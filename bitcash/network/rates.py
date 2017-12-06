@@ -98,7 +98,7 @@ def bch_to_satoshi():
     return BCH
 
 
-class BitcashpayRates:
+class BitpayRates:
     SINGLE_RATE = 'https://bitcashpay.com/api/rates/'
 
     @classmethod
@@ -291,27 +291,27 @@ class RatesAPI:
     IGNORED_ERRORS = (requests.exceptions.ConnectionError,
                       requests.exceptions.Timeout)
 
-    USD_RATES = []  # [BitcashpayRates.usd_to_satoshi, BlockchainRates.usd_to_satoshi]
-    EUR_RATES = []  # [BitcashpayRates.eur_to_satoshi, BlockchainRates.eur_to_satoshi]
-    GBP_RATES = []  # [BitcashpayRates.gbp_to_satoshi, BlockchainRates.gbp_to_satoshi]
-    JPY_RATES = []  # [BitcashpayRates.jpy_to_satoshi, BlockchainRates.jpy_to_satoshi]
-    CNY_RATES = []  # [BitcashpayRates.cny_to_satoshi, BlockchainRates.cny_to_satoshi]
-    HKD_RATES = []  # [BitcashpayRates.hkd_to_satoshi, BlockchainRates.hkd_to_satoshi]
-    CAD_RATES = []  # [BitcashpayRates.cad_to_satoshi, BlockchainRates.cad_to_satoshi]
-    AUD_RATES = []  # [BitcashpayRates.aud_to_satoshi, BlockchainRates.aud_to_satoshi]
-    NZD_RATES = []  # [BitcashpayRates.nzd_to_satoshi, BlockchainRates.nzd_to_satoshi]
-    RUB_RATES = []  # [BitcashpayRates.rub_to_satoshi, BlockchainRates.rub_to_satoshi]
-    BRL_RATES = []  # [BitcashpayRates.brl_to_satoshi, BlockchainRates.brl_to_satoshi]
-    CHF_RATES = []  # [BitcashpayRates.chf_to_satoshi, BlockchainRates.chf_to_satoshi]
-    SEK_RATES = []  # [BitcashpayRates.sek_to_satoshi, BlockchainRates.sek_to_satoshi]
-    DKK_RATES = []  # [BitcashpayRates.dkk_to_satoshi, BlockchainRates.dkk_to_satoshi]
-    ISK_RATES = []  # [BitcashpayRates.isk_to_satoshi, BlockchainRates.isk_to_satoshi]
-    PLN_RATES = []  # [BitcashpayRates.pln_to_satoshi, BlockchainRates.pln_to_satoshi]
-    KRW_RATES = []  # [BitcashpayRates.krw_to_satoshi, BlockchainRates.krw_to_satoshi]
-    CLP_RATES = []  # [BitcashpayRates.clp_to_satoshi, BlockchainRates.clp_to_satoshi]
-    SGD_RATES = []  # [BitcashpayRates.sgd_to_satoshi, BlockchainRates.sgd_to_satoshi]
-    THB_RATES = []  # [BitcashpayRates.thb_to_satoshi, BlockchainRates.thb_to_satoshi]
-    TWD_RATES = []  # [BitcashpayRates.twd_to_satoshi, BlockchainRates.twd_to_satoshi]
+    USD_RATES = []  # [BitpayRates.usd_to_satoshi, BlockchainRates.usd_to_satoshi]
+    EUR_RATES = []  # [BitpayRates.eur_to_satoshi, BlockchainRates.eur_to_satoshi]
+    GBP_RATES = []  # [BitpayRates.gbp_to_satoshi, BlockchainRates.gbp_to_satoshi]
+    JPY_RATES = []  # [BitpayRates.jpy_to_satoshi, BlockchainRates.jpy_to_satoshi]
+    CNY_RATES = []  # [BitpayRates.cny_to_satoshi, BlockchainRates.cny_to_satoshi]
+    HKD_RATES = []  # [BitpayRates.hkd_to_satoshi, BlockchainRates.hkd_to_satoshi]
+    CAD_RATES = []  # [BitpayRates.cad_to_satoshi, BlockchainRates.cad_to_satoshi]
+    AUD_RATES = []  # [BitpayRates.aud_to_satoshi, BlockchainRates.aud_to_satoshi]
+    NZD_RATES = []  # [BitpayRates.nzd_to_satoshi, BlockchainRates.nzd_to_satoshi]
+    RUB_RATES = []  # [BitpayRates.rub_to_satoshi, BlockchainRates.rub_to_satoshi]
+    BRL_RATES = []  # [BitpayRates.brl_to_satoshi, BlockchainRates.brl_to_satoshi]
+    CHF_RATES = []  # [BitpayRates.chf_to_satoshi, BlockchainRates.chf_to_satoshi]
+    SEK_RATES = []  # [BitpayRates.sek_to_satoshi, BlockchainRates.sek_to_satoshi]
+    DKK_RATES = []  # [BitpayRates.dkk_to_satoshi, BlockchainRates.dkk_to_satoshi]
+    ISK_RATES = []  # [BitpayRates.isk_to_satoshi, BlockchainRates.isk_to_satoshi]
+    PLN_RATES = []  # [BitpayRates.pln_to_satoshi, BlockchainRates.pln_to_satoshi]
+    KRW_RATES = []  # [BitpayRates.krw_to_satoshi, BlockchainRates.krw_to_satoshi]
+    CLP_RATES = []  # [BitpayRates.clp_to_satoshi, BlockchainRates.clp_to_satoshi]
+    SGD_RATES = []  # [BitpayRates.sgd_to_satoshi, BlockchainRates.sgd_to_satoshi]
+    THB_RATES = []  # [BitpayRates.thb_to_satoshi, BlockchainRates.thb_to_satoshi]
+    TWD_RATES = []  # [BitpayRates.twd_to_satoshi, BlockchainRates.twd_to_satoshi]
 
     @classmethod
     def usd_to_satoshi(cls):  # pragma: no cover
