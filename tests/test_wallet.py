@@ -226,8 +226,9 @@ class TestPrivateKeyTestnet:
         initial = len(private_key.get_transactions())
         current = initial
         tries = 0
-
-        private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
+        # FIXME: Changed jpy to satoshi and 1 to 10,000 since we don't yet
+        # have a rates API for BCH in place.
+        private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 10000, 'satoshi')])
 
         while tries < 15:  # pragma: no cover
             current = len(private_key.get_transactions())
