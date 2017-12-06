@@ -12,7 +12,15 @@ from bitcash.utils import (
 VERSION_1 = 0x01.to_bytes(4, byteorder='little')
 SEQUENCE = 0xffffffff.to_bytes(4, byteorder='little')
 LOCK_TIME = 0x00.to_bytes(4, byteorder='little')
+
+##
+# Python 3 doesn't allow bitwise operators on byte objects...
 HASH_TYPE = 0x01.to_bytes(4, byteorder='little')
+# BitcoinCash fork ID.
+SIGHASH_FORKID = 0x40.to_bytes(4, byteorder='little')
+# So we just do this for now. FIXME
+HASH_TYPE = 0x41.to_bytes(4, byteorder='little')
+##
 
 OP_0 = b'\x00'
 OP_CHECKLOCKTIMEVERIFY = b'\xb1'
