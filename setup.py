@@ -11,12 +11,12 @@ setup(
     version=version,
     description='BitcoinCash made easy.',
     long_description=open('README.rst', 'r').read(),
-    author='Ofek Lev',
-    author_email='ofekmeister@gmail.com',
-    maintainer='Ofek Lev',
-    maintainer_email='ofekmeister@gmail.com',
-    url='https://github.com/ofek/bitcash',
-    download_url='https://github.com/ofek/bitcash',
+    author='Teran McKinney',
+    author_email='sega01@go-beyond.org',
+    maintainer='Teran McKinney',
+    maintainer_email='sega01@go-beyond.org',
+    url='https://github.com/teran-mckinney/bitcash',
+    download_url='https://github.com/teran-mckinney/bitcash',
     license='MIT',
 
     keywords=(
