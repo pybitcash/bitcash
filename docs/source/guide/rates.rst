@@ -6,7 +6,7 @@ Exchange Rates
 Bitcash gets exchange rate data from trusted third-party APIs. Specifically,
 it can access:
 
-- `<https://bitcashpay.com/bitcoincash-exchange-rates>`_ via :class:`~bitcash.network.rates.BitcashpayRates`
+- `<https://bitcashpay.com/bitcoincash-exchange-rates>`_ via :class:`~bitcash.network.rates.BitpayRates`
 - `<https://blockchain.info/api/exchange_rates_api>`_ via :class:`~bitcash.network.rates.BlockchainRates`
 
 RatesAPI

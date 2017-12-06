@@ -33,7 +33,7 @@ Network
     :members:
     :undoc-members:
 
-.. autoclass:: bitcash.network.services.BitcashpayAPI
+.. autoclass:: bitcash.network.services.BitpayAPI
     :members:
     :undoc-members:
     :inherited-members:
@@ -62,7 +62,7 @@ Exchange Rates
     :members:
     :undoc-members:
 
-.. autoclass:: bitcash.network.rates.BitcashpayRates
+.. autoclass:: bitcash.network.rates.BitpayRates
     :members:
     :undoc-members:
 
