@@ -1,14 +1,14 @@
-Bitcash: BitcoinCash made easy.
+BitCash: BitcoinCash made easy.
 =======================
 
 .. image:: https://img.shields.io/pypi/v/bitcash.svg?style=flat-square
     :target: https://pypi.org/project/bitcash
 
-.. image:: https://img.shields.io/travis/ofek/bitcash.svg?branch=master&style=flat-square
-    :target: https://travis-ci.org/ofek/bitcash
+.. image:: https://img.shields.io/travis/sporestack/bitcash.svg?branch=master&style=flat-square
+    :target: https://travis-ci.org/sporestack/bitcash
 
-.. image:: https://img.shields.io/codecov/c/github/ofek/bitcash.svg?style=flat-square
-    :target: https://codecov.io/gh/ofek/bitcash
+.. image:: https://img.shields.io/codecov/c/github/sporestack/bitcash.svg?style=flat-square
+    :target: https://codecov.io/gh/sporestack/bitcash
 
 .. image:: https://img.shields.io/pypi/pyversions/bitcash.svg?style=flat-square
     :target: https://pypi.org/project/bitcash
@@ -18,13 +18,17 @@ Bitcash: BitcoinCash made easy.
 
 -----
 
-Bitcash is Python's `fastest <https://ofek.github.io/bitcash/guide/intro.html#why-bitcash>`_
+Forked from Ofek's awesome Bit library: https://github.com/ofek/bit
+
+Updates for Bit -> BitCash in progress.
+
+BitCash is Python's `fastest <https://sporestack.github.io/bitcash/guide/intro.html#why-bitcash>`_
 BitcoinCash library and was designed from the beginning to feel intuitive, be
 effortless to use, and have readable source code. It is heavily inspired by
 `Requests <https://github.com/kennethreitz/requests>`_ and
 `Keras <https://github.com/fchollet/keras>`_.
 
-**Bitcash is so easy to use, in fact, you can do this:**
+**BitCash is so easy to use, in fact, you can do this:**
 
 .. code-block:: python
 
@@ -72,7 +76,7 @@ If you are intrigued, continue reading. If not, continue all the same!
 Installation
 ------------
 
-Bitcash is distributed on `PyPI`_ as a universal wheel and is available on Linux/macOS
+BitCash is distributed on `PyPI`_ as a universal wheel and is available on Linux/macOS
 and Windows and supports Python 3.5+ and PyPy3.5-v5.7.1+. ``pip`` >= 8.1.2 is required.
 
 .. code-block:: bash
@@ -83,20 +87,13 @@ Documentation
 -------------
 
 Docs are `hosted by Github Pages`_ and are automatically built and published
-by Travis after every successful commit to Bitcash's ``master`` branch.
+by Travis after every successful commit to BitCash's ``master`` branch.
 
 Credits
 -------
 
-- Logo courtesy of `<https://textcraft.net>`_
-- `Gregory Maxwell`_ (BitcoinCash core dev) for teaching me a bitcash of `ECC`_ math
-- `arubi`_ in #bitcoincash for helping me understand transaction gotchas
-- `fuzeman`_ for bestowing me the name ``bitcash`` on the `Python Package Index`_
+- `ofek`_ for the original bit codebase.
+- `bjarnemagnussen`_ for his segwit code for the necessary BIP-143 support.
 
-.. _PyPI: https://pypi.org/project/bitcash
-.. _hosted by Github Pages: https://ofek.github.io/bitcash
-.. _Gregory Maxwell: https://github.com/gmaxwell
-.. _ECC: https://en.wikipedia.org/wiki/Elliptic_curve_cryptography
-.. _arubi: https://github.com/fivepiece
-.. _fuzeman: https://github.com/fuzeman
-.. _Python Package Index: https://pypi.org
+.. _ofek: https://github.com/sporestack/bitcash
+.. _bjarnemagnussen: https://github.com/bjarnemagnussen/bitcash/tree/segwit

@@ -1,9 +1,9 @@
-Bitcash is written and maintained by Ofek Lev.
+BitCash is a fork of Ofek's Bit.
 
 Maintainers
 -----------
 
-- Ofek Lev <ofekmeister@gmail.com> `@ofek <https://github.com/ofek>`_
+- Teran McKinney
 
 Contributors
 ------------
