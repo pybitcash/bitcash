@@ -1,5 +1,4 @@
 from collections import namedtuple
-from itertools import islice
 
 from bitcash.crypto import double_sha256, sha256
 from bitcash.exceptions import InsufficientFunds
@@ -188,9 +187,12 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
     public_key = private_key.public_key
     public_key_len = len(public_key).to_bytes(1, byteorder='little')
 
+    scriptCode = private_key.scriptcode
+    scriptCode_len = int_to_varint(len(scriptCode))
+
     version = VERSION_1
     lock_time = LOCK_TIME
-    sequence = SEQUENCE
+    # sequence = SEQUENCE
     hash_type = HASH_TYPE
     input_count = int_to_unknown_bytes(len(unspents), byteorder='little')
     output_count = int_to_unknown_bytes(len(outputs), byteorder='little')
@@ -206,22 +208,23 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
 
         inputs.append(TxIn(script, script_len, txid, txindex))
 
+    hashPrevouts = double_sha256(b''.join([i.txid+i.txindex for i in inputs.TxIn]))
+    hashSequence = double_sha256(b''.join([i.sequence for i in inputs.TxIn]))
+    hashOutputs = double_sha256(b''.join([bytes(o) for o in output_block]))
+
     for i, txin in enumerate(inputs):
 
-        hashed = sha256(
+        hashed = sha256(  # BIP-143: Used for Bitcoin Cash
             version +
-            input_count +
-            b''.join(ti.txid + ti.txindex + OP_0 + sequence
-                     for ti in islice(inputs, i)) +
+            hashPrevouts +
+            hashSequence +
             txin.txid +
             txin.txindex +
-            txin.script_len +
-            txin.script +
-            sequence +
-            b''.join(ti.txid + ti.txindex + OP_0 + sequence
-                     for ti in islice(inputs, i + 1, None)) +
-            output_count +
-            output_block +
+            scriptCode_len +
+            scriptCode +
+            txin.amount +
+            txin.sequence +
+            hashOutputs +
             lock_time +
             hash_type
         )
