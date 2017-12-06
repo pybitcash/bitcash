@@ -13,7 +13,7 @@ DEFAULT_CACHE_TIME = 60
 # rates when given in terms of 1 BCH.
 ONE = Decimal(1)
 
-# https://en.bitcoincash.it/wiki/Units
+# https://en.bitcoin.it/wiki/Units
 SATOSHI = 1
 uBCH = 10 ** 2
 mBCH = 10 ** 5

@@ -137,4 +137,4 @@ Each item must be an instance of :class:`~bitcash.network.meta.Unspent`.
 
 .. _decimal.Decimal: https://docs.python.org/3/library/decimal.html#decimal.Decimal
 .. _read this: https://blog.blockchain.com/2016/12/15/bitcoincash-transaction-fees-what-are-they-why-should-you-care
-.. _unspent transaction output: https://en.bitcoincash.it/wiki/Transaction#Input
+.. _unspent transaction output: https://en.bitcoin.it/wiki/Transaction#Input

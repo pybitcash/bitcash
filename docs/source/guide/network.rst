@@ -121,6 +121,6 @@ NetworkAPI
 Private key network operations use :class:`~bitcash.network.NetworkAPI`. For each method,
 it polls a service and if an error occurs it tries another.
 
-.. _satoshi: https://en.bitcoincash.it/wiki/Satoshi_(unit)
-.. _blockchain: https://en.bitcoincash.it/wiki/Block_chain
-.. _unspent transaction outputs: https://en.bitcoincash.it/wiki/Transaction#Input
+.. _satoshi: https://en.bitcoin.it/wiki/Satoshi_(unit)
+.. _blockchain: https://en.bitcoin.it/wiki/Block_chain
+.. _unspent transaction outputs: https://en.bitcoin.it/wiki/Transaction#Input

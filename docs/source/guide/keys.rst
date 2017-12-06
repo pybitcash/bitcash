@@ -210,8 +210,8 @@ Export:
     >>> key.to_der()
     b'0\x81\x84\x02\x01\x000\x10\x06\x07*\x86H\xce=\x02\x01\x06\x05+\x81\x04\x00\n\x04m0k\x02\x01\x01\x04 ld\x8f\xd4\xc0\x19\xbd^\xa1\xf7f\xee\x8b9j\x1c\xd3ZX\x89\x1b\x04\x13|e\xe7|g\x84:\xcf\xab\xa1D\x03B\x00\x04\xb6\x1a\x9bQ\x0c?\xe3\xb7\x80\x05,\xcf7\x01{\xf9,"\xb6\xdf\xe5\xbb\x0b+\x9b\xc5\x07@2\xa1\x8a\x01R<\x86\t\x1c\x02\x0fd\x8d\x90\xb5\x99w\xc5\x84(#\xfdr>^\xd3\xb5|\x9d1\xa1\x9c/\x04\xf5\xdd'
 
-.. _private key: https://en.bitcoincash.it/wiki/Private_key
+.. _private key: https://en.bitcoin.it/wiki/Private_key
 .. _elliptic curve: https://en.wikipedia.org/wiki/Elliptic_curve
 .. _SEC: https://en.wikipedia.org/wiki/SECG
-.. _secp256k1: https://en.bitcoincash.it/wiki/Secp256k1
-.. _wallet import format: https://en.bitcoincash.it/wiki/Private_key#Base58_Wallet_Import_format
+.. _secp256k1: https://en.bitcoin.it/wiki/Secp256k1
+.. _wallet import format: https://en.bitcoin.it/wiki/Private_key#Base58_Wallet_Import_format

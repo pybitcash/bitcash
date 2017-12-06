@@ -122,4 +122,4 @@ metadata. To convert your hex keys to WIF to use certain properties, do this:
     >>> key2.address
     '1BQCscSMaJhezQvX6hzCdcRVdsxJuMAdwt'
 
-.. _store messages or data: https://en.bitcoincash.it/wiki/OP_RETURN
+.. _store messages or data: https://en.bitcoin.it/wiki/OP_RETURN
