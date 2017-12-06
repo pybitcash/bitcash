@@ -1,7 +1,7 @@
 from collections import deque
 
-from bit.crypto import double_sha256_checksum
-from bit.utils import int_to_unknown_bytes
+from bitcash.crypto import double_sha256_checksum
+from bitcash.utils import int_to_unknown_bytes
 
 BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 BASE58_ALPHABET_LIST = list(BASE58_ALPHABET)

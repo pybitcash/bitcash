@@ -1,7 +1,7 @@
 import requests
 
-from bit.network import currency_to_satoshi
-from bit.network.meta import Unspent
+from bitcash.network import currency_to_satoshi
+from bitcash.network.meta import Unspent
 
 DEFAULT_TIMEOUT = 10
 
@@ -39,7 +39,7 @@ class InsightAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
-            Unspent(currency_to_satoshi(tx['amount'], 'btc'),
+            Unspent(currency_to_satoshi(tx['amount'], 'bch'),
                     tx['confirmations'],
                     tx['scriptPubKey'],
                     tx['txid'],
@@ -53,13 +53,13 @@ class InsightAPI:
         return True if r.status_code == 200 else False
 
 
-class BitpayAPI(InsightAPI):
-    MAIN_ENDPOINT = 'https://insight.bitpay.com/api/'
+class BitcashpayAPI(InsightAPI):
+    MAIN_ENDPOINT = 'https://insight.bitcashpay.com/api/'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'addr/'
     MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
-    TEST_ENDPOINT = 'https://test-insight.bitpay.com/api/'
+    TEST_ENDPOINT = 'https://test-insight.bitcashpay.com/api/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'addr/'
     TEST_BALANCE_API = TEST_ADDRESS_API + '{}/balance'
     TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/utxo'
@@ -86,7 +86,7 @@ class BitpayAPI(InsightAPI):
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
-            Unspent(currency_to_satoshi(tx['amount'], 'btc'),
+            Unspent(currency_to_satoshi(tx['amount'], 'bch'),
                     tx['confirmations'],
                     tx['scriptPubKey'],
                     tx['txid'],
@@ -162,12 +162,12 @@ class BlockchainAPI:
         return True if r.status_code == 200 else False
 
 
-class SmartbitAPI:
-    MAIN_ENDPOINT = 'https://api.smartbit.com.au/v1/blockchain/'
+class SmartbitcashAPI:
+    MAIN_ENDPOINT = 'https://api.smartbitcash.com.au/v1/blockchain/'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/'
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/unspent'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'pushtx'
-    TEST_ENDPOINT = 'https://testnet-api.smartbit.com.au/v1/blockchain/'
+    TEST_ENDPOINT = 'https://testnet-api.smartbitcash.com.au/v1/blockchain/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'address/'
     TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/unspent'
     TEST_TX_PUSH_API = TEST_ENDPOINT + 'pushtx'
@@ -223,7 +223,7 @@ class SmartbitAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
-            Unspent(currency_to_satoshi(tx['value'], 'btc'),
+            Unspent(currency_to_satoshi(tx['value'], 'bch'),
                     tx['confirmations'],
                     tx['script_pub_key']['hex'],
                     tx['txid'],
@@ -237,7 +237,7 @@ class SmartbitAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
-            Unspent(currency_to_satoshi(tx['value'], 'btc'),
+            Unspent(currency_to_satoshi(tx['value'], 'bch'),
                     tx['confirmations'],
                     tx['script_pub_key']['hex'],
                     tx['txid'],
@@ -262,27 +262,27 @@ class NetworkAPI:
                       requests.exceptions.Timeout,
                       requests.exceptions.ReadTimeout)
 
-    GET_BALANCE_MAIN = [BitpayAPI.get_balance,
+    GET_BALANCE_MAIN = [BitcashpayAPI.get_balance,
                         BlockchainAPI.get_balance,
-                        SmartbitAPI.get_balance]
+                        SmartbitcashAPI.get_balance]
     GET_TRANSACTIONS_MAIN = [BlockchainAPI.get_transactions,  # No limit, requires multiple requests
-                             BitpayAPI.get_transactions,  # Limit 1000
-                             SmartbitAPI.get_transactions]  # Limit 1000
-    GET_UNSPENT_MAIN = [BitpayAPI.get_unspent,  # No limit
-                        SmartbitAPI.get_unspent,  # Limit 1000
+                             BitcashpayAPI.get_transactions,  # Limit 1000
+                             SmartbitcashAPI.get_transactions]  # Limit 1000
+    GET_UNSPENT_MAIN = [BitcashpayAPI.get_unspent,  # No limit
+                        SmartbitcashAPI.get_unspent,  # Limit 1000
                         BlockchainAPI.get_unspent]  # Limit 250
     BROADCAST_TX_MAIN = [BlockchainAPI.broadcast_tx,
-                         BitpayAPI.broadcast_tx,
-                         SmartbitAPI.broadcast_tx]  # Limit 5/minute
+                         BitcashpayAPI.broadcast_tx,
+                         SmartbitcashAPI.broadcast_tx]  # Limit 5/minute
 
-    GET_BALANCE_TEST = [BitpayAPI.get_balance_testnet,
-                        SmartbitAPI.get_balance_testnet]
-    GET_TRANSACTIONS_TEST = [BitpayAPI.get_transactions_testnet,  # Limit 1000
-                             SmartbitAPI.get_transactions_testnet]  # Limit 1000
-    GET_UNSPENT_TEST = [BitpayAPI.get_unspent_testnet,  # No limit
-                        SmartbitAPI.get_unspent_testnet]  # Limit 1000
-    BROADCAST_TX_TEST = [BitpayAPI.broadcast_tx_testnet,
-                         SmartbitAPI.broadcast_tx_testnet]  # Limit 5/minute
+    GET_BALANCE_TEST = [BitcashpayAPI.get_balance_testnet,
+                        SmartbitcashAPI.get_balance_testnet]
+    GET_TRANSACTIONS_TEST = [BitcashpayAPI.get_transactions_testnet,  # Limit 1000
+                             SmartbitcashAPI.get_transactions_testnet]  # Limit 1000
+    GET_UNSPENT_TEST = [BitcashpayAPI.get_unspent_testnet,  # No limit
+                        SmartbitcashAPI.get_unspent_testnet]  # Limit 1000
+    BROADCAST_TX_TEST = [BitcashpayAPI.broadcast_tx_testnet,
+                         SmartbitcashAPI.broadcast_tx_testnet]  # Limit 5/minute
 
     @classmethod
     def get_balance(cls, address):
@@ -364,7 +364,7 @@ class NetworkAPI:
         :param address: The address in question.
         :type address: ``str``
         :raises ConnectionError: If all API services fail.
-        :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
+        :rtype: ``list`` of :class:`~bitcash.network.meta.Unspent`
         """
 
         for api_call in cls.GET_UNSPENT_MAIN:
@@ -383,7 +383,7 @@ class NetworkAPI:
         :param address: The address in question.
         :type address: ``str``
         :raises ConnectionError: If all API services fail.
-        :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
+        :rtype: ``list`` of :class:`~bitcash.network.meta.Unspent`
         """
 
         for api_call in cls.GET_UNSPENT_TEST:

@@ -1,11 +1,11 @@
 from collections import namedtuple
 from itertools import islice
 
-from bit.crypto import double_sha256, sha256
-from bit.exceptions import InsufficientFunds
-from bit.format import address_to_public_key_hash
-from bit.network.rates import currency_to_satoshi_cached
-from bit.utils import (
+from bitcash.crypto import double_sha256, sha256
+from bitcash.exceptions import InsufficientFunds
+from bitcash.format import address_to_public_key_hash
+from bitcash.network.rates import currency_to_satoshi_cached
+from bitcash.utils import (
     bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes
 )
 

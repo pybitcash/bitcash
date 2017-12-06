@@ -1,34 +1,34 @@
-Bit: Bitcoin made easy.
+Bitcash: BitcoinCash made easy.
 =======================
 
-.. image:: https://img.shields.io/pypi/v/bit.svg?style=flat-square
-    :target: https://pypi.org/project/bit
+.. image:: https://img.shields.io/pypi/v/bitcash.svg?style=flat-square
+    :target: https://pypi.org/project/bitcash
 
-.. image:: https://img.shields.io/travis/ofek/bit.svg?branch=master&style=flat-square
-    :target: https://travis-ci.org/ofek/bit
+.. image:: https://img.shields.io/travis/ofek/bitcash.svg?branch=master&style=flat-square
+    :target: https://travis-ci.org/ofek/bitcash
 
-.. image:: https://img.shields.io/codecov/c/github/ofek/bit.svg?style=flat-square
-    :target: https://codecov.io/gh/ofek/bit
+.. image:: https://img.shields.io/codecov/c/github/ofek/bitcash.svg?style=flat-square
+    :target: https://codecov.io/gh/ofek/bitcash
 
-.. image:: https://img.shields.io/pypi/pyversions/bit.svg?style=flat-square
-    :target: https://pypi.org/project/bit
+.. image:: https://img.shields.io/pypi/pyversions/bitcash.svg?style=flat-square
+    :target: https://pypi.org/project/bitcash
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
     :target: https://en.wikipedia.org/wiki/MIT_License
 
 -----
 
-Bit is Python's `fastest <https://ofek.github.io/bit/guide/intro.html#why-bit>`_
-Bitcoin library and was designed from the beginning to feel intuitive, be
+Bitcash is Python's `fastest <https://ofek.github.io/bitcash/guide/intro.html#why-bitcash>`_
+BitcoinCash library and was designed from the beginning to feel intuitive, be
 effortless to use, and have readable source code. It is heavily inspired by
 `Requests <https://github.com/kennethreitz/requests>`_ and
 `Keras <https://github.com/fchollet/keras>`_.
 
-**Bit is so easy to use, in fact, you can do this:**
+**Bitcash is so easy to use, in fact, you can do this:**
 
 .. code-block:: python
 
-    >>> from bit import Key
+    >>> from bitcash import Key
     >>>
     >>> my_key = Key(...)
     >>> my_key.get_balance('usd')
@@ -37,7 +37,7 @@ effortless to use, and have readable source code. It is heavily inspired by
     >>> # Let's donate!
     >>> outputs = [
     >>>     # Wikileaks
-    >>>     ('1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v', 0.0035, 'btc'),
+    >>>     ('1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v', 0.0035, 'bch'),
     >>>     # Internet Archive
     >>>     ('1Archive1n2C579dMsAu3iC6tWzuQJz8dN', 190, 'jpy'),
     >>>     # The Pirate Bay
@@ -72,29 +72,29 @@ If you are intrigued, continue reading. If not, continue all the same!
 Installation
 ------------
 
-Bit is distributed on `PyPI`_ as a universal wheel and is available on Linux/macOS
+Bitcash is distributed on `PyPI`_ as a universal wheel and is available on Linux/macOS
 and Windows and supports Python 3.5+ and PyPy3.5-v5.7.1+. ``pip`` >= 8.1.2 is required.
 
 .. code-block:: bash
 
-    $ pip install bit
+    $ pip install bitcash
 
 Documentation
 -------------
 
 Docs are `hosted by Github Pages`_ and are automatically built and published
-by Travis after every successful commit to Bit's ``master`` branch.
+by Travis after every successful commit to Bitcash's ``master`` branch.
 
 Credits
 -------
 
 - Logo courtesy of `<https://textcraft.net>`_
-- `Gregory Maxwell`_ (Bitcoin core dev) for teaching me a bit of `ECC`_ math
-- `arubi`_ in #bitcoin for helping me understand transaction gotchas
-- `fuzeman`_ for bestowing me the name ``bit`` on the `Python Package Index`_
+- `Gregory Maxwell`_ (BitcoinCash core dev) for teaching me a bitcash of `ECC`_ math
+- `arubi`_ in #bitcoincash for helping me understand transaction gotchas
+- `fuzeman`_ for bestowing me the name ``bitcash`` on the `Python Package Index`_
 
-.. _PyPI: https://pypi.org/project/bit
-.. _hosted by Github Pages: https://ofek.github.io/bit
+.. _PyPI: https://pypi.org/project/bitcash
+.. _hosted by Github Pages: https://ofek.github.io/bitcash
 .. _Gregory Maxwell: https://github.com/gmaxwell
 .. _ECC: https://en.wikipedia.org/wiki/Elliptic_curve_cryptography
 .. _arubi: https://github.com/fivepiece

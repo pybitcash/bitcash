@@ -3,16 +3,16 @@
 Exchange Rates
 ==============
 
-Bit gets exchange rate data from trusted third-party APIs. Specifically,
+Bitcash gets exchange rate data from trusted third-party APIs. Specifically,
 it can access:
 
-- `<https://bitpay.com/bitcoin-exchange-rates>`_ via :class:`~bit.network.rates.BitpayRates`
-- `<https://blockchain.info/api/exchange_rates_api>`_ via :class:`~bit.network.rates.BlockchainRates`
+- `<https://bitcashpay.com/bitcoincash-exchange-rates>`_ via :class:`~bitcash.network.rates.BitcashpayRates`
+- `<https://blockchain.info/api/exchange_rates_api>`_ via :class:`~bitcash.network.rates.BlockchainRates`
 
 RatesAPI
 --------
 
-Core operations use :class:`~bit.network.rates.RatesAPI`. For each method,
+Core operations use :class:`~bitcash.network.rates.RatesAPI`. For each method,
 it polls a service and if an error occurs it tries another.
 
 You will likely never use this directly.
@@ -20,12 +20,12 @@ You will likely never use this directly.
 Currency to Satoshi
 -------------------
 
-Bit exposes 2 ways to convert a given amount of currency to the equivalent
-number of satoshi: :func:`~bit.network.currency_to_satoshi` and
-:func:`~bit.network.currency_to_satoshi_cached`. The latter function will
+Bitcash exposes 2 ways to convert a given amount of currency to the equivalent
+number of satoshi: :func:`~bitcash.network.currency_to_satoshi` and
+:func:`~bitcash.network.currency_to_satoshi_cached`. The latter function will
 cache results for 1 minute :ref:`by default <cache times>`.
 
-Bit uses :func:`~bit.network.currency_to_satoshi_cached` in transactions to convert the
+Bitcash uses :func:`~bitcash.network.currency_to_satoshi_cached` in transactions to convert the
 amount in each output to spendable satoshi.
 
 To illustrate, here is how your outputs in `(destination, amount, currency)`
@@ -34,7 +34,7 @@ transactions:
 
 .. code-block:: python
 
-    >>> from bit.network import currency_to_satoshi_cached
+    >>> from bitcash.network import currency_to_satoshi_cached
     >>>
     >>> ...
     >>> for i, output in enumerate(outputs):
@@ -45,12 +45,12 @@ Satoshi to Currency
 -------------------
 
 Converting satoshi to another currency as a formatted string can be done using
-:func:`~bit.network.satoshi_to_currency` or :func:`~bit.network.satoshi_to_currency_cached`.
+:func:`~bitcash.network.satoshi_to_currency` or :func:`~bitcash.network.satoshi_to_currency_cached`.
 The result will be rounded down to the proper number of decimal places for each currency.
 
 .. code-block:: python
 
-    >>> from bit.network import satoshi_to_currency_cached
+    >>> from bitcash.network import satoshi_to_currency_cached
     >>>
     >>> satoshi_to_currency_cached(56789, 'usd')
     '0.59'
@@ -62,13 +62,13 @@ The result will be rounded down to the proper number of decimal places for each 
 Supported Currencies
 --------------------
 
-These are all the currencies currently supported by Bit. Note that converting
-satoshi to itself, ubtc, mbtc, or btc never requires exchange rate data and
+These are all the currencies currently supported by Bitcash. Note that converting
+satoshi to itself, ubch, mbch, or bch never requires exchange rate data and
 therefore no network calls are needed.
 
 .. code-block:: python
 
-    >>> from bit import SUPPORTED_CURRENCIES
+    >>> from bitcash import SUPPORTED_CURRENCIES
     >>> print(SUPPORTED_CURRENCIES)
 
 +---------+----------------------+
@@ -76,11 +76,11 @@ therefore no network calls are needed.
 +=========+======================+
 | satoshi | Satoshi              |
 +---------+----------------------+
-| ubtc    | Microbitcoin         |
+| ubch    | Microbitcoincash         |
 +---------+----------------------+
-| mbtc    | Millibitcoin         |
+| mbch    | Millibitcoincash         |
 +---------+----------------------+
-| btc     | Bitcoin              |
+| bch     | BitcoinCash              |
 +---------+----------------------+
 | usd     | United States Dollar |
 +---------+----------------------+
@@ -130,6 +130,6 @@ therefore no network calls are needed.
 Unsupported Currencies
 ----------------------
 
-If you need to use currencies in your :ref:`transactions` that Bit does not
-support, convert it yourself to satoshi, ubtc, mbtc, or btc as these are
+If you need to use currencies in your :ref:`transactions` that Bitcash does not
+support, convert it yourself to satoshi, ubch, mbch, or bch as these are
 supported natively.

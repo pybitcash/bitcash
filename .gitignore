@@ -3,7 +3,7 @@
 /.cache
 /.idea
 /.coverage
-/bit.egg-info
+/bitcash.egg-info
 /build
 /dist
 /docs/build

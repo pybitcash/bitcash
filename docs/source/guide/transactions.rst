@@ -3,10 +3,10 @@
 Transactions
 ============
 
-Keys in Bit allow 2 ways of handling transactions: a
-:func:`~bit.PrivateKey.create_transaction` method that creates a signed
+Keys in Bitcash allow 2 ways of handling transactions: a
+:func:`~bitcash.PrivateKey.create_transaction` method that creates a signed
 transaction and returns the aforementioned transaction in hex, and a
-:func:`~bit.PrivateKey.send` method that does the same thing but will
+:func:`~bitcash.PrivateKey.send` method that does the same thing but will
 attempt to broadcast the transaction, returning instead the transaction id
 for future lookup. Both methods take the exact same arguments.
 
@@ -42,7 +42,7 @@ If you wanted to use 35000 satoshi to buy ice cream, you need to use all 55000
 satoshi in the transaction. How this works is whatever is left over you send
 back to yourself as change.
 
-By default Bit will send any change to the same address you sent from. You
+By default Bitcash will send any change to the same address you sent from. You
 can specify where leftover funds go like this:
 
 .. code-block:: python
@@ -64,7 +64,7 @@ Fee
 
     -- Coinbase
 
-By default, Bit will poll `<https://bitcoinfees.earn.com>`_ and use a fee that
+By default, Bitcash will poll `<https://bitcoincashfees.earn.com>`_ and use a fee that
 will allow your transaction to be confirmed as soon as possible.
 
 You can change the satoshi per byte fee like so:
@@ -78,7 +78,7 @@ For more information about transaction fees `read this`_.
 Unspent Consolidation
 ---------------------
 
-By default Bit will use all of your available UTXOs to make future transactions
+By default Bitcash will use all of your available UTXOs to make future transactions
 smaller and therefore reduce fees.
 
 If you don't desire this behavior and only wish to use what is needed, do this:
@@ -133,8 +133,8 @@ or
     >>> unspents = [Unspent(...), Unspent(...), ...]
     >>> key.create_transaction(..., unspents=unspents)
 
-Each item must be an instance of :class:`~bit.network.meta.Unspent`.
+Each item must be an instance of :class:`~bitcash.network.meta.Unspent`.
 
 .. _decimal.Decimal: https://docs.python.org/3/library/decimal.html#decimal.Decimal
-.. _read this: https://blog.blockchain.com/2016/12/15/bitcoin-transaction-fees-what-are-they-why-should-you-care
-.. _unspent transaction output: https://en.bitcoin.it/wiki/Transaction#Input
+.. _read this: https://blog.blockchain.com/2016/12/15/bitcoincash-transaction-fees-what-are-they-why-should-you-care
+.. _unspent transaction output: https://en.bitcoincash.it/wiki/Transaction#Input

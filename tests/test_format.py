@@ -1,6 +1,6 @@
 import pytest
 
-from bit.format import (
+from bitcash.format import (
     address_to_public_key_hash, bytes_to_wif, coords_to_public_key,
     get_version, point_to_public_key, public_key_to_coords,
     public_key_to_address, verify_sig, wif_checksum_check, wif_to_bytes

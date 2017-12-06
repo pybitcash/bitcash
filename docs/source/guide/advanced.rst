@@ -6,30 +6,30 @@ Advanced
 Server Integration
 ------------------
 
-If you only want to use Bit for its raw speed to lessen the load on your
+If you only want to use Bitcash for its raw speed to lessen the load on your
 servers, you don't have to use any of our network capabilities.
 
-- Use :func:`~bit.PrivateKey.create_transaction` instead of
-  :func:`~bit.PrivateKey.send`
+- Use :func:`~bitcash.PrivateKey.create_transaction` instead of
+  :func:`~bitcash.PrivateKey.send`
 - Supply :ref:`your own UTXOs <unspentparam>`
 - Set :ref:`your own fee <feeparam>`
-- Make sure all :ref:`outputsparam` only use these currencies: satoshi, ubtc,
-  mbtc, or btc.
+- Make sure all :ref:`outputsparam` only use these currencies: satoshi, ubch,
+  mbch, or bch.
 
 .. _coldstorage:
 
 Offline Transactions
 --------------------
 
-Bit supports the signing of transactions for keys in cold storage. First you
+Bitcash supports the signing of transactions for keys in cold storage. First you
 need to prepare a transaction while connected to the internet using the
-:func:`~bit.PrivateKey.prepare_transaction` class method of a private key.
+:func:`~bitcash.PrivateKey.prepare_transaction` class method of a private key.
 You must know your address.
 
 .. code-block:: python
 
-    >>> from bit import PrivateKeyTestnet
-    >>> from bit.network import NetworkAPI, satoshi_to_currency
+    >>> from bitcash import PrivateKeyTestnet
+    >>> from bitcash.network import NetworkAPI, satoshi_to_currency
     >>>
     >>> satoshi_to_currency(NetworkAPI.get_balance_testnet(address), 'usd')
     '833.03'
@@ -39,7 +39,7 @@ You must know your address.
 
 This performs validation and returns a JSON string containing all the required
 information to create a transaction. You should then take this to your offline
-machine and use the :func:`~bit.PrivateKey.sign_transaction` method of your
+machine and use the :func:`~bitcash.PrivateKey.sign_transaction` method of your
 private key.
 
 .. code-block:: python
@@ -52,15 +52,15 @@ Finally, bring this transaction back to your connected device and broadcast it.
 
 .. code-block:: python
 
-    >>> from bit.network import NetworkAPI
+    >>> from bitcash.network import NetworkAPI
     >>> NetworkAPI.broadcast_tx_testnet(tx_hex)
 
 Blockchain Storage
 ------------------
 
-Bit allows you to easily `store messages or data`_ in the blockchain itself
-using the ``message`` parameter of :func:`~bit.PrivateKey.create_transaction`
-or :func:`~bit.PrivateKey.send`:
+Bitcash allows you to easily `store messages or data`_ in the blockchain itself
+using the ``message`` parameter of :func:`~bitcash.PrivateKey.create_transaction`
+or :func:`~bitcash.PrivateKey.send`:
 
 .. code-block:: python
 
@@ -77,7 +77,7 @@ If you want to change the default timeout of 5 seconds for service API calls:
 
 .. code-block:: python
 
-    >>> from bit import set_service_timeout
+    >>> from bitcash import set_service_timeout
     >>> set_service_timeout(3)
 
 .. _cache times:
@@ -90,7 +90,7 @@ or recommended fees (10 minutes):
 
 .. code-block:: python
 
-    >>> from bit import set_fee_cache_time, set_rate_cache_time
+    >>> from bitcash import set_fee_cache_time, set_rate_cache_time
     >>> set_rate_cache_time(30)
     >>> set_fee_cache_time(60 * 5)
 
@@ -104,8 +104,8 @@ metadata. To convert your hex keys to WIF to use certain properties, do this:
 
 .. code-block:: python
 
-    >>> from bit import Key
-    >>> from bit.format import hex_to_wif
+    >>> from bitcash import Key
+    >>> from bitcash.format import hex_to_wif
     >>>
     >>> # Compressed by default
     >>> key1 = Key()
@@ -122,4 +122,4 @@ metadata. To convert your hex keys to WIF to use certain properties, do this:
     >>> key2.address
     '1BQCscSMaJhezQvX6hzCdcRVdsxJuMAdwt'
 
-.. _store messages or data: https://en.bitcoin.it/wiki/OP_RETURN
+.. _store messages or data: https://en.bitcoincash.it/wiki/OP_RETURN

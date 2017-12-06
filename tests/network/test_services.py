@@ -1,8 +1,8 @@
 import pytest
 
-import bit
-from bit.network.services import (
-    BitpayAPI, BlockchainAPI, NetworkAPI, SmartbitAPI, set_service_timeout
+import bitcash
+from bitcash.network.services import (
+    BitcashpayAPI, BlockchainAPI, NetworkAPI, SmartbitcashAPI, set_service_timeout
 )
 from tests.utils import (
     catch_errors_raise_warnings, decorate_methods, raise_connection_error
@@ -29,9 +29,9 @@ def all_items_equal(seq):
 
 
 def test_set_service_timeout():
-    original = bit.network.services.DEFAULT_TIMEOUT
+    original = bitcash.network.services.DEFAULT_TIMEOUT
     set_service_timeout(3)
-    updated = bit.network.services.DEFAULT_TIMEOUT
+    updated = bitcash.network.services.DEFAULT_TIMEOUT
 
     assert original != updated
     assert updated == 3
@@ -100,51 +100,51 @@ class TestNetworkAPI:
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
-class TestBitpayAPI:
+class TestBitcashpayAPI:
     def test_get_balance_return_type(self):
-        assert isinstance(BitpayAPI.get_balance(MAIN_ADDRESS_USED1), int)
+        assert isinstance(BitcashpayAPI.get_balance(MAIN_ADDRESS_USED1), int)
 
     def test_get_balance_main_used(self):
-        assert BitpayAPI.get_balance(MAIN_ADDRESS_USED1) > 0
+        assert BitcashpayAPI.get_balance(MAIN_ADDRESS_USED1) > 0
 
     def test_get_balance_main_unused(self):
-        assert BitpayAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
+        assert BitcashpayAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
 
     def test_get_balance_test_used(self):
-        assert BitpayAPI.get_balance_testnet(TEST_ADDRESS_USED2) > 0
+        assert BitcashpayAPI.get_balance_testnet(TEST_ADDRESS_USED2) > 0
 
     def test_get_balance_test_unused(self):
-        assert BitpayAPI.get_balance_testnet(TEST_ADDRESS_UNUSED) == 0
+        assert BitcashpayAPI.get_balance_testnet(TEST_ADDRESS_UNUSED) == 0
 
     def test_get_transactions_return_type(self):
-        assert iter(BitpayAPI.get_transactions(MAIN_ADDRESS_USED1))
+        assert iter(BitcashpayAPI.get_transactions(MAIN_ADDRESS_USED1))
 
     def test_get_transactions_main_used(self):
-        assert len(BitpayAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 218
+        assert len(BitcashpayAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 218
 
     def test_get_transactions_main_unused(self):
-        assert len(BitpayAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
+        assert len(BitcashpayAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_transactions_test_used(self):
-        assert len(BitpayAPI.get_transactions_testnet(TEST_ADDRESS_USED2)) >= 444
+        assert len(BitcashpayAPI.get_transactions_testnet(TEST_ADDRESS_USED2)) >= 444
 
     def test_get_transactions_test_unused(self):
-        assert len(BitpayAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
+        assert len(BitcashpayAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
 
     def test_get_unspent_return_type(self):
-        assert iter(BitpayAPI.get_unspent(MAIN_ADDRESS_USED1))
+        assert iter(BitcashpayAPI.get_unspent(MAIN_ADDRESS_USED1))
 
     def test_get_unspent_main_used(self):
-        assert len(BitpayAPI.get_unspent(MAIN_ADDRESS_USED2)) >= 1
+        assert len(BitcashpayAPI.get_unspent(MAIN_ADDRESS_USED2)) >= 1
 
     def test_get_unspent_main_unused(self):
-        assert len(BitpayAPI.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
+        assert len(BitcashpayAPI.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_unspent_test_used(self):
-        assert len(BitpayAPI.get_unspent_testnet(TEST_ADDRESS_USED2)) >= 194
+        assert len(BitcashpayAPI.get_unspent_testnet(TEST_ADDRESS_USED2)) >= 194
 
     def test_get_unspent_test_unused(self):
-        assert len(BitpayAPI.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0
+        assert len(BitcashpayAPI.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
@@ -178,48 +178,48 @@ class TestBlockchainAPI:
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
-class TestSmartbitAPI:
+class TestSmartbitcashAPI:
     def test_get_balance_return_type(self):
-        assert isinstance(SmartbitAPI.get_balance(MAIN_ADDRESS_USED1), int)
+        assert isinstance(SmartbitcashAPI.get_balance(MAIN_ADDRESS_USED1), int)
 
     def test_get_balance_main_used(self):
-        assert SmartbitAPI.get_balance(MAIN_ADDRESS_USED1) > 0
+        assert SmartbitcashAPI.get_balance(MAIN_ADDRESS_USED1) > 0
 
     def test_get_balance_main_unused(self):
-        assert SmartbitAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
+        assert SmartbitcashAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
 
     def test_get_balance_test_used(self):
-        assert SmartbitAPI.get_balance_testnet(TEST_ADDRESS_USED2) > 0
+        assert SmartbitcashAPI.get_balance_testnet(TEST_ADDRESS_USED2) > 0
 
     def test_get_balance_test_unused(self):
-        assert SmartbitAPI.get_balance_testnet(TEST_ADDRESS_UNUSED) == 0
+        assert SmartbitcashAPI.get_balance_testnet(TEST_ADDRESS_UNUSED) == 0
 
     def test_get_transactions_return_type(self):
-        assert iter(SmartbitAPI.get_transactions(MAIN_ADDRESS_USED1))
+        assert iter(SmartbitcashAPI.get_transactions(MAIN_ADDRESS_USED1))
 
     def test_get_transactions_main_used(self):
-        assert len(SmartbitAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 218
+        assert len(SmartbitcashAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 218
 
     def test_get_transactions_main_unused(self):
-        assert len(SmartbitAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
+        assert len(SmartbitcashAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_transactions_test_used(self):
-        assert len(SmartbitAPI.get_transactions_testnet(TEST_ADDRESS_USED2)) >= 444
+        assert len(SmartbitcashAPI.get_transactions_testnet(TEST_ADDRESS_USED2)) >= 444
 
     def test_get_transactions_test_unused(self):
-        assert len(SmartbitAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
+        assert len(SmartbitcashAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
 
     def test_get_unspent_return_type(self):
-        assert iter(SmartbitAPI.get_unspent(MAIN_ADDRESS_USED1))
+        assert iter(SmartbitcashAPI.get_unspent(MAIN_ADDRESS_USED1))
 
     def test_get_unspent_main_used(self):
-        assert len(SmartbitAPI.get_unspent(MAIN_ADDRESS_USED2)) >= 1
+        assert len(SmartbitcashAPI.get_unspent(MAIN_ADDRESS_USED2)) >= 1
 
     def test_get_unspent_main_unused(self):
-        assert len(SmartbitAPI.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
+        assert len(SmartbitcashAPI.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_unspent_test_used(self):
-        assert len(SmartbitAPI.get_unspent_testnet(TEST_ADDRESS_USED2)) >= 194
+        assert len(SmartbitcashAPI.get_unspent_testnet(TEST_ADDRESS_USED2)) >= 194
 
     def test_get_unspent_test_unused(self):
-        assert len(SmartbitAPI.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0
+        assert len(SmartbitcashAPI.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0

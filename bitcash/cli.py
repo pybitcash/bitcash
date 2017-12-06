@@ -1,14 +1,14 @@
 import click
 
-from bit.keygen import generate_matching_address
+from bitcash.keygen import generate_matching_address
 
 
 @click.group(invoke_without_command=True)
-def bit():
+def bitcash():
     pass
 
 
-@bit.command()
+@bitcash.command()
 @click.argument('prefix')
 @click.option('--cores', '-c', default='all')
 def gen(prefix, cores):

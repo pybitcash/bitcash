@@ -1,18 +1,18 @@
 from time import sleep, time
 
-import bit
-from bit.network.rates import (
-    RatesAPI, btc_to_satoshi, currency_to_satoshi, currency_to_satoshi_cached,
-    mbtc_to_satoshi, satoshi_to_currency, satoshi_to_currency_cached,
-    satoshi_to_satoshi, set_rate_cache_time, ubtc_to_satoshi
+import bitcash
+from bitcash.network.rates import (
+    RatesAPI, bch_to_satoshi, currency_to_satoshi, currency_to_satoshi_cached,
+    mbch_to_satoshi, satoshi_to_currency, satoshi_to_currency_cached,
+    satoshi_to_satoshi, set_rate_cache_time, ubch_to_satoshi
 )
-from bit.utils import Decimal
+from bitcash.utils import Decimal
 
 
 def test_set_rate_cache_time():
-    original = bit.network.rates.DEFAULT_CACHE_TIME
+    original = bitcash.network.rates.DEFAULT_CACHE_TIME
     set_rate_cache_time(30)
-    updated = bit.network.rates.DEFAULT_CACHE_TIME
+    updated = bitcash.network.rates.DEFAULT_CACHE_TIME
 
     assert original != updated
     assert updated == 30
@@ -26,20 +26,20 @@ def test_satoshi_to_satoshi():
     assert s == 1
 
 
-def test_ubtc_to_satoshi():
-    s = ubtc_to_satoshi()
+def test_ubch_to_satoshi():
+    s = ubch_to_satoshi()
     assert isinstance(s, int)
     assert s == 100
 
 
-def test_mbtc_to_satoshi():
-    s = mbtc_to_satoshi()
+def test_mbch_to_satoshi():
+    s = mbch_to_satoshi()
     assert isinstance(s, int)
     assert s == 100000
 
 
-def test_btc_to_satoshi():
-    s = btc_to_satoshi()
+def test_bch_to_satoshi():
+    s = bch_to_satoshi()
     assert isinstance(s, int)
     assert s == 100000000
 
@@ -50,14 +50,14 @@ def test_currency_to_satoshi():
 
 class TestSatoshiToCurrency:
     def test_no_exponent(self):
-        assert satoshi_to_currency(1, 'btc') == '0.00000001'
+        assert satoshi_to_currency(1, 'bch') == '0.00000001'
 
     def test_zero_places(self):
         assert Decimal(satoshi_to_currency(100000, 'jpy')).as_tuple().exponent == 0
 
 
 def test_satoshi_to_currency_cached():
-    assert satoshi_to_currency_cached(1, 'ubtc') == '0.01'
+    assert satoshi_to_currency_cached(1, 'ubch') == '0.01'
 
 
 def test_rates_close():

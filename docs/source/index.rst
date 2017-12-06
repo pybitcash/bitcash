@@ -1,36 +1,36 @@
-Bit: Bitcoin made easy.
+Bitcash: BitcoinCash made easy.
 =======================
 
 Version |version|.
 
-.. image:: https://img.shields.io/pypi/v/bit.svg?style=flat-square
-    :target: https://pypi.org/project/bit
+.. image:: https://img.shields.io/pypi/v/bitcash.svg?style=flat-square
+    :target: https://pypi.org/project/bitcash
 
-.. image:: https://img.shields.io/travis/ofek/bit.svg?branch=master&style=flat-square
-    :target: https://travis-ci.org/ofek/bit
+.. image:: https://img.shields.io/travis/ofek/bitcash.svg?branch=master&style=flat-square
+    :target: https://travis-ci.org/ofek/bitcash
 
-.. image:: https://img.shields.io/codecov/c/github/ofek/bit.svg?style=flat-square
-    :target: https://codecov.io/gh/ofek/bit
+.. image:: https://img.shields.io/codecov/c/github/ofek/bitcash.svg?style=flat-square
+    :target: https://codecov.io/gh/ofek/bitcash
 
-.. image:: https://img.shields.io/pypi/pyversions/bit.svg?style=flat-square
-    :target: https://pypi.org/project/bit
+.. image:: https://img.shields.io/pypi/pyversions/bitcash.svg?style=flat-square
+    :target: https://pypi.org/project/bitcash
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
     :target: https://en.wikipedia.org/wiki/MIT_License
 
 -----
 
-Bit is Python's `fastest <https://ofek.github.io/bit/guide/intro.html#why-bit>`_
-Bitcoin library and was designed from the beginning to feel intuitive, be
+Bitcash is Python's `fastest <https://ofek.github.io/bitcash/guide/intro.html#why-bitcash>`_
+BitcoinCash library and was designed from the beginning to feel intuitive, be
 effortless to use, and have readable source code. It is heavily inspired by
 `Requests <https://github.com/kennethreitz/requests>`_ and
 `Keras <https://github.com/fchollet/keras>`_.
 
-**Bit is so easy to use, in fact, you can do this:**
+**Bitcash is so easy to use, in fact, you can do this:**
 
 .. code-block:: python
 
-    >>> from bit import Key
+    >>> from bitcash import Key
     >>>
     >>> my_key = Key(...)
     >>> my_key.get_balance('usd')
@@ -39,7 +39,7 @@ effortless to use, and have readable source code. It is heavily inspired by
     >>> # Let's donate!
     >>> outputs = [
     >>>     # Wikileaks
-    >>>     ('1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v', 0.0035, 'btc'),
+    >>>     ('1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v', 0.0035, 'bch'),
     >>>     # Internet Archive
     >>>     ('1Archive1n2C579dMsAu3iC6tWzuQJz8dN', 190, 'jpy'),
     >>>     # The Pirate Bay
@@ -75,7 +75,7 @@ User Guide
 ----------
 
 This section will tell you a little about the project, show how to install it,
-and will then walk you through how to use Bit with many examples and explanations
+and will then walk you through how to use Bitcash with many examples and explanations
 of best practices.
 
 .. toctree::
@@ -93,7 +93,7 @@ of best practices.
 Community
 ---------
 
-Here you will find everything you need to know about the development of Bit
+Here you will find everything you need to know about the development of Bitcash
 and the community surrounding it.
 
 .. toctree::
@@ -110,7 +110,7 @@ and the community surrounding it.
 Dev Guide
 ---------
 
-Up ahead is Bit's API and a few notes about design decisions. Beware the
+Up ahead is Bitcash's API and a few notes about design decisions. Beware the
 pedantry, or lack thereof.
 
 .. toctree::

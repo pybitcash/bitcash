@@ -1,4 +1,4 @@
-Bit is written and maintained by Ofek Lev.
+Bitcash is written and maintained by Ofek Lev.
 
 Maintainers
 -----------

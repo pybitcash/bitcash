@@ -1,4 +1,4 @@
-from bit.network.meta import Unspent
+from bitcash.network.meta import Unspent
 
 
 class TestUnspent:

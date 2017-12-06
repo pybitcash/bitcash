@@ -26,12 +26,12 @@ Documentation
 -------------
 
 Docs are hosted by `GitHub Pages`_ and are automatically built and published
-by Travis after every successful commit to Bit's ``master`` branch.
+by Travis after every successful commit to Bitcash's ``master`` branch.
 
 Version Scheme
 --------------
 
-Bit tries to adhere to `semantic versioning`_ as much as possible.
+Bitcash tries to adhere to `semantic versioning`_ as much as possible.
 
 .. _Travis CI: https://travis-ci.org
 .. _Codecov: https://codecov.io

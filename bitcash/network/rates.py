@@ -5,25 +5,25 @@ from time import time
 
 import requests
 
-from bit.utils import Decimal
+from bitcash.utils import Decimal
 
 DEFAULT_CACHE_TIME = 60
 
 # Constant for use in deriving exchange
-# rates when given in terms of 1 BTC.
+# rates when given in terms of 1 BCH.
 ONE = Decimal(1)
 
-# https://en.bitcoin.it/wiki/Units
+# https://en.bitcoincash.it/wiki/Units
 SATOSHI = 1
-uBTC = 10 ** 2
-mBTC = 10 ** 5
-BTC = 10 ** 8
+uBCH = 10 ** 2
+mBCH = 10 ** 5
+BCH = 10 ** 8
 
 SUPPORTED_CURRENCIES = OrderedDict([
     ('satoshi', 'Satoshi'),
-    ('ubtc', 'Microbitcoin'),
-    ('mbtc', 'Millibitcoin'),
-    ('btc', 'Bitcoin'),
+    ('ubch', 'Microbitcoincash'),
+    ('mbch', 'Millibitcoincash'),
+    ('bch', 'BitcoinCash'),
     ('usd', 'United States Dollar'),
     ('eur', 'Eurozone Euro'),
     ('gbp', 'Pound Sterling'),
@@ -50,9 +50,9 @@ SUPPORTED_CURRENCIES = OrderedDict([
 # https://en.wikipedia.org/wiki/ISO_4217
 CURRENCY_PRECISION = {
     'satoshi': 0,
-    'ubtc': 2,
-    'mbtc': 5,
-    'btc': 8,
+    'ubch': 2,
+    'mbch': 5,
+    'bch': 8,
     'usd': 2,
     'eur': 2,
     'gbp': 2,
@@ -86,25 +86,25 @@ def satoshi_to_satoshi():
     return SATOSHI
 
 
-def ubtc_to_satoshi():
-    return uBTC
+def ubch_to_satoshi():
+    return uBCH
 
 
-def mbtc_to_satoshi():
-    return mBTC
+def mbch_to_satoshi():
+    return mBCH
 
 
-def btc_to_satoshi():
-    return BTC
+def bch_to_satoshi():
+    return BCH
 
 
-class BitpayRates:
-    SINGLE_RATE = 'https://bitpay.com/api/rates/'
+class BitcashpayRates:
+    SINGLE_RATE = 'https://bitcashpay.com/api/rates/'
 
     @classmethod
     def currency_to_satoshi(cls, currency):
         rate = requests.get(cls.SINGLE_RATE + currency).json()['rate']
-        return int(ONE / Decimal(rate) * BTC)
+        return int(ONE / Decimal(rate) * BCH)
 
     @classmethod
     def usd_to_satoshi(cls):  # pragma: no cover
@@ -192,12 +192,12 @@ class BitpayRates:
 
 
 class BlockchainRates:
-    SINGLE_RATE = 'https://blockchain.info/tobtc?currency={}&value=1'
+    SINGLE_RATE = 'https://blockchain.info/tobch?currency={}&value=1'
 
     @classmethod
     def currency_to_satoshi(cls, currency):
         rate = requests.get(cls.SINGLE_RATE.format(currency)).json()
-        return int(Decimal(rate) * BTC)
+        return int(Decimal(rate) * BCH)
 
     @classmethod
     def usd_to_satoshi(cls):  # pragma: no cover
@@ -291,27 +291,27 @@ class RatesAPI:
     IGNORED_ERRORS = (requests.exceptions.ConnectionError,
                       requests.exceptions.Timeout)
 
-    USD_RATES = [BitpayRates.usd_to_satoshi, BlockchainRates.usd_to_satoshi]
-    EUR_RATES = [BitpayRates.eur_to_satoshi, BlockchainRates.eur_to_satoshi]
-    GBP_RATES = [BitpayRates.gbp_to_satoshi, BlockchainRates.gbp_to_satoshi]
-    JPY_RATES = [BitpayRates.jpy_to_satoshi, BlockchainRates.jpy_to_satoshi]
-    CNY_RATES = [BitpayRates.cny_to_satoshi, BlockchainRates.cny_to_satoshi]
-    HKD_RATES = [BitpayRates.hkd_to_satoshi, BlockchainRates.hkd_to_satoshi]
-    CAD_RATES = [BitpayRates.cad_to_satoshi, BlockchainRates.cad_to_satoshi]
-    AUD_RATES = [BitpayRates.aud_to_satoshi, BlockchainRates.aud_to_satoshi]
-    NZD_RATES = [BitpayRates.nzd_to_satoshi, BlockchainRates.nzd_to_satoshi]
-    RUB_RATES = [BitpayRates.rub_to_satoshi, BlockchainRates.rub_to_satoshi]
-    BRL_RATES = [BitpayRates.brl_to_satoshi, BlockchainRates.brl_to_satoshi]
-    CHF_RATES = [BitpayRates.chf_to_satoshi, BlockchainRates.chf_to_satoshi]
-    SEK_RATES = [BitpayRates.sek_to_satoshi, BlockchainRates.sek_to_satoshi]
-    DKK_RATES = [BitpayRates.dkk_to_satoshi, BlockchainRates.dkk_to_satoshi]
-    ISK_RATES = [BitpayRates.isk_to_satoshi, BlockchainRates.isk_to_satoshi]
-    PLN_RATES = [BitpayRates.pln_to_satoshi, BlockchainRates.pln_to_satoshi]
-    KRW_RATES = [BitpayRates.krw_to_satoshi, BlockchainRates.krw_to_satoshi]
-    CLP_RATES = [BitpayRates.clp_to_satoshi, BlockchainRates.clp_to_satoshi]
-    SGD_RATES = [BitpayRates.sgd_to_satoshi, BlockchainRates.sgd_to_satoshi]
-    THB_RATES = [BitpayRates.thb_to_satoshi, BlockchainRates.thb_to_satoshi]
-    TWD_RATES = [BitpayRates.twd_to_satoshi, BlockchainRates.twd_to_satoshi]
+    USD_RATES = [BitcashpayRates.usd_to_satoshi, BlockchainRates.usd_to_satoshi]
+    EUR_RATES = [BitcashpayRates.eur_to_satoshi, BlockchainRates.eur_to_satoshi]
+    GBP_RATES = [BitcashpayRates.gbp_to_satoshi, BlockchainRates.gbp_to_satoshi]
+    JPY_RATES = [BitcashpayRates.jpy_to_satoshi, BlockchainRates.jpy_to_satoshi]
+    CNY_RATES = [BitcashpayRates.cny_to_satoshi, BlockchainRates.cny_to_satoshi]
+    HKD_RATES = [BitcashpayRates.hkd_to_satoshi, BlockchainRates.hkd_to_satoshi]
+    CAD_RATES = [BitcashpayRates.cad_to_satoshi, BlockchainRates.cad_to_satoshi]
+    AUD_RATES = [BitcashpayRates.aud_to_satoshi, BlockchainRates.aud_to_satoshi]
+    NZD_RATES = [BitcashpayRates.nzd_to_satoshi, BlockchainRates.nzd_to_satoshi]
+    RUB_RATES = [BitcashpayRates.rub_to_satoshi, BlockchainRates.rub_to_satoshi]
+    BRL_RATES = [BitcashpayRates.brl_to_satoshi, BlockchainRates.brl_to_satoshi]
+    CHF_RATES = [BitcashpayRates.chf_to_satoshi, BlockchainRates.chf_to_satoshi]
+    SEK_RATES = [BitcashpayRates.sek_to_satoshi, BlockchainRates.sek_to_satoshi]
+    DKK_RATES = [BitcashpayRates.dkk_to_satoshi, BlockchainRates.dkk_to_satoshi]
+    ISK_RATES = [BitcashpayRates.isk_to_satoshi, BlockchainRates.isk_to_satoshi]
+    PLN_RATES = [BitcashpayRates.pln_to_satoshi, BlockchainRates.pln_to_satoshi]
+    KRW_RATES = [BitcashpayRates.krw_to_satoshi, BlockchainRates.krw_to_satoshi]
+    CLP_RATES = [BitcashpayRates.clp_to_satoshi, BlockchainRates.clp_to_satoshi]
+    SGD_RATES = [BitcashpayRates.sgd_to_satoshi, BlockchainRates.sgd_to_satoshi]
+    THB_RATES = [BitcashpayRates.thb_to_satoshi, BlockchainRates.thb_to_satoshi]
+    TWD_RATES = [BitcashpayRates.twd_to_satoshi, BlockchainRates.twd_to_satoshi]
 
     @classmethod
     def usd_to_satoshi(cls):  # pragma: no cover
@@ -547,9 +547,9 @@ class RatesAPI:
 
 EXCHANGE_RATES = {
     'satoshi': satoshi_to_satoshi,
-    'ubtc': ubtc_to_satoshi,
-    'mbtc': mbtc_to_satoshi,
-    'btc': btc_to_satoshi,
+    'ubch': ubch_to_satoshi,
+    'mbch': mbch_to_satoshi,
+    'bch': bch_to_satoshi,
     'usd': RatesAPI.usd_to_satoshi,
     'eur': RatesAPI.eur_to_satoshi,
     'gbp': RatesAPI.gbp_to_satoshi,

@@ -4,11 +4,11 @@ import time
 
 import pytest
 
-from bit.crypto import ECPrivateKey
-from bit.curve import Point
-from bit.format import verify_sig
-from bit.network import NetworkAPI
-from bit.wallet import BaseKey, Key, PrivateKey, PrivateKeyTestnet, wif_to_key
+from bitcash.crypto import ECPrivateKey
+from bitcash.curve import Point
+from bitcash.format import verify_sig
+from bitcash.network import NetworkAPI
+from bitcash.wallet import BaseKey, Key, PrivateKey, PrivateKeyTestnet, wif_to_key
 from .samples import (
     BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES, PRIVATE_KEY_DER,
     PRIVATE_KEY_HEX, PRIVATE_KEY_NUM, PRIVATE_KEY_PEM,
