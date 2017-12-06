@@ -40,3 +40,15 @@ def hex_to_int(hexed):
 
 def flip_hex_byte_order(string):
     return bytes_to_hex(hex_to_bytes(string)[::-1])
+
+
+def int_to_varint(val):
+
+    if val < 253:
+        return val.to_bytes(1, 'little')
+    elif val <= 65535:
+        return b'\xfd'+val.to_bytes(2, 'little')
+    elif val <= 4294967295:
+        return b'\xfe'+val.to_bytes(4, 'little')
+    else:
+        return b'\xff'+val.to_bytes(8, 'little')

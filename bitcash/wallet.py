@@ -3,11 +3,15 @@ import json
 from bitcash.crypto import ECPrivateKey
 from bitcash.curve import Point
 from bitcash.format import (
-    bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes
+    bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes,
+    address_to_public_key_hash
 )
 from bitcash.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
 from bitcash.network.meta import Unspent
-from bitcash.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
+from bitcash.transaction import (
+    calc_txid, create_p2pkh_transaction, sanitize_tx_data,
+    OP_CHECKSIG, OP_DUP, OP_EQUALVERIFY, OP_HASH160, OP_PUSH_20
+    )
 
 
 def wif_to_key(wif):
@@ -136,6 +140,7 @@ class PrivateKey(BaseKey):
         super().__init__(wif=wif)
 
         self._address = None
+        self._scriptcode = None
 
         self.balance = 0
         self.unspents = []
@@ -147,6 +152,13 @@ class PrivateKey(BaseKey):
         if self._address is None:
             self._address = public_key_to_address(self._public_key, version='main')
         return self._address
+
+    @property
+    def scriptcode(self):
+        self._scriptcode = (OP_DUP + OP_HASH160 + OP_PUSH_20 +
+                            address_to_public_key_hash(self.address) +
+                            OP_EQUALVERIFY + OP_CHECKSIG)
+        return self._scriptcode
 
     def to_wif(self):
         return bytes_to_wif(
@@ -420,6 +432,7 @@ class PrivateKeyTestnet(BaseKey):
         super().__init__(wif=wif)
 
         self._address = None
+        self._scriptcode = None
 
         self.balance = 0
         self.unspents = []
@@ -431,6 +444,13 @@ class PrivateKeyTestnet(BaseKey):
         if self._address is None:
             self._address = public_key_to_address(self._public_key, version='test')
         return self._address
+
+    @property
+    def scriptcode(self):
+        self._scriptcode = (OP_DUP + OP_HASH160 + OP_PUSH_20 +
+                            address_to_public_key_hash(self.address) +
+                            OP_EQUALVERIFY + OP_CHECKSIG)
+        return self._scriptcode
 
     def to_wif(self):
         return bytes_to_wif(

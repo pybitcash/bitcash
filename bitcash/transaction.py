@@ -5,7 +5,7 @@ from bitcash.exceptions import InsufficientFunds
 from bitcash.format import address_to_public_key_hash
 from bitcash.network.rates import currency_to_satoshi_cached
 from bitcash.utils import (
-    bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes
+    bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes, int_to_varint
 )
 
 VERSION_1 = 0x01.to_bytes(4, byteorder='little')
@@ -34,26 +34,29 @@ MESSAGE_LIMIT = 40
 
 
 class TxIn:
-    __slots__ = ('script', 'script_len', 'txid', 'txindex')
+    __slots__ = ('script', 'script_len', 'txid', 'txindex', 'amount')
 
-    def __init__(self, script, script_len, txid, txindex):
+    def __init__(self, script, script_len, txid, txindex, amount):
         self.script = script
         self.script_len = script_len
         self.txid = txid
         self.txindex = txindex
+        self.amount = amount
 
     def __eq__(self, other):
         return (self.script == other.script and
                 self.script_len == other.script_len and
                 self.txid == other.txid and
-                self.txindex == other.txindex)
+                self.txindex == other.txindex and
+                self.amount == other.amount)
 
     def __repr__(self):
-        return 'TxIn({}, {}, {}, {})'.format(
+        return 'TxIn({}, {}, {}, {}, {})'.format(
             repr(self.script),
             repr(self.script_len),
             repr(self.txid),
-            repr(self.txindex)
+            repr(self.txindex),
+            repr(self.amount)
         )
 
 
@@ -205,11 +208,12 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
         script_len = int_to_unknown_bytes(len(script), byteorder='little')
         txid = hex_to_bytes(unspent.txid)[::-1]
         txindex = unspent.txindex.to_bytes(4, byteorder='little')
+        amount = unspent.amount.to_bytes(8, byteorder='little')
 
-        inputs.append(TxIn(script, script_len, txid, txindex))
+        inputs.append(TxIn(script, script_len, txid, txindex, amount))
 
-    hashPrevouts = double_sha256(b''.join([i.txid+i.txindex for i in inputs.TxIn]))
-    hashSequence = double_sha256(b''.join([i.sequence for i in inputs.TxIn]))
+    hashPrevouts = double_sha256(b''.join([i.txid+i.txindex for i in inputs]))
+    hashSequence = double_sha256(b''.join([SEQUENCE for i in inputs]))
     hashOutputs = double_sha256(b''.join([bytes(o) for o in output_block]))
 
     for i, txin in enumerate(inputs):
@@ -223,7 +227,7 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
             scriptCode_len +
             scriptCode +
             txin.amount +
-            txin.sequence +
+            SEQUENCE +
             hashOutputs +
             lock_time +
             hash_type
