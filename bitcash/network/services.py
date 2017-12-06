@@ -17,6 +17,7 @@ class InsightAPI:
     MAIN_BALANCE_API = ''
     MAIN_UNSPENT_API = ''
     MAIN_TX_PUSH_API = ''
+    MAIN_TX_AMOUNT_API = ''
     TX_PUSH_PARAM = ''
 
     @classmethod
@@ -32,6 +33,16 @@ class InsightAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return r.json()['transactions']
+
+    @classmethod
+    def get_tx_amount(cls, txid, txindex):
+        endpoint = cls.MAIN_TX_AMOUNT_API
+
+        r = requests.get(endpoint.format(txid), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        response = r.json()
+        return response['vout'][txindex]['value']*100000000
 
     @classmethod
     def get_unspent(cls, address):
@@ -53,13 +64,18 @@ class InsightAPI:
         return True if r.status_code == 200 else False
 
 
-class BitcashpayAPI(InsightAPI):
-    MAIN_ENDPOINT = 'https://insight.bitcashpay.com/api/'
+# FIXME: This API is strange.
+# Compare: https://blockdozer.com/insight/tx/2638e44cf0b41b512d3eaadf0d528830c424c4d898d3a5ab5d5202ffdd1f758e
+# vs https://bch-insight.bitpay.com/tx/2638e44cf0b41b512d3eaadf0d528830c424c4d898d3a5ab5d5202ffdd1f758e
+# The addresses are all different. Not sure how much of this will work as a result.
+class BitpayAPI(InsightAPI):
+    MAIN_ENDPOINT = 'https://insight-bch.bitpay.com/api/'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'addr/'
     MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
-    TEST_ENDPOINT = 'https://test-insight.bitcashpay.com/api/'
+    MAIN_TX_AMOUNT_API = MAIN_ENDPOINT + 'tx'
+    TEST_ENDPOINT = 'https://test-bch-insight.bitpay.com/api/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'addr/'
     TEST_BALANCE_API = TEST_ADDRESS_API + '{}/balance'
     TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/utxo'
@@ -100,160 +116,57 @@ class BitcashpayAPI(InsightAPI):
         return True if r.status_code == 200 else False
 
 
-class BlockchainAPI:
-    ENDPOINT = 'https://blockchain.info/'
-    ADDRESS_API = ENDPOINT + 'address/{}?format=json'
-    UNSPENT_API = ENDPOINT + 'unspent?active='
-    TX_PUSH_API = ENDPOINT + 'pushtx'
-    TX_PUSH_PARAM = 'tx'
-
-    @classmethod
-    def get_balance(cls, address):
-        r = requests.get(cls.ADDRESS_API.format(address) + '&limit=0', timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        return r.json()['final_balance']
-
-    @classmethod
-    def get_transactions(cls, address):
-        endpoint = cls.ADDRESS_API
-
-        transactions = []
-        offset = 0
-        payload = {'offset': str(offset)}
-        txs_per_page = 50
-
-        response = requests.get(endpoint.format(address), timeout=DEFAULT_TIMEOUT).json()
-        total_txs = response['n_tx']
-
-        while total_txs > 0:
-            transactions.extend(tx['hash'] for tx in response['txs'])
-
-            total_txs -= txs_per_page
-            offset += txs_per_page
-            payload['offset'] = str(offset)
-            response = requests.get(endpoint.format(address),
-                                    params=payload,
-                                    timeout=DEFAULT_TIMEOUT).json()
-
-        return transactions
-
-    @classmethod
-    def get_unspent(cls, address):
-        r = requests.get(cls.UNSPENT_API + address, timeout=DEFAULT_TIMEOUT)
-
-        if r.status_code == 500:
-            return []
-        elif r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-
-        return [
-            Unspent(tx['value'],
-                    tx['confirmations'],
-                    tx['script'],
-                    tx['tx_hash_big_endian'],
-                    tx['tx_output_n'])
-            for tx in r.json()['unspent_outputs']
-        ][::-1]
-
-    @classmethod
-    def broadcast_tx(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
-        return True if r.status_code == 200 else False
-
-
-class SmartbitcashAPI:
-    MAIN_ENDPOINT = 'https://api.smartbitcash.com.au/v1/blockchain/'
-    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/'
-    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/unspent'
-    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'pushtx'
-    TEST_ENDPOINT = 'https://testnet-api.smartbitcash.com.au/v1/blockchain/'
-    TEST_ADDRESS_API = TEST_ENDPOINT + 'address/'
-    TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/unspent'
-    TEST_TX_PUSH_API = TEST_ENDPOINT + 'pushtx'
-    TX_PUSH_PARAM = 'hex'
-
-    @classmethod
-    def get_balance(cls, address):
-        r = requests.get(cls.MAIN_ADDRESS_API + address + '?limit=1', timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        return r.json()['address']['total']['balance_int']
+class BlockdozerAPI(InsightAPI):
+    MAIN_ENDPOINT = 'https://blockdozer.com/insight-api/'
+    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'addr/'
+    MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
+    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
+    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
+    MAIN_TX_AMOUNT_API = MAIN_ENDPOINT + 'tx'
+    TEST_ENDPOINT = 'http://tbcc.blockdozer.com/insight-api/'
+    TEST_ADDRESS_API = TEST_ENDPOINT + 'addr/'
+    TEST_BALANCE_API = TEST_ADDRESS_API + '{}/balance'
+    TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/utxo'
+    TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/send'
+    TX_PUSH_PARAM = 'rawtx'
 
     @classmethod
     def get_balance_testnet(cls, address):
-        r = requests.get(cls.TEST_ADDRESS_API + address + '?limit=1', timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.TEST_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return r.json()['address']['total']['balance_int']
-
-    @classmethod
-    def get_transactions(cls, address):
-        r = requests.get(cls.MAIN_ADDRESS_API + address + '?limit=1000', timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-
-        data = r.json()['address']
-
-        transactions = []
-
-        if 'transactions' in data:
-            transactions.extend(t['hash'] for t in data['transactions'])
-
-        return transactions
+        return r.json()
 
     @classmethod
     def get_transactions_testnet(cls, address):
-        r = requests.get(cls.TEST_ADDRESS_API + address + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.TEST_ADDRESS_API + address, timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-
-        data = r.json()['address']
-
-        transactions = []
-
-        if 'transactions' in data:
-            transactions.extend(t['hash'] for t in data['transactions'])
-
-        return transactions
-
-    @classmethod
-    def get_unspent(cls, address):
-        r = requests.get(cls.MAIN_UNSPENT_API.format(address) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        return [
-            Unspent(currency_to_satoshi(tx['value'], 'bch'),
-                    tx['confirmations'],
-                    tx['script_pub_key']['hex'],
-                    tx['txid'],
-                    tx['n'])
-            for tx in r.json()['unspent']
-        ]
+        return r.json()['transactions']
 
     @classmethod
     def get_unspent_testnet(cls, address):
-        r = requests.get(cls.TEST_UNSPENT_API.format(address) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.TEST_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
-            Unspent(currency_to_satoshi(tx['value'], 'bch'),
+            Unspent(currency_to_satoshi(tx['amount'], 'bch'),
                     tx['confirmations'],
-                    tx['script_pub_key']['hex'],
+                    tx['scriptPubKey'],
                     tx['txid'],
-                    tx['n'])
-            for tx in r.json()['unspent']
+                    tx['vout'])
+            for tx in r.json()
         ]
-
-    @classmethod
-    def broadcast_tx(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.MAIN_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
-        return True if r.status_code == 200 else False
 
     @classmethod
     def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
         r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
-        return True if r.status_code == 200 else False
+        if r.status_code == 200:
+            return True
+        else:
+            # print(r.text)
+            return False
+        # return True if r.status_code == 200 else False
 
 
 class NetworkAPI:
@@ -262,27 +175,24 @@ class NetworkAPI:
                       requests.exceptions.Timeout,
                       requests.exceptions.ReadTimeout)
 
-    GET_BALANCE_MAIN = [BitcashpayAPI.get_balance,
-                        BlockchainAPI.get_balance,
-                        SmartbitcashAPI.get_balance]
-    GET_TRANSACTIONS_MAIN = [BlockchainAPI.get_transactions,  # No limit, requires multiple requests
-                             BitcashpayAPI.get_transactions,  # Limit 1000
-                             SmartbitcashAPI.get_transactions]  # Limit 1000
-    GET_UNSPENT_MAIN = [BitcashpayAPI.get_unspent,  # No limit
-                        SmartbitcashAPI.get_unspent,  # Limit 1000
-                        BlockchainAPI.get_unspent]  # Limit 250
-    BROADCAST_TX_MAIN = [BlockchainAPI.broadcast_tx,
-                         BitcashpayAPI.broadcast_tx,
-                         SmartbitcashAPI.broadcast_tx]  # Limit 5/minute
+    GET_BALANCE_MAIN = [BitpayAPI.get_balance,
+                        BlockdozerAPI.get_balance]
+    GET_TRANSACTIONS_MAIN = [BitpayAPI.get_transactions,
+                             BlockdozerAPI.get_transactions]
+    GET_UNSPENT_MAIN = [BitpayAPI.get_unspent,
+                        BlockdozerAPI.get_unspent]
+    BROADCAST_TX_MAIN = [BitpayAPI.broadcast_tx,
+                         BlockdozerAPI.broadcast_tx]
+    GET_TX_AMOUNT = []
 
-    GET_BALANCE_TEST = [BitcashpayAPI.get_balance_testnet,
-                        SmartbitcashAPI.get_balance_testnet]
-    GET_TRANSACTIONS_TEST = [BitcashpayAPI.get_transactions_testnet,  # Limit 1000
-                             SmartbitcashAPI.get_transactions_testnet]  # Limit 1000
-    GET_UNSPENT_TEST = [BitcashpayAPI.get_unspent_testnet,  # No limit
-                        SmartbitcashAPI.get_unspent_testnet]  # Limit 1000
-    BROADCAST_TX_TEST = [BitcashpayAPI.broadcast_tx_testnet,
-                         SmartbitcashAPI.broadcast_tx_testnet]  # Limit 5/minute
+    GET_BALANCE_TEST = [BitpayAPI.get_balance_testnet,
+                        BlockdozerAPI.get_balance_testnet]
+    GET_TRANSACTIONS_TEST = [BitpayAPI.get_transactions_testnet,
+                             BlockdozerAPI.get_transactions_testnet]
+    GET_UNSPENT_TEST = [BitpayAPI.get_unspent_testnet,
+                        BlockdozerAPI.get_unspent_testnet]
+    BROADCAST_TX_TEST = [BitpayAPI.broadcast_tx_testnet,
+                         BlockdozerAPI.broadcast_tx_testnet]
 
     @classmethod
     def get_balance(cls, address):
@@ -352,6 +262,26 @@ class NetworkAPI:
         for api_call in cls.GET_TRANSACTIONS_TEST:
             try:
                 return api_call(address)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    def get_tx_amount(cls, txid, txindex):
+        """Gets the ID of all transactions related to an address.
+
+        :param txid: The transaction id in question.
+        :type txid: ``str``
+        :param txindex: The transaction index in question.
+        :type txindex: ``str``
+        :raises ConnectionError: If all API services fail.
+        :rtype: ``list`` of ``str``
+        """
+
+        for api_call in cls.GET_TX_AMOUNT:
+            try:
+                return api_call(txid, txindex)
             except cls.IGNORED_ERRORS:
                 pass
 
