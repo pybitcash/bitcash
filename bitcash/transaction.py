@@ -233,7 +233,8 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
             hash_type
         )
 
-        signature = private_key.sign(hashed) + b'\x01'
+        # signature = private_key.sign(hashed) + b'\x01'
+        signature = private_key.sign(hashed) + b'\x41'
 
         script_sig = (
             len(signature).to_bytes(1, byteorder='little') +
