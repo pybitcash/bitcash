@@ -191,6 +191,7 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
     public_key_len = len(public_key).to_bytes(1, byteorder='little')
 
     scriptCode = private_key.scriptcode
+    scriptCode_len = int_to_varint(len(scriptCode))
 
     version = VERSION_1
     lock_time = LOCK_TIME
@@ -215,6 +216,7 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
     hashSequence = double_sha256(b''.join([SEQUENCE for i in inputs]))
     hashOutputs = double_sha256(b''.join([bytes(o) for o in output_block]))
 
+    # scriptCode_len is part of the script.
     for i, txin in enumerate(inputs):
         to_be_hashed = (
             version +
@@ -222,6 +224,7 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
             hashSequence +
             txin.txid +
             txin.txindex +
+            scriptCode_len +
             scriptCode +
             txin.amount +
             SEQUENCE +
