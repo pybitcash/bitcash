@@ -19,13 +19,13 @@ setup(
     download_url='https://github.com/sporestack/bitcash/tarball/{}'.format(version),
     license='MIT',
 
-    keywords=(
+    keywords=[
         'bitcoincash',
         'cryptocurrency',
         'payments',
         'tools',
         'wallet',
-    ),
+    ],
 
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -40,7 +40,7 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
 
-    install_requires=('coincurve>=4.3.0', 'requests'),
+    install_requires=['coincurve>=4.3.0', 'requests'],
     extras_require={
         'cli': ('appdirs', 'click', 'privy', 'tinydb'),
         'cache': ('lmdb', ),
