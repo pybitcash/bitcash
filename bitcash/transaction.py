@@ -214,7 +214,7 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
 
     hashPrevouts = double_sha256(b''.join([i.txid+i.txindex for i in inputs]))
     hashSequence = double_sha256(b''.join([SEQUENCE for i in inputs]))
-    hashOutputs = double_sha256(b''.join([bytes(o) for o in output_block]))
+    hashOutputs = double_sha256(output_block)
 
     # scriptCode_len is part of the script.
     for i, txin in enumerate(inputs):
