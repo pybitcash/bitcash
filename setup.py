@@ -27,7 +27,7 @@ setup(
         'wallet',
     ),
 
-    classifiers=(
+    classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Intended Audience :: End Users/Desktop',
@@ -38,7 +38,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy'
-    ),
+    ],
 
     install_requires=('coincurve>=4.3.0', 'requests'),
     extras_require={
