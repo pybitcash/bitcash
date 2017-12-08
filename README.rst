@@ -20,13 +20,15 @@ BitCash: BitcoinCash made easy.
 
 Forked from Ofek's awesome Bit library: https://github.com/ofek/bit
 
-Updates for Bit -> BitCash in progress.
+Despite what it looks like, this is mostly a working library for Bitcoin Cash! Try to ignore the out of date bits on the README which referred to Bitcoin and not Bitcoin Cash.
 
-BitCash is Python's `fastest <https://sporestack.github.io/bitcash/guide/intro.html#why-bitcash>`_
-BitcoinCash library and was designed from the beginning to feel intuitive, be
-effortless to use, and have readable source code. It is heavily inspired by
-`Requests <https://github.com/kennethreitz/requests>`_ and
-`Keras <https://github.com/fchollet/keras>`_.
+What needs fixing
+----------------
+
+- This README.
+- Dynamic fees.
+- The test cases...
+- Rates (so 'usd', 'jpy', etc work as they do in bit)
 
 **BitCash is so easy to use, in fact, you can do this:**
 
@@ -81,12 +83,12 @@ and Windows and supports Python 3.5+ and PyPy3.5-v5.7.1+. ``pip`` >= 8.1.2 is re
 
 .. code-block:: bash
 
-    $ pip install bitcash
+    $ pip install bitcash  # pip3 if pip is Python 2 on your system.
 
 Documentation
 -------------
 
-Docs are `hosted by Github Pages`_ and are automatically built and published
+Docs are hosted by Github Pages and are automatically built and published
 by Travis after every successful commit to BitCash's ``master`` branch.
 
 Credits
