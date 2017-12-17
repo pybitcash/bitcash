@@ -22,9 +22,15 @@ Forked from Ofek's awesome Bit library: https://github.com/ofek/bit
 
 Despite what it looks like, this is mostly a working library for Bitcoin Cash! Try to ignore the out of date bits on the README which referred to Bitcoin and not Bitcoin Cash.
 
+Do not send to mainnet addresses beginning with a 3!
+----------------------------------------------------
+
+They are pay-to-scripthash and bitcash will silently eat your coins. Soon an exception should be added for this and later, actual pay to scripthash handling.
+
 What needs fixing
 ----------------
 
+- Must throw an exception on mainnet addresses not beginning with a 1 as we do not have P2SH support yet.
 - This README.
 - Dynamic fees.
 - The test cases...
