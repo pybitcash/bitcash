@@ -64,18 +64,14 @@ class InsightAPI:
         return True if r.status_code == 200 else False
 
 
-# FIXME: This API is strange.
-# Compare: https://blockdozer.com/insight/tx/2638e44cf0b41b512d3eaadf0d528830c424c4d898d3a5ab5d5202ffdd1f758e
-# vs https://bch-insight.bitpay.com/tx/2638e44cf0b41b512d3eaadf0d528830c424c4d898d3a5ab5d5202ffdd1f758e
-# The addresses are all different. Not sure how much of this will work as a result.
-class BitpayAPI(InsightAPI):
-    MAIN_ENDPOINT = 'https://insight-bch.bitpay.com/api/'
+class BCCBlockAPI(InsightAPI):
+    MAIN_ENDPOINT = 'https://bccblock.info/api/'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'addr/'
     MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
     MAIN_TX_AMOUNT_API = MAIN_ENDPOINT + 'tx'
-    TEST_ENDPOINT = 'https://test-bch-insight.bitpay.com/api/'
+    TEST_ENDPOINT = 'https://127.0.0.1/api/'  # FIXME: None.
     TEST_ADDRESS_API = TEST_ENDPOINT + 'addr/'
     TEST_BALANCE_API = TEST_ADDRESS_API + '{}/balance'
     TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/utxo'
@@ -175,23 +171,23 @@ class NetworkAPI:
                       requests.exceptions.Timeout,
                       requests.exceptions.ReadTimeout)
 
-    GET_BALANCE_MAIN = [BitpayAPI.get_balance,
+    GET_BALANCE_MAIN = [BCCBlockAPI.get_balance,
                         BlockdozerAPI.get_balance]
-    GET_TRANSACTIONS_MAIN = [BitpayAPI.get_transactions,
+    GET_TRANSACTIONS_MAIN = [BCCBlockAPI.get_transactions,
                              BlockdozerAPI.get_transactions]
-    GET_UNSPENT_MAIN = [BitpayAPI.get_unspent,
+    GET_UNSPENT_MAIN = [BCCBlockAPI.get_unspent,
                         BlockdozerAPI.get_unspent]
-    BROADCAST_TX_MAIN = [BitpayAPI.broadcast_tx,
+    BROADCAST_TX_MAIN = [BCCBlockAPI.broadcast_tx,
                          BlockdozerAPI.broadcast_tx]
     GET_TX_AMOUNT = []
 
-    GET_BALANCE_TEST = [BitpayAPI.get_balance_testnet,
+    GET_BALANCE_TEST = [BCCBlockAPI.get_balance_testnet,
                         BlockdozerAPI.get_balance_testnet]
-    GET_TRANSACTIONS_TEST = [BitpayAPI.get_transactions_testnet,
+    GET_TRANSACTIONS_TEST = [BCCBlockAPI.get_transactions_testnet,
                              BlockdozerAPI.get_transactions_testnet]
-    GET_UNSPENT_TEST = [BitpayAPI.get_unspent_testnet,
+    GET_UNSPENT_TEST = [BCCBlockAPI.get_unspent_testnet,
                         BlockdozerAPI.get_unspent_testnet]
-    BROADCAST_TX_TEST = [BitpayAPI.broadcast_tx_testnet,
+    BROADCAST_TX_TEST = [BCCBlockAPI.broadcast_tx_testnet,
                          BlockdozerAPI.broadcast_tx_testnet]
 
     @classmethod
