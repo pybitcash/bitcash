@@ -6,7 +6,7 @@ from bitcash.format import (
     bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes,
     address_to_public_key_hash
 )
-from bitcash.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
+from bitcash.network import NetworkAPI, get_fee, satoshi_to_currency_cached
 from bitcash.network.meta import Unspent
 from bitcash.transaction import (
     calc_txid, create_p2pkh_transaction, sanitize_tx_data,
@@ -242,7 +242,7 @@ class PrivateKey(BaseKey):
         unspents, outputs = sanitize_tx_data(
             unspents or self.unspents,
             outputs,
-            fee or get_fee_cached(),
+            fee or get_fee(),
             leftover or self.address,
             combine=combine,
             message=message,
@@ -337,7 +337,7 @@ class PrivateKey(BaseKey):
         unspents, outputs = sanitize_tx_data(
             unspents or NetworkAPI.get_unspent(address),
             outputs,
-            fee or get_fee_cached(),
+            fee or get_fee(),
             leftover or address,
             combine=combine,
             message=message,
@@ -534,7 +534,7 @@ class PrivateKeyTestnet(BaseKey):
         unspents, outputs = sanitize_tx_data(
             unspents or self.unspents,
             outputs,
-            fee or get_fee_cached(),
+            fee or get_fee(),
             leftover or self.address,
             combine=combine,
             message=message,
@@ -629,7 +629,7 @@ class PrivateKeyTestnet(BaseKey):
         unspents, outputs = sanitize_tx_data(
             unspents or NetworkAPI.get_unspent_testnet(address),
             outputs,
-            fee or get_fee_cached(),
+            fee or get_fee(),
             leftover or address,
             combine=combine,
             message=message,

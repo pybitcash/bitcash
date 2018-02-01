@@ -245,41 +245,12 @@ class TestPrivateKeyTestnet:
         Otherwise, we could send coins into an unrecoverable blackhole, needlessly.
         pay2sh addresses begin with 2 in testnet and 3 on mainnet.
         """
-        if TRAVIS and sys.version_info[:2] != (3, 6):
-            return
 
         private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
         private_key.get_unspents()
 
         with pytest.raises(ValueError):
-            private_key.send([('2NFKbBHzzh32q5DcZJNgZE9sF7gYmtPbawk', 1, 'jpy')])
-
-    def test_cold_storage(self):
-        if TRAVIS and sys.version_info[:2] != (3, 6):
-            return
-
-        private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
-        address = private_key.address
-
-        prepared = PrivateKeyTestnet.prepare_transaction(
-            address, [('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')]
-        )
-        tx_hex = private_key.sign_transaction(prepared)
-
-        initial = len(private_key.get_transactions())
-        current = initial
-        tries = 0
-
-        NetworkAPI.broadcast_tx_testnet(tx_hex)
-
-        while tries < 15:  # pragma: no cover
-            current = len(private_key.get_transactions())
-            if current > initial:
-                break
-            time.sleep(5)
-            tries += 1
-
-        assert current > initial
+            private_key.send([('2NFKbBHzzh32q5DcZJNgZE9sF7gYmtPbawk', 1, 'mbch')])
 
     def test_from_hex(self):
         key = PrivateKeyTestnet.from_hex(PRIVATE_KEY_HEX)

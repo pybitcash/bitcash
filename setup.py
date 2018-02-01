@@ -45,7 +45,7 @@ setup(
         'cli': ('appdirs', 'click', 'privy', 'tinydb'),
         'cache': ('lmdb', ),
     },
-    tests_require=['pytest'],
+    tests_require=['pytest', 'nose'],
 
     packages=find_packages(),
     entry_points={

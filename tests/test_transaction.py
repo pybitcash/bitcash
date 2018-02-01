@@ -13,14 +13,15 @@ from .samples import WALLET_FORMAT_MAIN
 
 RETURN_ADDRESS = 'n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi'
 
-FINAL_TX_1 = ('01000000018878399d83ec25c627cfbf753ff9ca3602373eac437ab2676154a3c2'
-              'da23adf3010000008a473044022068b8dce776ef1c071f4c516836cdfb358e44ef'
-              '58e0bf29d6776ebdc4a6b719df02204ea4a9b0f4e6afa4c229a3f11108ff66b178'
-              '95015afa0c26c4bbc2b3ba1a1cc60141043d5c2875c9bd116875a71a5db64cffcb'
-              '13396b163d039b1d932782489180433476a4352a2add00ebb0d5c94c515b72eb10'
-              'f1fd8f3f03b42f4a2b255bfc9aa9e3ffffffff0250c30000000000001976a914e7'
-              'c1345fc8f87c68170b3aa798a956c2fe6a9eff88ac0888fc04000000001976a914'
-              '92461bde6283b461ece7ddf4dbf1e0a48bd113d888ac00000000')
+FINAL_TX_1 = ('01000000018878399d83ec25c627cfbf753ff9ca3602373eac437ab2676154a'
+              '3c2da23adf3010000008a47304402204d6f28d77fa31cfc6c13bb1bda2628f2'
+              '237e2630e892dc62bb319eb75dc7f9310220741f4df7d9460daa844389eb23f'
+              'b318dd674967144eb89477608b10e03c175034141043d5c2875c9bd116875a7'
+              '1a5db64cffcb13396b163d039b1d932782489180433476a4352a2add00ebb0d'
+              '5c94c515b72eb10f1fd8f3f03b42f4a2b255bfc9aa9e3ffffffff0250c30000'
+              '000000001976a914e7c1345fc8f87c68170b3aa798a956c2fe6a9eff88ac088'
+              '8fc04000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888'
+              'ac00000000')
 INPUTS = [
     TxIn(
         (b"G0D\x02 E\xb7C\xdb\xaa\xaa,\xd1\xef\x0b\x914oVD\xe3-\xc7\x0c\xde\x05\t"
@@ -32,7 +33,8 @@ INPUTS = [
         b'\x8a',
         (b"\x88x9\x9d\x83\xec%\xc6'\xcf\xbfu?\xf9\xca6\x027>"
          b"\xacCz\xb2gaT\xa3\xc2\xda#\xad\xf3"),
-        b'\x01\x00\x00\x00'
+        b'\x01\x00\x00\x00',
+        0
     )
 ]
 INPUT_BLOCK = ('8878399d83ec25c627cfbf753ff9ca3602373eac437ab2676154a3c2da23adf30'
@@ -68,23 +70,22 @@ SIGNED_DATA = (b'\x85\xc7\xf6\xc6\x80\x13\xc2g\xd3t\x8e\xb8\xb4\x1f\xcc'
 
 class TestTxIn:
     def test_init(self):
-        txin = TxIn(b'script', b'\x06', b'txid', b'\x04')
+        txin = TxIn(b'script', b'\x06', b'txid', b'\x04', 0)
         assert txin.script == b'script'
         assert txin.script_len == b'\x06'
         assert txin.txid == b'txid'
         assert txin.txindex == b'\x04'
 
     def test_equality(self):
-        txin1 = TxIn(b'script', b'\x06', b'txid', b'\x04')
-        txin2 = TxIn(b'script', b'\x06', b'txid', b'\x04')
-        txin3 = TxIn(b'script', b'\x06', b'txi', b'\x03')
+        txin1 = TxIn(b'script', b'\x06', b'txid', b'\x04', 0)
+        txin2 = TxIn(b'script', b'\x06', b'txid', b'\x04', 0)
+        txin3 = TxIn(b'script', b'\x06', b'txi', b'\x03', 0)
         assert txin1 == txin2
         assert txin1 != txin3
 
     def test_repr(self):
-        txin = TxIn(b'script', b'\x06', b'txid', b'\x04')
-
-        assert repr(txin) == "TxIn(b'script', {}, b'txid', {})" \
+        txin = TxIn(b'script', b'\x06', b'txid', b'\x04', 0)
+        assert repr(txin) == "TxIn(b'script', {}, b'txid', {}, 0)" \
                              "".format(repr(b'\x06'), repr(b'\x04'))
 
 
@@ -188,6 +189,7 @@ class TestCreateSignedTransaction:
     def test_matching(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         tx = create_p2pkh_transaction(private_key, UNSPENTS, OUTPUTS)
+        print(tx)
         assert tx[-288:] == FINAL_TX_1[-288:]
 
 
@@ -222,4 +224,4 @@ def test_construct_input_block():
 
 
 def test_calc_txid():
-    assert calc_txid(FINAL_TX_1) == 'e6922a6e3f1ff422113f15543fbe1340a727441202f55519640a70ac4636c16f'
+    assert calc_txid(FINAL_TX_1) == '64637ffb0d36003eccbb0317dee000ac8a2744cbea3b8a4c3a477c132bb8ca69'

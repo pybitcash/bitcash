@@ -103,5 +103,5 @@ Credits
 - `ofek`_ for the original bit codebase.
 - `bjarnemagnussen`_ for his segwit code for the necessary BIP-143 support.
 
-.. _ofek: https://github.com/sporestack/bitcash
+.. _ofek: https://github.com/ofek/bit
 .. _bjarnemagnussen: https://github.com/bjarnemagnussen/bitcash/tree/segwit

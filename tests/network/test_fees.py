@@ -1,71 +1,13 @@
-from time import sleep, time
+from nose.tools import raises
 
-import bitcash
-from bitcash.network.fees import get_fee, get_fee_cached, set_fee_cache_time
-
-
-def test_set_fee_cache_time():
-    original = bitcash.network.fees.DEFAULT_CACHE_TIME
-    set_fee_cache_time(30)
-    updated = bitcash.network.fees.DEFAULT_CACHE_TIME
-
-    assert original != updated
-    assert updated == 30
-
-    set_fee_cache_time(original)
+from bitcash.network.fees import get_fee
 
 
 def test_get_fee():
-    assert get_fee(fast=True) >= get_fee(fast=False)
+    assert get_fee(speed='fast') >= get_fee(speed='medium')
+    assert get_fee(speed='medium') >= get_fee(speed='slow')
 
 
-class TestFeeCache:
-    def test_fast(self):
-        sleep(0.2)
-
-        start_time = time()
-        set_fee_cache_time(0)
-        get_fee_cached(fast=True)
-        initial_time = time() - start_time
-
-        start_time = time()
-        set_fee_cache_time(600)
-        get_fee_cached(fast=True)
-        cached_time = time() - start_time
-
-        assert initial_time > cached_time
-
-    def test_hour(self):
-        sleep(0.2)
-
-        start_time = time()
-        set_fee_cache_time(0)
-        get_fee_cached(fast=False)
-        initial_time = time() - start_time
-
-        start_time = time()
-        set_fee_cache_time(600)
-        get_fee_cached(fast=False)
-        cached_time = time() - start_time
-
-        assert initial_time > cached_time
-
-    def test_expires(self):
-        sleep(0.2)
-
-        set_fee_cache_time(0)
-        get_fee_cached()
-
-        start_time = time()
-        set_fee_cache_time(600)
-        get_fee_cached()
-        cached_time = time() - start_time
-
-        sleep(0.2)
-
-        start_time = time()
-        set_fee_cache_time(0.1)
-        get_fee_cached()
-        update_time = time() - start_time
-
-        assert update_time > cached_time
+@raises(ValueError)
+def test_get_fee_invalid_speed():
+    get_fee(speed='super fast')
