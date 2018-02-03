@@ -14,7 +14,8 @@ from .samples import (
     PRIVATE_KEY_HEX, PRIVATE_KEY_NUM, PRIVATE_KEY_PEM,
     PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_X,
     PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
-    WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
+    WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST,
+    BITCOIN_CASHADDRESS, BITCOIN_CASHADDRESS_TEST
 )
 
 TRAVIS = 'TRAVIS' in os.environ
@@ -131,8 +132,7 @@ class TestPrivateKey:
 
     def test_address(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
-        assert private_key.address == BITCOIN_ADDRESS
-        assert private_key.address == BITCOIN_ADDRESS
+        assert private_key.address == BITCOIN_CASHADDRESS
 
     def test_to_wif(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
@@ -177,7 +177,7 @@ class TestPrivateKey:
         assert key.to_int() == PRIVATE_KEY_NUM
 
     def test_repr(self):
-        assert repr(PrivateKey(WALLET_FORMAT_MAIN)) == '<PrivateKey: 1ELReFsTCUY2mfaDTy32qxYiT49z786eFg>'
+        assert repr(PrivateKey(WALLET_FORMAT_MAIN)) == '<PrivateKey: bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6>'
 
 
 class TestPrivateKeyTestnet:
@@ -191,8 +191,7 @@ class TestPrivateKeyTestnet:
 
     def test_address(self):
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
-        assert private_key.address == BITCOIN_ADDRESS_TEST
-        assert private_key.address == BITCOIN_ADDRESS_TEST
+        assert private_key.address == BITCOIN_CASHADDRESS_TEST
 
     def test_to_wif(self):
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
@@ -216,10 +215,26 @@ class TestPrivateKeyTestnet:
         transactions = private_key.get_transactions()
         assert transactions == private_key.transactions
 
-    def test_send(self):
-        if TRAVIS and sys.version_info[:2] != (3, 6):
-            return
+    # LEGACYADDRESSDEPRECATION
+    def test_send_cashaddress(self):
+        private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
+        private_key.get_unspents()
 
+        initial = len(private_key.get_transactions())
+        current = initial
+        tries = 0
+        # FIXME: Changed jpy to satoshi and 1 to 10,000 since we don't yet
+        # have a rates API for BCH in place.
+        private_key.send([(BITCOIN_CASHADDRESS_TEST, 10000, 'satoshi')])
+
+        while tries < 15:  # pragma: no cover
+            current = len(private_key.get_transactions())
+            if current > initial:
+                break
+            time.sleep(5)
+            tries += 1
+
+    def test_send(self):
         private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
         private_key.get_unspents()
 
@@ -273,4 +288,4 @@ class TestPrivateKeyTestnet:
         assert key.to_int() == PRIVATE_KEY_NUM
 
     def test_repr(self):
-        assert repr(PrivateKeyTestnet(WALLET_FORMAT_MAIN)) == '<PrivateKeyTestnet: mtrNwJxS1VyHYn3qBY1Qfsm3K3kh1mGRMS>'
+        assert repr(PrivateKeyTestnet(WALLET_FORMAT_MAIN)) == '<PrivateKeyTestnet: bchtest:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqjxnsx26x>'

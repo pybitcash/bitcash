@@ -1,5 +1,7 @@
 import json
 
+from cashaddress import convert as cashaddress
+
 from bitcash.crypto import ECPrivateKey
 from bitcash.curve import Point
 from bitcash.format import (
@@ -41,7 +43,6 @@ class BaseKey:
     :type wif: ``str``
     :raises TypeError: If ``wif`` is not a ``str``.
     """
-
     def __init__(self, wif=None):
         if wif:
             if isinstance(wif, str):
@@ -151,6 +152,7 @@ class PrivateKey(BaseKey):
         """The public address you share with others to receive funds."""
         if self._address is None:
             self._address = public_key_to_address(self._public_key, version='main')
+
         return self._address
 
     @property
@@ -443,6 +445,7 @@ class PrivateKeyTestnet(BaseKey):
         """The public address you share with others to receive funds."""
         if self._address is None:
             self._address = public_key_to_address(self._public_key, version='test')
+
         return self._address
 
     @property

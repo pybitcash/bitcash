@@ -1,6 +1,17 @@
 BitCash: BitcoinCash made easy.
 =======================
 
+NOTE about cashaddresses
+========================
+
+Breaking change in 0.5.0!
+
+Bitcoin Cash has changed address formats (from 1........ to bitcoincash:qsomething). We now support the new format. As of 0.5.0, the new address format is used internally and the .address returned from PrivateKey has changed to the new format. This is unfortunate to make such a change, but the work would have been far greater to have legacy addresses returned. PrivateKey.send() supports both legacy and cashaddresses.
+
+If you have not done so already, *please pin your bitcash version*. Like, bitcash==0.5.0 in your setup.py. This way breaking changes won't break your application.
+
+Some point after, legacy address support may be removed entirely. So please convert addresses to the new format before sending them on to BitCash: https://github.com/oskyk/cashaddress/
+
 .. image:: https://img.shields.io/pypi/v/bitcash.svg?style=flat-square
     :target: https://pypi.org/project/bitcash
 
@@ -22,15 +33,9 @@ Forked from Ofek's awesome Bit library: https://github.com/ofek/bit
 
 Despite what it looks like, this is mostly a working library for Bitcoin Cash! Try to ignore the out of date bits on the README which referred to Bitcoin and not Bitcoin Cash.
 
-Do not send to mainnet addresses beginning with a 3!
-----------------------------------------------------
-
-They are pay-to-scripthash and bitcash will silently eat your coins. Soon an exception should be added for this and later, actual pay to scripthash handling.
-
 What needs fixing
 ----------------
 
-- Must throw an exception on mainnet addresses not beginning with a 1 as we do not have P2SH support yet.
 - This README.
 - Dynamic fees.
 - The test cases...

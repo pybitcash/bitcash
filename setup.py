@@ -9,7 +9,7 @@ with open('bitcash/__init__.py', 'r') as f:
 setup(
     name='bitcash',
     version=version,
-    description='BitcoinCash made easy.',
+    description='Bitcoin Cash made easier.',
     long_description=open('README.rst', 'r').read(),
     author='Teran McKinney',
     author_email='sega01@go-beyond.org',
@@ -40,12 +40,12 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
 
-    install_requires=['coincurve>=4.3.0', 'requests'],
+    install_requires=['coincurve>=4.3.0', 'requests', 'cashaddress==1.0.4'],
     extras_require={
         'cli': ('appdirs', 'click', 'privy', 'tinydb'),
         'cache': ('lmdb', ),
     },
-    tests_require=['pytest', 'nose'],
+    tests_require=['pytest'],
 
     packages=find_packages(),
     entry_points={

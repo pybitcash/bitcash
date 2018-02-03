@@ -1,3 +1,4 @@
+from cashaddress import convert as cashaddress
 from coincurve import verify_signature as _vs
 
 from bitcash.base58 import b58decode_check, b58encode_check
@@ -35,21 +36,24 @@ def verify_sig(signature, data, public_key):
 
 
 def address_to_public_key_hash(address):
-    # Raise ValueError if we cannot identify the address.
+    # LEGACYADDRESSDEPRECATION
+    # FIXME: This legacy address support will be removed.
+    address = cashaddress.to_cash_address(address)
     get_version(address)
-    return b58decode_check(address)[1:]
+    Address = cashaddress.Address._cash_string(address)
+    return bytes(Address.payload)
 
 
 def get_version(address):
-    version = b58decode_check(address)[:1]
+    address = cashaddress.Address._cash_string(address)
 
-    if version == MAIN_PUBKEY_HASH:
+    if address.version == 'P2PKH':
         return 'main'
-    elif version == TEST_PUBKEY_HASH:
+    elif address.version == 'P2PKH-TESTNET':
         return 'test'
     else:
         raise ValueError('{} does not correspond to a mainnet nor '
-                         'testnet address.'.format(version))
+                         'testnet P2PKH address.'.format(address.version))
 
 
 def bytes_to_wif(private_key, version='main', compressed=False):
@@ -106,18 +110,20 @@ def wif_checksum_check(wif):
 
 
 def public_key_to_address(public_key, version='main'):
-
     if version == 'test':
-        version = TEST_PUBKEY_HASH
+        version = 'P2PKH-TESTNET'
+    elif version == 'main':
+        version = 'P2PKH'
     else:
-        version = MAIN_PUBKEY_HASH
-
+        raise ValueError('Invalid version.')
+    # 33 bytes compressed, 65 uncompressed.
     length = len(public_key)
-
     if length not in (33, 65):
         raise ValueError('{} is an invalid length for a public key.'.format(length))
 
-    return b58encode_check(version + ripemd160_sha256(public_key))
+    payload = list(ripemd160_sha256(public_key))
+    address = cashaddress.Address(payload=payload, version=version)
+    return address.cash_address()
 
 
 def public_key_to_coords(public_key):

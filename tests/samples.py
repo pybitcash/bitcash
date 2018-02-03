@@ -5,6 +5,12 @@ BITCOIN_ADDRESS_PAY2SH = '39SrGQEfFXcTYJhBvjZeQja66Cpz82EEUn'
 BITCOIN_ADDRESS_TEST = 'mtrNwJxS1VyHYn3qBY1Qfsm3K3kh1mGRMS'
 BITCOIN_ADDRESS_TEST_COMPRESSED = 'muUFbvTKDEokGTVUjScMhw1QF2rtv5hxCz'
 BITCOIN_ADDRESS_TEST_PAY2SH = '2NFKbBHzzh32q5DcZJNgZE9sF7gYmtPbawk'
+BITCOIN_CASHADDRESS = 'bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6'
+BITCOIN_CASHADDRESS_COMPRESSED = 'bitcoincash:qzvsaasdvw6mt9j2rs3gyps673gj86flev4sthhcc0'
+BITCOIN_CASHADDRESS_PAY2SH = 'bitcoincash:pp23x8hm0g8d6nrkesamaqeml3v6daeudvpa7zhktf'
+BITCOIN_CASHADDRESS_TEST = 'bchtest:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqjxnsx26x'
+BITCOIN_CASHADDRESS_TEST_COMPRESSED = 'bchtest:qzvsaasdvw6mt9j2rs3gyps673gj86flev3z0s40ln'
+BITCOIN_CASHADDRESS_TEST_PAY2SH = 'bchtest:prezv854vnyallagz5zuz5lmjkle8x2rpqfas9t47r'
 PRIVATE_KEY_BYTES = b'\xc2\x8a\x9f\x80s\x8fw\rRx\x03\xa5f\xcfo\xc3\xed\xf6\xce\xa5\x86\xc4\xfcJR#\xa5\xady~\x1a\xc3'
 PRIVATE_KEY_DER = (b"0\x81\x84\x02\x01\x000\x10\x06\x07*\x86H\xce=\x02\x01\x06"
                    b"\x05+\x81\x04\x00\n\x04m0k\x02\x01\x01\x04 \xc2\x8a\x9f"

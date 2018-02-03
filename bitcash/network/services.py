@@ -1,9 +1,10 @@
 import requests
+from cashaddress import convert as cashaddress
 
 from bitcash.network import currency_to_satoshi
 from bitcash.network.meta import Unspent
 
-DEFAULT_TIMEOUT = 10
+DEFAULT_TIMEOUT = 30
 
 
 def set_service_timeout(seconds):
@@ -65,36 +66,41 @@ class InsightAPI:
 
 
 class BCCBlockAPI(InsightAPI):
+    """
+    bccblock.info
+    No testnet, sadly. Also uses legacy addresses only.
+    """
     MAIN_ENDPOINT = 'https://bccblock.info/api/'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'addr/'
     MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
     MAIN_TX_AMOUNT_API = MAIN_ENDPOINT + 'tx'
-    TEST_ENDPOINT = 'https://127.0.0.1/api/'  # FIXME: None.
-    TEST_ADDRESS_API = TEST_ENDPOINT + 'addr/'
-    TEST_BALANCE_API = TEST_ADDRESS_API + '{}/balance'
-    TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/utxo'
-    TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/send'
     TX_PUSH_PARAM = 'rawtx'
 
     @classmethod
-    def get_balance_testnet(cls, address):
-        r = requests.get(cls.TEST_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
+    def get_balance(cls, address):
+        # As of 2018-02-02, bccblock.info only supports legacy addresses.
+        address = cashaddress.to_legacy_address(address)
+        r = requests.get(cls.MAIN_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return r.json()
 
     @classmethod
-    def get_transactions_testnet(cls, address):
-        r = requests.get(cls.TEST_ADDRESS_API + address, timeout=DEFAULT_TIMEOUT)
+    def get_transactions(cls, address):
+        # As of 2018-02-02, bccblock.info only supports legacy addresses.
+        address = cashaddress.to_legacy_address(address)
+        r = requests.get(cls.MAIN_ADDRESS_API + address, timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return r.json()['transactions']
 
     @classmethod
-    def get_unspent_testnet(cls, address):
-        r = requests.get(cls.TEST_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
+    def get_unspent(cls, address):
+        # As of 2018-02-02, bccblock.info only supports legacy addresses.
+        address = cashaddress.to_legacy_address(address)
+        r = requests.get(cls.MAIN_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
@@ -105,11 +111,6 @@ class BCCBlockAPI(InsightAPI):
                     tx['vout'])
             for tx in r.json()
         ]
-
-    @classmethod
-    def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
-        return True if r.status_code == 200 else False
 
 
 class BlockdozerAPI(InsightAPI):
@@ -181,14 +182,10 @@ class NetworkAPI:
                          BlockdozerAPI.broadcast_tx]
     GET_TX_AMOUNT = []
 
-    GET_BALANCE_TEST = [BCCBlockAPI.get_balance_testnet,
-                        BlockdozerAPI.get_balance_testnet]
-    GET_TRANSACTIONS_TEST = [BCCBlockAPI.get_transactions_testnet,
-                             BlockdozerAPI.get_transactions_testnet]
-    GET_UNSPENT_TEST = [BCCBlockAPI.get_unspent_testnet,
-                        BlockdozerAPI.get_unspent_testnet]
-    BROADCAST_TX_TEST = [BCCBlockAPI.broadcast_tx_testnet,
-                         BlockdozerAPI.broadcast_tx_testnet]
+    GET_BALANCE_TEST = [BlockdozerAPI.get_balance_testnet]
+    GET_TRANSACTIONS_TEST = [BlockdozerAPI.get_transactions_testnet]
+    GET_UNSPENT_TEST = [BlockdozerAPI.get_unspent_testnet]
+    BROADCAST_TX_TEST = [BlockdozerAPI.broadcast_tx_testnet]
 
     @classmethod
     def get_balance(cls, address):
