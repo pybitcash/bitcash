@@ -120,7 +120,7 @@ class BlockdozerAPI(InsightAPI):
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
     MAIN_TX_AMOUNT_API = MAIN_ENDPOINT + 'tx'
-    TEST_ENDPOINT = 'https://tbcc.blockdozer.com/insight-api/'
+    TEST_ENDPOINT = 'https://tbch.blockdozer.com/insight-api/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'addr/'
     TEST_BALANCE_API = TEST_ADDRESS_API + '{}/balance'
     TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/utxo'
