@@ -1,7 +1,5 @@
 import json
 
-from cashaddress import convert as cashaddress
-
 from bitcash.crypto import ECPrivateKey
 from bitcash.curve import Point
 from bitcash.format import (

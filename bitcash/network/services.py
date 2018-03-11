@@ -1,3 +1,5 @@
+import logging
+
 import requests
 from cashaddress import convert as cashaddress
 
@@ -161,9 +163,8 @@ class BlockdozerAPI(InsightAPI):
         if r.status_code == 200:
             return True
         else:
-            # print(r.text)
+            logging.error(r.text)
             return False
-        # return True if r.status_code == 200 else False
 
 
 class NetworkAPI:
