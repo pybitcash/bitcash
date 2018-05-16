@@ -67,12 +67,12 @@ class InsightAPI:
         return True if r.status_code == 200 else False
 
 
-class BCCBlockAPI(InsightAPI):
+class CashExplorerBitcoinDotComAPI(InsightAPI):
     """
-    bccblock.info
+    cashexplorer.bitcoin.com
     No testnet, sadly. Also uses legacy addresses only.
     """
-    MAIN_ENDPOINT = 'https://bccblock.info/api/'
+    MAIN_ENDPOINT = 'https://cashexplorer.bitcoin.com/api/'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'addr/'
     MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
@@ -82,7 +82,7 @@ class BCCBlockAPI(InsightAPI):
 
     @classmethod
     def get_balance(cls, address):
-        # As of 2018-02-02, bccblock.info only supports legacy addresses.
+        # As of 2018-05-16, cashexplorer.bitcoin.com only supports legacy addresses.
         address = cashaddress.to_legacy_address(address)
         r = requests.get(cls.MAIN_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
@@ -91,7 +91,7 @@ class BCCBlockAPI(InsightAPI):
 
     @classmethod
     def get_transactions(cls, address):
-        # As of 2018-02-02, bccblock.info only supports legacy addresses.
+        # As of 2018-05-16, cashexplorer.bitcoin.com only supports legacy addresses.
         address = cashaddress.to_legacy_address(address)
         r = requests.get(cls.MAIN_ADDRESS_API + address, timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
@@ -100,7 +100,7 @@ class BCCBlockAPI(InsightAPI):
 
     @classmethod
     def get_unspent(cls, address):
-        # As of 2018-02-02, bccblock.info only supports legacy addresses.
+        # As of 2018-05-16, cashexplorer.bitcoin.com only supports legacy addresses.
         address = cashaddress.to_legacy_address(address)
         r = requests.get(cls.MAIN_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
@@ -173,13 +173,13 @@ class NetworkAPI:
                       requests.exceptions.Timeout,
                       requests.exceptions.ReadTimeout)
 
-    GET_BALANCE_MAIN = [BCCBlockAPI.get_balance,
+    GET_BALANCE_MAIN = [CashExplorerBitcoinDotComAPI.get_balance,
                         BlockdozerAPI.get_balance]
-    GET_TRANSACTIONS_MAIN = [BCCBlockAPI.get_transactions,
+    GET_TRANSACTIONS_MAIN = [CashExplorerBitcoinDotComAPI.get_transactions,
                              BlockdozerAPI.get_transactions]
-    GET_UNSPENT_MAIN = [BCCBlockAPI.get_unspent,
+    GET_UNSPENT_MAIN = [CashExplorerBitcoinDotComAPI.get_unspent,
                         BlockdozerAPI.get_unspent]
-    BROADCAST_TX_MAIN = [BCCBlockAPI.broadcast_tx,
+    BROADCAST_TX_MAIN = [CashExplorerBitcoinDotComAPI.broadcast_tx,
                          BlockdozerAPI.broadcast_tx]
     GET_TX_AMOUNT = []
 

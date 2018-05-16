@@ -2,7 +2,7 @@ import pytest
 
 import bitcash
 from bitcash.network.services import (
-    BCCBlockAPI, BlockdozerAPI, NetworkAPI, set_service_timeout
+    CashExplorerBitcoinDotComAPI, BlockdozerAPI, NetworkAPI, set_service_timeout
 )
 from tests.utils import (
     catch_errors_raise_warnings, decorate_methods, raise_connection_error
@@ -100,51 +100,51 @@ class TestNetworkAPI:
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
-class TestBCCBlockAPI:
+class TestCashExplorerBitcoinDotComAPI:
     def test_get_balance_return_type(self):
-        assert isinstance(BCCBlockAPI.get_balance(MAIN_ADDRESS_USED1), int)
+        assert isinstance(CashExplorerBitcoinDotComAPI.get_balance(MAIN_ADDRESS_USED1), int)
 
     def test_get_balance_main_used(self):
-        assert BCCBlockAPI.get_balance(MAIN_ADDRESS_USED1) > 0
+        assert CashExplorerBitcoinDotComAPI.get_balance(MAIN_ADDRESS_USED1) > 0
 
     def test_get_balance_main_unused(self):
-        assert BCCBlockAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
+        assert CashExplorerBitcoinDotComAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
 
     def test_get_balance_test_used(self):
-        assert BCCBlockAPI.get_balance_testnet(TEST_ADDRESS_USED2) > 0
+        assert CashExplorerBitcoinDotComAPI.get_balance_testnet(TEST_ADDRESS_USED2) > 0
 
     def test_get_balance_test_unused(self):
-        assert BCCBlockAPI.get_balance_testnet(TEST_ADDRESS_UNUSED) == 0
+        assert CashExplorerBitcoinDotComAPI.get_balance_testnet(TEST_ADDRESS_UNUSED) == 0
 
     def test_get_transactions_return_type(self):
-        assert iter(BCCBlockAPI.get_transactions(MAIN_ADDRESS_USED1))
+        assert iter(CashExplorerBitcoinDotComAPI.get_transactions(MAIN_ADDRESS_USED1))
 
     def test_get_transactions_main_used(self):
-        assert len(BCCBlockAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 218
+        assert len(CashExplorerBitcoinDotComAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 218
 
     def test_get_transactions_main_unused(self):
-        assert len(BCCBlockAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
+        assert len(CashExplorerBitcoinDotComAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_transactions_test_used(self):
-        assert len(BCCBlockAPI.get_transactions_testnet(TEST_ADDRESS_USED2)) >= 444
+        assert len(CashExplorerBitcoinDotComAPI.get_transactions_testnet(TEST_ADDRESS_USED2)) >= 444
 
     def test_get_transactions_test_unused(self):
-        assert len(BCCBlockAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
+        assert len(CashExplorerBitcoinDotComAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
 
     def test_get_unspent_return_type(self):
-        assert iter(BCCBlockAPI.get_unspent(MAIN_ADDRESS_USED1))
+        assert iter(CashExplorerBitcoinDotComAPI.get_unspent(MAIN_ADDRESS_USED1))
 
     def test_get_unspent_main_used(self):
-        assert len(BCCBlockAPI.get_unspent(MAIN_ADDRESS_USED2)) >= 1
+        assert len(CashExplorerBitcoinDotComAPI.get_unspent(MAIN_ADDRESS_USED2)) >= 1
 
     def test_get_unspent_main_unused(self):
-        assert len(BCCBlockAPI.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
+        assert len(CashExplorerBitcoinDotComAPI.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_unspent_test_used(self):
-        assert len(BCCBlockAPI.get_unspent_testnet(TEST_ADDRESS_USED2)) >= 194
+        assert len(CashExplorerBitcoinDotComAPI.get_unspent_testnet(TEST_ADDRESS_USED2)) >= 194
 
     def test_get_unspent_test_unused(self):
-        assert len(BCCBlockAPI.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0
+        assert len(CashExplorerBitcoinDotComAPI.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
