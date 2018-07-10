@@ -249,11 +249,11 @@ class TestPrivateKeyTestnet:
             current = private_key.balance
             if current > initial:
                 break
-            time.sleep(10)
+            time.sleep(20)
             tries += 1
 
         logging.debug('Current: {}, Initial: {}'.format(current, initial))
-        assert current > initial
+        assert current < initial
 
     def test_send_pay2sh(self):
         """
