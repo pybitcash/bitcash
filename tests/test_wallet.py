@@ -1,16 +1,15 @@
 import os
-import sys
 import time
+import logging
 
 import pytest
 
 from bitcash.crypto import ECPrivateKey
 from bitcash.curve import Point
 from bitcash.format import verify_sig
-from bitcash.network import NetworkAPI
 from bitcash.wallet import BaseKey, Key, PrivateKey, PrivateKeyTestnet, wif_to_key
 from .samples import (
-    BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES, PRIVATE_KEY_DER,
+    PRIVATE_KEY_BYTES, PRIVATE_KEY_DER,
     PRIVATE_KEY_HEX, PRIVATE_KEY_NUM, PRIVATE_KEY_PEM,
     PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_X,
     PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
@@ -238,20 +237,22 @@ class TestPrivateKeyTestnet:
         private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
         private_key.get_unspents()
 
-        initial = len(private_key.get_transactions())
+        initial = private_key.balance
         current = initial
         tries = 0
         # FIXME: Changed jpy to satoshi and 1 to 10,000 since we don't yet
         # have a rates API for BCH in place.
         private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 10000, 'satoshi')])
 
-        while tries < 15:  # pragma: no cover
-            current = len(private_key.get_transactions())
+        while tries < 10:  # pragma: no cover
+            private_key.get_unspents()
+            current = private_key.balance
             if current > initial:
                 break
-            time.sleep(5)
+            time.sleep(10)
             tries += 1
 
+        logging.debug('Current: {}, Initial: {}'.format(current, initial))
         assert current > initial
 
     def test_send_pay2sh(self):

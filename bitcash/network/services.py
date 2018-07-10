@@ -63,7 +63,7 @@ class InsightAPI:
 
     @classmethod
     def broadcast_tx(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.MAIN_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        r = requests.post(cls.MAIN_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
 
@@ -116,13 +116,13 @@ class CashExplorerBitcoinDotComAPI(InsightAPI):
 
 
 class BlockdozerAPI(InsightAPI):
-    MAIN_ENDPOINT = 'https://blockdozer.com/insight-api/'
+    MAIN_ENDPOINT = 'https://blockdozer.com/api/'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'addr/'
     MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
     MAIN_TX_AMOUNT_API = MAIN_ENDPOINT + 'tx'
-    TEST_ENDPOINT = 'https://tbch.blockdozer.com/insight-api/'
+    TEST_ENDPOINT = 'https://tbch.blockdozer.com/api/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'addr/'
     TEST_BALANCE_API = TEST_ADDRESS_API + '{}/balance'
     TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/utxo'
@@ -148,18 +148,23 @@ class BlockdozerAPI(InsightAPI):
         r = requests.get(cls.TEST_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return [
-            Unspent(currency_to_satoshi(tx['amount'], 'bch'),
-                    tx['confirmations'],
-                    tx['scriptPubKey'],
-                    tx['txid'],
-                    tx['vout'])
-            for tx in r.json()
-        ]
+        unspents = []
+        for tx in r.json():
+            # In weird conditions, the API will send back unspents without a scriptPubKey.
+            if 'scriptPubKey' in tx:
+                unspents.append(Unspent(currency_to_satoshi(tx['amount'], 'bch'),
+                                        tx['confirmations'],
+                                        tx['scriptPubKey'],
+                                        tx['txid'],
+                                        tx['vout']))
+            else:
+                logging.warning('Unspent without scriptPubKey.')
+
+        return unspents
 
     @classmethod
     def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        r = requests.post(cls.TEST_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         if r.status_code == 200:
             return True
         else:
