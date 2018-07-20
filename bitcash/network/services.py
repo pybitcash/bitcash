@@ -196,6 +196,7 @@ class NetworkAPI:
     @classmethod
     def get_balance(cls, address):
         """Gets the balance of an address in satoshi.
+
         :param address: The address in question.
         :type address: ``str``
         :raises ConnectionError: If all API services fail.
@@ -213,6 +214,7 @@ class NetworkAPI:
     @classmethod
     def get_balance_testnet(cls, address):
         """Gets the balance of an address on the test network in satoshi.
+
         :param address: The address in question.
         :type address: ``str``
         :raises ConnectionError: If all API services fail.
@@ -230,6 +232,7 @@ class NetworkAPI:
     @classmethod
     def get_transactions(cls, address):
         """Gets the ID of all transactions related to an address.
+
         :param address: The address in question.
         :type address: ``str``
         :raises ConnectionError: If all API services fail.
@@ -248,6 +251,7 @@ class NetworkAPI:
     def get_transactions_testnet(cls, address):
         """Gets the ID of all transactions related to an address on the test
         network.
+
         :param address: The address in question.
         :type address: ``str``
         :raises ConnectionError: If all API services fail.
@@ -265,6 +269,7 @@ class NetworkAPI:
     @classmethod
     def get_tx_amount(cls, txid, txindex):
         """Gets the ID of all transactions related to an address.
+
         :param txid: The transaction id in question.
         :type txid: ``str``
         :param txindex: The transaction index in question.
@@ -284,6 +289,7 @@ class NetworkAPI:
     @classmethod
     def get_unspent(cls, address):
         """Gets all unspent transaction outputs belonging to an address.
+
         :param address: The address in question.
         :type address: ``str``
         :raises ConnectionError: If all API services fail.
@@ -302,6 +308,7 @@ class NetworkAPI:
     def get_unspent_testnet(cls, address):
         """Gets all unspent transaction outputs belonging to an address on the
         test network.
+
         :param address: The address in question.
         :type address: ``str``
         :raises ConnectionError: If all API services fail.
@@ -319,6 +326,7 @@ class NetworkAPI:
     @classmethod
     def broadcast_tx(cls, tx_hex):  # pragma: no cover
         """Broadcasts a transaction to the blockchain.
+
         :param tx_hex: A signed transaction in hex form.
         :type tx_hex: ``str``
         :raises ConnectionError: If all API services fail.
@@ -343,6 +351,7 @@ class NetworkAPI:
     @classmethod
     def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
         """Broadcasts a transaction to the test network's blockchain.
+
         :param tx_hex: A signed transaction in hex form.
         :type tx_hex: ``str``
         :raises ConnectionError: If all API services fail.
