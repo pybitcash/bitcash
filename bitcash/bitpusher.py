@@ -4,7 +4,8 @@ def create_PUSHDATA(lst_of_PUSHDATA):
     '''
     Takes in a list of (PUSHDATA, encoding type) tuples
     Returns binary encoded OP_RETURN PUSHDATA (automatically adds intervening OP_CODES specifying number of bytes in each PUSHDATA element)
-    0x6a (i.e. OP_RETURN) is added in other, auxillary functions, only PUSHDATA is returned
+    0x6a (i.e. OP_RETURN) is added in other, auxillary functions; only PUSHDATA is returned.
+    Max 220 bytes of PUSHDATA
     
     Example:
     
@@ -49,7 +50,6 @@ def create_PUSHDATA(lst_of_PUSHDATA):
             
         encoding = lst_of_PUSHDATA[i][1]
         if encoding == 'utf-8':
-            #FIXME - currently only handles up to 256 bytes per input
             PUSHDATA += len(lst_of_PUSHDATA[i][0]).to_bytes(1, byteorder='little') + lst_of_PUSHDATA[i][0].encode('utf-8')
         
         elif encoding == 'hex' and len(lst_of_PUSHDATA[i][0]) % 2 != 0:
