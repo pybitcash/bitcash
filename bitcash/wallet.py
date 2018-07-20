@@ -238,7 +238,6 @@ class PrivateKey(BaseKey):
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
-        print('create:', custom_PUSHDATA)
         unspents, outputs = sanitize_tx_data(
             unspents or self.unspents,
             outputs,
