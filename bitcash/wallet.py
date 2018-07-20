@@ -206,7 +206,7 @@ class PrivateKey(BaseKey):
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
-                           message=None, unspents=None):  # pragma: no cover
+                           message=None, unspents=None, custom_PUSHDATA=False):  # pragma: no cover
         """Creates a signed P2PKH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -238,7 +238,7 @@ class PrivateKey(BaseKey):
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
-
+        print('create:', custom_PUSHDATA)
         unspents, outputs = sanitize_tx_data(
             unspents or self.unspents,
             outputs,
@@ -246,10 +246,11 @@ class PrivateKey(BaseKey):
             leftover or self.address,
             combine=combine,
             message=message,
-            compressed=self.is_compressed()
+            compressed=self.is_compressed(),
+            custom_PUSHDATA=custom_PUSHDATA
         )
 
-        return create_p2pkh_transaction(self, unspents, outputs)
+        return create_p2pkh_transaction(self, unspents, outputs, custom_PUSHDATA=custom_PUSHDATA)
 
     def send(self, outputs, fee=None, leftover=None, combine=True,
              message=None, unspents=None):  # pragma: no cover
@@ -278,7 +279,7 @@ class PrivateKey(BaseKey):
         :type combine: ``bool``
         :param message: A message to include in the transaction. This will be
                         stored in the blockchain forever. Due to size limits,
-                        each message will be stored in chunks of 40 bytes.
+                        each message will be stored in chunks of 220 bytes.
         :type message: ``str``
         :param unspents: The UTXOs to use as the inputs. By default Bitcash will
                          communicate with the blockchain itself.
@@ -499,7 +500,7 @@ class PrivateKeyTestnet(BaseKey):
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
-                           message=None, unspents=None):
+                           message=None, unspents=None, custom_PUSHDATA=False):
         """Creates a signed P2PKH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -531,7 +532,6 @@ class PrivateKeyTestnet(BaseKey):
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
-
         unspents, outputs = sanitize_tx_data(
             unspents or self.unspents,
             outputs,
@@ -539,9 +539,10 @@ class PrivateKeyTestnet(BaseKey):
             leftover or self.address,
             combine=combine,
             message=message,
-            compressed=self.is_compressed()
+            compressed=self.is_compressed(),
+            custom_PUSHDATA=custom_PUSHDATA
         )
-
+        
         return create_p2pkh_transaction(self, unspents, outputs)
 
     def send(self, outputs, fee=None, leftover=None, combine=True,
