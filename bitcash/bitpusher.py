@@ -1,6 +1,4 @@
 import bitcash
-import cashaddress
-import requests
 
 def create_PUSHDATA(lst_of_PUSHDATA):
     '''
@@ -36,10 +34,10 @@ def create_PUSHDATA(lst_of_PUSHDATA):
             my_key.get_unspents() #necessary step --> updates my_key.unspents object variable
         
         # Output OP_RETURN PUSHDATA as bytes and store in variable
-            PUSHDATA_variable = bitPUSHER(lst_of_PUSHDATA) --> outputs OP_RETURN PUSHDATA as bytes and stores in variable
+            pushdata = bitPUSHER.create_PUSHDATA(lst_of_PUSHDATA) --> outputs OP_RETURN PUSHDATA as bytes and stores in variable
         
         # Create rawtx ready for broadcast (fee = 1 sat/byte; sending 0.0001 BCH back to own address)
-            rawtx = my_key.create_transaction([(my_key.address, 0.0001, 'bch')], fee=1, message=PUSHDATA, custom_PUSHDATA=True)
+            rawtx = my_key.create_transaction([(my_key.address, 0.0001, 'bch')], fee=1, message=pushdata, custom_PUSHDATA=True)
         
         # Broadcast rawtx
             bitcash.network.services.NetworkAPI.broadcast_tx(rawtx)
