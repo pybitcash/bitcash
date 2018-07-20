@@ -33,7 +33,7 @@ OP_HASH160 = b'\xa9'
 OP_PUSH_20 = b'\x14'
 OP_RETURN = b'\x6a'
 
-MESSAGE_LIMIT = 40
+MESSAGE_LIMIT = 220
 
 
 class TxIn:
@@ -90,7 +90,7 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed):
     return estimated_fee
 
 
-def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True):
+def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True, custom_PUSHDATA=False):
     """
     sanitize_tx_data()
 
@@ -104,19 +104,27 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
         # LEGACYADDRESSDEPRECATION
         # FIXME: Will be removed in an upcoming release, breaking compatibility with legacy addresses.
         dest = cashaddress.to_cash_address(dest)
-        outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))
+        outputs[i] = (dest, currency_to_satoshi_cached(amount, currency)) #condenses 'output' from tuple of 3 elements --> tuple of two elements (destination address, satoshis)
 
     if not unspents:
         raise ValueError('Transactions must have at least one unspent.')
 
     # Temporary storage so all outputs precede messages.
     messages = []
-
-    if message:
+    
+    # Status quo for sending utf-8 encoded messages in OP_RETURN
+    if ((len(message) > 0) and (custom_PUSHDATA == False)):
         message_chunks = chunk_data(message.encode('utf-8'), MESSAGE_LIMIT)
 
         for message in message_chunks:
-            messages.append((message, 0))
+            messages.append((message, 0)) #dest, amount
+            
+    # Custom PUSHDATA in OP_RETURN  
+        # Takes in message as raw PUSHDATA (must be already encoded as bytes - hex or utf-8)
+        # The (dest, amount) tuple in output list is (PUSHDATA, 0) in this case. 
+        # Max size of 220 bytes at this stage
+    elif (message and custom_PUSHDATA ==True):
+        messages.append((message, 0))
 
     # Include return address in fee estimate.
 
@@ -159,8 +167,10 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     return unspents, outputs
 
 
-def construct_output_block(outputs):
-
+def construct_output_block(outputs, custom_PUSHDATA=False):
+    #If Custom_PUSHDATA == False (Default), and amount = 0. 'the (0-220 byte long) string in place of destination address is treated as one utf-8 encoded message. 
+    #If Custom_PUSHDATA == True, raw hex will be directly appended after OP_RETURN.
+    
     output_block = b''
 
     for data in outputs:
@@ -176,15 +186,21 @@ def construct_output_block(outputs):
 
         # Blockchain storage
         else:
-            script = (OP_RETURN +
-                      len(dest).to_bytes(1, byteorder='little') +
-                      dest)
-
-            output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
+            if (custom_PUSHDATA == False):
+                script = (OP_RETURN +
+                            len(dest).to_bytes(1, byteorder='little') +
+                            dest)
+                            
+                output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
+            
+            elif (custom_PUSHDATA == True):
+                script = (OP_RETURN + dest) #Note: you must manually enter "len(PUSHDATA_element).to_bytes(1, byteorder='little')" before every PUSHDATA_element before executing this function
+                
+                output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
         output_block += int_to_unknown_bytes(len(script), byteorder='little')
         output_block += script
-
+			
     return output_block
 
 
@@ -205,8 +221,8 @@ def construct_input_block(inputs):
     return input_block
 
 
-def create_p2pkh_transaction(private_key, unspents, outputs):
-
+def create_p2pkh_transaction(private_key, unspents, outputs, custom_PUSHDATA=False):
+    
     public_key = private_key.public_key
     public_key_len = len(public_key).to_bytes(1, byteorder='little')
 
@@ -219,8 +235,13 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
     hash_type = HASH_TYPE
     input_count = int_to_unknown_bytes(len(unspents), byteorder='little')
     output_count = int_to_unknown_bytes(len(outputs), byteorder='little')
-    output_block = construct_output_block(outputs)
+    
+    if (custom_PUSHDATA == False):
+        output_block = construct_output_block(outputs)
+    else:
+        output_block = construct_output_block(outputs, custom_PUSHDATA=True)
 
+            
     # Optimize for speed, not memory, by pre-computing values.
     inputs = []
     for unspent in unspents:
