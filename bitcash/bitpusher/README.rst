@@ -6,7 +6,7 @@ Aims to be a comprehensive solution for:
 
 2) Easy interface with popular industry standards and protocols
 
-Current features:
+current features:
 -----------------
 
 * Broadcasts custom OP_RETURN pushdata onto the bitcoin cash blockchain
@@ -43,7 +43,7 @@ bitpuller
 * open source, google-like, block-chain search engine
 * complementary counterpart to bitpusher
 
-Example useage
+example useage
 --------------
 >>> import bitcash
 >>> my_key_main = bitcash.PrivateKey("Kymh9idW5bdM7n7dHvL1DPW6od9J8tFR7kgHMpGLhUcxU8Q1UGQY")
