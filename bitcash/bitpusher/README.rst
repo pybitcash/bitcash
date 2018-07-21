@@ -10,8 +10,16 @@ Current features:
 -----------------
 
 * Broadcasts custom OP_RETURN pushdata onto the bitcoin cash blockchain
-
 * Interfaces easily with memo.cash
+
+aims
+----
+
+Lower barriers to entry for new developers interested in bitcoin cash e.g:
+
+* Creating apps / tokens
+* Interacting with existing apps / tokens
+* Powerful searches / queries of block-chain metadata with an intuitive API.
 
 TODO
 ====
@@ -34,15 +42,6 @@ bitpuller
 * easy-to-use bitDB query API for python synergising well with bitpusher
 * open source, google-like, block-chain search engine
 * complementary counterpart to bitpusher
-
-aims
-----
-
-Lower barriers to entry for new developers interested in bitcoin cash e.g:
-
-* Creating apps / tokens
-* Interacting with existing apps / tokens
-* Powerful searches / queries of block-chain metadata with an intuitive API.
 
 Example useage
 --------------
