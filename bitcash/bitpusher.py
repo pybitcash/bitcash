@@ -25,7 +25,7 @@ def create_pushdata(lst_of_pushdata):
                 02                  - 2 bytes of pushdata to follow
                 6d01                - "communication channel" for memo.cash - "set name" action
                 09                  - 9 bytes to follow
-                626974505553484552  - "BitPusher" utf-8 encoded bytes --> hex representation
+                626974505553484552  - "bitPUSHER" utf-8 encoded bytes --> hex representation
 
         Currently (this module) only allows up to 220 bytes maximum at present.
         Will soon increase this capability dramatically by allowing for overflow.
