@@ -1,5 +1,9 @@
 # bitpusher
+Aims to be a comprehensive solution for:
+1) broadcasting custom OP_RETURN pushdata onto the bitcoin cash blockchain
+2) Easy interface with popular industry standards and protocols
 
+Current features:
 - [x] Broadcasts custom OP_RETURN pushdata onto the bitcoin cash blockchain
 - [x] Interfaces easily with memo.cash
 
