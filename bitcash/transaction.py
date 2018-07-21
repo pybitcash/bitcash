@@ -119,11 +119,8 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
         for message in message_chunks:
             messages.append((message, 0))  # dest, amount
 
-    # Custom pushdata in OP_RETURN
-        # Takes in message as raw pushdata (must be already encoded as bytes)
-        # The (dest, amount) tuple in output list is (pushdata, 0) in this particular case.
-        # Max size of 220 bytes at this stage
-    elif (len(message) > 0) is True and (custom_pushdata is True):
+    # Custom pushdata case added for diverse OP_RETURN applications
+    elif (len(message) > 0) is True and (custom_pushdata is True): 
         messages.append((message, 0))
 
     # Include return address in fee estimate.
