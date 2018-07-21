@@ -9,9 +9,9 @@ Aims to be a comprehensive solution for:
 Current features:
 -----------------
 
-- Broadcasts custom OP_RETURN pushdata onto the bitcoin cash blockchain
+* Broadcasts custom OP_RETURN pushdata onto the bitcoin cash blockchain
 
-- Interfaces easily with memo.cash
+* Interfaces easily with memo.cash
 
 TODO
 ====
@@ -21,31 +21,31 @@ bitpusher
 
 Add easy interface with popular industry standards and protocols such as:
 
-Tokenisation standards: e.g. SLP (Simple Ledger Protocol - see https://docs.google.com/document/d/1GcDGiVUEa87SIEjrvM9QcCINfoBw-R7EPWzNVR4M8EI)
+* Tokenisation standards: e.g. SLP (Simple Ledger Protocol - see https://docs.google.com/document/d/1GcDGiVUEa87SIEjrvM9QcCINfoBw-R7EPWzNVR4M8EI)
 
-Standard registration of Token ID / Issuer ID
+* Standard registration of Token ID / Issuer ID
 
-Broadcasting the SHA256 hash of important data / contracts onto the blockchain with your preference of intellectual property archive / industry standard protocol
+* Broadcasting the SHA256 hash of important data / contracts onto the blockchain with your preference of intellectual property archive / industry standard protocol
 
-Support for a few special cases such as _memo.cash_ and _blockpress.org_ to allow easy access for beginner python developers to gain experience playing around with OP_RETURN-based apps.
+* Support for a few special cases such as _memo.cash_ and _blockpress.org_ to allow easy access for beginner python developers to gain experience playing around with OP_RETURN-based apps.
 
 bitpuller (complementary counterpart)
 -------------------------------------
 
-easy-to-use bitDB query API for python synergising well with bitpusher
+* easy-to-use bitDB query API for python synergising well with bitpusher
 
-open source, google-like, block-chain search engine
+* open source, google-like, block-chain search engine
 
 aims
 ----
 
 Lower barriers to entry for new developers interested in bitcoin cash e.g:
 
-``*`` Creating apps / tokens
+* Creating apps / tokens
 
-``*`` Interacting with existing apps / tokens
+* Interacting with existing apps / tokens
 
-``*`` Powerful searches / queries of block-chain metadata with an intuitive API.
+* Powerful searches / queries of block-chain metadata with an intuitive API.
 
 Example useage
 --------------
@@ -75,11 +75,11 @@ Manual method (see below)
 
 6) Broadcast rawtx
 
->>> my_key = bitcash.PrivateKey('WIF Compressed (base58) here')`
->>> my_key.get_unspents() #necessary step --> updates my_key.unspents object variable`
->>> lst_of_pushdata =  [('6d01', 'hex'), ('bitPUSHER', 'utf-8')]`
->>> pushdata = bitcash.bitpusher.create_pushdata(lst_of_pushdata)`
->>> rawtx = my_key.create_transaction([(my_key.address, 0.0001, 'bch')], fee=1, message=pushdata, custom_PUSHDATA=True)`
->>> bitcash.network.services.NetworkAPI.broadcast_tx(rawtx)`
+>>> my_key = bitcash.PrivateKey('WIF Compressed (base58) here')
+>>> my_key.get_unspents() #necessary step --> updates my_key.unspents object variable
+>>> lst_of_pushdata =  [('6d01', 'hex'), ('bitPUSHER', 'utf-8')]
+>>> pushdata = bitcash.bitpusher.create_pushdata(lst_of_pushdata)
+>>> rawtx = my_key.create_transaction([(my_key.address, 0.0001, 'bch')], fee=1, message=pushdata, custom_PUSHDATA=True)
+>>> bitcash.network.services.NetworkAPI.broadcast_tx(rawtx)
 
 look at block explorer or wallet to see new transaction!
