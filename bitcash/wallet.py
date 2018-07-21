@@ -541,7 +541,7 @@ class PrivateKeyTestnet(BaseKey):
             compressed=self.is_compressed(),
             custom_pushdata=custom_pushdata
         )
-        
+
         return create_p2pkh_transaction(self, unspents, outputs)
 
     def send(self, outputs, fee=None, leftover=None, combine=True,
