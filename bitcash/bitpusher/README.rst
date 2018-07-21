@@ -51,13 +51,8 @@ Example useage
 as per memo.cash protocol @ https://memo.cash/protocol this results in a "Set name" action to "bitPUSHER"
 
 raw OP_RETURN will be:
+
     0e 6a 02 6d01 09 626974505553484552
-        0e                  - 14 bytes to follow (in hex)
-        6a                  - OP_RETURN
-        02                  - 2 bytes of pushdata to follow
-        6d01                - "communication channel" for memo.cash - "set name" action
-        09                  - 9 bytes to follow
-        626974505553484552  - "bitPUSHER" utf-8 encoded bytes --> hex representation
 
 Currently (this module) only allows up to 220 bytes maximum - as multiple OP_RETURNS in one transaction is considered non-standard.
 
