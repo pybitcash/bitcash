@@ -41,11 +41,11 @@ aims
 
 Lower barriers to entry for new developers interested in bitcoin cash e.g:
 
-    Creating apps / tokens
-    
-    Interacting with existing apps / tokens
-    
-    Powerful searches / queries of block-chain metadata with an intuitive API.
+``*`` Creating apps / tokens
+
+``*`` Interacting with existing apps / tokens
+
+``*`` Powerful searches / queries of block-chain metadata with an intuitive API.
 
 Example useage
 --------------
