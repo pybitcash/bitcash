@@ -33,7 +33,7 @@ OP_HASH160 = b'\xa9'
 OP_PUSH_20 = b'\x14'
 OP_RETURN = b'\x6a'
 
-MESSAGE_LIMIT = 40
+MESSAGE_LIMIT = 220
 
 
 class TxIn:
@@ -90,7 +90,7 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed):
     return estimated_fee
 
 
-def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True):
+def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True, custom_pushdata=False):
     """
     sanitize_tx_data()
 
@@ -104,7 +104,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
         # LEGACYADDRESSDEPRECATION
         # FIXME: Will be removed in an upcoming release, breaking compatibility with legacy addresses.
         dest = cashaddress.to_cash_address(dest)
-        outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))
+        outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))  # (dest, amount_in_BCH, currency) --> (dest, amount_in_satoshis)
 
     if not unspents:
         raise ValueError('Transactions must have at least one unspent.')
@@ -112,11 +112,16 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     # Temporary storage so all outputs precede messages.
     messages = []
 
-    if message:
+    # Status quo for sending utf-8 encoded messages in OP_RETURN
+    if (len(message) > 0) is True and (custom_pushdata is False):
         message_chunks = chunk_data(message.encode('utf-8'), MESSAGE_LIMIT)
 
         for message in message_chunks:
-            messages.append((message, 0))
+            messages.append((message, 0))  # dest, amount
+
+    # Custom pushdata case added for diverse OP_RETURN applications
+    elif (len(message) > 0) is True and (custom_pushdata is True): 
+        messages.append((message, 0))
 
     # Include return address in fee estimate.
 
@@ -159,7 +164,9 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     return unspents, outputs
 
 
-def construct_output_block(outputs):
+def construct_output_block(outputs, custom_pushdata=False):
+    # If custom_pushdata == False (Default), and amount = 0. 'the (0-220 byte long) string in place of destination address is treated as one utf-8 encoded message.
+    # If custom_pushdata == True, raw hex will be directly appended after OP_RETURN.
 
     output_block = b''
 
@@ -176,11 +183,17 @@ def construct_output_block(outputs):
 
         # Blockchain storage
         else:
-            script = (OP_RETURN +
-                      len(dest).to_bytes(1, byteorder='little') +
-                      dest)
+            if (custom_pushdata is False):
+                script = (OP_RETURN +
+                          len(dest).to_bytes(1, byteorder='little') +
+                          dest)
 
-            output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
+                output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
+
+            elif (custom_pushdata is True):
+                script = (OP_RETURN + dest)
+
+                output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
         output_block += int_to_unknown_bytes(len(script), byteorder='little')
         output_block += script
@@ -205,7 +218,7 @@ def construct_input_block(inputs):
     return input_block
 
 
-def create_p2pkh_transaction(private_key, unspents, outputs):
+def create_p2pkh_transaction(private_key, unspents, outputs, custom_pushdata=False):
 
     public_key = private_key.public_key
     public_key_len = len(public_key).to_bytes(1, byteorder='little')
@@ -219,7 +232,11 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
     hash_type = HASH_TYPE
     input_count = int_to_unknown_bytes(len(unspents), byteorder='little')
     output_count = int_to_unknown_bytes(len(outputs), byteorder='little')
-    output_block = construct_output_block(outputs)
+
+    if (custom_pushdata is False):
+        output_block = construct_output_block(outputs)
+    else:
+        output_block = construct_output_block(outputs, custom_pushdata=True)
 
     # Optimize for speed, not memory, by pre-computing values.
     inputs = []
@@ -232,7 +249,7 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
 
         inputs.append(TxIn(script, script_len, txid, txindex, amount))
 
-    hashPrevouts = double_sha256(b''.join([i.txid+i.txindex for i in inputs]))
+    hashPrevouts = double_sha256(b''.join([i.txid + i.txindex for i in inputs]))
     hashSequence = double_sha256(b''.join([SEQUENCE for i in inputs]))
     hashOutputs = double_sha256(output_block)
 
