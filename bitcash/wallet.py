@@ -206,7 +206,7 @@ class PrivateKey(BaseKey):
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
-                           message=None, unspents=None, custom_PUSHDATA=False):  # pragma: no cover
+                           message=None, unspents=None, custom_pushdata=False):  # pragma: no cover
         """Creates a signed P2PKH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -246,10 +246,10 @@ class PrivateKey(BaseKey):
             combine=combine,
             message=message,
             compressed=self.is_compressed(),
-            custom_PUSHDATA=custom_PUSHDATA
+            custom_pushdata=custom_pushdata
         )
 
-        return create_p2pkh_transaction(self, unspents, outputs, custom_PUSHDATA=custom_PUSHDATA)
+        return create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=custom_pushdata)
 
     def send(self, outputs, fee=None, leftover=None, combine=True,
              message=None, unspents=None):  # pragma: no cover
@@ -499,7 +499,7 @@ class PrivateKeyTestnet(BaseKey):
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
-                           message=None, unspents=None, custom_PUSHDATA=False):
+                           message=None, unspents=None, custom_pushdata=False):
         """Creates a signed P2PKH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -539,7 +539,7 @@ class PrivateKeyTestnet(BaseKey):
             combine=combine,
             message=message,
             compressed=self.is_compressed(),
-            custom_PUSHDATA=custom_PUSHDATA
+            custom_pushdata=custom_pushdata
         )
         
         return create_p2pkh_transaction(self, unspents, outputs)
