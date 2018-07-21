@@ -7,6 +7,7 @@ Aims to be a comprehensive solution for:
 2) Easy interface with popular industry standards and protocols
 
 Current features:
+-----------------
 
 - Broadcasts custom OP_RETURN pushdata onto the bitcoin cash blockchain
 
