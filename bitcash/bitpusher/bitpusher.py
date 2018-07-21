@@ -1,4 +1,6 @@
-import bitcash
+from bitcash import utils
+from bitcash.network.services import NetworkAPI
+from bitcash.bitpusher import memo
 
 
 def create_pushdata(lst_of_pushdata):
@@ -65,17 +67,21 @@ def create_pushdata(lst_of_pushdata):
 
         encoding = lst_of_pushdata[i][1]
         if encoding == 'utf-8':
-            pushdata += len(lst_of_pushdata[i][0]).to_bytes(1, byteorder='little') + lst_of_pushdata[i][0].encode('utf-8')
+            pushdata += len(lst_of_pushdata[i][0]).to_bytes(
+                1, byteorder='little') + lst_of_pushdata[i][0].encode('utf-8')
 
         elif encoding == 'hex' and len(lst_of_pushdata[i][0]) % 2 != 0:
-            raise ValueError("hex encoded pushdata must have length = a multiple of two")
+            raise ValueError(
+                "hex encoded pushdata must have length = a multiple of two")
 
         elif encoding == 'hex' and len(lst_of_pushdata[i][0]) % 2 == 0:
-            pushdata += (len(lst_of_pushdata[i][0]) // 2).to_bytes(1, byteorder='little') + bitcash.utils.hex_to_bytes(lst_of_pushdata[i][0])
+            pushdata += (len(lst_of_pushdata[i][0]) // 2).to_bytes(
+                1, byteorder='little') + utils.hex_to_bytes(lst_of_pushdata[i][0])
 
     # check for size
     if len(pushdata) > 220:
-        raise ValueError("Total bytes in OP_RETURN cannot exceed 220 bytes at present - apologies")
+        raise ValueError(
+            "Total bytes in OP_RETURN cannot exceed 220 bytes at present - apologies")
 
     return pushdata
 
@@ -97,8 +103,9 @@ def rawtx(PrivateKey, lst_of_pushdata, fee=1):
     '''
 
     PrivateKey.get_unspents()
-    pushdata = bitcash.bitpusher.create_pushdata(lst_of_pushdata)
-    rawtx = PrivateKey.create_transaction([(PrivateKey.address, 0.0001, 'bch')], fee=1, message=pushdata, custom_pushdata=True)
+    pushdata = create_pushdata(lst_of_pushdata)
+    rawtx = PrivateKey.create_transaction(
+        [(PrivateKey.address, 0.0001, 'bch')], fee=1, message=pushdata, custom_pushdata=True)
     return rawtx
 
 
@@ -122,10 +129,11 @@ def bitpush(PrivateKey, lst_of_pushdata, fee=1):
     --------
     lst_of_pushdata = [('6d01','hex'), ('my_new_memocash_name', 'utf-8')]
     bitpush(my_key, lst_of_pushdata)
-
     '''
-    PrivateKey.get_unspents()
-    pushdata = bitcash.bitpusher.create_pushdata(lst_of_pushdata)
-    rawtx = PrivateKey.create_transaction([(PrivateKey.address, 0.0001, 'bch')], fee=1, message=pushdata, custom_pushdata=True)
 
-    return bitcash.network.services.NetworkAPI.broadcast_tx(rawtx)
+    PrivateKey.get_unspents()
+    pushdata = create_pushdata(lst_of_pushdata)
+    rawtx = PrivateKey.create_transaction(
+        [(PrivateKey.address, 0.0001, 'bch')], fee=1, message=pushdata, custom_pushdata=True)
+
+    return NetworkAPI.broadcast_tx(rawtx)
