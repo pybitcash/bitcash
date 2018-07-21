@@ -59,7 +59,7 @@ raw OP_RETURN will be:
 
     0e 6a 02 6d01 09 626974505553484552
 
-Currently (this module) only allows up to 220 bytes maximum - as multiple OP_RETURNS in one transaction is considered non-standard.
+Currently (this module) only allows up to 220 bytes maximum - as multiple OP_RETURNS in one transaction are considered non-standard.
 
 Manual method (see below)
 
