@@ -123,7 +123,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
         # Takes in message as raw pushdata (must be already encoded as bytes - hex or utf-8)
         # The (dest, amount) tuple in output list is (pushdata, 0) in this case.
         # Max size of 220 bytes at this stage
-    elif (message is True) and (custom_pushdata is True):
+    elif (len(message) > 0) is True and (custom_pushdata is True):
         messages.append((message, 0))
 
     # Include return address in fee estimate.
