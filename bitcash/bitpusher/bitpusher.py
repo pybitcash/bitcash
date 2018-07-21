@@ -80,10 +80,24 @@ def create_pushdata(lst_of_pushdata):
     return pushdata
 
 
-def rawtx(PrivateKey, pushdata, fee=1):
+def rawtx(PrivateKey, lst_of_pushdata, fee=1):
+    '''creates a rawtx with OP_RETURN metadata
+
+    Parameters
+    ----------
+    PrivateKey : bitcash.PrivateKey object
+
+    pushdata : lst_of_pushdata in a 1-D array of 2-D tuples (pushdata, encoding)
+
+    fee : sat/byte (defaults to 1 satoshi per byte)
+
+    Returns
+    -------
+    rawtx ready to broadcast
+    '''
 
     PrivateKey.get_unspents()
-    pushdata = bitcash.bitpusher.create_pushdata(pushdata)
+    pushdata = bitcash.bitpusher.create_pushdata(lst_of_pushdata)
     rawtx = PrivateKey.create_transaction([(PrivateKey.address, 0.0001, 'bch')], fee=1, message=pushdata, custom_pushdata=True)
     return rawtx
 
