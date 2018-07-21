@@ -38,7 +38,9 @@ open source, google-like, block-chain search engine
 
 aims
 ----
-Lower barriers to entry for new developers interested in bitcoin cash e.g: 
+
+Lower barriers to entry for new developers interested in bitcoin cash e.g:
+
     Creating apps / tokens
     
     Interacting with existing apps / tokens
