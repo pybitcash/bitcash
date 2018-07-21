@@ -11,7 +11,7 @@ from bitcash.network.meta import Unspent
 from bitcash.transaction import (
     calc_txid, create_p2pkh_transaction, sanitize_tx_data,
     OP_CHECKSIG, OP_DUP, OP_EQUALVERIFY, OP_HASH160, OP_PUSH_20
-    )
+)
 
 
 def wif_to_key(wif):
