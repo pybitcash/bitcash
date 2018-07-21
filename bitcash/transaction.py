@@ -104,7 +104,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
         # LEGACYADDRESSDEPRECATION
         # FIXME: Will be removed in an upcoming release, breaking compatibility with legacy addresses.
         dest = cashaddress.to_cash_address(dest)
-        outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))  # condenses 'output' from tuple of 3 elements --> tuple of two elements (destination address, satoshis)
+        outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))  # (dest, amount_in_BCH, currency) --> (dest, amount_in_satoshis)
 
     if not unspents:
         raise ValueError('Transactions must have at least one unspent.')
@@ -120,8 +120,8 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
             messages.append((message, 0))  # dest, amount
 
     # Custom pushdata in OP_RETURN
-        # Takes in message as raw pushdata (must be already encoded as bytes - hex or utf-8)
-        # The (dest, amount) tuple in output list is (pushdata, 0) in this case.
+        # Takes in message as raw pushdata (must be already encoded as bytes)
+        # The (dest, amount) tuple in output list is (pushdata, 0) in this particular case.
         # Max size of 220 bytes at this stage
     elif (len(message) > 0) is True and (custom_pushdata is True):
         messages.append((message, 0))
@@ -194,7 +194,7 @@ def construct_output_block(outputs, custom_pushdata=False):
                 output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
             elif (custom_pushdata is True):
-                script = (OP_RETURN + dest)  # Note: you must manually enter "len(pushdata_element).to_bytes(1, byteorder='little')" before every pushdata_element before executing this function
+                script = (OP_RETURN + dest)
 
                 output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
