@@ -542,7 +542,7 @@ class PrivateKeyTestnet(BaseKey):
             custom_pushdata=custom_pushdata
         )
 
-        return create_p2pkh_transaction(self, unspents, outputs)
+        return create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=custom_pushdata)
 
     def send(self, outputs, fee=None, leftover=None, combine=True,
              message=None, unspents=None):
