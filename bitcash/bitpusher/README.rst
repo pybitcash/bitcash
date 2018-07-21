@@ -29,12 +29,11 @@ Add easy interface with popular industry standards and protocols such as:
 
 * Support for a few special cases such as _memo.cash_ and _blockpress.org_ to allow easy access for beginner python developers to gain experience playing around with OP_RETURN-based apps.
 
-bitpuller (complementary counterpart)
--------------------------------------
-
+bitpuller
+---------
 * easy-to-use bitDB query API for python synergising well with bitpusher
-
 * open source, google-like, block-chain search engine
+* complementary counterpart to bitpusher
 
 aims
 ----
@@ -42,9 +41,7 @@ aims
 Lower barriers to entry for new developers interested in bitcoin cash e.g:
 
 * Creating apps / tokens
-
 * Interacting with existing apps / tokens
-
 * Powerful searches / queries of block-chain metadata with an intuitive API.
 
 Example useage
