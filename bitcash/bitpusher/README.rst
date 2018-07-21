@@ -50,23 +50,25 @@ raw OP_RETURN will be:
 Currently (this module) only allows up to 220 bytes maximum - as multiple OP_RETURNS in one transaction is considered non-standard.
 
 Manual method (see below)
+
 1) Import private key with bitcash
+
 2) Update unspent transactions
+
 3) Create lst_of_pushdata
+
 4) Output OP_RETURN pushdata as bytes and store in variable
+
 5) Create rawtx ready for broadcast (fee = 1 sat/byte; sending 0.0001 BCH back to own address)
+
 6) Broadcast rawtx
-`my_key = bitcash.PrivateKey('WIF Compressed (base58) here')`
 
-`my_key.get_unspents() #necessary step --> updates my_key.unspents object variable`
-
-`lst_of_pushdata =  [('6d01', 'hex'), ('bitPUSHER', 'utf-8')]`
-
-`pushdata = bitcash.bitpusher.create_pushdata(lst_of_pushdata)`
-
-`rawtx = my_key.create_transaction([(my_key.address, 0.0001, 'bch')], fee=1, message=pushdata, custom_PUSHDATA=True)`
-
-`bitcash.network.services.NetworkAPI.broadcast_tx(rawtx)`
+>>> my_key = bitcash.PrivateKey('WIF Compressed (base58) here')`
+>>> my_key.get_unspents() #necessary step --> updates my_key.unspents object variable`
+>>> lst_of_pushdata =  [('6d01', 'hex'), ('bitPUSHER', 'utf-8')]`
+>>> pushdata = bitcash.bitpusher.create_pushdata(lst_of_pushdata)`
+>>> rawtx = my_key.create_transaction([(my_key.address, 0.0001, 'bch')], fee=1, message=pushdata, custom_PUSHDATA=True)`
+>>> bitcash.network.services.NetworkAPI.broadcast_tx(rawtx)`
 
 look at block explorer or wallet to see new transaction!
  '''
