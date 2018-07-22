@@ -22,6 +22,12 @@ Lower barriers to entry for new developers interested in bitcoin cash e.g:
 * Interacting with existing apps / tokens
 * Powerful searches / queries of block-chain metadata with an intuitive API.
 
+example useage
+--------------
+>>> import bitcash
+>>> my_key_main = bitcash.PrivateKey("Kymh9idW5bdM7n7dHvL1DPW6od9J8tFR7kgHMpGLhUcxU8Q1UGQY")
+>>> bitcash.bitpusher.bitpush(my_key_main, [('6d01', 'hex'), ('bitPUSHER', 'utf-8')])
+
 TODO
 ====
 
@@ -43,12 +49,6 @@ bitpuller
 * easy-to-use bitDB query API for python synergising well with bitpusher
 * open source, google-like, block-chain search engine
 * complementary counterpart to bitpusher
-
-example useage
---------------
->>> import bitcash
->>> my_key_main = bitcash.PrivateKey("Kymh9idW5bdM7n7dHvL1DPW6od9J8tFR7kgHMpGLhUcxU8Q1UGQY")
->>> bitcash.bitpusher.bitpush(my_key_main, [('6d01', 'hex'), ('bitPUSHER', 'utf-8')])
 
 as per memo.cash protocol @ https://memo.cash/protocol this results in a "Set name" action to "bitPUSHER"
 
