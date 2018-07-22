@@ -1,6 +1,7 @@
 from bitcash import utils
 from bitcash.network.services import NetworkAPI
 from bitcash.bitpusher import memo
+from bitcash.bitpusher import blockpress
 
 
 def create_pushdata(lst_of_pushdata):
