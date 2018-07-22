@@ -4,6 +4,42 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bitcash>`_)
 --------------------------------------------------------
 
+- NetworkAPI.get_tx_amount() is now working and properly handles
+  backends returning string or decimal values.
+
+0.5.2 (2018-05-16)
+------------------
+
+- bccblock.info is offline, replace with cashexplorer.bitcoin.com.
+  Hard fork happened yesterday. Not sure if bccblock.info was even ready
+  for that.
+
+0.5.1 (2018-03-11)
+------------------
+
+- Fix fee calculation with combined=False.
+- Also lower fees since we can. Couple little tweaks.
+- Delete a .orig file I had added before by mistake.
+
+0.5.0 (2018-02-03)
+------------------
+
+- Breaking change! Add cashaddr support, return .address as
+  cashaddr. That hopefully is all that breaks.
+
+0.4.3 (2017-12-20)
+------------------
+
+- Switch from Bitpay to BCCBlock.info.
+  Bitpay API is unusable with their address format, unless we
+  switch over. Not interested in doing that in the near future so
+  I found another block explorer.
+
+0.4.2 (2017-12-20)
+------------------
+
+- Raise exception when using pay2sh addresses.
+
 0.4.1 (2017-11-01)
 ------------------
 
