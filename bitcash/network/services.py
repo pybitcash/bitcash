@@ -33,7 +33,7 @@ class InsightAPI:
 
     @classmethod
     def get_transactions(cls, address):
-        r = requests.get(cls.MAIN_ADDRESS_API + address, timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.MAIN_ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return r.json()['transactions']
@@ -73,8 +73,8 @@ class CashExplorerBitcoinDotComAPI(InsightAPI):
     """
     MAIN_ENDPOINT = 'https://cashexplorer.bitcoin.com/api/'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'addr/{}'
-    MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
-    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
+    MAIN_BALANCE_API = MAIN_ADDRESS_API + '/balance'
+    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '/utxo'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
     MAIN_TX_AMOUNT_API = MAIN_ENDPOINT + 'tx/{}'
     TX_PUSH_PARAM = 'rawtx'
@@ -117,14 +117,14 @@ class CashExplorerBitcoinDotComAPI(InsightAPI):
 class BlockdozerAPI(InsightAPI):
     MAIN_ENDPOINT = 'https://blockdozer.com/api/'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'addr/{}'
-    MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
-    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
+    MAIN_BALANCE_API = MAIN_ADDRESS_API + '/balance'
+    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '/utxo'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
     MAIN_TX_AMOUNT_API = MAIN_ENDPOINT + 'tx/{}'
     TEST_ENDPOINT = 'https://tbch.blockdozer.com/api/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'addr/{}'
-    TEST_BALANCE_API = TEST_ADDRESS_API + '{}/balance'
-    TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/utxo'
+    TEST_BALANCE_API = TEST_ADDRESS_API + '/balance'
+    TEST_UNSPENT_API = TEST_ADDRESS_API + '/utxo'
     TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/send'
     TX_PUSH_PARAM = 'rawtx'
 
@@ -137,7 +137,7 @@ class BlockdozerAPI(InsightAPI):
 
     @classmethod
     def get_transactions_testnet(cls, address):
-        r = requests.get(cls.TEST_ADDRESS_API + address, timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.TEST_ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return r.json()['transactions']
