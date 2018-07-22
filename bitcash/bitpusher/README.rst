@@ -59,6 +59,7 @@ raw OP_RETURN will be:
 Currently (this module) only allows up to 220 bytes maximum - as multiple OP_RETURNS in one transaction are considered non-standard.
 
 Manual method (see below)
+-------------------------
 
 1) Import private key with bitcash
 
