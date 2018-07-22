@@ -11,6 +11,7 @@ current features:
 
 * Broadcasts custom OP_RETURN pushdata onto the bitcoin cash blockchain
 * Interfaces easily with memo.cash
+* Interfaces with blockpress.com (only a few functions at present)
 
 aims
 ----
