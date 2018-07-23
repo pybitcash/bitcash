@@ -349,7 +349,7 @@ class NetworkAPI:
         :param txid: The transaction id in question.
         :type txid: ``str``
         :raises ConnectionError: If all API services fail.
-        :rtype: ``list`` of ``str``
+        :rtype: ``Transaction``
         """
 
         for api_call in cls.GET_TX_MAIN:
@@ -368,7 +368,7 @@ class NetworkAPI:
         :param txid: The transaction id in question.
         :type txid: ``str``
         :raises ConnectionError: If all API services fail.
-        :rtype: ``list`` of ``str``
+        :rtype: ``Transaction``
         """
 
         for api_call in cls.GET_TX_TEST:
@@ -388,7 +388,7 @@ class NetworkAPI:
         :param txindex: The transaction index in question.
         :type txindex: ``int``
         :raises ConnectionError: If all API services fail.
-        :rtype: ``list`` of ``str``
+        :rtype: ``Decimal``
         """
 
         for api_call in cls.GET_TX_AMOUNT_MAIN:
@@ -409,7 +409,7 @@ class NetworkAPI:
         :param txindex: The transaction index in question.
         :type txindex: ``int``
         :raises ConnectionError: If all API services fail.
-        :rtype: ``list`` of ``str``
+        :rtype: ``Decimal``
         """
 
         for api_call in cls.GET_TX_AMOUNT_TEST:
