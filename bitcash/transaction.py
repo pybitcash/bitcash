@@ -120,8 +120,12 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
             messages.append((message, 0))  # dest, amount
 
     # Custom pushdata case added for diverse OP_RETURN applications
-    elif (len(message) > 0) is True and (custom_pushdata is True): 
-        messages.append((message, 0))
+    elif (len(message) > 0) is True and (custom_pushdata is True):
+        if (len(message) >= 220) is True:
+            # FIXME add capability to deal with >220 bytes for custom pushdata elements
+            raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
+        else:
+            messages.append((message, 0))
 
     # Include return address in fee estimate.
 
