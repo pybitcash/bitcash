@@ -45,7 +45,7 @@ class InsightAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         response = r.json()
-        return response['vout'][txindex]['value']*100000000
+        return response['vout'][txindex]['value'] * 100000000
 
     @classmethod
     def get_unspent(cls, address):
