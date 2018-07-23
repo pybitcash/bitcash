@@ -182,15 +182,6 @@ class BlockdozerAPI(InsightAPI):
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         response = r.json(parse_float=Decimal)
-        print(response)
-        #return (Decimal(response['vout'][txindex]['value'])*100000000).normalize()
-
-    @classmethod
-    def get_transaction_testnet(cls, txid):
-        r = requests.get(cls.TEST_TX_API.format(txid), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        response = r.json(parse_float=Decimal)
 
         tx = Transaction(response['txid'], response['blockheight'],
                 (Decimal(response['valueIn'])*100000000).normalize(),
