@@ -169,8 +169,6 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
 
 def construct_output_block(outputs, custom_pushdata=False):
-    # If custom_pushdata == False (Default), and amount = 0. 'the (0-220 byte long) string in place of destination address is treated as one utf-8 encoded message.
-    # If custom_pushdata == True, raw hex will be directly appended after OP_RETURN.
 
     output_block = b''
 
@@ -195,6 +193,7 @@ def construct_output_block(outputs, custom_pushdata=False):
                 output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
             elif (custom_pushdata is True):
+                # manual control over number of bytes in each batch of pushdata
                 script = (OP_RETURN + dest)
 
                 output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
