@@ -9,7 +9,8 @@ Unreleased (see `master <https://github.com/ofek/bitcash>`_)
   contains some common details of the transaction.
 
 - Allow raw byte string to be used as transaction OP_RETURN
-  message with new 'bytes=True' parameter. Increase message
+  message: automatic detection assumes a byte-like object when
+  message does not have an encode() function. Increase message
   size to 220 bytes.
 
 - NetworkAPI.get_tx_amount() is now working and properly handles

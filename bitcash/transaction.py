@@ -90,7 +90,7 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed):
     return estimated_fee
 
 
-def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, bytes=False, compressed=True):
+def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True):
     """
     sanitize_tx_data()
 
@@ -113,8 +113,10 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     messages = []
 
     if message:
-        if not bytes:
+        try:
             message = message.encode('utf-8')
+        except AttributeError:
+            pass # assume message is already a bytes-like object
 
         message_chunks = chunk_data(message, MESSAGE_LIMIT)
 

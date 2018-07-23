@@ -10,6 +10,8 @@ from bitcash.network.transaction import Transaction, TxPart
 
 DEFAULT_TIMEOUT = 30
 
+BCH_TO_SAT_MULTIPLIER = 100000000
+
 
 def set_service_timeout(seconds):
     global DEFAULT_TIMEOUT
@@ -48,9 +50,9 @@ class InsightAPI:
         response = r.json(parse_float=Decimal)
 
         tx = Transaction(response['txid'], response['blockheight'],
-                (Decimal(response['valueIn'])*100000000).normalize(),
-                (Decimal(response['valueOut'])*100000000).normalize(),
-                (Decimal(response['fees'])*100000000).normalize())
+                (Decimal(response['valueIn']) * BCH_TO_SAT_MULTIPLIER).normalize(),
+                (Decimal(response['valueOut']) * BCH_TO_SAT_MULTIPLIER).normalize(),
+                (Decimal(response['fees']) * BCH_TO_SAT_MULTIPLIER).normalize())
 
         for txin in response['vin']:
             part = TxPart(txin['addr'], txin['valueSat'], txin['scriptSig']['asm'])
@@ -62,7 +64,7 @@ class InsightAPI:
                 addr = txout['scriptPubKey']['addresses'][0]
 
             part = TxPart(addr,
-                    (Decimal(txout['value'])*100000000).normalize(),
+                    (Decimal(txout['value']) * BCH_TO_SAT_MULTIPLIER).normalize(),
                     txout['scriptPubKey']['asm'])
             tx.add_output(part)
 
@@ -74,7 +76,7 @@ class InsightAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         response = r.json(parse_float=Decimal)
-        return (Decimal(response['vout'][txindex]['value'])*100000000).normalize()
+        return (Decimal(response['vout'][txindex]['value']) * BCH_TO_SAT_MULTIPLIER).normalize()
 
     @classmethod
     def get_unspent(cls, address):
@@ -184,9 +186,9 @@ class BlockdozerAPI(InsightAPI):
         response = r.json(parse_float=Decimal)
 
         tx = Transaction(response['txid'], response['blockheight'],
-                (Decimal(response['valueIn'])*100000000).normalize(),
-                (Decimal(response['valueOut'])*100000000).normalize(),
-                (Decimal(response['fees'])*100000000).normalize())
+                (Decimal(response['valueIn']) * BCH_TO_SAT_MULTIPLIER).normalize(),
+                (Decimal(response['valueOut']) * BCH_TO_SAT_MULTIPLIER).normalize(),
+                (Decimal(response['fees']) * BCH_TO_SAT_MULTIPLIER).normalize())
 
         for txin in response['vin']:
             part = TxPart(txin['addr'], txin['valueSat'], txin['scriptSig']['asm'])
@@ -198,7 +200,7 @@ class BlockdozerAPI(InsightAPI):
                 addr = txout['scriptPubKey']['addresses'][0]
 
             part = TxPart(addr,
-                    (Decimal(txout['value'])*100000000).normalize(),
+                    (Decimal(txout['value']) * BCH_TO_SAT_MULTIPLIER).normalize(),
                     txout['scriptPubKey']['asm'])
             tx.add_output(part)
 
@@ -210,7 +212,7 @@ class BlockdozerAPI(InsightAPI):
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         response = r.json(parse_float=Decimal)
-        return (Decimal(response['vout'][txindex]['value'])*100000000).normalize()
+        return (Decimal(response['vout'][txindex]['value']) * BCH_TO_SAT_MULTIPLIER).normalize()
 
     @classmethod
     def get_unspent_testnet(cls, address):
