@@ -4,6 +4,10 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bitcash>`_)
 --------------------------------------------------------
 
+- Allow raw byte string to be used as transaction OP_RETURN
+  message with new 'bytes=True' parameter. Increase message
+  size to 220 bytes.
+
 - NetworkAPI.get_tx_amount() is now working and properly handles
   backends returning string or decimal values.
 

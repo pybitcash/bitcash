@@ -5,6 +5,7 @@ __pycache__
 /.cache
 /.idea
 /.coverage
+/.pytest_cache
 /bitcash.egg-info
 /build
 /dist

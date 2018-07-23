@@ -206,7 +206,7 @@ class PrivateKey(BaseKey):
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
-                           message=None, unspents=None):  # pragma: no cover
+                           message=None, bytes=False, unspents=None):  # pragma: no cover
         """Creates a signed P2PKH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -230,8 +230,11 @@ class PrivateKey(BaseKey):
         :type combine: ``bool``
         :param message: A message to include in the transaction. This will be
                         stored in the blockchain forever. Due to size limits,
-                        each message will be stored in chunks of 40 bytes.
+                        each message will be stored in chunks of 220 bytes.
         :type message: ``str``
+        :param bytes: Whether or not the supplied message is already bytes. If
+                      false (default), message is automatically encoded to UTF-8.
+        :type bytes: ``bool``
         :param unspents: The UTXOs to use as the inputs. By default Bitcash will
                          communicate with the blockchain itself.
         :type unspents: ``list`` of :class:`~bitcash.network.meta.Unspent`
@@ -246,13 +249,14 @@ class PrivateKey(BaseKey):
             leftover or self.address,
             combine=combine,
             message=message,
+            bytes=bytes,
             compressed=self.is_compressed()
         )
 
         return create_p2pkh_transaction(self, unspents, outputs)
 
     def send(self, outputs, fee=None, leftover=None, combine=True,
-             message=None, unspents=None):  # pragma: no cover
+             message=None, bytes=False, unspents=None):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the blockchain. This accepts the same arguments as
         :func:`~bitcash.PrivateKey.create_transaction`.
@@ -278,8 +282,11 @@ class PrivateKey(BaseKey):
         :type combine: ``bool``
         :param message: A message to include in the transaction. This will be
                         stored in the blockchain forever. Due to size limits,
-                        each message will be stored in chunks of 40 bytes.
+                        each message will be stored in chunks of 220 bytes.
         :type message: ``str``
+        :param bytes: Whether or not the supplied message is already bytes. If
+                      false (default), message is automatically encoded to UTF-8.
+        :type bytes: ``bool``
         :param unspents: The UTXOs to use as the inputs. By default Bitcash will
                          communicate with the blockchain itself.
         :type unspents: ``list`` of :class:`~bitcash.network.meta.Unspent`
@@ -288,7 +295,7 @@ class PrivateKey(BaseKey):
         """
 
         tx_hex = self.create_transaction(
-            outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
+            outputs, fee=fee, leftover=leftover, combine=combine, message=message, bytes=bytes, unspents=unspents
         )
 
         NetworkAPI.broadcast_tx(tx_hex)
@@ -297,7 +304,7 @@ class PrivateKey(BaseKey):
 
     @classmethod
     def prepare_transaction(cls, address, outputs, compressed=True, fee=None, leftover=None,
-                            combine=True, message=None, unspents=None):  # pragma: no cover
+                            combine=True, message=None, bytes=False, unspents=None):  # pragma: no cover
         """Prepares a P2PKH transaction for offline signing.
 
         :param address: The address the funds will be sent from.
@@ -326,8 +333,11 @@ class PrivateKey(BaseKey):
         :type combine: ``bool``
         :param message: A message to include in the transaction. This will be
                         stored in the blockchain forever. Due to size limits,
-                        each message will be stored in chunks of 40 bytes.
+                        each message will be stored in chunks of 220 bytes.
         :type message: ``str``
+        :param bytes: Whether or not the supplied message is already bytes. If
+                       false (default), message is automatically encoded to UTF-8.
+        :type bytes: ``bool``
         :param unspents: The UTXOs to use as the inputs. By default Bitcash will
                          communicate with the blockchain itself.
         :type unspents: ``list`` of :class:`~bitcash.network.meta.Unspent`
@@ -341,6 +351,7 @@ class PrivateKey(BaseKey):
             leftover or address,
             combine=combine,
             message=message,
+            bytes=bytes,
             compressed=compressed
         )
 
@@ -499,7 +510,7 @@ class PrivateKeyTestnet(BaseKey):
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
-                           message=None, unspents=None):
+                           message=None, bytes=False, unspents=None):
         """Creates a signed P2PKH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -523,8 +534,11 @@ class PrivateKeyTestnet(BaseKey):
         :type combine: ``bool``
         :param message: A message to include in the transaction. This will be
                         stored in the blockchain forever. Due to size limits,
-                        each message will be stored in chunks of 40 bytes.
+                        each message will be stored in chunks of 220 bytes.
         :type message: ``str``
+        :param bytes: Whether or not the supplied message is already bytes. If
+                      false (default), message is automatically encoded to UTF-8.
+        :type bytes: ``bool``
         :param unspents: The UTXOs to use as the inputs. By default Bitcash will
                          communicate with the testnet blockchain itself.
         :type unspents: ``list`` of :class:`~bitcash.network.meta.Unspent`
@@ -539,13 +553,14 @@ class PrivateKeyTestnet(BaseKey):
             leftover or self.address,
             combine=combine,
             message=message,
+            bytes=bytes,
             compressed=self.is_compressed()
         )
 
         return create_p2pkh_transaction(self, unspents, outputs)
 
     def send(self, outputs, fee=None, leftover=None, combine=True,
-             message=None, unspents=None):
+             message=None, bytes=False, unspents=None):
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the testnet blockchain. This accepts the same arguments as
         :func:`~bitcash.PrivateKeyTestnet.create_transaction`.
@@ -571,8 +586,11 @@ class PrivateKeyTestnet(BaseKey):
         :type combine: ``bool``
         :param message: A message to include in the transaction. This will be
                         stored in the blockchain forever. Due to size limits,
-                        each message will be stored in chunks of 40 bytes.
+                        each message will be stored in chunks of 220 bytes.
         :type message: ``str``
+        :param bytes: Whether or not the supplied message is already bytes. If
+                      false (default), message is automatically encoded to UTF-8.
+        :type bytes: ``bool``
         :param unspents: The UTXOs to use as the inputs. By default Bitcash will
                          communicate with the testnet blockchain itself.
         :type unspents: ``list`` of :class:`~bitcash.network.meta.Unspent`
@@ -581,7 +599,7 @@ class PrivateKeyTestnet(BaseKey):
         """
 
         tx_hex = self.create_transaction(
-            outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
+            outputs, fee=fee, leftover=leftover, combine=combine, message=message, bytes=bytes, unspents=unspents
         )
 
         NetworkAPI.broadcast_tx_testnet(tx_hex)
@@ -590,7 +608,7 @@ class PrivateKeyTestnet(BaseKey):
 
     @classmethod
     def prepare_transaction(cls, address, outputs, compressed=True, fee=None, leftover=None,
-                            combine=True, message=None, unspents=None):
+                            combine=True, message=None, bytes=False, unspents=None):
         """Prepares a P2PKH transaction for offline signing.
 
         :param address: The address the funds will be sent from.
@@ -619,8 +637,11 @@ class PrivateKeyTestnet(BaseKey):
         :type combine: ``bool``
         :param message: A message to include in the transaction. This will be
                         stored in the blockchain forever. Due to size limits,
-                        each message will be stored in chunks of 40 bytes.
+                        each message will be stored in chunks of 220 bytes.
         :type message: ``str``
+        :param bytes: Whether or not the supplied message is already bytes. If
+                      false (default), message is automatically encoded to UTF-8.
+        :type bytes: ``bool``
         :param unspents: The UTXOs to use as the inputs. By default Bitcash will
                          communicate with the blockchain itself.
         :type unspents: ``list`` of :class:`~bitcash.network.meta.Unspent`
@@ -634,6 +655,7 @@ class PrivateKeyTestnet(BaseKey):
             leftover or address,
             combine=combine,
             message=message,
+            bytes=bytes,
             compressed=compressed
         )
 

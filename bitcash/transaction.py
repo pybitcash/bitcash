@@ -33,7 +33,7 @@ OP_HASH160 = b'\xa9'
 OP_PUSH_20 = b'\x14'
 OP_RETURN = b'\x6a'
 
-MESSAGE_LIMIT = 40
+MESSAGE_LIMIT = 220  # or is it 223?
 
 
 class TxIn:
@@ -90,7 +90,7 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed):
     return estimated_fee
 
 
-def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True):
+def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, bytes=False, compressed=True):
     """
     sanitize_tx_data()
 
@@ -113,7 +113,10 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     messages = []
 
     if message:
-        message_chunks = chunk_data(message.encode('utf-8'), MESSAGE_LIMIT)
+        if not bytes:
+            message = message.encode('utf-8')
+
+        message_chunks = chunk_data(message, MESSAGE_LIMIT)
 
         for message in message_chunks:
             messages.append((message, 0))
