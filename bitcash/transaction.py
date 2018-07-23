@@ -104,7 +104,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
         # LEGACYADDRESSDEPRECATION
         # FIXME: Will be removed in an upcoming release, breaking compatibility with legacy addresses.
         dest = cashaddress.to_cash_address(dest)
-        outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))  # (dest, amount_in_BCH, currency) --> (dest, amount_in_satoshis)
+        outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))
 
     if not unspents:
         raise ValueError('Transactions must have at least one unspent.')
