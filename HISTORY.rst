@@ -4,6 +4,10 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bitcash>`_)
 --------------------------------------------------------
 
+- Add a get_transaction() function to network services that
+  returns an instance of a new Transaction class which
+  contains some common details of the transaction.
+
 - Allow raw byte string to be used as transaction OP_RETURN
   message with new 'bytes=True' parameter. Increase message
   size to 220 bytes.
