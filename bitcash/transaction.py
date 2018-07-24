@@ -90,7 +90,7 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed):
     return estimated_fee
 
 
-def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True):
+def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True, custom_pushdata=False):
     """
     sanitize_tx_data()
 
@@ -112,7 +112,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     # Temporary storage so all outputs precede messages.
     messages = []
 
-    if message:
+    if message and (custom_pushdata is False):
         try:
             message = message.encode('utf-8')
         except AttributeError:
@@ -121,6 +121,13 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
         message_chunks = chunk_data(message, MESSAGE_LIMIT)
 
         for message in message_chunks:
+            messages.append((message, 0))
+
+    elif message and (custom_pushdata is True):
+        if (len(message) >= 220):
+            # FIXME add capability for >220 bytes for custom pushdata elements
+            raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
+        else:
             messages.append((message, 0))
 
     # Include return address in fee estimate.
@@ -164,7 +171,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     return unspents, outputs
 
 
-def construct_output_block(outputs):
+def construct_output_block(outputs, custom_pushdata=False):
 
     output_block = b''
 
@@ -181,11 +188,21 @@ def construct_output_block(outputs):
 
         # Blockchain storage
         else:
-            script = (OP_RETURN +
-                      len(dest).to_bytes(1, byteorder='little') +
-                      dest)
+            if (custom_pushdata is False):
+                script = (OP_RETURN +
+                          len(dest).to_bytes(1, byteorder='little') +
+                          dest)
 
-            output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
+                output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
+
+            elif (custom_pushdata is True):
+                # manual control over number of bytes in each batch of pushdata
+                if type(dest) != bytes:
+                    raise TypeError("custom pushdata must be of type: bytes")
+                else:
+                    script = (OP_RETURN + dest)
+
+                output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
         output_block += int_to_unknown_bytes(len(script), byteorder='little')
         output_block += script
@@ -210,7 +227,7 @@ def construct_input_block(inputs):
     return input_block
 
 
-def create_p2pkh_transaction(private_key, unspents, outputs):
+def create_p2pkh_transaction(private_key, unspents, outputs, custom_pushdata=False):
 
     public_key = private_key.public_key
     public_key_len = len(public_key).to_bytes(1, byteorder='little')
@@ -224,7 +241,11 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
     hash_type = HASH_TYPE
     input_count = int_to_unknown_bytes(len(unspents), byteorder='little')
     output_count = int_to_unknown_bytes(len(outputs), byteorder='little')
-    output_block = construct_output_block(outputs)
+
+    if (custom_pushdata is False):
+        output_block = construct_output_block(outputs)
+    else:
+        output_block = construct_output_block(outputs, custom_pushdata=True)
 
     # Optimize for speed, not memory, by pre-computing values.
     inputs = []
