@@ -188,14 +188,14 @@ def construct_output_block(outputs, custom_pushdata=False):
 
         # Blockchain storage
         else:
-            if (custom_pushdata is False):
+            if custom_pushdata is False:
                 script = (OP_RETURN +
                           len(dest).to_bytes(1, byteorder='little') +
                           dest)
 
                 output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
-            elif (custom_pushdata is True):
+            elif custom_pushdata is True:
                 # manual control over number of bytes in each batch of pushdata
                 if type(dest) != bytes:
                     raise TypeError("custom pushdata must be of type: bytes")
@@ -242,10 +242,7 @@ def create_p2pkh_transaction(private_key, unspents, outputs, custom_pushdata=Fal
     input_count = int_to_unknown_bytes(len(unspents), byteorder='little')
     output_count = int_to_unknown_bytes(len(outputs), byteorder='little')
 
-    if (custom_pushdata is False):
-        output_block = construct_output_block(outputs)
-    else:
-        output_block = construct_output_block(outputs, custom_pushdata=True)
+    output_block = construct_output_block(outputs, custom_pushdata=custom_pushdata)
 
     # Optimize for speed, not memory, by pre-computing values.
     inputs = []
