@@ -64,6 +64,9 @@ OUTPUT_BLOCK_MESSAGES = ('50c30000000000001976a914e7c1345fc8f87c68170b3aa798a956
                          '0888fc04000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac'
                          '0000000000000000076a0568656c6c6f'
                          '0000000000000000076a057468657265')
+OUTPUT_BLOCK_MESSAGE_PUSHDATA = ('50c30000000000001976a914e7c1345fc8f87c68170b3aa798a956c2fe6a9eff88ac'
+                                 '0888fc04000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac'
+                                 '0000000000000000076a0568656c6c6f')
 SIGNED_DATA = (b'\x85\xc7\xf6\xc6\x80\x13\xc2g\xd3t\x8e\xb8\xb4\x1f\xcc'
                b'\x92x~\n\x1a\xac\xc0\xf0\xff\xf7\xda\xfe0\xb7!6t')
 
@@ -106,6 +109,22 @@ class TestSanitizeTxData:
 
         assert len(outputs) == 3
         assert outputs[2][0] == b'hello'
+        assert outputs[2][1] == 0
+
+    def test_message_pushdata(self):
+        unspents_original = [Unspent(10000, 0, '', '', 0),
+                             Unspent(10000, 0, '', '', 0)]
+        outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 1000, 'satoshi')]
+
+        BYTES = len(b'hello').to_bytes(1, byteorder='little') + b'hello'
+
+        unspents, outputs = sanitize_tx_data(
+            unspents_original, outputs_original, fee=5, leftover=RETURN_ADDRESS,
+            combine=True, message=BYTES, custom_pushdata=True
+        )
+
+        assert len(outputs) == 3
+        assert outputs[2][0] == b'\x05' + b'hello'
         assert outputs[2][1] == 0
 
     def test_fee_applied(self):
@@ -257,9 +276,25 @@ class TestConstructOutputBlock:
     def test_long_message(self):
         amount = b'\x00\x00\x00\x00\x00\x00\x00\x00'
         _, outputs = sanitize_tx_data(
-            UNSPENTS, [(out[0], out[1], 'satoshi') for out in OUTPUTS], 0, RETURN_ADDRESS, message='hello'*9
+            UNSPENTS, [(out[0], out[1], 'satoshi') for out in OUTPUTS], 0, RETURN_ADDRESS, message='hello'*50
         )
         assert construct_output_block(outputs).count(amount) == 2
+
+    def test_pushdata_message(self):
+        BYTES = len(b'hello').to_bytes(1, byteorder='little') + b'hello'
+        assert construct_output_block(OUTPUTS + [(BYTES, 0)], custom_pushdata=True) == hex_to_bytes(OUTPUT_BLOCK_MESSAGE_PUSHDATA)
+
+    def test_long_pushdata(self):
+        BYTES = len(b'hello').to_bytes(1, byteorder='little') + b'hello'  # 6 bytes each * 40 = 240 bytes
+
+        with pytest.raises(ValueError):
+            sanitize_tx_data(UNSPENTS, [(out[0], out[1], 'satoshi') for out in OUTPUTS], 0,
+                             RETURN_ADDRESS, message=BYTES*40, custom_pushdata=True)
+
+    def test_string_pushdata(self):
+        # Preferable to raise TypeError if string input with custom_pushdata=True.
+        with pytest.raises(TypeError):
+            construct_output_block(OUTPUTS + [('hello', 0)], custom_pushdata=True)
 
 
 def test_construct_input_block():
