@@ -196,9 +196,9 @@ def construct_output_block(outputs, custom_pushdata=False):
                 elif length_data <= 0xff:
                     script += b"\x4c" + length_data.to_bytes(1, byteorder='little') +  dest  # OP_PUSHDATA1 format
                 elif length_data <= 0xffff:
-                    script += b"\x4d" + len(dest).to_bytes(2, byteorder='little') +  dest  # OP_PUSHDATA2 format
+                    script += b"\x4d" + length_data.to_bytes(2, byteorder='little') +  dest  # OP_PUSHDATA2 format
                 else:
-                    script += b'\x4e' + len(dest).to_bytes(4, byteorder='little') +  dest  # OP_PUSHDATA4 format
+                    script += b'\x4e' + length_data.to_bytes(4, byteorder='little') +  dest  # OP_PUSHDATA4 format
 
                 output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
