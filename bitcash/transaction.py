@@ -189,9 +189,16 @@ def construct_output_block(outputs, custom_pushdata=False):
         # Blockchain storage
         else:
             if custom_pushdata is False:
-                script = (OP_RETURN +
-                          len(dest).to_bytes(1, byteorder='little') +
-                          dest)
+                script = OP_RETURN
+                length_data = len(dest)
+                if length_data <= 0x4c:  # (https://en.bitcoin.it/wiki/Script)
+                    script += length_data.to_bytes(1, byteorder='little') +  dest
+                elif length_data <= 0xff:
+                    script += b"\x4c" + length_data.to_bytes(1, byteorder='little') +  dest  # OP_PUSHDATA1 format
+                elif length_data <= 0xffff:
+                    script += b"\x4d" + len(dest).to_bytes(2, byteorder='little') +  dest  # OP_PUSHDATA2 format
+                else:
+                    script += b'\x4e' + len(dest).to_bytes(4, byteorder='little') +  dest  # OP_PUSHDATA4 format
 
                 output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
