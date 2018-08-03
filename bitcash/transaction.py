@@ -73,7 +73,7 @@ def calc_txid(tx_hex):
     return bytes_to_hex(double_sha256(hex_to_bytes(tx_hex))[::-1])
 
 
-def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size):
+def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size=0):
 
     if not satoshis:
         return 0
@@ -181,7 +181,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
         for index, unspent in enumerate(unspents):
             total_in += unspent.amount
-            calculated_fee = estimate_tx_fee(len(unspents[:index + 1]), num_outputs, fee, compressed)
+            calculated_fee = estimate_tx_fee(len(unspents[:index + 1]), num_outputs, fee, compressed, total_op_return_size)
             total_out = sum_outputs + calculated_fee
 
             if total_in >= total_out:
