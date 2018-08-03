@@ -32,8 +32,11 @@ OP_EQUALVERIFY = b'\x88'
 OP_HASH160 = b'\xa9'
 OP_PUSH_20 = b'\x14'
 OP_RETURN = b'\x6a'
+OP_PUSHDATA1 = b'\x4c'
+OP_PUSHDATA2 = b'\x4d'
+OP_PUSHDATA4 = b'\x4e'
 
-MESSAGE_LIMIT = 220  # or is it 223?
+MESSAGE_LIMIT = 220
 
 
 class TxIn:
@@ -70,17 +73,19 @@ def calc_txid(tx_hex):
     return bytes_to_hex(double_sha256(hex_to_bytes(tx_hex))[::-1])
 
 
-def estimate_tx_fee(n_in, n_out, satoshis, compressed):
+def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size):
 
     if not satoshis:
         return 0
 
     estimated_size = (
+        4 +  # version
         n_in * (148 if compressed else 180)
         + len(int_to_unknown_bytes(n_in, byteorder='little'))
-        + n_out * 34
+        + n_out * 34  # excluding op_return outputs, dealt with separately
         + len(int_to_unknown_bytes(n_out, byteorder='little'))
-        + 8
+        + op_return_size  # grand total size of op_return outputs(s) and related field(s)
+        + 4  # time lock
     )
 
     estimated_fee = estimated_size * satoshis
@@ -88,6 +93,31 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed):
     logging.debug('Estimated fee: {} satoshis for {} bytes'.format(estimated_fee, estimated_size))
 
     return estimated_fee
+
+
+def get_op_return_size(message):
+    # calculate op_return size for each individual message
+    op_return_size = (
+        8  # int64_t amount 0x00000000
+        + len(OP_RETURN)  # 1 byte
+        + len(get_op_pushdata_code(message))  # 1 byte if <75 bytes, 2 bytes if OP_PUSHDATA1...
+        + len(message)  # Max 220 bytes at present
+    )
+    # "Var_Int" that preceeds OP_RETURN - 0xdf is max value with currenlt 220 byte limit (so only adds 1 byte)
+    op_return_size += len(int_to_varint(op_return_size))
+    return op_return_size
+
+
+def get_op_pushdata_code(dest):
+    length_data = len(dest)
+    if length_data <= 0x4c:  # (https://en.bitcoin.it/wiki/Script)
+        return length_data.to_bytes(1, byteorder='little')
+    elif length_data <= 0xff:
+        return OP_PUSHDATA1 + length_data.to_bytes(1, byteorder='little')  # OP_PUSHDATA1 format
+    elif length_data <= 0xffff:
+        return OP_PUSHDATA2 + length_data.to_bytes(2, byteorder='little')  # OP_PUSHDATA2 format
+    else:
+        return OP_PUSHDATA4 + length_data.to_bytes(4, byteorder='little')  # OP_PUSHDATA4 format
 
 
 def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True, custom_pushdata=False):
@@ -111,6 +141,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
     # Temporary storage so all outputs precede messages.
     messages = []
+    total_op_return_size = 0
 
     if message and (custom_pushdata is False):
         try:
@@ -122,6 +153,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
         for message in message_chunks:
             messages.append((message, 0))
+            total_op_return_size += get_op_return_size(message)
 
     elif message and (custom_pushdata is True):
         if (len(message) >= 220):
@@ -131,14 +163,13 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
             messages.append((message, 0))
 
     # Include return address in fee estimate.
-
     total_in = 0
-    num_outputs = len(outputs) + len(messages) + 1
+    num_outputs = len(outputs) + 1
     sum_outputs = sum(out[1] for out in outputs)
 
     if combine:
         # calculated_fee is in total satoshis.
-        calculated_fee = estimate_tx_fee(len(unspents), num_outputs, fee, compressed)
+        calculated_fee = estimate_tx_fee(len(unspents), num_outputs, fee, compressed, total_op_return_size)
         total_out = sum_outputs + calculated_fee
         unspents = unspents.copy()
         total_in += sum(unspent.amount for unspent in unspents)
@@ -189,16 +220,7 @@ def construct_output_block(outputs, custom_pushdata=False):
         # Blockchain storage
         else:
             if custom_pushdata is False:
-                script = OP_RETURN
-                length_data = len(dest)
-                if length_data <= 0x4c:  # (https://en.bitcoin.it/wiki/Script)
-                    script += length_data.to_bytes(1, byteorder='little') +  dest
-                elif length_data <= 0xff:
-                    script += b"\x4c" + length_data.to_bytes(1, byteorder='little') +  dest  # OP_PUSHDATA1 format
-                elif length_data <= 0xffff:
-                    script += b"\x4d" + length_data.to_bytes(2, byteorder='little') +  dest  # OP_PUSHDATA2 format
-                else:
-                    script += b'\x4e' + length_data.to_bytes(4, byteorder='little') +  dest  # OP_PUSHDATA4 format
+                script = OP_RETURN + get_op_pushdata_code(dest) + dest
 
                 output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
@@ -211,6 +233,8 @@ def construct_output_block(outputs, custom_pushdata=False):
 
                 output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
+        # Script length in wiki is "Var_int" but there's a note of "modern BitcoinQT" using a more compact "CVarInt"
+        # CVarInt is what I believe we have here - No changes made. If incorrect - only breaks if 220 byte limit is increased.
         output_block += int_to_unknown_bytes(len(script), byteorder='little')
         output_block += script
 
