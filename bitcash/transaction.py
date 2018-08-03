@@ -103,7 +103,7 @@ def get_op_return_size(message):
         + len(get_op_pushdata_code(message))  # 1 byte if <75 bytes, 2 bytes if OP_PUSHDATA1...
         + len(message)  # Max 220 bytes at present
     )
-    # "Var_Int" that preceeds OP_RETURN - 0xdf is max value with currenlt 220 byte limit (so only adds 1 byte)
+    # "Var_Int" that preceeds OP_RETURN - 0xdf is max value with current 220 byte limit (so only adds 1 byte)
     op_return_size += len(int_to_varint(op_return_size))
     return op_return_size
 
