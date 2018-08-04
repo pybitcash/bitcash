@@ -95,14 +95,23 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size=0):
     return estimated_fee
 
 
-def get_op_return_size(message):
+def get_op_return_size(message, custom_pushdata=False):
     # calculate op_return size for each individual message
-    op_return_size = (
-        8  # int64_t amount 0x00000000
-        + len(OP_RETURN)  # 1 byte
-        + len(get_op_pushdata_code(message))  # 1 byte if <75 bytes, 2 bytes if OP_PUSHDATA1...
-        + len(message)  # Max 220 bytes at present
-    )
+    if custom_pushdata is False:
+        op_return_size = (
+            8  # int64_t amount 0x00000000
+            + len(OP_RETURN)  # 1 byte
+            + len(get_op_pushdata_code(message))  # 1 byte if <75 bytes, 2 bytes if OP_PUSHDATA1...
+            + len(message)  # Max 220 bytes at present
+        )
+
+    if custom_pushdata is True:
+        op_return_size = (
+            8  # int64_t amount 0x00000000
+            + len(OP_RETURN)  # 1 byte
+            + len(message)  # Unsure if Max size will be >220 bytes due to extra OP_PUSHDATA codes...
+        )
+
     # "Var_Int" that preceeds OP_RETURN - 0xdf is max value with current 220 byte limit (so only adds 1 byte)
     op_return_size += len(int_to_varint(op_return_size))
     return op_return_size
@@ -153,7 +162,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
         for message in message_chunks:
             messages.append((message, 0))
-            total_op_return_size += get_op_return_size(message)
+            total_op_return_size += get_op_return_size(message, custom_pushdata=False)
 
     elif message and (custom_pushdata is True):
         if (len(message) >= 220):
@@ -161,6 +170,8 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
             raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
         else:
             messages.append((message, 0))
+            total_op_return_size += get_op_return_size(message, custom_pushdata=True)
+
 
     # Include return address in fee estimate.
     total_in = 0
