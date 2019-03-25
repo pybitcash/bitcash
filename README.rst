@@ -39,7 +39,6 @@ What needs fixing
 - This README.
 - Dynamic fees.
 - The test cases...
-- Rates (so 'usd', 'jpy', etc work as they do in bit)
 
 **BitCash is so easy to use, in fact, you can do this:**
 
