@@ -6,9 +6,9 @@
 # Medium should get in within the next couple blocks, 90% certainty.
 # Slow, in a few hours, 90% certainty.
 # The default should be medium so you can go up/down from there.
-DEFAULT_FEE_FAST = 8
-DEFAULT_FEE_MEDIUM = 4
-DEFAULT_FEE_SLOW = 2
+DEFAULT_FEE_FAST = 4
+DEFAULT_FEE_MEDIUM = 2
+DEFAULT_FEE_SLOW = 1
 
 
 FEE_SPEED_FAST = 'fast'
