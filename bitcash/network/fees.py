@@ -10,8 +10,6 @@ DEFAULT_FEE_FAST = 8
 DEFAULT_FEE_MEDIUM = 4
 DEFAULT_FEE_SLOW = 2
 
-# FIXME: Need to add in a fees API. Issue #1
-# URL = 'https://bitcoincashfees.earn.com/api/v1/fees/recommended'
 
 FEE_SPEED_FAST = 'fast'
 FEE_SPEED_MEDIUM = 'medium'
