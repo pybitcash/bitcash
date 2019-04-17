@@ -1,17 +1,9 @@
-# import requests
-# from requests.exceptions import ConnectionError, HTTPError, Timeout
+# Fee can be increased in case of spike of transaction number.
+# Slow will likely be included in the next block.
+DEFAULT_FEE_FAST = 4
+DEFAULT_FEE_MEDIUM = 2
+DEFAULT_FEE_SLOW = 1
 
-# Ideally, fast, medium, slow would correlate with actually blocks out.
-# Fast, really shoot for getting into the next block no matter what.
-# Medium should get in within the next couple blocks, 90% certainty.
-# Slow, in a few hours, 90% certainty.
-# The default should be medium so you can go up/down from there.
-DEFAULT_FEE_FAST = 8
-DEFAULT_FEE_MEDIUM = 4
-DEFAULT_FEE_SLOW = 2
-
-# FIXME: Need to add in a fees API. Issue #1
-# URL = 'https://bitcoincashfees.earn.com/api/v1/fees/recommended'
 
 FEE_SPEED_FAST = 'fast'
 FEE_SPEED_MEDIUM = 'medium'
