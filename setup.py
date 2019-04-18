@@ -10,7 +10,7 @@ setup(
     name='bitcash',
     version=version,
     description='Bitcoin Cash made easier.',
-    long_description=open('README.rst', 'r').read(),
+    long_description=open('README.md', 'r').read(),
     long_description_content_type='text/markdown',
     author='Teran McKinney',
     author_email='sega01@go-beyond.org',
