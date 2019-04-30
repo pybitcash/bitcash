@@ -3,11 +3,10 @@
 Exchange Rates
 ==============
 
-Bitcash gets exchange rate data from trusted third-party APIs. Specifically,
+BitCash gets exchange rate data from trusted third-party APIs. Specifically,
 it can access:
 
-- `<https://bitcashpay.com/bitcoincash-exchange-rates>`_ via :class:`~bitcash.network.rates.BitpayRates`
-- `<https://blockchain.info/api/exchange_rates_api>`_ via :class:`~bitcash.network.rates.BlockchainRates`
+- `<https://bitpay.com/bitcoincash-exchange-rates>`_ via :class:`~bitcash.network.rates.BitpayRates`
 
 RatesAPI
 --------
@@ -20,12 +19,12 @@ You will likely never use this directly.
 Currency to Satoshi
 -------------------
 
-Bitcash exposes 2 ways to convert a given amount of currency to the equivalent
+BitCash exposes 2 ways to convert a given amount of currency to the equivalent
 number of satoshi: :func:`~bitcash.network.currency_to_satoshi` and
 :func:`~bitcash.network.currency_to_satoshi_cached`. The latter function will
 cache results for 1 minute :ref:`by default <cache times>`.
 
-Bitcash uses :func:`~bitcash.network.currency_to_satoshi_cached` in transactions to convert the
+bitcash uses :func:`~bitcash.network.currency_to_satoshi_cached` in transactions to convert the
 amount in each output to spendable satoshi.
 
 To illustrate, here is how your outputs in `(destination, amount, currency)`
@@ -62,7 +61,7 @@ The result will be rounded down to the proper number of decimal places for each 
 Supported Currencies
 --------------------
 
-These are all the currencies currently supported by Bitcash. Note that converting
+These are all the currencies currently supported by bitcash. Note that converting
 satoshi to itself, ubch, mbch, or bch never requires exchange rate data and
 therefore no network calls are needed.
 
@@ -76,11 +75,11 @@ therefore no network calls are needed.
 +=========+======================+
 | satoshi | Satoshi              |
 +---------+----------------------+
-| ubch    | Microbitcoincash         |
+| ubch    | Microbitcoin         |
 +---------+----------------------+
-| mbch    | Millibitcoincash         |
+| mbch    | Millibitcoin         |
 +---------+----------------------+
-| bch     | BitcoinCash              |
+| bch     | Bitcoin Cash         |
 +---------+----------------------+
 | usd     | United States Dollar |
 +---------+----------------------+
@@ -130,6 +129,6 @@ therefore no network calls are needed.
 Unsupported Currencies
 ----------------------
 
-If you need to use currencies in your :ref:`transactions` that Bitcash does not
+If you need to use currencies in your :ref:`transactions` that bitcash does not
 support, convert it yourself to satoshi, ubch, mbch, or bch as these are
 supported natively.
