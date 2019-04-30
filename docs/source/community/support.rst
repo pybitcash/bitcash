@@ -11,7 +11,7 @@ Please `file an issue on GitHub <https://github.com/sporestack/bitcash/issues>`_
 Send a Tweet
 ------------
 
-You can tweet `@sporestack <https://twitter.com/sporestack>`_ anytime.
+You can tweet `@merc1er <https://twitter.com/merc1er>`_ anytime.
 
 Telegram
 --------------

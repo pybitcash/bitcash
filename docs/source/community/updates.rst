@@ -12,7 +12,7 @@ way to track the development of bitcash.
 Twitter
 -------
 
-Feel free to follow `@sporestack <https://twitter.com/sporestack>`_ on
+Feel free to follow `@merc1er <https://twitter.com/merc1er>`_ on
 Twitter for occasional updates.
 
 .. include:: ../../../HISTORY.rst
