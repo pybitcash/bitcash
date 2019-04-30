@@ -3,7 +3,7 @@
 Transactions
 ============
 
-Keys in Bitcash allow 2 ways of handling transactions: a
+Keys in bitcash allow 2 ways of handling transactions: a
 :func:`~bitcash.PrivateKey.create_transaction` method that creates a signed
 transaction and returns the aforementioned transaction in hex, and a
 :func:`~bitcash.PrivateKey.send` method that does the same thing but will
@@ -19,7 +19,7 @@ The only required argument is a list of outputs.
 
 .. code-block:: python
 
-    >>> key.create_transaction([('1Archive1n2C579dMsAu3iC6tWzuQJz8dN', 190, 'jpy')])
+    >>> key.create_transaction([('bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5', 190, 'jpy')])
 
 Output Format
 -------------
@@ -42,7 +42,7 @@ If you wanted to use 35000 satoshi to buy ice cream, you need to use all 55000
 satoshi in the transaction. How this works is whatever is left over you send
 back to yourself as change.
 
-By default Bitcash will send any change to the same address you sent from. You
+By default bitcash will send any change to the same address you sent from. You
 can specify where leftover funds go like this:
 
 .. code-block:: python
@@ -64,9 +64,6 @@ Fee
 
     -- Coinbase
 
-By default, Bitcash will poll `<https://bitcoincashfees.earn.com>`_ and use a fee that
-will allow your transaction to be confirmed as soon as possible.
-
 You can change the satoshi per byte fee like so:
 
 .. code-block:: python
@@ -78,7 +75,7 @@ For more information about transaction fees `read this`_.
 Unspent Consolidation
 ---------------------
 
-By default Bitcash will use all of your available UTXOs to make future transactions
+By default bitcash will use all of your available UTXOs to make future transactions
 smaller and therefore reduce fees.
 
 If you don't desire this behavior and only wish to use what is needed, do this:
@@ -136,5 +133,5 @@ or
 Each item must be an instance of :class:`~bitcash.network.meta.Unspent`.
 
 .. _decimal.Decimal: https://docs.python.org/3/library/decimal.html#decimal.Decimal
-.. _read this: https://blog.blockchain.com/2016/12/15/bitcoincash-transaction-fees-what-are-they-why-should-you-care
+.. _read this: https://blog.blockchain.com/2016/12/15/bitcoin-transaction-fees-what-are-they-why-should-you-care
 .. _unspent transaction output: https://en.bitcoin.it/wiki/Transaction#Input

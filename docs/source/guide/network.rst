@@ -108,12 +108,10 @@ a future release they will become proper objects.
 Services
 --------
 
-Bitcash communicates with the blockchain using trusted third-party APIs.
+BitCash communicates with the blockchain using trusted third-party APIs.
 Specifically, it can access:
 
-- `<https://insight.bitcashpay.com>`_ via :class:`~bitcash.network.services.BitpayAPI`
-- `<https://blockchain.info>`_ via :class:`~bitcash.network.services.BlockchainAPI`
-- `<https://smartbitcash.com.au>`_ via :class:`~bitcash.network.services.SmartbitcashAPI`
+- `<https://insight.bitpay.com>`_ via :class:`~bitcash.network.services.BitpayAPI`
 
 NetworkAPI
 ^^^^^^^^^^
