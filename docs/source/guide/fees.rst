@@ -3,35 +3,13 @@
 Fees
 ====
 
-Bitcash provides a convenient way to get recommended satoshi/byte fees in the
-form of :func:`~bitcash.network.get_fee` and :func:`~bitcash.network.get_fee_cached`,
-the latter of which will cache results for 10 minutes
-:ref:`by default <cache times>`. Currently, the only service in
-use is `<https://bitcoincashfees.earn.com>`_.
+For now, bitcash provides a 2 satoshi/byte default fee.
 
-Each function takes an optional argument ``fast`` that is ``True`` by default.
-If ``True``, the fee returned will be "The lowest fee (in satoshis per byte)
-that will currently result in the fastest transaction confirmations (usually
-0 to 1 block delay)". Otherwise, the number returned will be "The lowest fee
-(in satoshis per byte) that will confirm transactions within an hour (with 90%
-probability)".
+Transactions will likely be confirmed in the next block.
 
 .. code-block:: python
 
-    >>> from bitcash.network import get_fee, get_fee_cached
+    >>> from bitcash.network import get_fee
     >>>
-    >>> get_fee(fast=False)
-    180
-    >>> get_fee_cached()
-    240
-
-If recommended fee services are unreachable, hard-coded defaults will be used.
-
-.. code-block:: python
-
-    >>> from bitcash.network import fees
-    >>>
-    >>> fees.DEFAULT_FEE_FAST
-    220
-    >>> fees.DEFAULT_FEE_HOUR
-    160
+    >>> get_fee()
+    2

@@ -6,7 +6,7 @@ Advanced
 Server Integration
 ------------------
 
-If you only want to use Bitcash for its raw speed to lessen the load on your
+If you only want to use bitcash for its raw speed to lessen the load on your
 servers, you don't have to use any of our network capabilities.
 
 - Use :func:`~bitcash.PrivateKey.create_transaction` instead of
@@ -21,7 +21,7 @@ servers, you don't have to use any of our network capabilities.
 Offline Transactions
 --------------------
 
-Bitcash supports the signing of transactions for keys in cold storage. First you
+bitcash supports the signing of transactions for keys in cold storage. First you
 need to prepare a transaction while connected to the internet using the
 :func:`~bitcash.PrivateKey.prepare_transaction` class method of a private key.
 You must know your address.
@@ -58,7 +58,7 @@ Finally, bring this transaction back to your connected device and broadcast it.
 Blockchain Storage
 ------------------
 
-Bitcash allows you to easily `store messages or data`_ in the blockchain itself
+bitcash allows you to easily `store messages or data`_ in the blockchain itself
 using the ``message`` parameter of :func:`~bitcash.PrivateKey.create_transaction`
 or :func:`~bitcash.PrivateKey.send`:
 
@@ -118,8 +118,8 @@ metadata. To convert your hex keys to WIF to use certain properties, do this:
     True
     >>> # Different public keys for derivation of address
     >>> key1.address
-    '15BYk3fNHwPB5GMjsxTX26QoWZZtwJnzCf'
+    'bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5'
     >>> key2.address
-    '1BQCscSMaJhezQvX6hzCdcRVdsxJuMAdwt'
+    'bitcoincash:qzryhmmxxmmjjccsj3zfhh06md4zkpdyngw2wrvnh4'
 
 .. _store messages or data: https://en.bitcoin.it/wiki/OP_RETURN
