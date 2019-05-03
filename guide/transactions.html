@@ -1,0 +1,290 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Transactions &#8212; bitcash 0.5.2 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Exchange Rates" href="rates.html" />
+    <link rel="prev" title="Network" href="network.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+<div class="documentwrapper">
+  <div class="bodywrapper">
+    <div class="body" role="main">
+    
+  <div class="section" id="transactions">
+<span id="id1"></span><h1>Transactions<a class="headerlink" href="#transactions" title="Permalink to this headline">¶</a></h1>
+<p>Keys in bitcash allow 2 ways of handling transactions: a
+<a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.create_transaction" title="bitcash.PrivateKey.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a> method that creates a signed
+transaction and returns the aforementioned transaction in hex, and a
+<a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.send" title="bitcash.PrivateKey.send"><code class="xref py py-func docutils literal notranslate"><span class="pre">send()</span></code></a> method that does the same thing but will
+attempt to broadcast the transaction, returning instead the transaction id
+for future lookup. Both methods take the exact same arguments.</p>
+<div class="section" id="outputs">
+<span id="outputsparam"></span><h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
+<p>The only required argument is a list of outputs.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">([(</span><span class="s1">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="s1">&#39;jpy&#39;</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="output-format">
+<h2>Output Format<a class="headerlink" href="#output-format" title="Permalink to this headline">¶</a></h2>
+<p>Each output should be a tuple of arity 3 in the form <cite>(destination, amount, currency)</cite>.
+The amount can be either an int, float, or string as long as it is a valid input to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>. The currency must be <a class="reference internal" href="rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</p>
+</div>
+<div class="section" id="change-address">
+<h2>Change Address<a class="headerlink" href="#change-address" title="Permalink to this headline">¶</a></h2>
+<p>Whenever you spend an <a class="reference external" href="https://en.bitcoin.it/wiki/Transaction#Input">unspent transaction output</a>, it must be used in its
+entirety.</p>
+<p>Say for example you had this UTXO:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">55000</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you wanted to use 35000 satoshi to buy ice cream, you need to use all 55000
+satoshi in the transaction. How this works is whatever is left over you send
+back to yourself as change.</p>
+<p>By default bitcash will send any change to the same address you sent from. You
+can specify where leftover funds go like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">leftover</span><span class="o">=</span><span class="s1">&#39;some_address&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Whatever funds remain at this point (<cite>remaining = unspent - (sending + leftover)</cite>)
+will be collected by miners as a fee.</p>
+</div>
+<div class="section" id="fee">
+<span id="feeparam"></span><h2>Fee<a class="headerlink" href="#fee" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>“Miner fees are a small amount of digital currency that is included in
+transactions as a reward/incentive to the people who operate the network.
+They help the network continue to grow and provide an incentive for your
+transactions to be verified quickly.”</p>
+<p class="attribution">&mdash;Coinbase</p>
+</div></blockquote>
+<p>You can change the satoshi per byte fee like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">fee</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more information about transaction fees <a class="reference external" href="https://blog.blockchain.com/2016/12/15/bitcoin-transaction-fees-what-are-they-why-should-you-care">read this</a>.</p>
+</div>
+<div class="section" id="unspent-consolidation">
+<h2>Unspent Consolidation<a class="headerlink" href="#unspent-consolidation" title="Permalink to this headline">¶</a></h2>
+<p>By default bitcash will use all of your available UTXOs to make future transactions
+smaller and therefore reduce fees.</p>
+<p>If you don’t desire this behavior and only wish to use what is needed, do this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For example, if your had the following UTXOs available:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Forgetting about fees for the moment, assume you want to spend 150 satoshi. If
+you combine all funds, you’d be left with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">450</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you don’t, you’d be left with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="transfer-funds">
+<h2>Transfer Funds<a class="headerlink" href="#transfer-funds" title="Permalink to this headline">¶</a></h2>
+<p>If you want to send all available funds to another address or wish to simply
+move your coins, you can specify a leftover address and zero outputs like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">([],</span> <span class="n">leftover</span><span class="o">=</span><span class="s1">&#39;some_address&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="unspent">
+<span id="unspentparam"></span><h2>Unspent<a class="headerlink" href="#unspent" title="Permalink to this headline">¶</a></h2>
+<p>If you already have a means of communicating with the blockchain, you can
+supply your own list of unspent transaction outputs by doing either:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">unspents</span> <span class="o">=</span> <span class="p">[</span><span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">unspents</span> <span class="o">=</span> <span class="p">[</span><span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">unspents</span><span class="o">=</span><span class="n">unspents</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Each item must be an instance of <a class="reference internal" href="../dev/api.html#bitcash.network.meta.Unspent" title="bitcash.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a>.</p>
+</div>
+</div>
+
+
+    <br>
+    <ul>
+      <li>
+        Previous topic: <a href="network.html">Network</a>
+      </li>
+      <li>
+        Next topic: <a href="rates.html">Exchange Rates</a>
+      </li>
+    </ul>
+    </div>
+  </div>
+</div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/sidebarlogo.html -->
+
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/bitcash.png"/>
+  </a>
+</p>
+
+<p>
+  <iframe src="https://ghbtns.com/github-btn.html?user=sporestack&repo=bitcash&type=watch&count=true&size=large"
+    allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+<p>
+  bitcash is a modern Bitcoin Cash library designed to be a pleasure to use for developers and end users alike.
+</p>
+
+<h3>Stay Informed</h3>
+<p>Receive updates on new releases and upcoming projects.</p>
+
+<p><iframe src="https://ghbtns.com/github-btn.html?user=sporestack&type=follow&count=false"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200" height="20"></iframe></p>
+
+<p><a href="https://twitter.com/merc1er" class="twitter-follow-button" data-show-count="false">Follow @merc1er</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+
+
+<h3>Other Projects</h3>
+
+<p>More <a href="https://bitcoincash.org/developers.html">Bitcoin Cash</a> projects</p>
+<ul>
+  <!-- <li><a href="#"></a></li> -->
+</ul>
+
+
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://github.com/sporestack/bitcash">bitcash @ GitHub</a></li>
+  <li><a href="https://pypi.org/project/bitcash">bitcash @ PyPI</a></li>
+  <li><a href="https://github.com/sporestack/bitcash/issues">Issue Tracker</a></li>
+</ul>
+
+<h3>Dependencies</h3>
+<ul>
+  <li><a href="https://github.com/ofek/coincurve">Coincurve</a></li>
+  <li><a href="https://github.com/kennethreitz/requests">Requests</a></li>
+  <li><a href="#">CashAddress</a></li>
+</ul>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Transactions</a><ul>
+<li><a class="reference internal" href="#outputs">Outputs</a></li>
+<li><a class="reference internal" href="#output-format">Output Format</a></li>
+<li><a class="reference internal" href="#change-address">Change Address</a></li>
+<li><a class="reference internal" href="#fee">Fee</a></li>
+<li><a class="reference internal" href="#unspent-consolidation">Unspent Consolidation</a></li>
+<li><a class="reference internal" href="#transfer-funds">Transfer Funds</a></li>
+<li><a class="reference internal" href="#unspent">Unspent</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="network.html" title="previous chapter">Network</a></li>
+      <li>Next: <a href="rates.html" title="next chapter">Exchange Rates</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/guide/transactions.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
+
+<!-- Alabaster (krTheme++) Hacks -->
+
+<!-- CSS Adjustments (I'm very picky.) -->
+<style type="text/css">
+
+  /* Rezzy requires precise alignment. */
+  img.logo {margin-left: -20px!important;}
+
+  /* "Quick Search" should be capitalized. */
+  div#searchbox h3 {text-transform: capitalize;}
+
+  /* Make the document a little wider, less code is cut-off. */
+  div.document {width: 1008px;}
+
+  /* Much-improved spacing around code blocks. */
+  div.highlight pre {padding: 11px 14px;}
+
+  /* Remain Responsive! */
+  @media screen and (max-width: 1008px) {
+    div.sphinxsidebar {display: none;}
+    div.document {width: 100%!important;}
+
+    /* Have code blocks escape the document right-margin. */
+    div.highlight pre {margin-right: -30px;}
+  }
+
+</style>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, BitCash.
+      
+      |
+      <a href="../_sources/guide/transactions.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/sporestack/bitcash" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

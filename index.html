@@ -1,0 +1,314 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bitcash: Bitcoin Cash for Python &#8212; bitcash 0.5.2 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introduction" href="guide/intro.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+<div class="documentwrapper">
+  <div class="bodywrapper">
+    <div class="body" role="main">
+    
+  <div class="section" id="bitcash-bitcoin-cash-for-python">
+<h1>bitcash: Bitcoin Cash for Python<a class="headerlink" href="#bitcash-bitcoin-cash-for-python" title="Permalink to this headline">¶</a></h1>
+<p>Version 0.5.2.</p>
+<a class="reference external image-reference" href="https://pypi.org/project/bitcash"><img alt="https://img.shields.io/pypi/v/bitcash.svg?style=flat-square" src="https://img.shields.io/pypi/v/bitcash.svg?style=flat-square" /></a>
+<a class="reference external image-reference" href="https://pypi.org/project/bitcash"><img alt="https://img.shields.io/pypi/pyversions/bitcash.svg?style=flat-square" src="https://img.shields.io/pypi/pyversions/bitcash.svg?style=flat-square" /></a>
+<a class="reference external image-reference" href="https://travis-ci.org/sporestack/bitcash"><img alt="https://travis-ci.org/sporestack/bitcash.svg?branch=master" src="https://travis-ci.org/sporestack/bitcash.svg?branch=master" /></a>
+<img alt="https://img.shields.io/codecov/c/github/sporestack/bitcash.svg?style=flat-square" src="https://img.shields.io/codecov/c/github/sporestack/bitcash.svg?style=flat-square" />
+<a class="reference external image-reference" href="https://en.wikipedia.org/wiki/MIT_License"><img alt="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" /></a>
+<hr class="docutils" />
+<p>BitCash is Python’s <a class="reference external" href="guide/intro.html#why-bitcash">fastest</a>
+Bitcoin Cash library and was designed from the beginning to feel intuitive, be
+effortless to use, and have readable source code. It is heavily inspired by
+<a class="reference external" href="https://github.com/kennethreitz/requests">Requests</a> and
+<a class="reference external" href="https://github.com/fchollet/keras">Keras</a>.</p>
+<p><strong>bitcash is so easy to use, in fact, you can do this:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">Key</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">k</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">k</span><span class="o">.</span><span class="n">address</span>
+<span class="go">&#39;bitcoincash:qp0hamw9rpyllkmvd8047w9em3yt9fytsunyhutucx&#39;</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">k</span><span class="o">.</span><span class="n">get_balance</span><span class="p">(</span><span class="s1">&#39;usd&#39;</span><span class="p">)</span>
+<span class="go">&#39;2&#39;</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Let&#39;s donate a dollar to CoinSpice.io</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">(</span><span class="s1">&#39;bitcoincash:qz69e5y8yrtujhsyht7q9xq5zhu4mrklmv0ap7tq5f&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;usd&#39;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="c1"># you can add more recipients here</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">k</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+<span class="go">&#39;6aea7b1c687d976644a430a87e34c93a8a7fd52d77c30e9cc247fc8228b749ff&#39;</span>
+</pre></div>
+</div>
+<p>Here is the transaction <a class="reference external" href="https://explorer.bitcoin.com/bch/tx/6aea7b1c687d976644a430a87e34c93a8a7fd52d77c30e9cc247fc8228b749ff">https://explorer.bitcoin.com/bch/tx/6aea7b1c687d976644a430a87e34c93a8a7fd52d77c30e9cc247fc8228b749ff</a>.</p>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Python’s fastest available implementation (100x faster than closest library)</li>
+<li>Seamless integration with existing server setups</li>
+<li>Supports keys in cold storage</li>
+<li>Fully supports 25 different currencies</li>
+<li>First class support for storing data in the blockchain</li>
+<li>Deterministic signatures via RFC 6979</li>
+<li>Access to the blockchain through multiple APIs for redundancy</li>
+<li>Exchange rate API, with optional caching</li>
+<li>Compressed public keys by default</li>
+<li>Multiple representations of private keys; WIF, PEM, DER, etc.</li>
+<li>Standard P2PKH transactions</li>
+</ul>
+<p>If you are intrigued, continue reading. If not, continue all the same!</p>
+</div>
+<div class="section" id="user-guide">
+<h2>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h2>
+<p>This section will tell you a little about the project, show how to install it,
+and will then walk you through how to use bitcash with many examples and explanations
+of best practices.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guide/intro.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide/intro.html#why-bitcash">Why bitcash?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/intro.html#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/intro.html#credits">Credits</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide/install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide/install.html#pypi">PyPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/install.html#source-code">Source Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide/keys.html">Keys</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide/keys.html#what-is-a-private-key">What is a private key?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/keys.html#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/keys.html#creation">Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/keys.html#public-point">Public Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/keys.html#public-key">Public Key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/keys.html#address">Address</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/keys.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide/network.html">Network</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide/network.html#balance">Balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/network.html#unspent">Unspent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/network.html#transaction-history">Transaction History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/network.html#services">Services</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide/transactions.html">Transactions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide/transactions.html#outputs">Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/transactions.html#output-format">Output Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/transactions.html#change-address">Change Address</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/transactions.html#fee">Fee</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/transactions.html#unspent-consolidation">Unspent Consolidation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/transactions.html#transfer-funds">Transfer Funds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/transactions.html#unspent">Unspent</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide/rates.html">Exchange Rates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide/rates.html#ratesapi">RatesAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/rates.html#currency-to-satoshi">Currency to Satoshi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/rates.html#satoshi-to-currency">Satoshi to Currency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/rates.html#supported-currencies">Supported Currencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/rates.html#unsupported-currencies">Unsupported Currencies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide/fees.html">Fees</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/advanced.html">Advanced</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide/advanced.html#server-integration">Server Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/advanced.html#offline-transactions">Offline Transactions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/advanced.html#blockchain-storage">Blockchain Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/advanced.html#services-timeout">Services Timeout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/advanced.html#cache-times">Cache Times</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/advanced.html#hex-to-wif">Hex to WIF</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="community">
+<h2>Community<a class="headerlink" href="#community" title="Permalink to this headline">¶</a></h2>
+<p>Here you will find everything you need to know about the development of bitcash
+and the community surrounding it.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="community/faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="community/support.html">Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="community/development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="community/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="community/vulnerabilities.html">Vulnerability Disclosure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="community/updates.html">Stay Informed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="community/updates.html#release-history">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="community/authors.html">Authors</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="dev-guide">
+<h2>Dev Guide<a class="headerlink" href="#dev-guide" title="Permalink to this headline">¶</a></h2>
+<p>Up ahead is bitcash’s API and a few notes about design decisions. Beware the
+pedantry, or lack thereof.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev/api.html">Developer Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/api.html#keys">Keys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/api.html#network">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/api.html#exchange-rates">Exchange Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/api.html#fees">Fees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/api.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/api.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+    <br>
+    <ul>
+      <li>
+        Next topic: <a href="guide/intro.html">Introduction</a>
+      </li>
+    </ul>
+    </div>
+  </div>
+</div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/sidebarintro.html -->
+
+<p class="logo">
+  <a href="#">
+    <img class="logo" src="_static/bitcash.png"/>
+  </a>
+</p>
+
+<p>
+  <iframe src="https://ghbtns.com/github-btn.html?user=sporestack&repo=bitcash&type=watch&count=true&size=large"
+    allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+<p>
+  BitCash is a modern Bitcoin Cash library designed to be a pleasure to use for developers and end users alike.
+</p>
+
+<h3>Stay Informed</h3>
+<p>Receive updates on new releases and upcoming projects.</p>
+
+<p><iframe src="https://ghbtns.com/github-btn.html?user=sporestack&type=follow&count=false"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200" height="20"></iframe></p>
+
+<p><a href="https://twitter.com/merc1er" class="twitter-follow-button" data-show-count="false">Follow @merc1er</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+
+
+<h3>Other Projects</h3>
+
+<p>More <a href="https://bitcoincash.org/developers.html">Bitcoin Cash</a> projects</p>
+<ul>
+  <!-- <li><a href="https://github.com/sporestack">Privy</a></li> -->
+</ul>
+
+
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://github.com/sporestack/bitcash">bitcash @ GitHub</a></li>
+  <li><a href="https://pypi.org/project/bitcash">bitcash @ PyPI</a></li>
+  <li><a href="https://github.com/sporestack/bitcash/issues">Issue Tracker</a></li>
+</ul>
+
+<h3>Dependencies</h3>
+<ul>
+  <li><a href="https://github.com/ofek/coincurve">Coincurve</a></li>
+  <li><a href="https://github.com/kennethreitz/requests">Requests</a></li>
+  <li><a href="#">CashAddress</a></li>
+</ul>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
+
+<!-- Alabaster (krTheme++) Hacks -->
+
+<!-- CSS Adjustments (I'm very picky.) -->
+<style type="text/css">
+
+  /* Rezzy requires precise alignment. */
+  img.logo {margin-left: -20px!important;}
+
+  /* "Quick Search" should be capitalized. */
+  div#searchbox h3 {text-transform: capitalize;}
+
+  /* Make the document a little wider, less code is cut-off. */
+  div.document {width: 1008px;}
+
+  /* Much-improved spacing around code blocks. */
+  div.highlight pre {padding: 11px 14px;}
+
+  /* Remain Responsive! */
+  @media screen and (max-width: 1008px) {
+    div.sphinxsidebar {display: none;}
+    div.document {width: 100%!important;}
+
+    /* Have code blocks escape the document right-margin. */
+    div.highlight pre {margin-right: -30px;}
+  }
+
+</style>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, BitCash.
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/sporestack/bitcash" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
