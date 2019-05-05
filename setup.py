@@ -9,7 +9,7 @@ with open('bitcash/__init__.py', 'r') as f:
 setup(
     name='bitcash',
     version=version,
-    description='Bitcoin Cash made easier.',
+    description='Bitcoin Cash made easy.',
     long_description=open('README.md', 'r').read(),
     long_description_content_type='text/markdown',
     author='Teran McKinney',
