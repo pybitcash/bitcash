@@ -4,4 +4,4 @@ from bitcash.network.services import set_service_timeout
 from bitcash.wallet import Key, PrivateKey, PrivateKeyTestnet, wif_to_key
 
 name = 'bitcash'
-__version__ = '0.5.2.6'
+__version__ = '0.5.2.7'
