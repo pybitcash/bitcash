@@ -6,11 +6,16 @@ with open('bitcash/__init__.py', 'r') as f:
             version = line.strip().split('= ')[1].strip("'")
             break
 
+try:
+    long_description = open('README.md', 'r').read()
+except Exception:
+    long_description = 'Bitcoin Cash... failed to read README.md'
+
 setup(
     name='bitcash',
     version=version,
     description='Bitcoin Cash made easier.',
-    long_description=open('README.md', 'r').read(),
+    long_description=long_description,
     long_description_content_type='text/markdown',
     author='Teran McKinney',
     author_email='sega01@go-beyond.org',
