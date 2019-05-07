@@ -36,7 +36,7 @@ Forked from [Ofek's awesome Bit library](https://github.com/ofek/bit).
 '6aea7b1c687d976644a430a87e34c93a8a7fd52d77c30e9cc247fc8228b749ff'
 ```
 
-Done ✅ Here is the transaction:  
+Done. Here is the transaction:
 https://explorer.bitcoin.com/bch/tx/6aea7b1c687d976644a430a87e34c93a8a7fd52d77c30e9cc247fc8228b749ff
 
 ## Features
