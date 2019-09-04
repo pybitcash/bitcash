@@ -99,14 +99,19 @@ def bch_to_satoshi():
 
 
 class BitpayRates:
-    SINGLE_RATE = 'https://bitpay.com/api/rates/bch/'
+    """
+    API Documentation:
+    https://bitpay.com/api/rates#rest-api-resources-rates
+    """
+    SINGLE_RATE = 'https://bitpay.com/rates/BCH/'
 
     @classmethod
     def currency_to_satoshi(cls, currency):
-        r = requests.get(cls.SINGLE_RATE + currency)
-        if r.status_code != 200:
-            raise requests.exceptions.ConnectionError
-        rate = r.json()['rate']
+        headers = {"x-accept-version": "2.0.0",
+                   "Accept": "application/json"}
+        r = requests.get(cls.SINGLE_RATE + currency, headers=headers)
+        r.raise_for_status()
+        rate = r.json()['data']['rate']
         return int(ONE / Decimal(rate) * BCH)
 
     @classmethod
@@ -215,6 +220,7 @@ class RatesAPI:
     number of satoshi.
     """
     IGNORED_ERRORS = (requests.exceptions.ConnectionError,
+                      requests.exceptions.HTTPError,
                       requests.exceptions.Timeout)
 
     USD_RATES = [BitpayRates.usd_to_satoshi, LivecoinRates.usd_to_satoshi]

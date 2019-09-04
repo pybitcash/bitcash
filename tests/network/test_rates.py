@@ -64,7 +64,8 @@ def test_rates_close():
     rates = sorted([
         api_call() for api_call in RatesAPI.USD_RATES
     ])
-    assert rates[-1] - rates[0] < 2000
+    # This is in tenths of a cent, so making sure they are within $10.
+    assert rates[-1] - rates[0] < 10000
 
 
 class TestRateCache:
