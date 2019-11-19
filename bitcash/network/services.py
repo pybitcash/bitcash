@@ -156,7 +156,7 @@ class BitcoreAPI(InsightAPI):
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send' # to fix
     MAIN_TX_API = MAIN_ENDPOINT + 'tx/{}'
     MAIN_TX_AMOUNT_API = MAIN_TX_API
-    TEST_ENDPOINT = 'https://api.bitcore.io/api/BCH/mainnet/'
+    TEST_ENDPOINT = 'https://api.bitcore.io/api/BCH/testnet/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'address/{}'
     TEST_BALANCE_API = TEST_ADDRESS_API + '/balance'
     TEST_UNSPENT_API = TEST_ADDRESS_API + '/?unspent=true'
@@ -232,18 +232,22 @@ class BitcoreAPI(InsightAPI):
 
     @classmethod
     def get_unspent_testnet(cls, address):
+        address = address.replace('bchtest:', '')
         r = requests.get(cls.TEST_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         unspents = []
         for tx in r.json():
-            # In weird conditions, the API will send back unspents without a scriptPubKey.
-            if 'scriptPubKey' in tx:
-                unspents.append(Unspent(currency_to_satoshi(tx['amount'], 'bch'),
-                                        tx['confirmations'],
-                                        tx['scriptPubKey'],
-                                        tx['txid'],
-                                        tx['vout']))
+            # In weird conditions, the API will send back unspents
+            # without a scriptPubKey.
+            if 'script' in tx:
+                unspents.append(Unspent(currency_to_satoshi(
+                    tx['value'], 'satoshi'),
+                    tx['confirmations'],
+                    tx['script'],
+                    tx['mintTxid'],
+                    tx['mintIndex'])
+                )
             else:
                 logging.warning('Unspent without scriptPubKey.')
 
