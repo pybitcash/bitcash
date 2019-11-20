@@ -197,10 +197,11 @@ class BitcoreAPI(InsightAPI):
 
     @classmethod
     def get_transactions_testnet(cls, address):
+        address = address.replace('bchtest:', '')
         r = requests.get(cls.TEST_ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return r.json()['transactions']
+        return [tx['mintTxid'] for tx in r.json()]
 
     @classmethod
     def get_transaction_testnet(cls, txid):
