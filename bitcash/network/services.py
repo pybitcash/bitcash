@@ -181,6 +181,14 @@ class BitcoreAPI(InsightAPI):
         ]
 
     @classmethod
+    def get_transactions(cls, address):
+        address = address.replace('bitcoincash:', '')
+        r = requests.get(cls.MAIN_ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return [tx['mintTxid'] for tx in r.json()]
+
+    @classmethod
     def get_balance_testnet(cls, address):
         r = requests.get(cls.TEST_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
