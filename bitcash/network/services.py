@@ -94,7 +94,7 @@ class InsightAPI:
 
     @classmethod
     def broadcast_tx(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.MAIN_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        r = requests.post(cls.MAIN_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex, 'network': 'mainnet', 'coin': 'BCH'}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
 
@@ -153,7 +153,7 @@ class BitcoreAPI(InsightAPI):
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/{}'
     MAIN_BALANCE_API = MAIN_ADDRESS_API + '/balance'
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '/?unspent=true'
-    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send' # to fix
+    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
     MAIN_TX_API = MAIN_ENDPOINT + 'tx/{}'
     MAIN_TX_AMOUNT_API = MAIN_TX_API
     TEST_ENDPOINT = 'https://api.bitcore.io/api/BCH/testnet/'
@@ -163,7 +163,7 @@ class BitcoreAPI(InsightAPI):
     TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/send'
     TEST_TX_API = TEST_ENDPOINT + 'tx/{}'
     TEST_TX_AMOUNT_API = TEST_TX_API
-    TX_PUSH_PARAM = 'rawtx'
+    TX_PUSH_PARAM = 'rawTx'
 
     @classmethod
     def get_unspent(cls, address):
@@ -264,12 +264,8 @@ class BitcoreAPI(InsightAPI):
 
     @classmethod
     def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.TEST_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 200:
-            return True
-        else:
-            logging.error(r.text)
-            return False
+        r = requests.post(cls.TEST_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex, 'network': 'testnet', 'coin': 'BCH'}, timeout=DEFAULT_TIMEOUT)
+        return True if r.status_code == 200 else False
 
 
 class NetworkAPI:
