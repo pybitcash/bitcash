@@ -2,7 +2,7 @@ import pytest
 
 import bitcash
 from bitcash.network.services import (
-    CashExplorerBitcoinDotComAPI, BlockdozerAPI, NetworkAPI, set_service_timeout
+    CashExplorerBitcoinDotComAPI, BitcoreAPI, NetworkAPI, set_service_timeout
 )
 from tests.utils import (
     catch_errors_raise_warnings, decorate_methods, raise_connection_error
