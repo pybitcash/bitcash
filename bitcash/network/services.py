@@ -94,7 +94,7 @@ class InsightAPI:
 
     @classmethod
     def broadcast_tx(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.MAIN_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        r = requests.post(cls.MAIN_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex, 'network': 'mainnet', 'coin': 'BCH'}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
 
@@ -147,22 +147,46 @@ class CashExplorerBitcoinDotComAPI(InsightAPI):
         ]
 
 
-class BlockdozerAPI(InsightAPI):
-    MAIN_ENDPOINT = 'https://blockdozer.com/api/'
-    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'addr/{}'
+class BitcoreAPI(InsightAPI):
+    """ Insight API v8 """
+    MAIN_ENDPOINT = 'https://api.bitcore.io/api/BCH/mainnet/'
+    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/{}'
     MAIN_BALANCE_API = MAIN_ADDRESS_API + '/balance'
-    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '/utxo'
+    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '/?unspent=true'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
     MAIN_TX_API = MAIN_ENDPOINT + 'tx/{}'
     MAIN_TX_AMOUNT_API = MAIN_TX_API
-    TEST_ENDPOINT = 'https://tbch.blockdozer.com/api/'
-    TEST_ADDRESS_API = TEST_ENDPOINT + 'addr/{}'
+    TEST_ENDPOINT = 'https://api.bitcore.io/api/BCH/testnet/'
+    TEST_ADDRESS_API = TEST_ENDPOINT + 'address/{}'
     TEST_BALANCE_API = TEST_ADDRESS_API + '/balance'
-    TEST_UNSPENT_API = TEST_ADDRESS_API + '/utxo'
+    TEST_UNSPENT_API = TEST_ADDRESS_API + '/?unspent=true'
     TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/send'
     TEST_TX_API = TEST_ENDPOINT + 'tx/{}'
     TEST_TX_AMOUNT_API = TEST_TX_API
-    TX_PUSH_PARAM = 'rawtx'
+    TX_PUSH_PARAM = 'rawTx'
+
+    @classmethod
+    def get_unspent(cls, address):
+        address = address.replace('bitcoincash:', '')
+        r = requests.get(cls.MAIN_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return [
+            Unspent(currency_to_satoshi(tx['value'], 'satoshi'),
+                    tx['confirmations'],
+                    tx['script'],
+                    tx['mintTxid'],
+                    tx['mintIndex'])
+            for tx in r.json()
+        ]
+
+    @classmethod
+    def get_transactions(cls, address):
+        address = address.replace('bitcoincash:', '')
+        r = requests.get(cls.MAIN_ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return [tx['mintTxid'] for tx in r.json()]
 
     @classmethod
     def get_balance_testnet(cls, address):
@@ -173,10 +197,11 @@ class BlockdozerAPI(InsightAPI):
 
     @classmethod
     def get_transactions_testnet(cls, address):
+        address = address.replace('bchtest:', '')
         r = requests.get(cls.TEST_ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return r.json()['transactions']
+        return [tx['mintTxid'] for tx in r.json()]
 
     @classmethod
     def get_transaction_testnet(cls, txid):
@@ -216,18 +241,22 @@ class BlockdozerAPI(InsightAPI):
 
     @classmethod
     def get_unspent_testnet(cls, address):
+        address = address.replace('bchtest:', '')
         r = requests.get(cls.TEST_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         unspents = []
         for tx in r.json():
-            # In weird conditions, the API will send back unspents without a scriptPubKey.
-            if 'scriptPubKey' in tx:
-                unspents.append(Unspent(currency_to_satoshi(tx['amount'], 'bch'),
-                                        tx['confirmations'],
-                                        tx['scriptPubKey'],
-                                        tx['txid'],
-                                        tx['vout']))
+            # In weird conditions, the API will send back unspents
+            # without a scriptPubKey.
+            if 'script' in tx:
+                unspents.append(Unspent(currency_to_satoshi(
+                    tx['value'], 'satoshi'),
+                    tx['confirmations'],
+                    tx['script'],
+                    tx['mintTxid'],
+                    tx['mintIndex'])
+                )
             else:
                 logging.warning('Unspent without scriptPubKey.')
 
@@ -235,12 +264,8 @@ class BlockdozerAPI(InsightAPI):
 
     @classmethod
     def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.TEST_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 200:
-            return True
-        else:
-            logging.error(r.text)
-            return False
+        r = requests.post(cls.TEST_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex, 'network': 'testnet', 'coin': 'BCH'}, timeout=DEFAULT_TIMEOUT)
+        return True if r.status_code == 200 else False
 
 
 class NetworkAPI:
@@ -250,24 +275,24 @@ class NetworkAPI:
                       requests.exceptions.ReadTimeout)
 
     GET_BALANCE_MAIN = [CashExplorerBitcoinDotComAPI.get_balance,
-                        BlockdozerAPI.get_balance]
+                        BitcoreAPI.get_balance]
     GET_TRANSACTIONS_MAIN = [CashExplorerBitcoinDotComAPI.get_transactions,
-                             BlockdozerAPI.get_transactions]
+                             BitcoreAPI.get_transactions]
     GET_UNSPENT_MAIN = [CashExplorerBitcoinDotComAPI.get_unspent,
-                        BlockdozerAPI.get_unspent]
+                        BitcoreAPI.get_unspent]
     BROADCAST_TX_MAIN = [CashExplorerBitcoinDotComAPI.broadcast_tx,
-                         BlockdozerAPI.broadcast_tx]
+                         BitcoreAPI.broadcast_tx]
     GET_TX_MAIN = [CashExplorerBitcoinDotComAPI.get_transaction,
-                   BlockdozerAPI.get_transaction]
+                   BitcoreAPI.get_transaction]
     GET_TX_AMOUNT_MAIN = [CashExplorerBitcoinDotComAPI.get_tx_amount,
-                          BlockdozerAPI.get_tx_amount]
+                          BitcoreAPI.get_tx_amount]
 
-    GET_BALANCE_TEST = [BlockdozerAPI.get_balance_testnet]
-    GET_TRANSACTIONS_TEST = [BlockdozerAPI.get_transactions_testnet]
-    GET_UNSPENT_TEST = [BlockdozerAPI.get_unspent_testnet]
-    BROADCAST_TX_TEST = [BlockdozerAPI.broadcast_tx_testnet]
-    GET_TX_TEST = [BlockdozerAPI.get_transaction_testnet]
-    GET_TX_AMOUNT_TEST = [BlockdozerAPI.get_tx_amount_testnet]
+    GET_BALANCE_TEST = [BitcoreAPI.get_balance_testnet]
+    GET_TRANSACTIONS_TEST = [BitcoreAPI.get_transactions_testnet]
+    GET_UNSPENT_TEST = [BitcoreAPI.get_unspent_testnet]
+    BROADCAST_TX_TEST = [BitcoreAPI.broadcast_tx_testnet]
+    GET_TX_TEST = [BitcoreAPI.get_transaction_testnet]
+    GET_TX_AMOUNT_TEST = [BitcoreAPI.get_tx_amount_testnet]
 
     @classmethod
     def get_balance(cls, address):
