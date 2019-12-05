@@ -107,10 +107,27 @@ class BitcoinDotComAPI():
     MAIN_TX_API = MAIN_ENDPOINT + 'tx/{}'
     MAIN_TX_AMOUNT_API = MAIN_TX_API
     TX_PUSH_PARAM = 'rawtx'
+    TEST_ENDPOINT = 'https://trest.bitcoin.com/v2/'
+    TEST_ADDRESS_API = TEST_ENDPOINT + 'address/details/{}'
+    TEST_BALANCE_API = TEST_ADDRESS_API + '/utxo'
+    TEST_UNSPENT_API = TEST_ENDPOINT + 'tx/send'
+    TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/{}'
+    TEST_TX_API = MAIN_TX_API
+    TEST_TX_AMOUNT_API = TEST_TX_API
 
     @classmethod
     def get_balance(cls, address):
         r = requests.get(cls.MAIN_ADDRESS_API.format(address),
+                                            timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        data = r.json()
+        balance = data['balanceSat'] + data['unconfirmedBalanceSat']
+        return balance
+
+    @classmethod
+    def get_balance_testnet(cls, address):
+        r = requests.get(cls.TEST_ADDRESS_API.format(address),
                                             timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -323,7 +340,8 @@ class NetworkAPI:
     GET_TX_AMOUNT_MAIN = [BitcoinDotComAPI.get_tx_amount,
                           BitcoreAPI.get_tx_amount]
 
-    GET_BALANCE_TEST = [BitcoreAPI.get_balance_testnet]
+    GET_BALANCE_TEST = [BitcoinDotComAPI.get_balance_testnet,
+                            BitcoreAPI.get_balance_testnet]
     GET_TRANSACTIONS_TEST = [BitcoreAPI.get_transactions_testnet]
     GET_UNSPENT_TEST = [BitcoreAPI.get_unspent_testnet]
     BROADCAST_TX_TEST = [BitcoreAPI.broadcast_tx_testnet]
