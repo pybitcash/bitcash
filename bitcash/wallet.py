@@ -185,7 +185,8 @@ class PrivateKey(BaseKey):
         :type currency: ``str``
         :rtype: ``str``
         """
-        self.balance = NetworkAPI.get_balance(self.address)
+        self.unspents[:] = NetworkAPI.get_unspent(self.address)
+        self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.balance_as(currency)
 
     def get_unspents(self):
@@ -480,7 +481,8 @@ class PrivateKeyTestnet(BaseKey):
         :type currency: ``str``
         :rtype: ``str``
         """
-        self.balance = NetworkAPI.get_balance_testnet(self.address)
+        self.unspents[:] = NetworkAPI.get_unspent_testnet(self.address)
+        self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.balance
 
     def get_unspents(self):
