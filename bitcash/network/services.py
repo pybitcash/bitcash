@@ -103,14 +103,14 @@ class BitcoinDotComAPI():
     MAIN_ENDPOINT = 'https://rest.bitcoin.com/v2/'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/details/{}'
     MAIN_UNSPENT_API = MAIN_ENDPOINT + 'address/utxo/{}'
-    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
+    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'rawtransactions/sendRawTransaction/{}'
     MAIN_TX_API = MAIN_ENDPOINT + 'tx/{}'
     MAIN_TX_AMOUNT_API = MAIN_TX_API
     TX_PUSH_PARAM = 'rawtx'
     TEST_ENDPOINT = 'https://trest.bitcoin.com/v2/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'address/details/{}'
     TEST_UNSPENT_API = TEST_ENDPOINT + 'address/utxo/{}'
-    TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/{}'
+    TEST_TX_PUSH_API = TEST_ENDPOINT + '/rawtransactions/sendRawTransaction/{}'
     TEST_TX_API = MAIN_TX_API
     TEST_TX_AMOUNT_API = TEST_TX_API
 
@@ -211,7 +211,7 @@ class BitcoinDotComAPI():
 
     @classmethod
     def broadcast_tx(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.MAIN_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex, 'network': 'mainnet', 'coin': 'BCH'}, timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.MAIN_TX_PUSH_API.format(tx_hex))
         return True if r.status_code == 200 else False
 
 
