@@ -109,8 +109,7 @@ class BitcoinDotComAPI():
     TX_PUSH_PARAM = 'rawtx'
     TEST_ENDPOINT = 'https://trest.bitcoin.com/v2/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'address/details/{}'
-    TEST_BALANCE_API = TEST_ENDPOINT + 'address/utxo/{}'
-    TEST_UNSPENT_API = TEST_ENDPOINT + 'tx/send'
+    TEST_UNSPENT_API = TEST_ENDPOINT + 'address/utxo/{}'
     TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/{}'
     TEST_TX_API = MAIN_TX_API
     TEST_TX_AMOUNT_API = TEST_TX_API
@@ -182,7 +181,23 @@ class BitcoinDotComAPI():
 
     @classmethod
     def get_unspent(cls, address):
-        r = requests.get(cls.MAIN_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.MAIN_UNSPENT_API.format(address),
+                                            timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return [
+            Unspent(currency_to_satoshi(tx['amount'], 'bch'),
+                    tx['confirmations'],
+                    r.json()['scriptPubKey'],
+                    tx['txid'],
+                    tx['vout'])
+            for tx in r.json()['utxos']
+        ]
+
+    @classmethod
+    def get_unspent_testnet(cls, address):
+        r = requests.get(cls.TEST_UNSPENT_API.format(address),
+                                            timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
@@ -343,7 +358,8 @@ class NetworkAPI:
     GET_BALANCE_TEST = [BitcoinDotComAPI.get_balance_testnet,
                             BitcoreAPI.get_balance_testnet]
     GET_TRANSACTIONS_TEST = [BitcoreAPI.get_transactions_testnet]
-    GET_UNSPENT_TEST = [BitcoreAPI.get_unspent_testnet]
+    GET_UNSPENT_TEST = [BitcoinDotComAPI.get_unspent_testnet,
+                                BitcoreAPI.get_unspent_testnet]
     BROADCAST_TX_TEST = [BitcoreAPI.broadcast_tx_testnet]
     GET_TX_TEST = [BitcoreAPI.get_transaction_testnet]
     GET_TX_AMOUNT_TEST = [BitcoreAPI.get_tx_amount_testnet]
