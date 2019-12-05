@@ -214,6 +214,11 @@ class BitcoinDotComAPI():
         r = requests.get(cls.MAIN_TX_PUSH_API.format(tx_hex))
         return True if r.status_code == 200 else False
 
+    @classmethod
+    def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
+        r = requests.get(cls.TEST_TX_PUSH_API.format(tx_hex))
+        return True if r.status_code == 200 else False
+
 
 class BitcoreAPI(InsightAPI):
     """ Insight API v8 """
@@ -360,7 +365,8 @@ class NetworkAPI:
     GET_TRANSACTIONS_TEST = [BitcoreAPI.get_transactions_testnet]
     GET_UNSPENT_TEST = [BitcoinDotComAPI.get_unspent_testnet,
                                 BitcoreAPI.get_unspent_testnet]
-    BROADCAST_TX_TEST = [BitcoreAPI.broadcast_tx_testnet]
+    BROADCAST_TX_TEST = [BitcoinDotComAPI.broadcast_tx_testnet,
+                                BitcoreAPI.broadcast_tx_testnet]
     GET_TX_TEST = [BitcoreAPI.get_transaction_testnet]
     GET_TX_AMOUNT_TEST = [BitcoreAPI.get_tx_amount_testnet]
 
