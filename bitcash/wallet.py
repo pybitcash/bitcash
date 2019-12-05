@@ -178,14 +178,14 @@ class PrivateKey(BaseKey):
 
     def get_balance(self, currency='satoshi'):
         """Fetches the current balance by calling
-        :func:`~bitcash.PrivateKey.get_unspents` and returns it using
+        :func:`~bitcash.PrivateKey.get_balance` and returns it using
         :func:`~bitcash.PrivateKey.balance_as`.
 
         :param currency: One of the :ref:`supported currencies`.
         :type currency: ``str``
         :rtype: ``str``
         """
-        self.get_unspents()
+        self.balance = NetworkAPI.get_balance(self.address)
         return self.balance_as(currency)
 
     def get_unspents(self):
@@ -472,15 +472,16 @@ class PrivateKeyTestnet(BaseKey):
 
     def get_balance(self, currency='satoshi'):
         """Fetches the current balance by calling
-        :func:`~bitcash.PrivateKeyTestnet.get_unspents` and returns it using
-        :func:`~bitcash.PrivateKeyTestnet.balance_as`.
+        :func:`~bitcash.PrivateKeyTestnet.get_unspents`.
+        We do not use `~bitcash.PrivateKeyTestnet.balance_as` as Testnet coins
+        do not have a fiat (e.g. USD) value.
 
         :param currency: One of the :ref:`supported currencies`.
         :type currency: ``str``
         :rtype: ``str``
         """
-        self.get_unspents()
-        return self.balance_as(currency)
+        self.balance = NetworkAPI.get_balance_testnet(self.address)
+        return self.balance
 
     def get_unspents(self):
         """Fetches all available unspent transaction outputs.
