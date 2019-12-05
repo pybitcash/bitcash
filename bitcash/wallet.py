@@ -178,14 +178,14 @@ class PrivateKey(BaseKey):
 
     def get_balance(self, currency='satoshi'):
         """Fetches the current balance by calling
-        :func:`~bitcash.PrivateKey.get_unspents` and returns it using
+        :func:`~bitcash.PrivateKey.get_balance` and returns it using
         :func:`~bitcash.PrivateKey.balance_as`.
 
         :param currency: One of the :ref:`supported currencies`.
         :type currency: ``str``
         :rtype: ``str``
         """
-        self.get_unspents()
+        self.balance = NetworkAPI.get_balance(self.address)
         return self.balance_as(currency)
 
     def get_unspents(self):
