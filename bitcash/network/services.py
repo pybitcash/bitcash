@@ -102,14 +102,14 @@ class BitcoinDotComAPI():
     """ rest.bitcoin.com API """
     MAIN_ENDPOINT = 'https://rest.bitcoin.com/v2/'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/details/{}'
-    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '/utxo'
+    MAIN_UNSPENT_API = MAIN_ENDPOINT + 'address/utxo/{}'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
     MAIN_TX_API = MAIN_ENDPOINT + 'tx/{}'
     MAIN_TX_AMOUNT_API = MAIN_TX_API
     TX_PUSH_PARAM = 'rawtx'
     TEST_ENDPOINT = 'https://trest.bitcoin.com/v2/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'address/details/{}'
-    TEST_BALANCE_API = TEST_ADDRESS_API + '/utxo'
+    TEST_BALANCE_API = TEST_ENDPOINT + 'address/utxo/{}'
     TEST_UNSPENT_API = TEST_ENDPOINT + 'tx/send'
     TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/{}'
     TEST_TX_API = MAIN_TX_API
@@ -188,10 +188,10 @@ class BitcoinDotComAPI():
         return [
             Unspent(currency_to_satoshi(tx['amount'], 'bch'),
                     tx['confirmations'],
-                    tx['scriptPubKey'],
+                    r.json()['scriptPubKey'],
                     tx['txid'],
                     tx['vout'])
-            for tx in r.json()
+            for tx in r.json()['utxos']
         ]
 
     @classmethod
