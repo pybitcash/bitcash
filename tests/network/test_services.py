@@ -66,9 +66,10 @@ class TestNetworkAPI:
         with pytest.raises(ConnectionError):
             MockBackend.get_balance_testnet(TEST_ADDRESS_USED2)
 
-    def test_get_transactions_main_equal(self):
-        results = [call(MAIN_ADDRESS_USED1)[:100] for call in NetworkAPI.GET_TRANSACTIONS_MAIN]
-        assert all_items_common(results)
+    # FIXME: Bitcore.io only returns unspents
+    # def test_get_transactions_main_equal(self):
+    #     results = [call(MAIN_ADDRESS_USED1)[:100] for call in NetworkAPI.GET_TRANSACTIONS_MAIN]
+    #     assert all_items_common(results)
 
     def test_get_transactions_main_failure(self):
         with pytest.raises(ConnectionError):
