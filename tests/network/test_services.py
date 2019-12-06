@@ -8,13 +8,13 @@ from tests.utils import (
     catch_errors_raise_warnings, decorate_methods, raise_connection_error
 )
 
-MAIN_ADDRESS_USED1 = '1L2JsXHPMYuAa9ugvHGLwkdstCPUDemNCf'
-MAIN_ADDRESS_USED2 = '17SkEw2md5avVNyYgj6RiXuQKNwkXaxFyQ'
-MAIN_ADDRESS_UNUSED = '1DvnoW4vsXA1H9KDgNiMqY7iNkzC187ve1'
-TEST_ADDRESS_USED1 = 'n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi'
-TEST_ADDRESS_USED2 = 'mmvP3mTe53qxHdPqXEvdu8WdC7GfQ2vmx5'
-TEST_ADDRESS_USED3 = 'mpnrLMH4m4e6dS8Go84P1r2hWwTiFTXmtW'
-TEST_ADDRESS_UNUSED = 'mp1xDKvvZ4yd8h9mLC4P76syUirmxpXhuk'
+MAIN_ADDRESS_USED1 = 'qrg2nw20kxhspdlec82qxrgdegrq23hyuyjx2h29sy'
+MAIN_ADDRESS_USED2 = 'qpr270a5sxphltdmggtj07v4nskn9gmg9yx4m5h7s4'
+MAIN_ADDRESS_UNUSED = 'qzxumj0tjwwrep698rv4mnwa5ek3ddsgxuvcunqnjx'
+TEST_ADDRESS_USED1 = 'qrnuzdzleru8c6qhpva20x9f2mp0u657luhfyxjep5'
+TEST_ADDRESS_USED2 = 'qprralpnpx6zrx3w2aet97u0c6rcfrlp8v6jenepj5'
+TEST_ADDRESS_USED3 = 'qpjm4n7m4r6aufkxxy5nqm5letejdm4f5sn6an6rsl'
+TEST_ADDRESS_UNUSED = 'qpwn6qz29s5rv2uf0cxd7ygnwdttsuschczaz38yc5'
 
 
 def all_items_common(seq):
