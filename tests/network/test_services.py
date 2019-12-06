@@ -29,9 +29,9 @@ def all_items_equal(seq):
 
 
 def test_set_service_timeout():
-    original = bit.network.services.DEFAULT_TIMEOUT
+    original = bitcash.network.services.DEFAULT_TIMEOUT
     set_service_timeout(3)
-    updated = bit.network.services.DEFAULT_TIMEOUT
+    updated = bitcash.network.services.DEFAULT_TIMEOUT
 
     assert original != updated
     assert updated == 3
@@ -148,48 +148,48 @@ class TestBitcoinDotComAPI:
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
-class TestBlockdozerAPI:
+class TestBitcoreAPI:
     def test_get_balance_return_type(self):
-        assert isinstance(BlockdozerAPI.get_balance(MAIN_ADDRESS_USED1), int)
+        assert isinstance(BitcoreAPI.get_balance(MAIN_ADDRESS_USED1), int)
 
     def test_get_balance_main_used(self):
-        assert BlockdozerAPI.get_balance(MAIN_ADDRESS_USED1) > 0
+        assert BitcoreAPI.get_balance(MAIN_ADDRESS_USED1) > 0
 
     def test_get_balance_main_unused(self):
-        assert BlockdozerAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
+        assert BitcoreAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
 
     def test_get_balance_test_used(self):
-        assert BlockdozerAPI.get_balance_testnet(TEST_ADDRESS_USED2) > 0
+        assert BitcoreAPI.get_balance_testnet(TEST_ADDRESS_USED2) > 0
 
     def test_get_balance_test_unused(self):
-        assert BlockdozerAPI.get_balance_testnet(TEST_ADDRESS_UNUSED) == 0
+        assert BitcoreAPI.get_balance_testnet(TEST_ADDRESS_UNUSED) == 0
 
     def test_get_transactions_return_type(self):
-        assert iter(BlockdozerAPI.get_transactions(MAIN_ADDRESS_USED1))
+        assert iter(BitcoreAPI.get_transactions(MAIN_ADDRESS_USED1))
 
     def test_get_transactions_main_used(self):
-        assert len(BlockdozerAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 218
+        assert len(BitcoreAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 218
 
     def test_get_transactions_main_unused(self):
-        assert len(BlockdozerAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
+        assert len(BitcoreAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_transactions_test_used(self):
-        assert len(BlockdozerAPI.get_transactions_testnet(TEST_ADDRESS_USED2)) >= 444
+        assert len(BitcoreAPI.get_transactions_testnet(TEST_ADDRESS_USED2)) >= 444
 
     def test_get_transactions_test_unused(self):
-        assert len(BlockdozerAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
+        assert len(BitcoreAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
 
     def test_get_unspent_return_type(self):
-        assert iter(BlockdozerAPI.get_unspent(MAIN_ADDRESS_USED1))
+        assert iter(BitcoreAPI.get_unspent(MAIN_ADDRESS_USED1))
 
     def test_get_unspent_main_used(self):
-        assert len(BlockdozerAPI.get_unspent(MAIN_ADDRESS_USED2)) >= 1
+        assert len(BitcoreAPI.get_unspent(MAIN_ADDRESS_USED2)) >= 1
 
     def test_get_unspent_main_unused(self):
-        assert len(BlockdozerAPI.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
+        assert len(BitcoreAPI.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_unspent_test_used(self):
-        assert len(BlockdozerAPI.get_unspent_testnet(TEST_ADDRESS_USED2)) >= 194
+        assert len(BitcoreAPI.get_unspent_testnet(TEST_ADDRESS_USED2)) >= 194
 
     def test_get_unspent_test_unused(self):
-        assert len(BlockdozerAPI.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0
+        assert len(BitcoreAPI.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0
