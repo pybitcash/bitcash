@@ -143,6 +143,14 @@ class BitcoinDotComAPI():
         return r.json()['transactions']
 
     @classmethod
+    def get_transactions_testnet(cls, address):
+        r = requests.get(cls.TEST_ADDRESS_API.format(address),
+                                            timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return r.json()['transactions']
+
+    @classmethod
     def get_transaction(cls, txid):
         r = requests.get(cls.MAIN_TX_API.format(txid),
                                             timeout=DEFAULT_TIMEOUT)
