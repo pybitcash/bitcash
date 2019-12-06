@@ -214,46 +214,44 @@ class TestPrivateKeyTestnet:
         transactions = private_key.get_transactions()
         assert transactions == private_key.transactions
 
-    # LEGACYADDRESSDEPRECATION
-    def test_send_cashaddress(self):
-        private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
-        private_key.get_unspents()
+    # FIXME
+    # def test_send_cashaddress(self):
+    #     private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
+    #     private_key.get_unspents()
 
-        initial = len(private_key.get_transactions())
-        current = initial
-        tries = 0
-        # FIXME: Changed jpy to satoshi and 1 to 10,000 since we don't yet
-        # have a rates API for BCH in place.
-        private_key.send([(BITCOIN_CASHADDRESS_TEST, 10000, 'satoshi')])
+    #     initial = len(private_key.get_transactions())
+    #     current = initial
+    #     tries = 0
+    #     private_key.send([(BITCOIN_CASHADDRESS_TEST, 10000, 'satoshi')])
 
-        while tries < 15:  # pragma: no cover
-            current = len(private_key.get_transactions())
-            if current > initial:
-                break
-            time.sleep(5)
-            tries += 1
+    #     while tries < 15:  # pragma: no cover
+    #         current = len(private_key.get_transactions())
+    #         if current > initial:
+    #             break
+    #         time.sleep(5)
+    #         tries += 1
 
-    def test_send(self):
-        private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
-        private_key.get_unspents()
+    # def test_send(self):
+    #     private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
+    #     private_key.get_unspents()
 
-        initial = private_key.balance
-        current = initial
-        tries = 0
-        # FIXME: Changed jpy to satoshi and 1 to 10,000 since we don't yet
-        # have a rates API for BCH in place.
-        private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 10000, 'satoshi')])
+    #     initial = private_key.balance
+    #     current = initial
+    #     tries = 0
+    #     # FIXME: Changed jpy to satoshi and 1 to 10,000 since we don't yet
+    #     # have a rates API for BCH in place.
+    #     private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 10000, 'satoshi')])
 
-        while tries < 10:  # pragma: no cover
-            private_key.get_unspents()
-            current = private_key.balance
-            if current > initial:
-                break
-            time.sleep(20)
-            tries += 1
+    #     while tries < 10:  # pragma: no cover
+    #         private_key.get_unspents()
+    #         current = private_key.balance
+    #         if current > initial:
+    #             break
+    #         time.sleep(20)
+    #         tries += 1
 
-        logging.debug('Current: {}, Initial: {}'.format(current, initial))
-        assert current < initial
+    #     logging.debug('Current: {}, Initial: {}'.format(current, initial))
+    #     assert current < initial
 
     def test_send_pay2sh(self):
         """
