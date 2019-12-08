@@ -214,44 +214,36 @@ class TestPrivateKeyTestnet:
         transactions = private_key.get_transactions()
         assert transactions == private_key.transactions
 
-    # FIXME
-    # def test_send_cashaddress(self):
-    #     private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
-    #     private_key.get_unspents()
+    def test_send_cashaddress(self):
+        private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
 
-    #     initial = len(private_key.get_transactions())
-    #     current = initial
-    #     tries = 0
-    #     private_key.send([(BITCOIN_CASHADDRESS_TEST, 10000, 'satoshi')])
+        initial = private_key.get_balance()
+        current = initial
+        tries = 0
+        private_key.send([(BITCOIN_CASHADDRESS_TEST, 2000, 'satoshi')])
 
-    #     while tries < 15:  # pragma: no cover
-    #         current = len(private_key.get_transactions())
-    #         if current > initial:
-    #             break
-    #         time.sleep(5)
-    #         tries += 1
+        time.sleep(3)  # give some time to the indexer to update the balance
+        current = private_key.get_balance()
 
-    # def test_send(self):
-    #     private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
-    #     private_key.get_unspents()
+        logging.debug('Current: {}, Initial: {}'.format(current, initial))
+        assert current < initial
 
-    #     initial = private_key.balance
-    #     current = initial
-    #     tries = 0
-    #     # FIXME: Changed jpy to satoshi and 1 to 10,000 since we don't yet
-    #     # have a rates API for BCH in place.
-    #     private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 10000, 'satoshi')])
+    def test_send(self):
+        private_key = PrivateKeyTestnet('cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ')
+        private_key.get_unspents()
 
-    #     while tries < 10:  # pragma: no cover
-    #         private_key.get_unspents()
-    #         current = private_key.balance
-    #         if current > initial:
-    #             break
-    #         time.sleep(20)
-    #         tries += 1
+        initial = private_key.balance
+        current = initial
+        tries = 0
+        # FIXME: Changed jpy to satoshi and 1 to 10,000 since we don't yet
+        # have a rates API for BCH in place.
+        private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 2000, 'satoshi')])
 
-    #     logging.debug('Current: {}, Initial: {}'.format(current, initial))
-    #     assert current < initial
+        time.sleep(3)  # give some time to the indexer to update the balance
+        current = private_key.get_balance()
+
+        logging.debug('Current: {}, Initial: {}'.format(current, initial))
+        assert current < initial
 
     def test_send_pay2sh(self):
         """
