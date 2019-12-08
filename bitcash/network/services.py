@@ -31,22 +31,19 @@ class InsightAPI:
     @classmethod
     def get_balance(cls, address):
         r = requests.get(cls.MAIN_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         return r.json()
 
     @classmethod
     def get_transactions(cls, address):
         r = requests.get(cls.MAIN_ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         return r.json()['transactions']
 
     @classmethod
     def get_transaction(cls, txid):
         r = requests.get(cls.MAIN_TX_API.format(txid), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         response = r.json(parse_float=Decimal)
 
         tx = Transaction(response['txid'], response['blockheight'],
@@ -73,16 +70,14 @@ class InsightAPI:
     @classmethod
     def get_tx_amount(cls, txid, txindex):
         r = requests.get(cls.MAIN_TX_AMOUNT_API.format(txid), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         response = r.json(parse_float=Decimal)
         return (Decimal(response['vout'][txindex]['value']) * BCH_TO_SAT_MULTIPLIER).normalize()
 
     @classmethod
     def get_unspent(cls, address):
         r = requests.get(cls.MAIN_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         return [
             Unspent(currency_to_satoshi(tx['amount'], 'bch'),
                     tx['confirmations'],
@@ -118,8 +113,7 @@ class BitcoinDotComAPI():
     def get_balance(cls, address):
         r = requests.get(cls.MAIN_ADDRESS_API.format(address),
                                             timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         data = r.json()
         balance = data['balanceSat'] + data['unconfirmedBalanceSat']
         return balance
@@ -128,8 +122,7 @@ class BitcoinDotComAPI():
     def get_balance_testnet(cls, address):
         r = requests.get(cls.TEST_ADDRESS_API.format(address),
                                             timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         data = r.json()
         balance = data['balanceSat'] + data['unconfirmedBalanceSat']
         return balance
@@ -138,16 +131,21 @@ class BitcoinDotComAPI():
     def get_transactions(cls, address):
         r = requests.get(cls.MAIN_ADDRESS_API.format(address),
                                             timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
+        return r.json()['transactions']
+
+    @classmethod
+    def get_transactions_testnet(cls, address):
+        r = requests.get(cls.TEST_ADDRESS_API.format(address),
+                                            timeout=DEFAULT_TIMEOUT)
+        r.raise_for_status()  # pragma: no cover
         return r.json()['transactions']
 
     @classmethod
     def get_transaction(cls, txid):
         r = requests.get(cls.MAIN_TX_API.format(txid),
                                             timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         response = r.json(parse_float=Decimal)
 
         tx = Transaction(response['txid'], response['blockheight'],
@@ -174,8 +172,7 @@ class BitcoinDotComAPI():
     @classmethod
     def get_tx_amount(cls, txid, txindex):
         r = requests.get(cls.MAIN_TX_AMOUNT_API.format(txid), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         response = r.json(parse_float=Decimal)
         return (Decimal(response['vout'][txindex]['value']) * BCH_TO_SAT_MULTIPLIER).normalize()
 
@@ -183,8 +180,7 @@ class BitcoinDotComAPI():
     def get_unspent(cls, address):
         r = requests.get(cls.MAIN_UNSPENT_API.format(address),
                                             timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         return [
             Unspent(currency_to_satoshi(tx['amount'], 'bch'),
                     tx['confirmations'],
@@ -198,8 +194,7 @@ class BitcoinDotComAPI():
     def get_unspent_testnet(cls, address):
         r = requests.get(cls.TEST_UNSPENT_API.format(address),
                                             timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         return [
             Unspent(currency_to_satoshi(tx['amount'], 'bch'),
                     tx['confirmations'],
@@ -242,8 +237,7 @@ class BitcoreAPI(InsightAPI):
     def get_unspent(cls, address):
         address = address.replace('bitcoincash:', '')
         r = requests.get(cls.MAIN_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         return [
             Unspent(currency_to_satoshi(tx['value'], 'satoshi'),
                     tx['confirmations'],
@@ -257,30 +251,32 @@ class BitcoreAPI(InsightAPI):
     def get_transactions(cls, address):
         address = address.replace('bitcoincash:', '')
         r = requests.get(cls.MAIN_ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         return [tx['mintTxid'] for tx in r.json()]
+
+    @classmethod
+    def get_balance(cls, address):
+        r = requests.get(cls.MAIN_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
+        r.raise_for_status()  # pragma: no cover
+        return r.json()['balance']
 
     @classmethod
     def get_balance_testnet(cls, address):
         r = requests.get(cls.TEST_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        return r.json()
+        r.raise_for_status()  # pragma: no cover
+        return r.json()['balance']
 
     @classmethod
     def get_transactions_testnet(cls, address):
         address = address.replace('bchtest:', '')
         r = requests.get(cls.TEST_ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         return [tx['mintTxid'] for tx in r.json()]
 
     @classmethod
     def get_transaction_testnet(cls, txid):
         r = requests.get(cls.TEST_TX_API.format(txid), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         response = r.json(parse_float=Decimal)
 
         tx = Transaction(response['txid'], response['blockheight'],
@@ -307,8 +303,7 @@ class BitcoreAPI(InsightAPI):
     @classmethod
     def get_tx_amount_testnet(cls, txid, txindex):
         r = requests.get(cls.TEST_TX_AMOUNT_API.format(txid), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         response = r.json(parse_float=Decimal)
         return (Decimal(response['vout'][txindex]['value']) * BCH_TO_SAT_MULTIPLIER).normalize()
 
@@ -316,8 +311,7 @@ class BitcoreAPI(InsightAPI):
     def get_unspent_testnet(cls, address):
         address = address.replace('bchtest:', '')
         r = requests.get(cls.TEST_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         unspents = []
         for tx in r.json():
             # In weird conditions, the API will send back unspents
