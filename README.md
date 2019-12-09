@@ -70,6 +70,8 @@ $ pip install bitcash  # pip3 if pip is Python 2 on your system.
 Docs are hosted by Github Pages and are automatically built and published
 by Travis after every successful commit to BitCash's ``master`` branch.
 
+[Read the documentation](https://sporestack.github.io/bitcash/)
+
 ## Credits
 
 - [ofek](https://github.com/ofek/bit) for the original bit codebase.
