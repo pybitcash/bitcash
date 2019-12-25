@@ -4,7 +4,7 @@
 
 set -o errexit -o nounset
 
-if [ "$TRAVIS_REPO_SLUG" != "merc1er/bitcash" ] || [ "$TRAVIS_PULL_REQUEST" != "false" ] || [ "$TRAVIS_BRANCH" != "docs-deploy" ]
+if [ "$TRAVIS_PULL_REQUEST" != "false" ] || [ "$TRAVIS_BRANCH" != "master" ]
 then
   echo "This commit was made against the $TRAVIS_BRANCH and not the master! No deploy!"
   exit 0
@@ -29,10 +29,10 @@ make html
 cd build/html
 
 git init
-git config user.name "Corentin Mercier"
-git config user.email "corentin@mercier.link"
+git config user.name "Teran McKinney"
+git config user.email ""
 
-git remote add upstream "https://$GH_TOKEN@github.com/merc1er/bitcash.git"
+git remote add upstream "https://$GH_TOKEN@github.com/sporestack/bitcash.git"
 git fetch upstream
 git reset upstream/gh-pages
 
