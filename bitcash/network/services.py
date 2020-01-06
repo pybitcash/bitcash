@@ -209,16 +209,14 @@ class BitcoinDotComAPI():
     @classmethod
     def get_raw_transaction(cls, txid):
         r = requests.get(cls.MAIN_RAW_API.format(txid), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         response = r.json(parse_float=Decimal)
         return response
 
     @classmethod
     def get_raw_transaction_testnet(cls, txid):
         r = requests.get(cls.TEST_RAW_API.format(txid), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
+        r.raise_for_status()  # pragma: no cover
         response = r.json(parse_float=Decimal)
         return response
 
