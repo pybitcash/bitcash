@@ -993,6 +993,16 @@ the public key.</p>
 <dd></dd></dl>
 
 <dl class="attribute">
+<dt id="bitcash.network.NetworkAPI.GET_RAW_TX_MAIN">
+<code class="sig-name descname">GET_RAW_TX_MAIN</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_raw_transaction of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_RAW_TX_MAIN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bitcash.network.NetworkAPI.GET_RAW_TX_TEST">
+<code class="sig-name descname">GET_RAW_TX_TEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_raw_transaction_testnet of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_RAW_TX_TEST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="bitcash.network.NetworkAPI.GET_TRANSACTIONS_MAIN">
 <code class="sig-name descname">GET_TRANSACTIONS_MAIN</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_transactions of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;, &lt;bound method BitcoreAPI.get_transactions of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_TRANSACTIONS_MAIN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1095,6 +1105,41 @@ the public key.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitcash.network.NetworkAPI.get_raw_transaction">
+<em class="property">classmethod </em><code class="sig-name descname">get_raw_transaction</code><span class="sig-paren">(</span><em class="sig-param">txid</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_raw_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the raw, unparsed transaction details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>txid</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The transaction id in question.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Transaction</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitcash.network.NetworkAPI.get_raw_transaction_testnet">
+<em class="property">classmethod </em><code class="sig-name descname">get_raw_transaction_testnet</code><span class="sig-paren">(</span><em class="sig-param">txid</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_raw_transaction_testnet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the raw, unparsed transaction details on the test
+network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>txid</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The transaction id in question.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Transaction</span></code></p>
 </dd>
 </dl>
 </dd></dl>
