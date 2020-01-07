@@ -101,6 +101,7 @@ class BitcoinDotComAPI():
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'rawtransactions/sendRawTransaction/{}'
     MAIN_TX_API = MAIN_ENDPOINT + 'tx/{}'
     MAIN_TX_AMOUNT_API = MAIN_TX_API
+    MAIN_RAW_API = MAIN_ENDPOINT + 'transaction/details/{}'
     TX_PUSH_PARAM = 'rawtx'
     TEST_ENDPOINT = 'https://trest.bitcoin.com/v2/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'address/details/{}'
@@ -108,6 +109,7 @@ class BitcoinDotComAPI():
     TEST_TX_PUSH_API = TEST_ENDPOINT + '/rawtransactions/sendRawTransaction/{}'
     TEST_TX_API = MAIN_TX_API
     TEST_TX_AMOUNT_API = TEST_TX_API
+    TEST_RAW_API = TEST_ENDPOINT + 'transaction/details/{}'
 
     @classmethod
     def get_balance(cls, address):
@@ -203,6 +205,20 @@ class BitcoinDotComAPI():
                     tx['vout'])
             for tx in r.json()['utxos']
         ]
+
+    @classmethod
+    def get_raw_transaction(cls, txid):
+        r = requests.get(cls.MAIN_RAW_API.format(txid), timeout=DEFAULT_TIMEOUT)
+        r.raise_for_status()  # pragma: no cover
+        response = r.json(parse_float=Decimal)
+        return response
+
+    @classmethod
+    def get_raw_transaction_testnet(cls, txid):
+        r = requests.get(cls.TEST_RAW_API.format(txid), timeout=DEFAULT_TIMEOUT)
+        r.raise_for_status()  # pragma: no cover
+        response = r.json(parse_float=Decimal)
+        return response
 
     @classmethod
     def broadcast_tx(cls, tx_hex):  # pragma: no cover
@@ -353,6 +369,7 @@ class NetworkAPI:
                    BitcoreAPI.get_transaction]
     GET_TX_AMOUNT_MAIN = [BitcoinDotComAPI.get_tx_amount,
                           BitcoreAPI.get_tx_amount]
+    GET_RAW_TX_MAIN = [BitcoinDotComAPI.get_raw_transaction]
 
     GET_BALANCE_TEST = [BitcoinDotComAPI.get_balance_testnet,
                             BitcoreAPI.get_balance_testnet]
@@ -363,6 +380,7 @@ class NetworkAPI:
                                 BitcoreAPI.broadcast_tx_testnet]
     GET_TX_TEST = [BitcoreAPI.get_transaction_testnet]
     GET_TX_AMOUNT_TEST = [BitcoreAPI.get_tx_amount_testnet]
+    GET_RAW_TX_TEST = [BitcoinDotComAPI.get_raw_transaction_testnet]
 
     @classmethod
     def get_balance(cls, address):
@@ -547,6 +565,43 @@ class NetworkAPI:
         for api_call in cls.GET_UNSPENT_TEST:
             try:
                 return api_call(address)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    def get_raw_transaction(cls, txid):
+        """Gets the raw, unparsed transaction details.
+
+        :param txid: The transaction id in question.
+        :type txid: ``str``
+        :raises ConnectionError: If all API services fail.
+        :rtype: ``Transaction``
+        """
+
+        for api_call in cls.GET_RAW_TX_MAIN:
+            try:
+                return api_call(txid)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    def get_raw_transaction_testnet(cls, txid):
+        """Gets the raw, unparsed transaction details on the test
+        network.
+
+        :param txid: The transaction id in question.
+        :type txid: ``str``
+        :raises ConnectionError: If all API services fail.
+        :rtype: ``Transaction``
+        """
+
+        for api_call in cls.GET_RAW_TX_TEST:
+            try:
+                return api_call(txid)
             except cls.IGNORED_ERRORS:
                 pass
 
