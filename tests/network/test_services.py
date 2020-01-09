@@ -11,10 +11,12 @@ from tests.utils import (
 MAIN_ADDRESS_USED1 = 'qrg2nw20kxhspdlec82qxrgdegrq23hyuyjx2h29sy'
 MAIN_ADDRESS_USED2 = 'qpr270a5sxphltdmggtj07v4nskn9gmg9yx4m5h7s4'
 MAIN_ADDRESS_UNUSED = 'qzxumj0tjwwrep698rv4mnwa5ek3ddsgxuvcunqnjx'
+MAIN_TX = '9bccb8d6adf53ca49cea02118871e29d3b4e5cb157dc3a475dd364e30fb20993'
 TEST_ADDRESS_USED1 = 'qrnuzdzleru8c6qhpva20x9f2mp0u657luhfyxjep5'
 TEST_ADDRESS_USED2 = 'qprralpnpx6zrx3w2aet97u0c6rcfrlp8v6jenepj5'
 TEST_ADDRESS_USED3 = 'qpjm4n7m4r6aufkxxy5nqm5letejdm4f5sn6an6rsl'
 TEST_ADDRESS_UNUSED = 'qpwn6qz29s5rv2uf0cxd7ygnwdttsuschczaz38yc5'
+TEST_TX = '09d0c9773c56fac218ae084226e9db8480d9b5c6f60cc0466431d6820d344adc'
 
 
 def all_items_common(seq):
@@ -146,6 +148,12 @@ class TestBitcoinDotComAPI:
 
     def test_get_unspent_test_unused(self):
         assert len(BitcoinDotComAPI.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0
+
+    def test_get_raw_transaction(self):
+        assert BitcoinDotComAPI.get_raw_transaction(MAIN_TX)['txid'] == MAIN_TX
+
+    def test_get_raw_transaction_testnet(self):
+        assert BitcoinDotComAPI.get_raw_transaction_testnet(TEST_TX)['txid'] == TEST_TX
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
