@@ -44,6 +44,13 @@ SUPPORTED_CURRENCIES = OrderedDict([
     ('sgd', 'Singapore Dollar'),
     ('thb', 'Thai Baht'),
     ('twd', 'New Taiwan Dollar'),
+    ('ḿxn', 'Mexican Peso'),
+    ('cop', 'Colombian Peso'),
+    ('ars', 'Argentinian Peso'),
+    ('cup', 'Cuban Peso'),
+    ('pen', 'Peruvian Sol'),
+    ('bol', 'Bolivian Peso'),
+    ('dop', 'Dominican Peso'),
     ('clp', 'Chilean Peso')
 ])
 
@@ -73,6 +80,14 @@ CURRENCY_PRECISION = {
     'sgd': 2,
     'thb': 2,
     'twd': 2,
+    'mxn': 2,
+    'cop': 0,
+    'ars': 2,
+    'cup': 2,
+    'pen': 2,
+    'uyu': 2,
+    'bol': 2,
+    'dop': 2,
     'clp': 0
 }
 
