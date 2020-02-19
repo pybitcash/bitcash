@@ -620,17 +620,6 @@ class RatesAPI:
 
         raise ConnectionError('All APIs are unreachable.')
 
-    @classmethod
-    def bop_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.BOB_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
 
 EXCHANGE_RATES = {
     'satoshi': satoshi_to_satoshi,
