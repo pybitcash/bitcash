@@ -49,7 +49,8 @@ SUPPORTED_CURRENCIES = OrderedDict([
     ('ars', 'Argentinian Peso'),
     ('cup', 'Cuban Peso'),
     ('pen', 'Peruvian Sol'),
-    ('bol', 'Bolivian Peso'),
+    ('uyu', 'Uruguayan Peso'),
+    ('bob', 'Bolivian Boliviano'),
     ('dop', 'Dominican Peso'),
     ('clp', 'Chilean Peso')
 ])
@@ -86,7 +87,7 @@ CURRENCY_PRECISION = {
     'cup': 2,
     'pen': 2,
     'uyu': 2,
-    'bol': 2,
+    'bob': 2,
     'dop': 2,
     'clp': 0
 }
