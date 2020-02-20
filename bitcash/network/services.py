@@ -99,7 +99,7 @@ class BitcoinDotComAPI():
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/details/{}'
     MAIN_UNSPENT_API = MAIN_ENDPOINT + 'address/utxo/{}'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'rawtransactions/sendRawTransaction/{}'
-    MAIN_TX_API = MAIN_ENDPOINT + 'tx/{}'
+    MAIN_TX_API = MAIN_ENDPOINT + 'transaction/details/{}'
     MAIN_TX_AMOUNT_API = MAIN_TX_API
     MAIN_RAW_API = MAIN_ENDPOINT + 'transaction/details/{}'
     TX_PUSH_PARAM = 'rawtx'
@@ -156,7 +156,7 @@ class BitcoinDotComAPI():
                 (Decimal(response['fees']) * BCH_TO_SAT_MULTIPLIER).normalize())
 
         for txin in response['vin']:
-            part = TxPart(txin['addr'], txin['valueSat'], txin['scriptSig']['asm'])
+            part = TxPart(txin['cashAddress'], txin['value'], txin['scriptSig']['asm'])
             tx.add_input(part)
 
         for txout in response['vout']:
