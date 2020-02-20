@@ -43,37 +43,6 @@ class InsightAPI:
         return r.json()['transactions']
 
     @classmethod
-    def get_transaction(cls, txid):
-        r = requests.get(cls.MAIN_TX_API.format(txid), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
-        response = r.json(parse_float=Decimal)
-
-        tx = Transaction(response['txid'], response['blockheight'],
-                         (Decimal(response['valueIn']) *
-                          BCH_TO_SAT_MULTIPLIER).normalize(),
-                         (Decimal(response['valueOut']) *
-                          BCH_TO_SAT_MULTIPLIER).normalize(),
-                         (Decimal(response['fees']) * BCH_TO_SAT_MULTIPLIER).normalize())
-
-        for txin in response['vin']:
-            part = TxPart(txin['addr'], txin['valueSat'],
-                          txin['scriptSig']['asm'])
-            tx.add_input(part)
-
-        for txout in response['vout']:
-            addr = None
-            if 'addresses' in txout['scriptPubKey'] and txout['scriptPubKey']['addresses'] is not None:
-                addr = txout['scriptPubKey']['addresses'][0]
-
-            part = TxPart(addr,
-                          (Decimal(txout['value']) *
-                           BCH_TO_SAT_MULTIPLIER).normalize(),
-                          txout['scriptPubKey']['asm'])
-            tx.add_output(part)
-
-        return tx
-
-    @classmethod
     def get_tx_amount(cls, txid, txindex):
         r = requests.get(cls.MAIN_TX_AMOUNT_API.format(
             txid), timeout=DEFAULT_TIMEOUT)
@@ -397,8 +366,7 @@ class NetworkAPI:
                         BitcoreAPI.get_unspent]
     BROADCAST_TX_MAIN = [BitcoinDotComAPI.broadcast_tx,
                          BitcoreAPI.broadcast_tx]
-    GET_TX_MAIN = [BitcoinDotComAPI.get_transaction,
-                   BitcoreAPI.get_transaction]
+    GET_TX_MAIN = [BitcoinDotComAPI.get_transaction]
     GET_TX_AMOUNT_MAIN = [BitcoinDotComAPI.get_tx_amount,
                           BitcoreAPI.get_tx_amount]
     GET_RAW_TX_MAIN = [BitcoinDotComAPI.get_raw_transaction]
