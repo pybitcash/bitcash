@@ -146,7 +146,7 @@ class BitcoinDotComAPI():
     @classmethod
     def get_transaction(cls, txid):
         r = requests.get(cls.MAIN_TX_API.format(txid),
-                                            timeout=DEFAULT_TIMEOUT)
+                         timeout=DEFAULT_TIMEOUT)
         r.raise_for_status()  # pragma: no cover
         response = r.json(parse_float=Decimal)
 
@@ -156,13 +156,15 @@ class BitcoinDotComAPI():
                 (Decimal(response['fees']) * BCH_TO_SAT_MULTIPLIER).normalize())
 
         for txin in response['vin']:
-            part = TxPart(txin['cashAddress'], txin['value'], txin['scriptSig']['asm'])
+            part = TxPart(txin['cashAddress'],
+                          txin['value'],
+                          txin['scriptSig']['asm'])
             tx.add_input(part)
 
         for txout in response['vout']:
             addr = None
-            if 'addresses' in txout['scriptPubKey'] and txout['scriptPubKey']['addresses'] is not None:
-                addr = txout['scriptPubKey']['addresses'][0]
+            if 'cashAddrs' in txout['scriptPubKey'] and txout['scriptPubKey']['cashAddrs'] is not None:
+                addr = txout['scriptPubKey']['cashAddrs'][0]
 
             part = TxPart(addr,
                     (Decimal(txout['value']) * BCH_TO_SAT_MULTIPLIER).normalize(),
