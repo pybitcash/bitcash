@@ -17,6 +17,7 @@ TEST_ADDRESS_USED2 = 'qprralpnpx6zrx3w2aet97u0c6rcfrlp8v6jenepj5'
 TEST_ADDRESS_USED3 = 'qpjm4n7m4r6aufkxxy5nqm5letejdm4f5sn6an6rsl'
 TEST_ADDRESS_UNUSED = 'qpwn6qz29s5rv2uf0cxd7ygnwdttsuschczaz38yc5'
 TEST_TX = '09d0c9773c56fac218ae084226e9db8480d9b5c6f60cc0466431d6820d344adc'
+TEST_TX2 = '3c26deab2df023a8dbee15bf47701332f6661323ea117a58362b0ea9605129fd'
 
 
 def all_items_common(seq):
@@ -127,6 +128,12 @@ class TestBitcoinDotComAPI:
 
     def test_get_transactions_main_unused(self):
         assert len(BitcoinDotComAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
+
+    def test_get_transaction(self):
+        assert len(str(BitcoinDotComAPI.get_transaction(MAIN_TX))) >= 156
+
+    def test_get_transaction_testnet(self):
+        assert len(str(BitcoinDotComAPI.get_transaction_testnet(TEST_TX2))) >= 156
 
     def test_get_transactions_test_used(self):
         assert len(BitcoinDotComAPI.get_transactions_testnet(TEST_ADDRESS_USED2)) >= 444
