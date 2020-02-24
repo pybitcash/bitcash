@@ -44,7 +44,7 @@ SUPPORTED_CURRENCIES = OrderedDict([
     ('sgd', 'Singapore Dollar'),
     ('thb', 'Thai Baht'),
     ('twd', 'New Taiwan Dollar'),
-    ('ḿxn', 'Mexican Peso'),
+    ('mxn', 'Mexican Peso'),
     ('cop', 'Colombian Peso'),
     ('ars', 'Argentinian Peso'),
     ('cup', 'Cuban Peso'),
