@@ -44,6 +44,14 @@ SUPPORTED_CURRENCIES = OrderedDict([
     ('sgd', 'Singapore Dollar'),
     ('thb', 'Thai Baht'),
     ('twd', 'New Taiwan Dollar'),
+    ('mxn', 'Mexican Peso'),
+    ('cop', 'Colombian Peso'),
+    ('ars', 'Argentinian Peso'),
+    ('cup', 'Cuban Peso'),
+    ('pen', 'Peruvian Sol'),
+    ('uyu', 'Uruguayan Peso'),
+    ('bob', 'Bolivian Boliviano'),
+    ('dop', 'Dominican Peso'),
     ('clp', 'Chilean Peso')
 ])
 
@@ -73,6 +81,14 @@ CURRENCY_PRECISION = {
     'sgd': 2,
     'thb': 2,
     'twd': 2,
+    'mxn': 2,
+    'cop': 0,
+    'ars': 2,
+    'cup': 2,
+    'pen': 2,
+    'uyu': 2,
+    'bob': 2,
+    'dop': 2,
     'clp': 0
 }
 
@@ -183,6 +199,34 @@ class BitpayRates:
         return cls.currency_to_satoshi('krw')
 
     @classmethod
+    def twd_to_satoshi(cls):  # pragma: no cover
+        return cls.currency_to_satoshi('twd')
+
+    @classmethod
+    def mxn_to_satoshi(cls):  # pragma: no cover
+        return cls.currency_to_satoshi('mxn')
+
+    @classmethod
+    def ars_to_satoshi(cls):  # pragma: no cover
+        return cls.currency_to_satoshi('ars')
+
+    @classmethod
+    def cop_to_satoshi(cls):  # pragma: no cover
+        return cls.currency_to_satoshi('cop')
+
+    @classmethod
+    def cup_to_satoshi(cls):  # pragma: no cover
+        return cls.currency_to_satoshi('cup')
+
+    @classmethod
+    def pen_to_satoshi(cls):  # pragma: no cover
+        return cls.currency_to_satoshi('pen')
+
+    @classmethod
+    def uyu_to_satoshi(cls):  # pragma: no cover
+        return cls.currency_to_satoshi('uyu')
+
+    @classmethod
     def clp_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('clp')
 
@@ -195,9 +239,12 @@ class BitpayRates:
         return cls.currency_to_satoshi('thb')
 
     @classmethod
-    def twd_to_satoshi(cls):  # pragma: no cover
-        return cls.currency_to_satoshi('twd')
+    def bob_to_satoshi(cls):  # pragma: no cover
+        return cls.currency_to_satoshi('bob')
 
+    @classmethod
+    def dop_to_satoshi(cls):  # pragma: no cover
+        return cls.currency_to_satoshi('dop')
 
 class LivecoinRates:
     SINGLE_RATE = 'https://api.livecoin.net/exchange/ticker?currencyPair=BCH/{}'
@@ -244,6 +291,16 @@ class RatesAPI:
     SGD_RATES = [BitpayRates.sgd_to_satoshi]
     THB_RATES = [BitpayRates.thb_to_satoshi]
     TWD_RATES = [BitpayRates.twd_to_satoshi]
+    MXN_RATES = [BitpayRates.mxn_to_satoshi]
+    ARS_RATES = [BitpayRates.ars_to_satoshi]
+    COP_RATES = [BitpayRates.cop_to_satoshi]
+    CUP_RATES = [BitpayRates.cup_to_satoshi]
+    PEN_RATES = [BitpayRates.pen_to_satoshi]
+    UYU_RATES = [BitpayRates.uyu_to_satoshi]
+    BOB_RATES = [BitpayRates.bob_to_satoshi]
+    DOP_RATES = [BitpayRates.dop_to_satoshi]
+    
+    
 
     @classmethod
     def usd_to_satoshi(cls):  # pragma: no cover
@@ -475,6 +532,93 @@ class RatesAPI:
                 pass
 
         raise ConnectionError('All APIs are unreachable.')
+    
+    @classmethod
+    def mxn_to_satoshi(cls):  # pragma: no cover
+
+        for api_call in cls.MXN_RATES:
+            try:
+                return api_call()
+            except cls.IGNORED_ERRORS:
+                pass
+        raise ConnectionError('All APIs are unreachable.')
+    
+    @classmethod
+    def ars_to_satoshi(cls):  # pragma: no cover
+
+        for api_call in cls.ARS_RATES:
+            try:
+                return api_call()
+            except cls.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
+    
+    @classmethod
+    def cop_to_satoshi(cls):  # pragma: no cover
+
+        for api_call in cls.COP_RATES:
+            try:
+                return api_call()
+            except cls.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    def cup_to_satoshi(cls):  # pragma: no cover
+
+        for api_call in cls.CUP_RATES:
+            try:
+                return api_call()
+            except cls.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    def pen_to_satoshi(cls):  # pragma: no cover
+
+        for api_call in cls.PEN_RATES:
+            try:
+                return api_call()
+            except cls.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    def uyu_to_satoshi(cls):  # pragma: no cover
+
+        for api_call in cls.UYU_RATES:
+            try:
+                return api_call()
+            except cls.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    def dop_to_satoshi(cls):  # pragma: no cover
+
+        for api_call in cls.DOP_RATES:
+            try:
+                return api_call()
+            except cls.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    def bob_to_satoshi(cls):  # pragma: no cover
+
+        for api_call in cls.BOB_RATES:
+            try:
+                return api_call()
+            except cls.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
 
 
 EXCHANGE_RATES = {
@@ -502,6 +646,14 @@ EXCHANGE_RATES = {
     'sgd': RatesAPI.sgd_to_satoshi,
     'thb': RatesAPI.thb_to_satoshi,
     'twd': RatesAPI.twd_to_satoshi,
+    'mxn': RatesAPI.mxn_to_satoshi,
+    'ars': RatesAPI.ars_to_satoshi,
+    'cop': RatesAPI.cop_to_satoshi,
+    'cup': RatesAPI.cup_to_satoshi,
+    'uyu': RatesAPI.uyu_to_satoshi,
+    'bob': RatesAPI.bob_to_satoshi,
+    'pen': RatesAPI.pen_to_satoshi,
+    'dop': RatesAPI.dop_to_satoshi, 
     'clp': RatesAPI.clp_to_satoshi
 }
 
@@ -608,3 +760,4 @@ def satoshi_to_currency_cached(num, currency):
             rounding=ROUND_DOWN
         ).normalize()
     )
+
