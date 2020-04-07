@@ -1,7 +1,6 @@
 import logging
 
 import requests
-from cashaddress import convert as cashaddress
 from decimal import Decimal
 
 from bitcash.network import currency_to_satoshi
