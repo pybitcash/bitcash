@@ -359,6 +359,7 @@ class NetworkAPI:
                       requests.exceptions.Timeout,
                       requests.exceptions.ReadTimeout)
 
+    # Mainnet
     GET_BALANCE_MAIN = [BitcoinDotComAPI.get_balance,
                         BitcoreAPI.get_balance]
     GET_TRANSACTIONS_MAIN = [BitcoinDotComAPI.get_transactions,
@@ -372,6 +373,7 @@ class NetworkAPI:
                           BitcoreAPI.get_tx_amount]
     GET_RAW_TX_MAIN = [BitcoinDotComAPI.get_raw_transaction]
 
+    # Testnet
     GET_BALANCE_TEST = [BitcoinDotComAPI.get_balance_testnet,
                         BitcoreAPI.get_balance_testnet]
     GET_TRANSACTIONS_TEST = [BitcoreAPI.get_transactions_testnet]
