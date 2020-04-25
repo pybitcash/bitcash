@@ -354,10 +354,7 @@ class BitcoreAPI(InsightAPI):
 
 
 class NetworkAPI:
-    IGNORED_ERRORS = (ConnectionError,
-                      requests.exceptions.ConnectionError,
-                      requests.exceptions.Timeout,
-                      requests.exceptions.ReadTimeout)
+    IGNORED_ERRORS = (Exception)
 
     # Mainnet
     GET_BALANCE_MAIN = [BitcoinDotComAPI.get_balance,
