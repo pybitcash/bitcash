@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Developer Interface &#8212; bitcash 0.5.3.3 documentation</title>
+    <title>Developer Interface &#8212; bitcash 0.5.3.4 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -33,15 +33,15 @@
 <span id="developer-interface"></span><span id="api"></span><h1>Developer Interface<a class="headerlink" href="#module-bitcash" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="keys">
 <span id="keysapi"></span><h2>Keys<a class="headerlink" href="#keys" title="Permalink to this headline">¶</a></h2>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.Key">
 <code class="sig-prename descclassname">bitcash.</code><code class="sig-name descname">Key</code><a class="headerlink" href="#bitcash.Key" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">bitcash.wallet.PrivateKey</span></code></p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bitcash.PrivateKey">
-<em class="property">class </em><code class="sig-prename descclassname">bitcash.</code><code class="sig-name descname">PrivateKey</code><span class="sig-paren">(</span><em class="sig-param">wif=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bitcash.</code><code class="sig-name descname">PrivateKey</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wif</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class represents a BitcoinCash private key. <code class="docutils literal notranslate"><span class="pre">Key</span></code> is an alias.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -54,15 +54,15 @@ byte is disregarded. Compression will be used by all new keys.</p>
 <dd class="field-even"><p><strong>TypeError</strong> – If <code class="docutils literal notranslate"><span class="pre">wif</span></code> is not a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.address">
 <em class="property">property </em><code class="sig-name descname">address</code><a class="headerlink" href="#bitcash.PrivateKey.address" title="Permalink to this definition">¶</a></dt>
 <dd><p>The public address you share with others to receive funds.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.balance_as">
-<code class="sig-name descname">balance_as</code><span class="sig-paren">(</span><em class="sig-param">currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.balance_as" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">balance_as</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">currency</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.balance_as" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns your balance as a formatted string in a particular currency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -74,9 +74,9 @@ byte is disregarded. Compression will be used by all new keys.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.create_transaction">
-<code class="sig-name descname">create_transaction</code><span class="sig-paren">(</span><em class="sig-param">outputs</em>, <em class="sig-param">fee=None</em>, <em class="sig-param">leftover=None</em>, <em class="sig-param">combine=True</em>, <em class="sig-param">message=None</em>, <em class="sig-param">unspents=None</em>, <em class="sig-param">custom_pushdata=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.create_transaction" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_transaction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outputs</span></em>, <em class="sig-param"><span class="n">fee</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">leftover</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">combine</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">unspents</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">custom_pushdata</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.create_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -112,9 +112,9 @@ communicate with the blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.from_bytes">
-<em class="property">classmethod </em><code class="sig-name descname">from_bytes</code><span class="sig-paren">(</span><em class="sig-param">bytestr</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_bytes" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_bytes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bytestr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_bytes" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>bytestr</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as hex.</p>
@@ -125,9 +125,9 @@ communicate with the blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.from_der">
-<em class="property">classmethod </em><code class="sig-name descname">from_der</code><span class="sig-paren">(</span><em class="sig-param">der</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_der" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_der</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">der</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_der" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>der</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as DER.</p>
@@ -138,9 +138,9 @@ communicate with the blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.from_hex">
-<em class="property">classmethod </em><code class="sig-name descname">from_hex</code><span class="sig-paren">(</span><em class="sig-param">hexed</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_hex" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_hex</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hexed</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_hex" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>hexed</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A private key previously encoded as hex.</p>
@@ -151,9 +151,9 @@ communicate with the blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.from_int">
-<em class="property">classmethod </em><code class="sig-name descname">from_int</code><span class="sig-paren">(</span><em class="sig-param">num</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_int" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_int</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_int" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>num</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – A private key in raw integer form.</p>
@@ -164,9 +164,9 @@ communicate with the blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.from_pem">
-<em class="property">classmethod </em><code class="sig-name descname">from_pem</code><span class="sig-paren">(</span><em class="sig-param">pem</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_pem" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_pem</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pem</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_pem" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>pem</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as PEM.</p>
@@ -177,9 +177,9 @@ communicate with the blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.get_balance">
-<code class="sig-name descname">get_balance</code><span class="sig-paren">(</span><em class="sig-param">currency='satoshi'</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.get_balance" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_balance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">currency</span><span class="o">=</span><span class="default_value">'satoshi'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.get_balance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches the current balance by calling
 <a class="reference internal" href="#bitcash.PrivateKey.get_balance" title="bitcash.PrivateKey.get_balance"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_balance()</span></code></a> and returns it using
 <a class="reference internal" href="#bitcash.PrivateKey.balance_as" title="bitcash.PrivateKey.balance_as"><code class="xref py py-func docutils literal notranslate"><span class="pre">balance_as()</span></code></a>.</p>
@@ -193,7 +193,7 @@ communicate with the blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.get_transactions">
 <code class="sig-name descname">get_transactions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.get_transactions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches transaction history.</p>
@@ -204,7 +204,7 @@ communicate with the blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.get_unspents">
 <code class="sig-name descname">get_unspents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.get_unspents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches all available unspent transaction outputs.</p>
@@ -215,7 +215,7 @@ communicate with the blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.is_compressed">
 <code class="sig-name descname">is_compressed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.is_compressed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns whether or not this private key corresponds to a compressed
@@ -227,9 +227,9 @@ public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.prepare_transaction">
-<em class="property">classmethod </em><code class="sig-name descname">prepare_transaction</code><span class="sig-paren">(</span><em class="sig-param">address</em>, <em class="sig-param">outputs</em>, <em class="sig-param">compressed=True</em>, <em class="sig-param">fee=None</em>, <em class="sig-param">leftover=None</em>, <em class="sig-param">combine=True</em>, <em class="sig-param">message=None</em>, <em class="sig-param">unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.prepare_transaction" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">prepare_transaction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">outputs</span></em>, <em class="sig-param"><span class="n">compressed</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">fee</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">leftover</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">combine</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">unspents</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.prepare_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepares a P2PKH transaction for offline signing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -269,26 +269,26 @@ communicate with the blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.public_key">
 <em class="property">property </em><code class="sig-name descname">public_key</code><a class="headerlink" href="#bitcash.PrivateKey.public_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>The public point serialized to bytes.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.public_point">
 <em class="property">property </em><code class="sig-name descname">public_point</code><a class="headerlink" href="#bitcash.PrivateKey.public_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>The public point (x, y).</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.scriptcode">
 <em class="property">property </em><code class="sig-name descname">scriptcode</code><a class="headerlink" href="#bitcash.PrivateKey.scriptcode" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.send">
-<code class="sig-name descname">send</code><span class="sig-paren">(</span><em class="sig-param">outputs</em>, <em class="sig-param">fee=None</em>, <em class="sig-param">leftover=None</em>, <em class="sig-param">combine=True</em>, <em class="sig-param">message=None</em>, <em class="sig-param">unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.send" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outputs</span></em>, <em class="sig-param"><span class="n">fee</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">leftover</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">combine</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">unspents</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.send" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction and attempts to broadcast it on
 the blockchain. This accepts the same arguments as
 <a class="reference internal" href="#bitcash.PrivateKey.create_transaction" title="bitcash.PrivateKey.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a>.</p>
@@ -327,9 +327,9 @@ communicate with the blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.sign">
-<code class="sig-name descname">sign</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.sign" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sign</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.sign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Signs some data which can be verified later by others using
 the public key.</p>
 <dl class="field-list simple">
@@ -345,9 +345,9 @@ the public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.sign_transaction">
-<code class="sig-name descname">sign_transaction</code><span class="sig-paren">(</span><em class="sig-param">tx_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.sign_transaction" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sign_transaction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tx_data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.sign_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction using previously prepared
 transaction data.</p>
 <dl class="field-list simple">
@@ -363,7 +363,7 @@ transaction data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.to_bytes">
 <code class="sig-name descname">to_bytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.to_bytes" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -373,7 +373,7 @@ transaction data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.to_der">
 <code class="sig-name descname">to_der</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.to_der" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -383,7 +383,7 @@ transaction data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.to_hex">
 <code class="sig-name descname">to_hex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.to_hex" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -393,7 +393,7 @@ transaction data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.to_int">
 <code class="sig-name descname">to_int</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.to_int" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -403,7 +403,7 @@ transaction data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.to_pem">
 <code class="sig-name descname">to_pem</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.to_pem" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -413,14 +413,14 @@ transaction data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.to_wif">
 <code class="sig-name descname">to_wif</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.to_wif" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKey.verify">
-<code class="sig-name descname">verify</code><span class="sig-paren">(</span><em class="sig-param">signature</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.verify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">verify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signature</span></em>, <em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.verify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies some data was signed by this private key.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -437,9 +437,9 @@ transaction data.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bitcash.PrivateKeyTestnet">
-<em class="property">class </em><code class="sig-prename descclassname">bitcash.</code><code class="sig-name descname">PrivateKeyTestnet</code><span class="sig-paren">(</span><em class="sig-param">wif=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bitcash.</code><code class="sig-name descname">PrivateKeyTestnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wif</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class represents a testnet BitcoinCash private key. <strong>Note:</strong> coins
 on the test network have no monetary value!</p>
 <dl class="field-list simple">
@@ -453,15 +453,15 @@ byte is disregarded. Compression will be used by all new keys.</p>
 <dd class="field-even"><p><strong>TypeError</strong> – If <code class="docutils literal notranslate"><span class="pre">wif</span></code> is not a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.address">
 <em class="property">property </em><code class="sig-name descname">address</code><a class="headerlink" href="#bitcash.PrivateKeyTestnet.address" title="Permalink to this definition">¶</a></dt>
 <dd><p>The public address you share with others to receive funds.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.balance_as">
-<code class="sig-name descname">balance_as</code><span class="sig-paren">(</span><em class="sig-param">currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.balance_as" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">balance_as</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">currency</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.balance_as" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns your balance as a formatted string in a particular currency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -473,9 +473,9 @@ byte is disregarded. Compression will be used by all new keys.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.create_transaction">
-<code class="sig-name descname">create_transaction</code><span class="sig-paren">(</span><em class="sig-param">outputs</em>, <em class="sig-param">fee=None</em>, <em class="sig-param">leftover=None</em>, <em class="sig-param">combine=True</em>, <em class="sig-param">message=None</em>, <em class="sig-param">unspents=None</em>, <em class="sig-param">custom_pushdata=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.create_transaction" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_transaction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outputs</span></em>, <em class="sig-param"><span class="n">fee</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">leftover</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">combine</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">unspents</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">custom_pushdata</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.create_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -512,9 +512,9 @@ communicate with the testnet blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.from_bytes">
-<em class="property">classmethod </em><code class="sig-name descname">from_bytes</code><span class="sig-paren">(</span><em class="sig-param">bytestr</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_bytes" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_bytes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bytestr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_bytes" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>bytestr</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as hex.</p>
@@ -525,9 +525,9 @@ communicate with the testnet blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.from_der">
-<em class="property">classmethod </em><code class="sig-name descname">from_der</code><span class="sig-paren">(</span><em class="sig-param">der</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_der" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_der</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">der</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_der" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>der</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as DER.</p>
@@ -538,9 +538,9 @@ communicate with the testnet blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.from_hex">
-<em class="property">classmethod </em><code class="sig-name descname">from_hex</code><span class="sig-paren">(</span><em class="sig-param">hexed</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_hex" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_hex</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hexed</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_hex" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>hexed</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A private key previously encoded as hex.</p>
@@ -551,9 +551,9 @@ communicate with the testnet blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.from_int">
-<em class="property">classmethod </em><code class="sig-name descname">from_int</code><span class="sig-paren">(</span><em class="sig-param">num</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_int" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_int</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_int" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>num</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – A private key in raw integer form.</p>
@@ -564,9 +564,9 @@ communicate with the testnet blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.from_pem">
-<em class="property">classmethod </em><code class="sig-name descname">from_pem</code><span class="sig-paren">(</span><em class="sig-param">pem</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_pem" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_pem</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pem</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_pem" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>pem</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as PEM.</p>
@@ -577,9 +577,9 @@ communicate with the testnet blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.get_balance">
-<code class="sig-name descname">get_balance</code><span class="sig-paren">(</span><em class="sig-param">currency='satoshi'</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.get_balance" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_balance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">currency</span><span class="o">=</span><span class="default_value">'satoshi'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.get_balance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches the current balance by calling
 <a class="reference internal" href="#bitcash.PrivateKeyTestnet.get_unspents" title="bitcash.PrivateKeyTestnet.get_unspents"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_unspents()</span></code></a>.
 We do not use <cite>~bitcash.PrivateKeyTestnet.balance_as</cite> as Testnet coins
@@ -594,7 +594,7 @@ do not have a fiat (e.g. USD) value.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.get_transactions">
 <code class="sig-name descname">get_transactions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.get_transactions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches transaction history.</p>
@@ -605,7 +605,7 @@ do not have a fiat (e.g. USD) value.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.get_unspents">
 <code class="sig-name descname">get_unspents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.get_unspents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches all available unspent transaction outputs.</p>
@@ -616,7 +616,7 @@ do not have a fiat (e.g. USD) value.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.is_compressed">
 <code class="sig-name descname">is_compressed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.is_compressed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns whether or not this private key corresponds to a compressed
@@ -628,9 +628,9 @@ public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.prepare_transaction">
-<em class="property">classmethod </em><code class="sig-name descname">prepare_transaction</code><span class="sig-paren">(</span><em class="sig-param">address</em>, <em class="sig-param">outputs</em>, <em class="sig-param">compressed=True</em>, <em class="sig-param">fee=None</em>, <em class="sig-param">leftover=None</em>, <em class="sig-param">combine=True</em>, <em class="sig-param">message=None</em>, <em class="sig-param">unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.prepare_transaction" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">prepare_transaction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">outputs</span></em>, <em class="sig-param"><span class="n">compressed</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">fee</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">leftover</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">combine</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">unspents</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.prepare_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepares a P2PKH transaction for offline signing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -670,26 +670,26 @@ communicate with the blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.public_key">
 <em class="property">property </em><code class="sig-name descname">public_key</code><a class="headerlink" href="#bitcash.PrivateKeyTestnet.public_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>The public point serialized to bytes.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.public_point">
 <em class="property">property </em><code class="sig-name descname">public_point</code><a class="headerlink" href="#bitcash.PrivateKeyTestnet.public_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>The public point (x, y).</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.scriptcode">
 <em class="property">property </em><code class="sig-name descname">scriptcode</code><a class="headerlink" href="#bitcash.PrivateKeyTestnet.scriptcode" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.send">
-<code class="sig-name descname">send</code><span class="sig-paren">(</span><em class="sig-param">outputs</em>, <em class="sig-param">fee=None</em>, <em class="sig-param">leftover=None</em>, <em class="sig-param">combine=True</em>, <em class="sig-param">message=None</em>, <em class="sig-param">unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.send" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outputs</span></em>, <em class="sig-param"><span class="n">fee</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">leftover</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">combine</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">unspents</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.send" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction and attempts to broadcast it on
 the testnet blockchain. This accepts the same arguments as
 <a class="reference internal" href="#bitcash.PrivateKeyTestnet.create_transaction" title="bitcash.PrivateKeyTestnet.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a>.</p>
@@ -728,9 +728,9 @@ communicate with the testnet blockchain itself.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.sign">
-<code class="sig-name descname">sign</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.sign" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sign</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.sign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Signs some data which can be verified later by others using
 the public key.</p>
 <dl class="field-list simple">
@@ -746,9 +746,9 @@ the public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.sign_transaction">
-<code class="sig-name descname">sign_transaction</code><span class="sig-paren">(</span><em class="sig-param">tx_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.sign_transaction" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sign_transaction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tx_data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.sign_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction using previously prepared
 transaction data.</p>
 <dl class="field-list simple">
@@ -764,7 +764,7 @@ transaction data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.to_bytes">
 <code class="sig-name descname">to_bytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.to_bytes" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -774,7 +774,7 @@ transaction data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.to_der">
 <code class="sig-name descname">to_der</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.to_der" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -784,7 +784,7 @@ transaction data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.to_hex">
 <code class="sig-name descname">to_hex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.to_hex" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -794,7 +794,7 @@ transaction data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.to_int">
 <code class="sig-name descname">to_int</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.to_int" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -804,7 +804,7 @@ transaction data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.to_pem">
 <code class="sig-name descname">to_pem</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.to_pem" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -814,14 +814,14 @@ transaction data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.to_wif">
 <code class="sig-name descname">to_wif</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.to_wif" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.PrivateKeyTestnet.verify">
-<code class="sig-name descname">verify</code><span class="sig-paren">(</span><em class="sig-param">signature</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.verify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">verify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signature</span></em>, <em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.verify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies some data was signed by this private key.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -838,9 +838,9 @@ transaction data.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bitcash.wallet.BaseKey">
-<em class="property">class </em><code class="sig-prename descclassname">bitcash.wallet.</code><code class="sig-name descname">BaseKey</code><span class="sig-paren">(</span><em class="sig-param">wif=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bitcash.wallet.</code><code class="sig-name descname">BaseKey</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wif</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class represents a point on the elliptic curve secp256k1 and
 provides all necessary cryptographic functionality. You shouldn’t use
 this class directly.</p>
@@ -855,7 +855,7 @@ byte is disregarded. Compression will be used by all new keys.</p>
 <dd class="field-even"><p><strong>TypeError</strong> – If <code class="docutils literal notranslate"><span class="pre">wif</span></code> is not a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.wallet.BaseKey.is_compressed">
 <code class="sig-name descname">is_compressed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.is_compressed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns whether or not this private key corresponds to a compressed
@@ -867,21 +867,21 @@ public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.wallet.BaseKey.public_key">
 <em class="property">property </em><code class="sig-name descname">public_key</code><a class="headerlink" href="#bitcash.wallet.BaseKey.public_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>The public point serialized to bytes.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.wallet.BaseKey.public_point">
 <em class="property">property </em><code class="sig-name descname">public_point</code><a class="headerlink" href="#bitcash.wallet.BaseKey.public_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>The public point (x, y).</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.wallet.BaseKey.sign">
-<code class="sig-name descname">sign</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.sign" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sign</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.sign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Signs some data which can be verified later by others using
 the public key.</p>
 <dl class="field-list simple">
@@ -897,7 +897,7 @@ the public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.wallet.BaseKey.to_bytes">
 <code class="sig-name descname">to_bytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.to_bytes" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -907,7 +907,7 @@ the public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.wallet.BaseKey.to_der">
 <code class="sig-name descname">to_der</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.to_der" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -917,7 +917,7 @@ the public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.wallet.BaseKey.to_hex">
 <code class="sig-name descname">to_hex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.to_hex" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -927,7 +927,7 @@ the public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.wallet.BaseKey.to_int">
 <code class="sig-name descname">to_int</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.to_int" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -937,7 +937,7 @@ the public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.wallet.BaseKey.to_pem">
 <code class="sig-name descname">to_pem</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.to_pem" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -947,9 +947,9 @@ the public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.wallet.BaseKey.verify">
-<code class="sig-name descname">verify</code><span class="sig-paren">(</span><em class="sig-param">signature</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.verify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">verify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signature</span></em>, <em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.verify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies some data was signed by this private key.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -969,87 +969,87 @@ the public key.</p>
 </div>
 <div class="section" id="network">
 <h2>Network<a class="headerlink" href="#network" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="bitcash.network.NetworkAPI">
 <em class="property">class </em><code class="sig-prename descclassname">bitcash.network.</code><code class="sig-name descname">NetworkAPI</code><a class="headerlink" href="#bitcash.network.NetworkAPI" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="attribute">
+<dd><dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.BROADCAST_TX_MAIN">
 <code class="sig-name descname">BROADCAST_TX_MAIN</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.broadcast_tx of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;, &lt;bound method InsightAPI.broadcast_tx of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.BROADCAST_TX_MAIN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.BROADCAST_TX_TEST">
 <code class="sig-name descname">BROADCAST_TX_TEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.broadcast_tx_testnet of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;, &lt;bound method BitcoreAPI.broadcast_tx_testnet of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.BROADCAST_TX_TEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_BALANCE_MAIN">
 <code class="sig-name descname">GET_BALANCE_MAIN</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_balance of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;, &lt;bound method BitcoreAPI.get_balance of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_BALANCE_MAIN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_BALANCE_TEST">
 <code class="sig-name descname">GET_BALANCE_TEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_balance_testnet of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;, &lt;bound method BitcoreAPI.get_balance_testnet of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_BALANCE_TEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_RAW_TX_MAIN">
 <code class="sig-name descname">GET_RAW_TX_MAIN</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_raw_transaction of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_RAW_TX_MAIN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_RAW_TX_TEST">
 <code class="sig-name descname">GET_RAW_TX_TEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_raw_transaction_testnet of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_RAW_TX_TEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_TRANSACTIONS_MAIN">
 <code class="sig-name descname">GET_TRANSACTIONS_MAIN</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_transactions of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;, &lt;bound method BitcoreAPI.get_transactions of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_TRANSACTIONS_MAIN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_TRANSACTIONS_TEST">
 <code class="sig-name descname">GET_TRANSACTIONS_TEST</code><em class="property"> = [&lt;bound method BitcoreAPI.get_transactions_testnet of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_TRANSACTIONS_TEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_TX_AMOUNT_MAIN">
 <code class="sig-name descname">GET_TX_AMOUNT_MAIN</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_tx_amount of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;, &lt;bound method InsightAPI.get_tx_amount of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_TX_AMOUNT_MAIN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_TX_AMOUNT_TEST">
 <code class="sig-name descname">GET_TX_AMOUNT_TEST</code><em class="property"> = [&lt;bound method BitcoreAPI.get_tx_amount_testnet of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_TX_AMOUNT_TEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_TX_MAIN">
 <code class="sig-name descname">GET_TX_MAIN</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_transaction of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_TX_MAIN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_TX_TEST">
 <code class="sig-name descname">GET_TX_TEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_transaction_testnet of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_TX_TEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_UNSPENT_MAIN">
 <code class="sig-name descname">GET_UNSPENT_MAIN</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_unspent of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;, &lt;bound method BitcoreAPI.get_unspent of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_UNSPENT_MAIN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_UNSPENT_TEST">
 <code class="sig-name descname">GET_UNSPENT_TEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_unspent_testnet of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;, &lt;bound method BitcoreAPI.get_unspent_testnet of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_UNSPENT_TEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.IGNORED_ERRORS">
-<code class="sig-name descname">IGNORED_ERRORS</code><em class="property"> = (&lt;class 'ConnectionError'&gt;, &lt;class 'requests.exceptions.ConnectionError'&gt;, &lt;class 'requests.exceptions.Timeout'&gt;, &lt;class 'requests.exceptions.ReadTimeout'&gt;)</em><a class="headerlink" href="#bitcash.network.NetworkAPI.IGNORED_ERRORS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">IGNORED_ERRORS</code><em class="property"> = (&lt;class 'requests.exceptions.RequestException'&gt;, &lt;class 'requests.exceptions.HTTPError'&gt;, &lt;class 'requests.exceptions.ConnectionError'&gt;, &lt;class 'requests.exceptions.ProxyError'&gt;, &lt;class 'requests.exceptions.SSLError'&gt;, &lt;class 'requests.exceptions.Timeout'&gt;, &lt;class 'requests.exceptions.ConnectTimeout'&gt;, &lt;class 'requests.exceptions.ReadTimeout'&gt;, &lt;class 'requests.exceptions.TooManyRedirects'&gt;, &lt;class 'requests.exceptions.ChunkedEncodingError'&gt;, &lt;class 'requests.exceptions.ContentDecodingError'&gt;, &lt;class 'requests.exceptions.StreamConsumedError'&gt;)</em><a class="headerlink" href="#bitcash.network.NetworkAPI.IGNORED_ERRORS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.broadcast_tx">
-<em class="property">classmethod </em><code class="sig-name descname">broadcast_tx</code><span class="sig-paren">(</span><em class="sig-param">tx_hex</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.broadcast_tx" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">broadcast_tx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tx_hex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.broadcast_tx" title="Permalink to this definition">¶</a></dt>
 <dd><p>Broadcasts a transaction to the blockchain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1061,9 +1061,9 @@ the public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.broadcast_tx_testnet">
-<em class="property">classmethod </em><code class="sig-name descname">broadcast_tx_testnet</code><span class="sig-paren">(</span><em class="sig-param">tx_hex</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.broadcast_tx_testnet" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">broadcast_tx_testnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tx_hex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.broadcast_tx_testnet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Broadcasts a transaction to the test network’s blockchain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1075,9 +1075,9 @@ the public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_balance">
-<em class="property">classmethod </em><code class="sig-name descname">get_balance</code><span class="sig-paren">(</span><em class="sig-param">address</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_balance" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">get_balance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_balance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the balance of an address in satoshi.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1092,9 +1092,9 @@ the public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_balance_testnet">
-<em class="property">classmethod </em><code class="sig-name descname">get_balance_testnet</code><span class="sig-paren">(</span><em class="sig-param">address</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_balance_testnet" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">get_balance_testnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_balance_testnet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the balance of an address on the test network in satoshi.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1109,9 +1109,9 @@ the public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_raw_transaction">
-<em class="property">classmethod </em><code class="sig-name descname">get_raw_transaction</code><span class="sig-paren">(</span><em class="sig-param">txid</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_raw_transaction" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">get_raw_transaction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_raw_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the raw, unparsed transaction details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1126,9 +1126,9 @@ the public key.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_raw_transaction_testnet">
-<em class="property">classmethod </em><code class="sig-name descname">get_raw_transaction_testnet</code><span class="sig-paren">(</span><em class="sig-param">txid</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_raw_transaction_testnet" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">get_raw_transaction_testnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_raw_transaction_testnet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the raw, unparsed transaction details on the test
 network.</p>
 <dl class="field-list simple">
@@ -1144,9 +1144,9 @@ network.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_transaction">
-<em class="property">classmethod </em><code class="sig-name descname">get_transaction</code><span class="sig-paren">(</span><em class="sig-param">txid</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transaction" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">get_transaction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the full transaction details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1161,9 +1161,9 @@ network.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_transaction_testnet">
-<em class="property">classmethod </em><code class="sig-name descname">get_transaction_testnet</code><span class="sig-paren">(</span><em class="sig-param">txid</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transaction_testnet" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">get_transaction_testnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transaction_testnet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the full transaction details on the test
 network.</p>
 <dl class="field-list simple">
@@ -1179,9 +1179,9 @@ network.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_transactions">
-<em class="property">classmethod </em><code class="sig-name descname">get_transactions</code><span class="sig-paren">(</span><em class="sig-param">address</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transactions" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">get_transactions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transactions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the ID of all transactions related to an address.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1196,9 +1196,9 @@ network.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_transactions_testnet">
-<em class="property">classmethod </em><code class="sig-name descname">get_transactions_testnet</code><span class="sig-paren">(</span><em class="sig-param">address</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transactions_testnet" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">get_transactions_testnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transactions_testnet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the ID of all transactions related to an address on the test
 network.</p>
 <dl class="field-list simple">
@@ -1214,9 +1214,9 @@ network.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_tx_amount">
-<em class="property">classmethod </em><code class="sig-name descname">get_tx_amount</code><span class="sig-paren">(</span><em class="sig-param">txid</em>, <em class="sig-param">txindex</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_tx_amount" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">get_tx_amount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txid</span></em>, <em class="sig-param"><span class="n">txindex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_tx_amount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the amount of a given transaction output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1234,9 +1234,9 @@ network.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_tx_amount_testnet">
-<em class="property">classmethod </em><code class="sig-name descname">get_tx_amount_testnet</code><span class="sig-paren">(</span><em class="sig-param">txid</em>, <em class="sig-param">txindex</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_tx_amount_testnet" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">get_tx_amount_testnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txid</span></em>, <em class="sig-param"><span class="n">txindex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_tx_amount_testnet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the amount of a given transaction output on the
 test network.</p>
 <dl class="field-list simple">
@@ -1255,9 +1255,9 @@ test network.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_unspent">
-<em class="property">classmethod </em><code class="sig-name descname">get_unspent</code><span class="sig-paren">(</span><em class="sig-param">address</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_unspent" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">get_unspent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_unspent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets all unspent transaction outputs belonging to an address.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1272,9 +1272,9 @@ test network.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_unspent_testnet">
-<em class="property">classmethod </em><code class="sig-name descname">get_unspent_testnet</code><span class="sig-paren">(</span><em class="sig-param">address</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_unspent_testnet" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">get_unspent_testnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_unspent_testnet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets all unspent transaction outputs belonging to an address on the
 test network.</p>
 <dl class="field-list simple">
@@ -1292,41 +1292,41 @@ test network.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bitcash.network.meta.Unspent">
-<em class="property">class </em><code class="sig-prename descclassname">bitcash.network.meta.</code><code class="sig-name descname">Unspent</code><span class="sig-paren">(</span><em class="sig-param">amount</em>, <em class="sig-param">confirmations</em>, <em class="sig-param">script</em>, <em class="sig-param">txid</em>, <em class="sig-param">txindex</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.meta.Unspent" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bitcash.network.meta.</code><code class="sig-name descname">Unspent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">amount</span></em>, <em class="sig-param"><span class="n">confirmations</span></em>, <em class="sig-param"><span class="n">script</span></em>, <em class="sig-param"><span class="n">txid</span></em>, <em class="sig-param"><span class="n">txindex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.meta.Unspent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents an unspent transaction output (UTXO).</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.meta.Unspent.amount">
 <code class="sig-name descname">amount</code><a class="headerlink" href="#bitcash.network.meta.Unspent.amount" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.meta.Unspent.confirmations">
 <code class="sig-name descname">confirmations</code><a class="headerlink" href="#bitcash.network.meta.Unspent.confirmations" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.meta.Unspent.from_dict">
-<em class="property">classmethod </em><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param">d</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.meta.Unspent.from_dict" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.meta.Unspent.from_dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.meta.Unspent.script">
 <code class="sig-name descname">script</code><a class="headerlink" href="#bitcash.network.meta.Unspent.script" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.meta.Unspent.to_dict">
 <code class="sig-name descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.meta.Unspent.to_dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.meta.Unspent.txid">
 <code class="sig-name descname">txid</code><a class="headerlink" href="#bitcash.network.meta.Unspent.txid" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.meta.Unspent.txindex">
 <code class="sig-name descname">txindex</code><a class="headerlink" href="#bitcash.network.meta.Unspent.txindex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1336,9 +1336,9 @@ test network.</p>
 </div>
 <div class="section" id="exchange-rates">
 <h2>Exchange Rates<a class="headerlink" href="#exchange-rates" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bitcash.network.currency_to_satoshi">
-<code class="sig-prename descclassname">bitcash.network.</code><code class="sig-name descname">currency_to_satoshi</code><span class="sig-paren">(</span><em class="sig-param">amount</em>, <em class="sig-param">currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.currency_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bitcash.network.</code><code class="sig-name descname">currency_to_satoshi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">amount</span></em>, <em class="sig-param"><span class="n">currency</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.currency_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a given amount of currency to the equivalent number of
 satoshi. The amount can be either an int, float, or string as long as
 it is a valid input to <code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>.</p>
@@ -1355,9 +1355,9 @@ it is a valid input to <code class="xref py py-class docutils literal notranslat
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bitcash.network.currency_to_satoshi_cached">
-<code class="sig-prename descclassname">bitcash.network.</code><code class="sig-name descname">currency_to_satoshi_cached</code><span class="sig-paren">(</span><em class="sig-param">amount</em>, <em class="sig-param">currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.currency_to_satoshi_cached" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bitcash.network.</code><code class="sig-name descname">currency_to_satoshi_cached</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">amount</span></em>, <em class="sig-param"><span class="n">currency</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.currency_to_satoshi_cached" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a given amount of currency to the equivalent number of
 satoshi. The amount can be either an int, float, or string as long as
 it is a valid input to <code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>. Results are cached
@@ -1375,9 +1375,9 @@ using a decorator for 60 seconds by default. See <a class="reference internal" h
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bitcash.network.satoshi_to_currency">
-<code class="sig-prename descclassname">bitcash.network.</code><code class="sig-name descname">satoshi_to_currency</code><span class="sig-paren">(</span><em class="sig-param">num</em>, <em class="sig-param">currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.satoshi_to_currency" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bitcash.network.</code><code class="sig-name descname">satoshi_to_currency</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em>, <em class="sig-param"><span class="n">currency</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.satoshi_to_currency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a given number of satoshi to another currency as a formatted
 string rounded down to the proper number of decimal places.</p>
 <dl class="field-list simple">
@@ -1393,9 +1393,9 @@ string rounded down to the proper number of decimal places.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bitcash.network.satoshi_to_currency_cached">
-<code class="sig-prename descclassname">bitcash.network.</code><code class="sig-name descname">satoshi_to_currency_cached</code><span class="sig-paren">(</span><em class="sig-param">num</em>, <em class="sig-param">currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.satoshi_to_currency_cached" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bitcash.network.</code><code class="sig-name descname">satoshi_to_currency_cached</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em>, <em class="sig-param"><span class="n">currency</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.satoshi_to_currency_cached" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a given number of satoshi to another currency as a formatted
 string rounded down to the proper number of decimal places. Results are
 cached using a decorator for 60 seconds by default. See <a class="reference internal" href="../guide/advanced.html#cache-times"><span class="std std-ref">Cache Times</span></a>.</p>
@@ -1412,346 +1412,466 @@ cached using a decorator for 60 seconds by default. See <a class="reference inte
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bitcash.network.rates.RatesAPI">
 <em class="property">class </em><code class="sig-prename descclassname">bitcash.network.rates.</code><code class="sig-name descname">RatesAPI</code><a class="headerlink" href="#bitcash.network.rates.RatesAPI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Each method converts exactly 1 unit of the currency to the equivalent
 number of satoshi.</p>
-<dl class="attribute">
+<dl class="py attribute">
+<dt id="bitcash.network.rates.RatesAPI.ARS_RATES">
+<code class="sig-name descname">ARS_RATES</code><em class="property"> = [&lt;bound method BitpayRates.ars_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.ARS_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.AUD_RATES">
 <code class="sig-name descname">AUD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.aud_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.AUD_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
+<dt id="bitcash.network.rates.RatesAPI.BOB_RATES">
+<code class="sig-name descname">BOB_RATES</code><em class="property"> = [&lt;bound method BitpayRates.bob_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.BOB_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.BRL_RATES">
 <code class="sig-name descname">BRL_RATES</code><em class="property"> = [&lt;bound method BitpayRates.brl_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.BRL_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.CAD_RATES">
 <code class="sig-name descname">CAD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.cad_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.CAD_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.CHF_RATES">
 <code class="sig-name descname">CHF_RATES</code><em class="property"> = [&lt;bound method BitpayRates.chf_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.CHF_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.CLP_RATES">
 <code class="sig-name descname">CLP_RATES</code><em class="property"> = [&lt;bound method BitpayRates.clp_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.CLP_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.CNY_RATES">
 <code class="sig-name descname">CNY_RATES</code><em class="property"> = [&lt;bound method BitpayRates.cny_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.CNY_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
+<dt id="bitcash.network.rates.RatesAPI.COP_RATES">
+<code class="sig-name descname">COP_RATES</code><em class="property"> = [&lt;bound method BitpayRates.cop_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.COP_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="bitcash.network.rates.RatesAPI.CUP_RATES">
+<code class="sig-name descname">CUP_RATES</code><em class="property"> = [&lt;bound method BitpayRates.cup_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.CUP_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.DKK_RATES">
 <code class="sig-name descname">DKK_RATES</code><em class="property"> = [&lt;bound method BitpayRates.dkk_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.DKK_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
+<dt id="bitcash.network.rates.RatesAPI.DOP_RATES">
+<code class="sig-name descname">DOP_RATES</code><em class="property"> = [&lt;bound method BitpayRates.dop_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.DOP_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.EUR_RATES">
 <code class="sig-name descname">EUR_RATES</code><em class="property"> = [&lt;bound method BitpayRates.eur_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.EUR_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.GBP_RATES">
 <code class="sig-name descname">GBP_RATES</code><em class="property"> = [&lt;bound method BitpayRates.gbp_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.GBP_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.HKD_RATES">
 <code class="sig-name descname">HKD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.hkd_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.HKD_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.IGNORED_ERRORS">
 <code class="sig-name descname">IGNORED_ERRORS</code><em class="property"> = (&lt;class 'requests.exceptions.ConnectionError'&gt;, &lt;class 'requests.exceptions.HTTPError'&gt;, &lt;class 'requests.exceptions.Timeout'&gt;)</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.IGNORED_ERRORS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.ISK_RATES">
 <code class="sig-name descname">ISK_RATES</code><em class="property"> = [&lt;bound method BitpayRates.isk_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.ISK_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.JPY_RATES">
 <code class="sig-name descname">JPY_RATES</code><em class="property"> = [&lt;bound method BitpayRates.jpy_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.JPY_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.KRW_RATES">
 <code class="sig-name descname">KRW_RATES</code><em class="property"> = [&lt;bound method BitpayRates.krw_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.KRW_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
+<dt id="bitcash.network.rates.RatesAPI.MXN_RATES">
+<code class="sig-name descname">MXN_RATES</code><em class="property"> = [&lt;bound method BitpayRates.mxn_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.MXN_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.NZD_RATES">
 <code class="sig-name descname">NZD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.nzd_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.NZD_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
+<dt id="bitcash.network.rates.RatesAPI.PEN_RATES">
+<code class="sig-name descname">PEN_RATES</code><em class="property"> = [&lt;bound method BitpayRates.pen_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.PEN_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.PLN_RATES">
 <code class="sig-name descname">PLN_RATES</code><em class="property"> = [&lt;bound method BitpayRates.pln_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.PLN_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.RUB_RATES">
 <code class="sig-name descname">RUB_RATES</code><em class="property"> = [&lt;bound method BitpayRates.rub_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.RUB_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.SEK_RATES">
 <code class="sig-name descname">SEK_RATES</code><em class="property"> = [&lt;bound method BitpayRates.sek_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.SEK_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.SGD_RATES">
 <code class="sig-name descname">SGD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.sgd_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.SGD_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.THB_RATES">
 <code class="sig-name descname">THB_RATES</code><em class="property"> = [&lt;bound method BitpayRates.thb_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.THB_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.TWD_RATES">
 <code class="sig-name descname">TWD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.twd_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.TWD_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.USD_RATES">
 <code class="sig-name descname">USD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.usd_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;, &lt;bound method LivecoinRates.usd_to_satoshi of &lt;class 'bitcash.network.rates.LivecoinRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.USD_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py attribute">
+<dt id="bitcash.network.rates.RatesAPI.UYU_RATES">
+<code class="sig-name descname">UYU_RATES</code><em class="property"> = [&lt;bound method BitpayRates.uyu_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.UYU_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bitcash.network.rates.RatesAPI.ars_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">ars_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.ars_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.aud_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">aud_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.aud_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="bitcash.network.rates.RatesAPI.bob_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">bob_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.bob_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.brl_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">brl_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.brl_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.cad_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">cad_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.cad_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.chf_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">chf_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.chf_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.clp_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">clp_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.clp_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.cny_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">cny_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.cny_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="bitcash.network.rates.RatesAPI.cop_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">cop_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.cop_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bitcash.network.rates.RatesAPI.cup_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">cup_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.cup_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.dkk_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">dkk_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.dkk_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="bitcash.network.rates.RatesAPI.dop_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">dop_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.dop_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.eur_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">eur_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.eur_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.gbp_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">gbp_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.gbp_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.hkd_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">hkd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.hkd_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.isk_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">isk_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.isk_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.jpy_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">jpy_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.jpy_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.krw_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">krw_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.krw_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="bitcash.network.rates.RatesAPI.mxn_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">mxn_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.mxn_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.nzd_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">nzd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.nzd_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="bitcash.network.rates.RatesAPI.pen_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">pen_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.pen_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.pln_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">pln_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.pln_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.rub_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">rub_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.rub_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.sek_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">sek_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.sek_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.sgd_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">sgd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.sgd_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.thb_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">thb_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.thb_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.twd_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">twd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.twd_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.RatesAPI.usd_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">usd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.usd_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt id="bitcash.network.rates.RatesAPI.uyu_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">uyu_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.RatesAPI.uyu_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bitcash.network.rates.BitpayRates">
 <em class="property">class </em><code class="sig-prename descclassname">bitcash.network.rates.</code><code class="sig-name descname">BitpayRates</code><a class="headerlink" href="#bitcash.network.rates.BitpayRates" title="Permalink to this definition">¶</a></dt>
 <dd><p>API Documentation:
 <a class="reference external" href="https://bitpay.com/api/rates#rest-api-resources-rates">https://bitpay.com/api/rates#rest-api-resources-rates</a></p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="bitcash.network.rates.BitpayRates.SINGLE_RATE">
 <code class="sig-name descname">SINGLE_RATE</code><em class="property"> = 'https://bitpay.com/rates/BCH/'</em><a class="headerlink" href="#bitcash.network.rates.BitpayRates.SINGLE_RATE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="bitcash.network.rates.BitpayRates.ars_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">ars_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.ars_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.aud_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">aud_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.aud_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="bitcash.network.rates.BitpayRates.bob_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">bob_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.bob_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.brl_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">brl_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.brl_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.cad_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">cad_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.cad_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.chf_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">chf_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.chf_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.clp_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">clp_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.clp_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.cny_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">cny_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.cny_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="bitcash.network.rates.BitpayRates.currency_to_satoshi">
-<em class="property">classmethod </em><code class="sig-name descname">currency_to_satoshi</code><span class="sig-paren">(</span><em class="sig-param">currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.currency_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt id="bitcash.network.rates.BitpayRates.cop_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">cop_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.cop_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="bitcash.network.rates.BitpayRates.cup_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">cup_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.cup_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bitcash.network.rates.BitpayRates.currency_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">currency_to_satoshi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">currency</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.currency_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.dkk_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">dkk_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.dkk_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="bitcash.network.rates.BitpayRates.dop_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">dop_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.dop_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.eur_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">eur_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.eur_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.gbp_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">gbp_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.gbp_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.hkd_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">hkd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.hkd_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.isk_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">isk_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.isk_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.jpy_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">jpy_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.jpy_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.krw_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">krw_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.krw_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="bitcash.network.rates.BitpayRates.mxn_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">mxn_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.mxn_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.nzd_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">nzd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.nzd_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="bitcash.network.rates.BitpayRates.pen_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">pen_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.pen_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.pln_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">pln_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.pln_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.rub_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">rub_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.rub_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.sek_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">sek_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.sek_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.sgd_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">sgd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.sgd_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.thb_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">thb_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.thb_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.twd_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">twd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.twd_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bitcash.network.rates.BitpayRates.usd_to_satoshi">
 <em class="property">classmethod </em><code class="sig-name descname">usd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.usd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bitcash.network.rates.BitpayRates.uyu_to_satoshi">
+<em class="property">classmethod </em><code class="sig-name descname">uyu_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.rates.BitpayRates.uyu_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1759,9 +1879,9 @@ number of satoshi.</p>
 </div>
 <div class="section" id="fees">
 <h2>Fees<a class="headerlink" href="#fees" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bitcash.network.get_fee">
-<code class="sig-prename descclassname">bitcash.network.</code><code class="sig-name descname">get_fee</code><span class="sig-paren">(</span><em class="sig-param">speed='medium'</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.get_fee" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bitcash.network.</code><code class="sig-name descname">get_fee</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">speed</span><span class="o">=</span><span class="default_value">'medium'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.get_fee" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the recommended satoshi per byte fee.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1776,9 +1896,9 @@ number of satoshi.</p>
 </div>
 <div class="section" id="utilities">
 <h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bitcash.verify_sig">
-<code class="sig-prename descclassname">bitcash.</code><code class="sig-name descname">verify_sig</code><span class="sig-paren">(</span><em class="sig-param">signature</em>, <em class="sig-param">data</em>, <em class="sig-param">public_key</em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.verify_sig" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bitcash.</code><code class="sig-name descname">verify_sig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signature</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">public_key</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.verify_sig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies some data was signed by the owner of a public key.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1797,7 +1917,7 @@ number of satoshi.</p>
 </div>
 <div class="section" id="exceptions">
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
-<dl class="exception">
+<dl class="py exception">
 <dt id="bitcash.exceptions.InsufficientFunds">
 <em class="property">exception </em><code class="sig-prename descclassname">bitcash.exceptions.</code><code class="sig-name descname">InsufficientFunds</code><a class="headerlink" href="#bitcash.exceptions.InsufficientFunds" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
