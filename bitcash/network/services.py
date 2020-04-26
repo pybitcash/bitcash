@@ -1,7 +1,6 @@
 import logging
 
 import requests
-from cashaddress import convert as cashaddress
 from decimal import Decimal
 
 from bitcash.network import currency_to_satoshi
@@ -355,11 +354,22 @@ class BitcoreAPI(InsightAPI):
 
 
 class NetworkAPI:
-    IGNORED_ERRORS = (ConnectionError,
-                      requests.exceptions.ConnectionError,
-                      requests.exceptions.Timeout,
-                      requests.exceptions.ReadTimeout)
+    IGNORED_ERRORS = (
+        requests.exceptions.RequestException,
+        requests.exceptions.HTTPError,
+        requests.exceptions.ConnectionError,
+        requests.exceptions.ProxyError,
+        requests.exceptions.SSLError,
+        requests.exceptions.Timeout,
+        requests.exceptions.ConnectTimeout,
+        requests.exceptions.ReadTimeout,
+        requests.exceptions.TooManyRedirects,
+        requests.exceptions.ChunkedEncodingError,
+        requests.exceptions.ContentDecodingError,
+        requests.exceptions.StreamConsumedError,
+    )
 
+    # Mainnet
     GET_BALANCE_MAIN = [BitcoinDotComAPI.get_balance,
                         BitcoreAPI.get_balance]
     GET_TRANSACTIONS_MAIN = [BitcoinDotComAPI.get_transactions,
@@ -373,6 +383,7 @@ class NetworkAPI:
                           BitcoreAPI.get_tx_amount]
     GET_RAW_TX_MAIN = [BitcoinDotComAPI.get_raw_transaction]
 
+    # Testnet
     GET_BALANCE_TEST = [BitcoinDotComAPI.get_balance_testnet,
                         BitcoreAPI.get_balance_testnet]
     GET_TRANSACTIONS_TEST = [BitcoreAPI.get_transactions_testnet]
