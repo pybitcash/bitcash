@@ -6,7 +6,7 @@
     <img src="https://img.shields.io/pypi/v/bitcash.svg?style=flat-square" alt="BitCash PyPi version">
   </a>
   <img src="https://img.shields.io/travis/sporestack/bitcash.svg?branch=master&style=flat-square" alt="Build status">
-  <img src="https://img.shields.io/codecov/c/github/sporestack/bitcash.svg?style=flat-square" alt="Code Coverage">
+  <img src="https://codecov.io/gh/pybitcash/bitcash/branch/master/graph/badge.svg" alt="Code Coverage">
   <img src="https://img.shields.io/pypi/pyversions/bitcash.svg?style=flat-square" alt="Python Versions">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="MIT license">
 </p>
@@ -70,7 +70,7 @@ $ pip install bitcash  # pip3 if pip is Python 2 on your system.
 Docs are hosted by Github Pages and are automatically built and published
 by Travis after every successful commit to BitCash's ``master`` branch.
 
-[Read the documentation](https://sporestack.github.io/bitcash/)
+[Read the documentation](https://pybitcash.github.io/bitcash/)
 
 ## Credits
 
