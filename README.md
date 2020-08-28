@@ -44,7 +44,7 @@ https://explorer.bitcoin.com/bch/tx/6aea7b1c687d976644a430a87e34c93a8a7fd52d77c3
 - Python's fastest available implementation (100x faster than closest library)
 - Seamless integration with existing server setups
 - Supports keys in cold storage
-- Fully supports 25 different currencies
+- Fully supports 29 different currencies
 - First class support for storing data in the blockchain
 - Deterministic signatures via RFC 6979
 - Access to the blockchain (and testnet chain) through multiple APIs for redundancy
