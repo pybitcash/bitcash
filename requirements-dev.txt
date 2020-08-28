@@ -4,11 +4,5 @@
 -r requirements.txt
 pytest
 coverage
-lxml              # For test coverage in run_test.py
-coverage          # For test coverage in run_test.py
-pillow            # For loading images in documentation generation
-nbsphinx          # For converting ipynb in documentation
-pandoc            # For documentation Qt snapshot updates
-
-# Use dev version of PyInstaller to keep hooks up-to-date
-https://github.com/pyinstaller/pyinstaller/archive/develop.zip; sys_platform == "win32"
+twine
+sphinx
