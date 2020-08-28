@@ -21,8 +21,8 @@ setup(
     author_email='sega01@go-beyond.org',
     maintainer='Teran McKinney',
     maintainer_email='sega01@go-beyond.org',
-    url='https://github.com/sporestack/bitcash',
-    download_url='https://github.com/sporestack/bitcash/tarball/{}'.format(
+    url='https://github.com/pybitcash/bitcash',
+    download_url='https://github.com/pybitcash/bitcash/tarball/{}'.format(
         version),
     license='MIT',
 

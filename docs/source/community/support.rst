@@ -6,7 +6,7 @@ There are many ways to get in touch.
 File an Issue
 -------------
 
-Please `file an issue on GitHub <https://github.com/sporestack/bitcash/issues>`_ if you encounter unexpected behavior or if you would like to request new features.
+Please `file an issue on GitHub <https://github.com/pybitcash/bitcash/issues>`_ if you encounter unexpected behavior or if you would like to request new features.
 
 Send a Tweet
 ------------
