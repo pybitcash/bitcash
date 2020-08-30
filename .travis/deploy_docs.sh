@@ -32,7 +32,7 @@ git init
 git config user.name "Teran McKinney"
 git config user.email ""
 
-git remote add upstream "https://$GH_TOKEN@github.com/sporestack/bitcash.git"
+git remote add upstream "https://$GH_TOKEN@github.com/pybitcash/bitcash.git"
 git fetch upstream
 git reset upstream/gh-pages
 

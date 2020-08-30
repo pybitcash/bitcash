@@ -5,7 +5,7 @@
   <a href="https://pypi.org/project/bitcash" target="_blank">
     <img src="https://img.shields.io/pypi/v/bitcash.svg?style=flat-square" alt="BitCash PyPi version">
   </a>
-  <img src="https://img.shields.io/travis/sporestack/bitcash.svg?branch=master&style=flat-square" alt="Build status">
+  <img src="https://img.shields.io/travis/pybitcash/bitcash.svg?branch=master&style=flat-square" alt="Build status">
   <img src="https://codecov.io/gh/pybitcash/bitcash/branch/master/graph/badge.svg" alt="Code Coverage">
   <img src="https://img.shields.io/pypi/pyversions/bitcash.svg?style=flat-square" alt="Python Versions">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="MIT license">
@@ -44,7 +44,7 @@ https://explorer.bitcoin.com/bch/tx/6aea7b1c687d976644a430a87e34c93a8a7fd52d77c3
 - Python's fastest available implementation (100x faster than closest library)
 - Seamless integration with existing server setups
 - Supports keys in cold storage
-- Fully supports 25 different currencies
+- Fully supports 29 different currencies
 - First class support for storing data in the blockchain
 - Deterministic signatures via RFC 6979
 - Access to the blockchain (and testnet chain) through multiple APIs for redundancy
