@@ -9,21 +9,33 @@ class InvalidAddress(Exception):
 
 class Address:
     VERSION_MAP = {
+        # 'legacy': [
+        #     ('P2SH', 5, False),
+        #     ('P2PKH', 0, False),
+        #     ('P2SH-TESTNET', 196, True),
+        #     ('P2PKH-TESTNET', 111, True),
+        # ],
         'legacy': [
-            ('P2SH', 5, False),
-            ('P2PKH', 0, False),
-            ('P2SH-TESTNET', 196, True),
-            ('P2PKH-TESTNET', 111, True),
-            ('P2SH-REGTEST', 196, True),
-            ('P2PKH-REGTEST', 111, True)
+            ('P2SH', 5, 'mainnet'),
+            ('P2PKH', 0, 'mainnet'),
+            ('P2SH-TESTNET', 196, 'testnet'),
+            ('P2PKH-TESTNET', 111, 'testnet'),
+            ('P2SH-REGTEST', 196, 'regtest'),
+            ('P2PKH-REGTEST', 111, 'regtest')
         ],
+        # 'cash': [
+        #     ('P2SH', 8, False),
+        #     ('P2PKH', 0, False),
+        #     ('P2SH-TESTNET', 8, True),
+        #     ('P2PKH-TESTNET', 0, True),
+        # ]
         'cash': [
-            ('P2SH', 8, False),
-            ('P2PKH', 0, False),
-            ('P2SH-TESTNET', 8, True),
-            ('P2PKH-TESTNET', 0, True),
-            ('P2SH-REGTEST', 8, True),
-            ('P2PKH-REGTEST', 0, True)
+            ('P2SH', 8, 'mainnet'),
+            ('P2PKH', 0, 'mainnet'),
+            ('P2SH-TESTNET', 8, 'testnet'),
+            ('P2PKH-TESTNET', 0, 'testnet'),
+            ('P2SH-REGTEST', 8, 'regtest'),
+            ('P2PKH-REGTEST', 0, 'regtest')
         ]
     }
     MAINNET_PREFIX = 'bitcoincash'
@@ -36,12 +48,19 @@ class Address:
         if prefix:
             self.prefix = prefix
         else:
-            if Address._address_type('cash', self.version)[2]:
+            if Address._address_type('cash', self.version)[2] == "testnet":
                 self.prefix = self.TESTNET_PREFIX
-            elif Address._address_type('cash', self.version)[4]:
+            elif Address._address_type('cash', self.version)[2] == "regtest":
                 self.prefix = self.REGTEST_PREFIX
             else:
                 self.prefix = self.MAINNET_PREFIX
+
+            # if Address._address_type('cash', self.version)[2]:
+            #     self.prefix = self.TESTNET_PREFIX
+            # # elif Address._address_type('cash', self.version)[4]:
+            # #     self.prefix = self.REGTEST_PREFIX
+            # else:
+            #     self.prefix = self.MAINNET_PREFIX
 
     def __str__(self):
         return 'version: {}\npayload: {}\nprefix: {}'.format(self.version, self.payload, self.prefix)
