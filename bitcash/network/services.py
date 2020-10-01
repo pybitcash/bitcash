@@ -83,7 +83,7 @@ class BitcoinDotComAPI():
     TEST_ENDPOINT = 'https://trest.bitcoin.com/v2/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'address/details/{}'
     TEST_UNSPENT_API = TEST_ENDPOINT + 'address/utxo/{}'
-    TEST_TX_PUSH_API = TEST_ENDPOINT + '/rawtransactions/sendRawTransaction/{}'
+    TEST_TX_PUSH_API = TEST_ENDPOINT + 'rawtransactions/sendRawTransaction/{}'
     TEST_TX_API = TEST_ENDPOINT + 'transaction/details/{}'
     TEST_TX_AMOUNT_API = TEST_TX_API
     TEST_RAW_API = TEST_ENDPOINT + 'transaction/details/{}'
