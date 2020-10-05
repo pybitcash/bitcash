@@ -17,6 +17,7 @@ from .samples import (
     PUBLIC_KEY_X, PUBLIC_KEY_Y,
     WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
     WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
+    # , WALLET_FORMAT_REGTEST
 )
 
 VALID_SIGNATURE = (b'0E\x02!\x00\xd7y\xe0\xa4\xfc\xea\x88\x18sDit\x9d\x01\xf3'
@@ -71,6 +72,9 @@ class TestBytesToWIF:
     def test_testnet(self):
         assert bytes_to_wif(PRIVATE_KEY_BYTES, version='test') == WALLET_FORMAT_TEST
 
+    # def test_regtest(self):
+    #     assert bytes_to_wif(PRIVATE_KEY_BYTES, version='regtest') == WALLET_FORMAT_REGTEST
+
     def test_compressed(self):
         assert bytes_to_wif(PRIVATE_KEY_BYTES, compressed=True) == WALLET_FORMAT_COMPRESSED_MAIN
 
@@ -86,6 +90,9 @@ class TestWIFToBytes:
 
     def test_testnet(self):
         assert wif_to_bytes(WALLET_FORMAT_TEST) == (PRIVATE_KEY_BYTES, False, 'test')
+
+    # def test_regtest(self):
+    #     assert wif_to_bytes(WALLET_FORMAT_REGTEST) == (PRIVATE_KEY_BYTES, False, 'regtest')
 
     def test_compressed(self):
         assert wif_to_bytes(WALLET_FORMAT_COMPRESSED_MAIN) == (PRIVATE_KEY_BYTES, True, 'main')

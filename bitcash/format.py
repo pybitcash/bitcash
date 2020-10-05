@@ -10,11 +10,19 @@ MAIN_SCRIPT_HASH = b'\x05'
 MAIN_PRIVATE_KEY = b'\x80'
 MAIN_BIP32_PUBKEY = b'\x04\x88\xb2\x1e'
 MAIN_BIP32_PRIVKEY = b'\x04\x88\xad\xe4'
+
 TEST_PUBKEY_HASH = b'\x6f'
 TEST_SCRIPT_HASH = b'\xc4'
 TEST_PRIVATE_KEY = b'\xef'
 TEST_BIP32_PUBKEY = b'\x045\x87\xcf'
 TEST_BIP32_PRIVKEY = b'\x045\x83\x94'
+
+REG_PUBKEY_HASH = b'\x6f'
+REG_SCRIPT_HASH = b'\xc4'
+REG_PRIVATE_KEY = b'\xef'
+REG_BIP32_PUBKEY = b'\x045\x87\xcf'
+REG_BIP32_PRIVKEY = b'\x045\x83\x94'
+
 PUBLIC_KEY_UNCOMPRESSED = b'\x04'
 PUBLIC_KEY_COMPRESSED_EVEN_Y = b'\x02'
 PUBLIC_KEY_COMPRESSED_ODD_Y = b'\x03'
@@ -35,10 +43,10 @@ def verify_sig(signature, data, public_key):
     return _vs(signature, data, public_key)
 
 
-def address_to_public_key_hash(address):
+def address_to_public_key_hash(address, regtest=False):
     # LEGACYADDRESSDEPRECATION
     # FIXME: This legacy address support will be removed.
-    address = cashaddress.to_cash_address(address)
+    address = cashaddress.to_cash_address(address, regtest)
     get_version(address)
     Address = cashaddress.Address._cash_string(address)
     return bytes(Address.payload)
@@ -51,15 +59,19 @@ def get_version(address):
         return 'main'
     elif address.version == 'P2PKH-TESTNET':
         return 'test'
+    elif address.version == 'P2PKH-REGTEST':
+        return 'regtest'
     else:
-        raise ValueError('{} does not correspond to a mainnet nor '
-                         'testnet P2PKH address.'.format(address.version))
+        raise ValueError('{} does not correspond to a mainnet testnet, nor '
+                         'regtest P2PKH address.'.format(address.version))
 
 
 def bytes_to_wif(private_key, version='main', compressed=False):
 
     if version == 'test':
         prefix = TEST_PRIVATE_KEY
+    elif version == 'regtest':
+        prefix = REG_PRIVATE_KEY
     else:
         prefix = MAIN_PRIVATE_KEY
 
@@ -73,7 +85,7 @@ def bytes_to_wif(private_key, version='main', compressed=False):
     return b58encode_check(private_key)
 
 
-def wif_to_bytes(wif):
+def wif_to_bytes(wif, regtest=False):
 
     private_key = b58decode_check(wif)
 
@@ -84,14 +96,17 @@ def wif_to_bytes(wif):
     elif version == TEST_PRIVATE_KEY:
         version = 'test'
     else:
-        raise ValueError('{} does not correspond to a mainnet nor '
-                         'testnet address.'.format(version))
+        raise ValueError('{} does not correspond to a mainnet, testnet, nor '
+                         'regtest address.'.format(version))
 
     # Remove version byte and, if present, compression flag.
     if len(wif) == 52 and private_key[-1] == 1:
         private_key, compressed = private_key[1:-1], True
     else:
         private_key, compressed = private_key[1:], False
+
+    if regtest:
+        version = 'regtest'
 
     return private_key, compressed, version
 
@@ -103,7 +118,7 @@ def wif_checksum_check(wif):
     except ValueError:
         return False
 
-    if decoded[:1] in (MAIN_PRIVATE_KEY, TEST_PRIVATE_KEY):
+    if decoded[:1] in (MAIN_PRIVATE_KEY, TEST_PRIVATE_KEY, REG_PRIVATE_KEY):
         return True
 
     return False
@@ -112,6 +127,8 @@ def wif_checksum_check(wif):
 def public_key_to_address(public_key, version='main'):
     if version == 'test':
         version = 'P2PKH-TESTNET'
+    elif version == 'regtest':
+        version = 'P2PKH-REGTEST'
     elif version == 'main':
         version = 'P2PKH'
     else:
