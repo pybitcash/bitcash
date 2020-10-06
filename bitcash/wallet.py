@@ -47,10 +47,10 @@ class BaseKey:
     :type wif: ``str``
     :raises TypeError: If ``wif`` is not a ``str``.
     """
-    def __init__(self, wif=None):
+    def __init__(self, wif=None, regtest=False):
         if wif:
             if isinstance(wif, str):
-                private_key_bytes, compressed, version = wif_to_bytes(wif)
+                private_key_bytes, compressed, version = wif_to_bytes(wif, regtest)
                 self._pk = ECPrivateKey(private_key_bytes)
             elif isinstance(wif, ECPrivateKey):
                 self._pk = wif
@@ -732,7 +732,7 @@ class PrivateKeyRegtest(BaseKey):
     :raises TypeError: If ``wif`` is not a ``str``.
     """
 
-    def __init__(self, wif=None):
+    def __init__(self, wif=None, regtest=True):
         super().__init__(wif=wif)
 
         self._address = None
