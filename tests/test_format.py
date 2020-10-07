@@ -136,12 +136,6 @@ class TestPublicKeyToAddress:
             public_key_to_address(PUBLIC_KEY_COMPRESSED[:-1])
 
     def test_public_key_to_address_test_compressed(self):
-        assert public_key_to_address(PUBLIC_KEY_COMPRESSED, version='test') == BITCOIN_ADDRESS_TEST_COMPRESSED
-
-    def test_public_key_to_address_test_uncompressed(self):
-        assert public_key_to_address(PUBLIC_KEY_UNCOMPRESSED, version='test') == BITCOIN_ADDRESS_TEST
-
-    def test_public_key_to_address_test_compressed(self):
         assert public_key_to_address(PUBLIC_KEY_COMPRESSED, version='test') == BITCOIN_CASHADDRESS_TEST_COMPRESSED
 
     def test_public_key_to_address_test_uncompressed(self):
