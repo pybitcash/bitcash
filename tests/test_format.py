@@ -90,6 +90,9 @@ class TestWIFToBytes:
     def test_compressed(self):
         assert wif_to_bytes(WALLET_FORMAT_COMPRESSED_MAIN) == (PRIVATE_KEY_BYTES, True, 'main')
 
+    def test_testnet_compressed(self):
+        assert wif_to_bytes(WALLET_FORMAT_COMPRESSED_TEST) == (PRIVATE_KEY_BYTES, True, 'test')
+
     def test_invalid_network(self):
         with pytest.raises(ValueError):
             wif_to_bytes(BITCOIN_ADDRESS)
@@ -104,6 +107,9 @@ class TestWIFChecksumCheck:
 
     def test_wif_checksum_check_compressed_success(self):
         assert wif_checksum_check(WALLET_FORMAT_COMPRESSED_MAIN)
+
+    def test_wif_checksum_check_test_compressed_success(self):
+        assert wif_checksum_check(WALLET_FORMAT_COMPRESSED_TEST)
 
     def test_wif_checksum_check_decode_failure(self):
         assert not wif_checksum_check(BITCOIN_ADDRESS[:-1])
@@ -159,7 +165,9 @@ def test_point_to_public_key():
 
 def test_address_to_public_key_hash():
     assert address_to_public_key_hash(BITCOIN_CASHADDRESS) == PUBKEY_HASH
+    assert address_to_public_key_hash(BITCOIN_CASHADDRESS_TEST) == PUBKEY_HASH
     assert address_to_public_key_hash(BITCOIN_CASHADDRESS_COMPRESSED) == PUBKEY_HASH_COMPRESSED
+    assert address_to_public_key_hash(BITCOIN_CASHADDRESS_TEST_COMPRESSED) == PUBKEY_HASH_COMPRESSED
     with pytest.raises(ValueError):
         address_to_public_key_hash(BITCOIN_CASHADDRESS_PAY2SH)
     with pytest.raises(ValueError):
