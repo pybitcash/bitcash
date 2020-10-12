@@ -48,7 +48,7 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
 
-    install_requires=['coincurve>=4.3.0', 'requests', 'cashaddress==1.0.4'],
+    install_requires=['coincurve>=4.3.0', 'requests', 'cashaddress-regtest==1.1.0'],
     extras_require={
         'cli': ('appdirs', 'click', 'privy', 'tinydb'),
         'cache': ('lmdb', ),

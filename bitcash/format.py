@@ -17,11 +17,11 @@ TEST_PRIVATE_KEY = b'\xef'
 TEST_BIP32_PUBKEY = b'\x045\x87\xcf'
 TEST_BIP32_PRIVKEY = b'\x045\x83\x94'
 
-REG_PUBKEY_HASH = b'\x6f'
-REG_SCRIPT_HASH = b'\xc4'
-REG_PRIVATE_KEY = b'\xef'
-REG_BIP32_PUBKEY = b'\x045\x87\xcf'
-REG_BIP32_PRIVKEY = b'\x045\x83\x94'
+REGTEST_PUBKEY_HASH = b'\x6f'
+REGTEST_SCRIPT_HASH = b'\xc4'
+REGTEST_PRIVATE_KEY = b'\xef'
+REGTEST_BIP32_PUBKEY = b'\x045\x87\xcf'
+REGTEST_BIP32_PRIVKEY = b'\x045\x83\x94'
 
 PUBLIC_KEY_UNCOMPRESSED = b'\x04'
 PUBLIC_KEY_COMPRESSED_EVEN_Y = b'\x02'
@@ -71,7 +71,7 @@ def bytes_to_wif(private_key, version='main', compressed=False):
     if version == 'test':
         prefix = TEST_PRIVATE_KEY
     elif version == 'regtest':
-        prefix = REG_PRIVATE_KEY
+        prefix = REGTEST_PRIVATE_KEY
     else:
         prefix = MAIN_PRIVATE_KEY
 
@@ -118,7 +118,7 @@ def wif_checksum_check(wif):
     except ValueError:
         return False
 
-    if decoded[:1] in (MAIN_PRIVATE_KEY, TEST_PRIVATE_KEY, REG_PRIVATE_KEY):
+    if decoded[:1] in (MAIN_PRIVATE_KEY, TEST_PRIVATE_KEY, REGTEST_PRIVATE_KEY):
         return True
 
     return False
