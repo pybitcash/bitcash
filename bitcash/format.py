@@ -93,8 +93,6 @@ def wif_to_bytes(wif, regtest=False):
 
     if version == MAIN_PRIVATE_KEY:
         version = 'main'
-    elif version == REG_PRIVATE_KEY:
-        version = 'regtest'
     elif version == TEST_PRIVATE_KEY:
         version = 'test'
     else:
