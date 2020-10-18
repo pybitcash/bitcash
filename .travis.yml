@@ -3,15 +3,15 @@ dist: xenial
 language: python
 
 matrix:
-    include:
-        - python: 3.5
-          env: TOXENV=py35
-        - python: 3.6
-          env: TOXENV=py36
-        - python: 3.7
-          env: TOXENV=py37
-        - python: pypy3
-          env: TOXENV=pypy3
+  include:
+    - python: 3.5
+      env: TOXENV=py35
+    - python: 3.6
+      env: TOXENV=py36
+    - python: 3.7
+      env: TOXENV=py37
+    - python: pypy3
+      env: TOXENV=pypy3
 
 install:
   - pip install -U setuptools pip
@@ -25,3 +25,12 @@ after_success:
   - codecov
   - chmod a+x ./.travis/deploy_docs.sh
   - ./.travis/deploy_docs.sh
+
+deploy:
+  # source: https://docs.travis-ci.com/user/deployment/pypi/
+  provider: pypi
+  username: "__token__"
+  password:
+    secure: Ji8Y+LnYjq6k6jWYBXSTyarC+Fe1Dkag50DcmTyoaa9ODncyREeyNau6iHKuqvKnOV0WbbpP2YH0a6on2ONhONdVg5+nN8kE8kJDV0Jirqxd1MQqQLK4H52bciJ/I4Zf+nUGQMt8CXyoLzEgXKZaQZOeaZSXXPecOUyUGTG9xBfjGBE4GlB/67jpEsusMRR0Hrzbsd7BJ3Hiet9f9vRbu0rjeeSrkNP5jlTJw1YZ0Nx2KRn+BOurURSjXOMruZ7ZRpZtP59fgaRzy5a/T23jE32ShnWeDV0Q0rFhcC55e5O8tQTcfwKZl+PBzkQM5R6LAkzUDSm4aqhynqOtb1jkX1oWvKhNIu/Q23bRmgyJsDqbsdqnqmgFuXhG82fStVds1HIxNxJdcLh+Kvr79WLb5bHv6oHVOfLbjRz4SbXxoV9arHwkwmAPLNbphzh4Ir5QoI2QTL3xoAs9/HuDvZV6/dOpmrjeo9A4MLLzReXeF74mq77P5rsDzuUKSXBoZdhbtGKbXc+UkMisXCQgHX+xY/b1jkfgFPxP7B9F4bS8iKmOwPLU5MKgvySAe3CQR49bWvDN8vIs+Xe6FUT+IwZhabgyS0/NK+3R/r9C1MYSS2QzHK9jZpTBl+RybiuAyJg7gtLbi7LqmVn8tV4MA1v8ebKoFTeLiZM0ftr6zlRYJEs=
+  on:
+    tags: true
