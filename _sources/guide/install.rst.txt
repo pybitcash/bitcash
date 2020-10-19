@@ -22,7 +22,7 @@ You can clone it like this:
 
 .. code-block:: bash
 
-    $ git clone git://github.com/sporestack/bitcash.git
+    $ git clone git://github.com/pybitcash/bitcash.git
 
 .. _PyPI: https://pypi.org/project/bitcash
-.. _here: https://github.com/sporestack/bitcash
+.. _here: https://github.com/pybitcash/bitcash

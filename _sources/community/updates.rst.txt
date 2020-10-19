@@ -6,7 +6,7 @@ Check the following sources often to keep up on new features and other changes.
 GitHub
 ------
 
-The `project page <https://github.com/sporestack/bitcash>`_ on GitHub remains the best
+The `project page <https://github.com/pybitcash/bitcash>`_ on GitHub remains the best
 way to track the development of bitcash.
 
 Twitter

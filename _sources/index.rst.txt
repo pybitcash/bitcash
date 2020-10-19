@@ -9,10 +9,10 @@ Version |version|.
 .. image:: https://img.shields.io/pypi/pyversions/bitcash.svg?style=flat-square
     :target: https://pypi.org/project/bitcash
 
-.. image:: https://travis-ci.org/sporestack/bitcash.svg?branch=master
-    :target: https://travis-ci.org/sporestack/bitcash
+.. image:: https://travis-ci.org/pybitcash/bitcash.svg?branch=master
+    :target: https://travis-ci.org/pybitcash/bitcash
 
-.. image:: https://img.shields.io/codecov/c/github/sporestack/bitcash.svg?style=flat-square
+.. image:: https://img.shields.io/codecov/c/github/pybitcash/bitcash.svg?style=flat-square
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
     :target: https://en.wikipedia.org/wiki/MIT_License
