@@ -328,6 +328,9 @@ class TestPrivateKeyRegtest:
         transactions = private_key.get_transactions()
         assert transactions == private_key.transactions
 
+    #This tests requires the local node to be continuously generating blocks
+    #marking 'skip' until auto-block generation is functional
+    @pytest.mark.skip
     def test_send_cashaddress(self):
         # Local node user will need to ensure the address is funded
         # first in order for this test to pass
@@ -344,6 +347,9 @@ class TestPrivateKeyRegtest:
         logging.debug('Current: {}, Initial: {}'.format(current, initial))
         assert current < initial
 
+    #This tests requires the local node to be continuously generating blocks
+    #marking 'skip' until auto-block generation is functional
+    @pytest.mark.skip
     def test_send(self):
         # Local node user will need to ensure the address is funded
         # first in order for this test to pass
