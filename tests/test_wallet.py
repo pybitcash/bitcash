@@ -8,6 +8,7 @@ from bitcash.crypto import ECPrivateKey
 from bitcash.curve import Point
 from bitcash.format import verify_sig
 from bitcash.wallet import BaseKey, Key, PrivateKey, PrivateKeyTestnet, PrivateKeyRegtest, wif_to_key
+from bitcash.exceptions import InvalidAddress
 from .samples import (
     PRIVATE_KEY_BYTES, PRIVATE_KEY_DER,
     PRIVATE_KEY_HEX, PRIVATE_KEY_NUM, PRIVATE_KEY_PEM,
@@ -15,7 +16,8 @@ from .samples import (
     PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
     WALLET_FORMAT_COMPRESSED_REGTEST, WALLET_FORMAT_MAIN,
     WALLET_FORMAT_TEST, WALLET_FORMAT_REGTEST,
-    BITCOIN_CASHADDRESS, BITCOIN_CASHADDRESS_TEST, BITCOIN_CASHADDRESS_REGTEST
+    BITCOIN_CASHADDRESS, BITCOIN_CASHADDRESS_TEST, BITCOIN_CASHADDRESS_REGTEST,
+    BITCOIN_ADDRESS_TEST_PAY2SH, BITCOIN_ADDRESS_REGTEST_PAY2SH
 )
 
 TRAVIS = 'TRAVIS' in os.environ
@@ -242,7 +244,7 @@ class TestPrivateKeyTestnet:
 
     @pytest.mark.skip
     def test_send(self):
-        private_key = PrivateKeyTestnet('cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ')
+        private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
         private_key.get_unspents()
 
         initial = private_key.balance
@@ -266,8 +268,8 @@ class TestPrivateKeyTestnet:
         private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
         private_key.get_unspents()
 
-        with pytest.raises(ValueError):
-            private_key.send([('2NFKbBHzzh32q5DcZJNgZE9sF7gYmtPbawk', 1, 'mbch')])
+        with pytest.raises(InvalidAddress):
+            private_key.send([(BITCOIN_ADDRESS_TEST_PAY2SH, 1, 'mbch')])
 
     def test_from_hex(self):
         key = PrivateKeyTestnet.from_hex(PRIVATE_KEY_HEX)
@@ -353,7 +355,7 @@ class TestPrivateKeyRegtest:
     def test_send(self):
         # Local node user will need to ensure the address is funded
         # first in order for this test to pass
-        private_key = PrivateKeyRegtest('cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ')
+        private_key = PrivateKeyRegtest(WALLET_FORMAT_COMPRESSED_REGTEST)
         private_key.get_unspents()
 
         initial = private_key.balance
@@ -369,6 +371,7 @@ class TestPrivateKeyRegtest:
         logging.debug('Current: {}, Initial: {}'.format(current, initial))
         assert current < initial
 
+    @pytest.mark.skip
     def test_send_pay2sh(self):
         """
         We don't yet support pay2sh, so we must throw an exception if we get one.
@@ -379,7 +382,7 @@ class TestPrivateKeyRegtest:
         private_key = PrivateKeyRegtest(WALLET_FORMAT_COMPRESSED_REGTEST)
         private_key.get_unspents()
 
-        with pytest.raises(ValueError):
+        with pytest.raises(InvalidAddress):
             private_key.send([('2NFKbBHzzh32q5DcZJNgZE9sF7gYmtPbawk', 1, 'mbch')])
 
     def test_from_hex(self):

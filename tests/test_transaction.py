@@ -8,20 +8,25 @@ from bitcash.transaction import (
 )
 from bitcash.utils import hex_to_bytes
 from bitcash.wallet import PrivateKey
-from .samples import WALLET_FORMAT_MAIN, BITCOIN_CASHADDRESS_TEST_COMPRESSED
+from .samples import (
+    WALLET_FORMAT_MAIN, BITCOIN_CASHADDRESS, BITCOIN_CASHADDRESS_COMPRESSED
+)
 
 
-RETURN_ADDRESS = 'n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi'
+RETURN_ADDRESS = BITCOIN_CASHADDRESS
 
 FINAL_TX_1 = ('01000000018878399d83ec25c627cfbf753ff9ca3602373eac437ab2676154a'
-              '3c2da23adf3010000008a47304402204d6f28d77fa31cfc6c13bb1bda2628f2'
-              '237e2630e892dc62bb319eb75dc7f9310220741f4df7d9460daa844389eb23f'
-              'b318dd674967144eb89477608b10e03c175034141043d5c2875c9bd116875a7'
+              '3c2da23adf3010000008a473044022013d0751fb16eb7e1ac75aa799ebbfb55'
+              '2bf112174f4a7eea689b8930cf582abc02206bc2082f38019476ecc3dc839fd'
+              'eda87a70041f23f0843edd101792109a10c6e4141043d5c2875c9bd116875a7'
               '1a5db64cffcb13396b163d039b1d932782489180433476a4352a2add00ebb0d'
               '5c94c515b72eb10f1fd8f3f03b42f4a2b255bfc9aa9e3ffffffff0250c30000'
-              '000000001976a914e7c1345fc8f87c68170b3aa798a956c2fe6a9eff88ac088'
-              '8fc04000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888'
+              '000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac088'
+              '8fc04000000001976a914990ef60d63b5b5964a1c2282061af45123e93fcb88'
               'ac00000000')
+
+FINAL_TX_ID = "f7e1086edae26fee6ad5efcf9d2c2ff6126c468ddc3a35ed4df51ad557b56ce0"
+
 INPUTS = [
     TxIn(
         (b"G0D\x02 E\xb7C\xdb\xaa\xaa,\xd1\xef\x0b\x914oVD\xe3-\xc7\x0c\xde\x05\t"
@@ -50,23 +55,29 @@ UNSPENTS = [
             'f3ad23dac2a3546167b27a43ac3e370236caf93f75bfcf27c625ec839d397888',
             1)
 ]
-OUTPUTS = [
-    ('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 50000),
-    ('mtrNwJxS1VyHYn3qBY1Qfsm3K3kh1mGRMS', 83658760)
+OUTPUTS = [ 
+    (BITCOIN_CASHADDRESS, 50000), 
+    (BITCOIN_CASHADDRESS_COMPRESSED, 83658760) 
 ]
 MESSAGES = [
     (b'hello', 0),
     (b'there', 0)
 ]
-OUTPUT_BLOCK = ('50c30000000000001976a914e7c1345fc8f87c68170b3aa798a956c2fe6a9eff88ac'
-                '0888fc04000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac')
-OUTPUT_BLOCK_MESSAGES = ('50c30000000000001976a914e7c1345fc8f87c68170b3aa798a956c2fe6a9eff88ac'
-                         '0888fc04000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac'
+OUTPUT_BLOCK = ('50c30000000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac'
+                '0888fc04000000001976a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac')
+
+OUTPUT_BLOCK_TESTNET = ('50c30000000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac'
+                '0888fc04000000001976a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac')
+                
+OUTPUT_BLOCK_MESSAGES = ('50c30000000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac'
+                         '0888fc04000000001976a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac'
                          '0000000000000000076a0568656c6c6f'
                          '0000000000000000076a057468657265')
-OUTPUT_BLOCK_MESSAGE_PUSHDATA = ('50c30000000000001976a914e7c1345fc8f87c68170b3aa798a956c2fe6a9eff88ac'
-                                 '0888fc04000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac'
+
+OUTPUT_BLOCK_MESSAGE_PUSHDATA = ('50c30000000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac'
+                                 '0888fc04000000001976a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac'
                                  '0000000000000000076a0568656c6c6f')
+
 SIGNED_DATA = (b'\x85\xc7\xf6\xc6\x80\x13\xc2g\xd3t\x8e\xb8\xb4\x1f\xcc'
                b'\x92x~\n\x1a\xac\xc0\xf0\xff\xf7\xda\xfe0\xb7!6t')
 
@@ -100,7 +111,8 @@ class TestSanitizeTxData:
     def test_message(self):
         unspents_original = [Unspent(10000, 0, '', '', 0),
                              Unspent(10000, 0, '', '', 0)]
-        outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 1000, 'satoshi')]
+        # outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 1000, 'satoshi')]
+        outputs_original = [(BITCOIN_CASHADDRESS_COMPRESSED, 1000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=5, leftover=RETURN_ADDRESS,
@@ -114,7 +126,8 @@ class TestSanitizeTxData:
     def test_message_pushdata(self):
         unspents_original = [Unspent(10000, 0, '', '', 0),
                              Unspent(10000, 0, '', '', 0)]
-        outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 1000, 'satoshi')]
+        # outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 1000, 'satoshi')]
+        outputs_original = [(BITCOIN_CASHADDRESS_COMPRESSED, 1000, 'satoshi')]
 
         BYTES = len(b'hello').to_bytes(1, byteorder='little') + b'hello'
 
@@ -130,7 +143,8 @@ class TestSanitizeTxData:
     def test_fee_applied(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2000, 'satoshi')]
+    #    outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2000, 'satoshi')]
+        outputs_original = [(BITCOIN_CASHADDRESS_COMPRESSED, 2000, 'satoshi')]
 
         with pytest.raises(InsufficientFunds):
             sanitize_tx_data(
@@ -141,7 +155,8 @@ class TestSanitizeTxData:
     def test_zero_remaining(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2000, 'satoshi')]
+        # outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2000, 'satoshi')]
+        outputs_original = [(BITCOIN_CASHADDRESS_COMPRESSED, 2000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
@@ -149,12 +164,14 @@ class TestSanitizeTxData:
         )
 
         assert unspents == unspents_original
-        assert outputs == [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2000)]
+        # assert outputs == [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2000)]
+        assert outputs == [(BITCOIN_CASHADDRESS_COMPRESSED, 2000)]
 
     def test_combine_remaining(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 500, 'satoshi')]
+        # outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 500, 'satoshi')]
+        outputs_original = [(BITCOIN_CASHADDRESS_COMPRESSED, 500, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
@@ -169,7 +186,8 @@ class TestSanitizeTxData:
     def test_combine_insufficient_funds(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2500, 'satoshi')]
+        # outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2500, 'satoshi')]
+        outputs_original = [(BITCOIN_CASHADDRESS_COMPRESSED, 2500, 'satoshi')]
 
         with pytest.raises(InsufficientFunds):
             sanitize_tx_data(
@@ -180,7 +198,8 @@ class TestSanitizeTxData:
     def test_no_combine_remaining(self):
         unspents_original = [Unspent(7000, 0, '', '', 0),
                              Unspent(3000, 0, '', '', 0)]
-        outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2000, 'satoshi')]
+        # outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2000, 'satoshi')]
+        outputs_original = [(BITCOIN_CASHADDRESS_COMPRESSED, 2000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
@@ -196,7 +215,8 @@ class TestSanitizeTxData:
         unspents_original = [Unspent(1500, 0, '', '', 0),
                              Unspent(1600, 0, '', '', 0),
                              Unspent(1700, 0, '', '', 0)]
-        outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2000, 'satoshi')]
+        # outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2000, 'satoshi')]
+        outputs_original = [(BITCOIN_CASHADDRESS_COMPRESSED, 2000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
@@ -215,7 +235,8 @@ class TestSanitizeTxData:
         unspents_single = [Unspent(5000, 0, '', '', 0)]
         unspents_original = [Unspent(5000, 0, '', '', 0),
                              Unspent(5000, 0, '', '', 0)]
-        outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 1000, 'satoshi')]
+        # outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 1000, 'satoshi')]
+        outputs_original = [(BITCOIN_CASHADDRESS_COMPRESSED, 1000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=1, leftover=RETURN_ADDRESS,
@@ -238,7 +259,8 @@ class TestSanitizeTxData:
     def test_no_combine_insufficient_funds(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2500, 'satoshi')]
+        # outputs_original = [(BITCOIN_CASHADDRESS_TEST_COMPRESSED, 2500, 'satoshi')]
+        outputs_original = [(BITCOIN_CASHADDRESS_COMPRESSED, 2500, 'satoshi')]
 
         with pytest.raises(InsufficientFunds):
             sanitize_tx_data(
@@ -302,4 +324,4 @@ def test_construct_input_block():
 
 
 def test_calc_txid():
-    assert calc_txid(FINAL_TX_1) == '64637ffb0d36003eccbb0317dee000ac8a2744cbea3b8a4c3a477c132bb8ca69'
+    assert calc_txid(FINAL_TX_1) == FINAL_TX_ID

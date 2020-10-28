@@ -200,3 +200,7 @@ def test_address_to_public_key_hash():
         address_to_public_key_hash(BITCOIN_CASHADDRESS_TEST_PAY2SH)
     with pytest.raises(ValueError):
         address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST_PAY2SH)
+
+
+
+# InvalidAddress
