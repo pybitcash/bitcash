@@ -330,10 +330,11 @@ class TestPrivateKeyRegtest:
         transactions = private_key.get_transactions()
         assert transactions == private_key.transactions
 
-    #This tests requires the local node to be continuously generating blocks
-    #marking 'skip' until auto-block generation is functional
     @pytest.mark.skip
     def test_send_cashaddress(self):
+        # This tests requires the local node to be continuously generating blocks
+        # marking 'skip' until auto-block generation is functional
+
         # Local node user will need to ensure the address is funded
         # first in order for this test to pass
         private_key = PrivateKeyRegtest(WALLET_FORMAT_COMPRESSED_REGTEST)
@@ -349,10 +350,11 @@ class TestPrivateKeyRegtest:
         logging.debug('Current: {}, Initial: {}'.format(current, initial))
         assert current < initial
 
-    #This tests requires the local node to be continuously generating blocks
-    #marking 'skip' until auto-block generation is functional
     @pytest.mark.skip
     def test_send(self):
+        # This tests requires the local node to be continuously generating blocks
+        # marking 'skip' until auto-block generation is functional 
+    
         # Local node user will need to ensure the address is funded
         # first in order for this test to pass
         private_key = PrivateKeyRegtest(WALLET_FORMAT_COMPRESSED_REGTEST)
@@ -373,6 +375,12 @@ class TestPrivateKeyRegtest:
 
     @pytest.mark.skip
     def test_send_pay2sh(self):
+        # This tests requires the local node to be continuously generating blocks
+        # marking 'skip' until auto-block generation is functional 
+    
+        # Local node user will need to ensure the address is funded
+        # first in order for this test to pass
+
         """
         We don't yet support pay2sh, so we must throw an exception if we get one.
         Otherwise, we could send coins into an unrecoverable blackhole, needlessly.
