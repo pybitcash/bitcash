@@ -4,6 +4,7 @@ from coincurve import verify_signature as _vs
 from bitcash.base58 import b58decode_check, b58encode_check
 from bitcash.crypto import ripemd160_sha256
 from bitcash.curve import x_to_y
+from bitcash.exceptions import InvalidAddress
 
 MAIN_PUBKEY_HASH = b'\x00'
 MAIN_SCRIPT_HASH = b'\x05'
@@ -43,13 +44,19 @@ def verify_sig(signature, data, public_key):
     return _vs(signature, data, public_key)
 
 
-def address_to_public_key_hash(address, regtest=False):
-    # LEGACYADDRESSDEPRECATION
-    # FIXME: This legacy address support will be removed.
-    address = cashaddress.to_cash_address(address, regtest)
-    get_version(address)
-    Address = cashaddress.Address._cash_string(address)
-    return bytes(Address.payload)
+def address_to_public_key_hash(address):
+    if ":" not in address:
+        # Address must be a cash address, legacy no longer supported
+        raise InvalidAddress
+
+    address = cashaddress.Address._cash_string(address)
+
+    if "P2PKH" not in address.version:
+        # Bitcash currently only has support for P2PKH transaction types
+        # P2SH and others will raise ValueError
+        raise ValueError
+
+    return bytes(address.payload)
 
 
 def get_version(address):
@@ -94,7 +101,12 @@ def wif_to_bytes(wif, regtest=False):
     if version == MAIN_PRIVATE_KEY:
         version = 'main'
     elif version == TEST_PRIVATE_KEY:
-        version = 'test'
+        # Regtest and testnet WIF formats are identical, so we
+        # check the 'regtest' flag and manually set the version
+        if regtest:
+            version = 'regtest'
+        else:
+            version = 'test'
     else:
         raise ValueError('{} does not correspond to a mainnet, testnet nor '
                          'regtest address.'.format(version))
@@ -104,9 +116,6 @@ def wif_to_bytes(wif, regtest=False):
         private_key, compressed = private_key[1:-1], True
     else:
         private_key, compressed = private_key[1:], False
-
-    if regtest:
-        version = 'regtest'
 
     return private_key, compressed, version
 

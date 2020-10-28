@@ -129,7 +129,7 @@ def get_op_pushdata_code(dest):
         return OP_PUSHDATA4 + length_data.to_bytes(4, byteorder='little')  # OP_PUSHDATA4 format
 
 
-def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True, custom_pushdata=False, regtest=False):
+def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True, custom_pushdata=False):
     """
     sanitize_tx_data()
 
@@ -140,9 +140,6 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
     for i, output in enumerate(outputs):
         dest, amount, currency = output
-        # LEGACYADDRESSDEPRECATION
-        # FIXME: Will be removed in an upcoming release, breaking compatibility with legacy addresses.
-        dest = cashaddress.to_cash_address(dest, regtest)
         outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))
 
     if not unspents:

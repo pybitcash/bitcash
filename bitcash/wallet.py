@@ -16,23 +16,22 @@ from bitcash.transaction import (
 
 def wif_to_key(wif, regtest=False):
     private_key_bytes, compressed, version = wif_to_bytes(wif, regtest)
-
-    if regtest:
-        if compressed:
-            return PrivateKeyRegtest.from_bytes(private_key_bytes)
-        else:
-            return PrivateKeyRegtest(wif)
     
     if version == 'main':
         if compressed:
             return PrivateKey.from_bytes(private_key_bytes)
         else:
             return PrivateKey(wif)
-    else:
+    elif version == 'test':
         if compressed:
             return PrivateKeyTestnet.from_bytes(private_key_bytes)
         else:
             return PrivateKeyTestnet(wif)
+    else: # Regtest
+        if compressed:
+            return PrivateKeyRegtest.from_bytes(private_key_bytes)
+        else:
+            return PrivateKeyRegtest(wif)
 
 
 class BaseKey:
@@ -733,7 +732,7 @@ class PrivateKeyRegtest(BaseKey):
     """
 
     def __init__(self, wif=None, regtest=True):
-        super().__init__(wif=wif)
+        super().__init__(wif, regtest)
 
         self._address = None
         self._scriptcode = None
@@ -753,7 +752,7 @@ class PrivateKeyRegtest(BaseKey):
     @property
     def scriptcode(self):
         self._scriptcode = (OP_DUP + OP_HASH160 + OP_PUSH_20 +
-                            address_to_public_key_hash(self.address, regtest=True) +
+                            address_to_public_key_hash(self.address) +
                             OP_EQUALVERIFY + OP_CHECKSIG)
         return self._scriptcode
 
@@ -847,7 +846,6 @@ class PrivateKeyRegtest(BaseKey):
             message=message,
             compressed=self.is_compressed(),
             custom_pushdata=custom_pushdata,
-            regtest=True
         )
 
         return create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=custom_pushdata)
@@ -943,7 +941,6 @@ class PrivateKeyRegtest(BaseKey):
             combine=combine,
             message=message,
             compressed=compressed,
-            regtest=True
         )
 
         data = {
