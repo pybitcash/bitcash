@@ -315,16 +315,19 @@ class TestPrivateKeyRegtest:
         private_key = PrivateKeyRegtest(WALLET_FORMAT_COMPRESSED_REGTEST)
         assert private_key.to_wif() == WALLET_FORMAT_COMPRESSED_REGTEST
 
+    @pytest.mark.skip
     def test_get_balance(self):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_REGTEST)
         balance = int(private_key.get_balance())
         assert balance == private_key.balance
 
+    @pytest.mark.skip
     def test_get_unspent(self):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_REGTEST)
         unspent = private_key.get_unspents()
         assert unspent == private_key.unspents
 
+    @pytest.mark.skip
     def test_get_transactions(self):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_REGTEST)
         transactions = private_key.get_transactions()

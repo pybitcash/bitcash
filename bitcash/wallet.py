@@ -27,7 +27,7 @@ def wif_to_key(wif, regtest=False):
             return PrivateKeyTestnet.from_bytes(private_key_bytes)
         else:
             return PrivateKeyTestnet(wif)
-    else: # Regtest
+    else:  # Regtest
         if compressed:
             return PrivateKeyRegtest.from_bytes(private_key_bytes)
         else:
