@@ -2,6 +2,9 @@ dist: xenial
 
 language: python
 
+services:
+  - docker
+
 matrix:
   include:
     - python: 3.5
@@ -20,6 +23,11 @@ install:
   - pip install tox
   - pip install codecov
   - pip install sphinx
+  - git clone https://github.com/actorforth/bch-toolkit
+  - cd ./bch-toolkit
+  - ./setup node rest
+  - ./run server rest
+  - ./bitcoin-cli
 
 script: "tox -- -rs"
 
