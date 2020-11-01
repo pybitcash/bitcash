@@ -27,6 +27,7 @@ install:
   - cd ./bch-toolkit
   - ./setup node rest
   - ./run server rest
+  - sleep 5
   - ./bitcoin-cli
 
 script: "tox -- -rs"
