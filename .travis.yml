@@ -29,6 +29,7 @@ install:
   - ./run server rest
   - sleep 5
   - ./bitcoin-cli
+  - curl http://localhost:12500/v2/
 
 script: "tox -- -rs"
 
