@@ -315,29 +315,27 @@ class TestPrivateKeyRegtest:
         private_key = PrivateKeyRegtest(WALLET_FORMAT_COMPRESSED_REGTEST)
         assert private_key.to_wif() == WALLET_FORMAT_COMPRESSED_REGTEST
 
-    @pytest.mark.skip
+    @pytest.mark.regtest
     def test_get_balance(self):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_REGTEST)
         balance = int(private_key.get_balance())
         assert balance == private_key.balance
 
-    @pytest.mark.skip
+    @pytest.mark.regtest
     def test_get_unspent(self):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_REGTEST)
         unspent = private_key.get_unspents()
         assert unspent == private_key.unspents
 
-    @pytest.mark.skip
+    @pytest.mark.regtest
     def test_get_transactions(self):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_REGTEST)
         transactions = private_key.get_transactions()
         assert transactions == private_key.transactions
 
-    @pytest.mark.skip
+    @pytest.mark.regtest
     def test_send_cashaddress(self):
         # This tests requires the local node to be continuously generating blocks
-        # marking 'skip' until auto-block generation is functional
-
         # Local node user will need to ensure the address is funded
         # first in order for this test to pass
         private_key = PrivateKeyRegtest(WALLET_FORMAT_COMPRESSED_REGTEST)
@@ -353,11 +351,9 @@ class TestPrivateKeyRegtest:
         logging.debug('Current: {}, Initial: {}'.format(current, initial))
         assert current < initial
 
-    @pytest.mark.skip
+    @pytest.mark.regtest
     def test_send(self):
         # This tests requires the local node to be continuously generating blocks
-        # marking 'skip' until auto-block generation is functional 
-    
         # Local node user will need to ensure the address is funded
         # first in order for this test to pass
         private_key = PrivateKeyRegtest(WALLET_FORMAT_COMPRESSED_REGTEST)
@@ -376,15 +372,12 @@ class TestPrivateKeyRegtest:
         logging.debug('Current: {}, Initial: {}'.format(current, initial))
         assert current < initial
 
-    @pytest.mark.skip
+    @pytest.mark.regtest
     def test_send_pay2sh(self):
-        # This tests requires the local node to be continuously generating blocks
-        # marking 'skip' until auto-block generation is functional 
-    
-        # Local node user will need to ensure the address is funded
-        # first in order for this test to pass
-
         """
+        This tests requires the local node to be continuously generating blocks
+        Local node user will need to ensure the address is funded
+        first in order for this test to pass
         We don't yet support pay2sh, so we must throw an exception if we get one.
         Otherwise, we could send coins into an unrecoverable blackhole, needlessly.
         pay2sh addresses begin with 2 in testnet and 3 on mainnet.
