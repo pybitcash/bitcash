@@ -1,6 +1,7 @@
 *.log
 *.pyc
 *.orig
+.DS_Store
 __pycache__
 /.cache
 /.idea

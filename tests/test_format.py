@@ -10,13 +10,14 @@ from bitcash.format import (
 from .samples import (
     BITCOIN_ADDRESS, BITCOIN_ADDRESS_COMPRESSED, BITCOIN_CASHADDRESS_PAY2SH,
     BITCOIN_ADDRESS_TEST_COMPRESSED, BITCOIN_ADDRESS_TEST,
-    BITCOIN_CASHADDRESS_TEST_PAY2SH, PRIVATE_KEY_BYTES, PUBKEY_HASH,
-    BITCOIN_CASHADDRESS, BITCOIN_CASHADDRESS_COMPRESSED,
+    BITCOIN_CASHADDRESS_TEST_PAY2SH, BITCOIN_CASHADDRESS_REGTEST,
+    BITCOIN_CASHADDRESS_REGTEST_COMPRESSED, BITCOIN_CASHADDRESS_REGTEST_PAY2SH,
+    PRIVATE_KEY_BYTES, PUBKEY_HASH, BITCOIN_CASHADDRESS, BITCOIN_CASHADDRESS_COMPRESSED,
     BITCOIN_CASHADDRESS_TEST, BITCOIN_CASHADDRESS_TEST_COMPRESSED,
     PUBKEY_HASH_COMPRESSED, PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED,
     PUBLIC_KEY_X, PUBLIC_KEY_Y,
     WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
-    WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
+    WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST, WALLET_FORMAT_REGTEST
 )
 
 VALID_SIGNATURE = (b'0E\x02!\x00\xd7y\xe0\xa4\xfc\xea\x88\x18sDit\x9d\x01\xf3'
@@ -43,6 +44,10 @@ class TestGetVersion:
         assert get_version(BITCOIN_CASHADDRESS_TEST) == 'test'
         assert get_version(BITCOIN_CASHADDRESS_TEST_COMPRESSED) == 'test'
 
+    def test_regtest(self):
+        assert get_version(BITCOIN_CASHADDRESS_REGTEST) == 'regtest'
+        assert get_version(BITCOIN_CASHADDRESS_REGTEST_COMPRESSED) == 'regtest'
+
     def test_invalid(self):
         with pytest.raises(InvalidAddress):
             get_version('dg2dNAjuezub6iJVPNML5pW5ZQvtA9ocL')
@@ -54,6 +59,10 @@ class TestGetVersion:
     def test_testnet_pay2sh(self):
         with pytest.raises(ValueError):
             get_version(BITCOIN_CASHADDRESS_TEST_PAY2SH)
+
+    def test_regtest_pay2sh(self):
+        with pytest.raises(ValueError):
+            get_version(BITCOIN_CASHADDRESS_REGTEST_PAY2SH)
 
 
 class TestVerifySig:
@@ -71,6 +80,9 @@ class TestBytesToWIF:
     def test_testnet(self):
         assert bytes_to_wif(PRIVATE_KEY_BYTES, version='test') == WALLET_FORMAT_TEST
 
+    def test_regtest(self):
+        assert bytes_to_wif(PRIVATE_KEY_BYTES, version='regtest') == WALLET_FORMAT_REGTEST
+
     def test_compressed(self):
         assert bytes_to_wif(PRIVATE_KEY_BYTES, compressed=True) == WALLET_FORMAT_COMPRESSED_MAIN
 
@@ -86,6 +98,9 @@ class TestWIFToBytes:
 
     def test_testnet(self):
         assert wif_to_bytes(WALLET_FORMAT_TEST) == (PRIVATE_KEY_BYTES, False, 'test')
+
+    def test_regtest(self):
+        assert wif_to_bytes(WALLET_FORMAT_REGTEST, regtest=True) == (PRIVATE_KEY_BYTES, False, 'regtest')
 
     def test_compressed(self):
         assert wif_to_bytes(WALLET_FORMAT_COMPRESSED_MAIN) == (PRIVATE_KEY_BYTES, True, 'main')
@@ -104,6 +119,9 @@ class TestWIFChecksumCheck:
 
     def test_wif_checksum_check_test_success(self):
         assert wif_checksum_check(WALLET_FORMAT_TEST)
+
+    def test_wif_checksum_check_regtest_success(self):
+        assert wif_checksum_check(WALLET_FORMAT_REGTEST)
 
     def test_wif_checksum_check_compressed_success(self):
         assert wif_checksum_check(WALLET_FORMAT_COMPRESSED_MAIN)
@@ -147,6 +165,12 @@ class TestPublicKeyToAddress:
     def test_public_key_to_address_test_uncompressed(self):
         assert public_key_to_address(PUBLIC_KEY_UNCOMPRESSED, version='test') == BITCOIN_CASHADDRESS_TEST
 
+    def test_public_key_to_address_regtest_compressed(self):
+        assert public_key_to_address(PUBLIC_KEY_COMPRESSED, version='regtest') == BITCOIN_CASHADDRESS_REGTEST_COMPRESSED
+
+    def test_public_key_to_address_regtest_uncompressed(self):
+        assert public_key_to_address(PUBLIC_KEY_UNCOMPRESSED, version='regtest') == BITCOIN_CASHADDRESS_REGTEST
+
 
 class TestCoordsToPublicKey:
     def test_coords_to_public_key_compressed(self):
@@ -168,7 +192,15 @@ def test_address_to_public_key_hash():
     assert address_to_public_key_hash(BITCOIN_CASHADDRESS_TEST) == PUBKEY_HASH
     assert address_to_public_key_hash(BITCOIN_CASHADDRESS_COMPRESSED) == PUBKEY_HASH_COMPRESSED
     assert address_to_public_key_hash(BITCOIN_CASHADDRESS_TEST_COMPRESSED) == PUBKEY_HASH_COMPRESSED
+    assert address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST) == PUBKEY_HASH
+    assert address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST_COMPRESSED) == PUBKEY_HASH_COMPRESSED
     with pytest.raises(ValueError):
         address_to_public_key_hash(BITCOIN_CASHADDRESS_PAY2SH)
     with pytest.raises(ValueError):
         address_to_public_key_hash(BITCOIN_CASHADDRESS_TEST_PAY2SH)
+    with pytest.raises(ValueError):
+        address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST_PAY2SH)
+
+
+
+# InvalidAddress
