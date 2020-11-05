@@ -6,8 +6,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Developer Interface &#8212; bitcash 0.5.4 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -841,7 +841,7 @@ transaction data.</p>
 
 <dl class="py class">
 <dt id="bitcash.wallet.BaseKey">
-<em class="property">class </em><code class="sig-prename descclassname">bitcash.wallet.</code><code class="sig-name descname">BaseKey</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wif</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bitcash.wallet.</code><code class="sig-name descname">BaseKey</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wif</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">regtest</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class represents a point on the elliptic curve secp256k1 and
 provides all necessary cryptographic functionality. You shouldn’t use
 this class directly.</p>
@@ -979,6 +979,11 @@ the public key.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="bitcash.network.NetworkAPI.BROADCAST_TX_REGTEST">
+<code class="sig-name descname">BROADCAST_TX_REGTEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.broadcast_tx_regtest of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.BROADCAST_TX_REGTEST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.BROADCAST_TX_TEST">
 <code class="sig-name descname">BROADCAST_TX_TEST</code><em class="property"> = [&lt;bound method BitcoreAPI.broadcast_tx_testnet of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;, &lt;bound method BitcoinDotComAPI.broadcast_tx_testnet of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.BROADCAST_TX_TEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -986,6 +991,11 @@ the public key.</p>
 <dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_BALANCE_MAIN">
 <code class="sig-name descname">GET_BALANCE_MAIN</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_balance of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;, &lt;bound method BitcoreAPI.get_balance of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_BALANCE_MAIN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="bitcash.network.NetworkAPI.GET_BALANCE_REGTEST">
+<code class="sig-name descname">GET_BALANCE_REGTEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_balance_regtest of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_BALANCE_REGTEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -999,6 +1009,11 @@ the public key.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="bitcash.network.NetworkAPI.GET_RAW_TX_REGTEST">
+<code class="sig-name descname">GET_RAW_TX_REGTEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_raw_transaction_regtest of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_RAW_TX_REGTEST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_RAW_TX_TEST">
 <code class="sig-name descname">GET_RAW_TX_TEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_raw_transaction_testnet of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_RAW_TX_TEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1006,6 +1021,11 @@ the public key.</p>
 <dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_TRANSACTIONS_MAIN">
 <code class="sig-name descname">GET_TRANSACTIONS_MAIN</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_transactions of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;, &lt;bound method BitcoreAPI.get_transactions of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_TRANSACTIONS_MAIN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="bitcash.network.NetworkAPI.GET_TRANSACTIONS_REGTEST">
+<code class="sig-name descname">GET_TRANSACTIONS_REGTEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_transactions_regtest of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_TRANSACTIONS_REGTEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1019,6 +1039,11 @@ the public key.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="bitcash.network.NetworkAPI.GET_TX_AMOUNT_REGTEST">
+<code class="sig-name descname">GET_TX_AMOUNT_REGTEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_tx_amount_regtest of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_TX_AMOUNT_REGTEST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_TX_AMOUNT_TEST">
 <code class="sig-name descname">GET_TX_AMOUNT_TEST</code><em class="property"> = [&lt;bound method BitcoreAPI.get_tx_amount_testnet of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_TX_AMOUNT_TEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1029,6 +1054,11 @@ the public key.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="bitcash.network.NetworkAPI.GET_TX_REGTEST">
+<code class="sig-name descname">GET_TX_REGTEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_transaction_regtest of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_TX_REGTEST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_TX_TEST">
 <code class="sig-name descname">GET_TX_TEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_transaction_testnet of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_TX_TEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1036,6 +1066,11 @@ the public key.</p>
 <dl class="py attribute">
 <dt id="bitcash.network.NetworkAPI.GET_UNSPENT_MAIN">
 <code class="sig-name descname">GET_UNSPENT_MAIN</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_unspent of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;, &lt;bound method BitcoreAPI.get_unspent of &lt;class 'bitcash.network.services.BitcoreAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_UNSPENT_MAIN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="bitcash.network.NetworkAPI.GET_UNSPENT_REGTEST">
+<code class="sig-name descname">GET_UNSPENT_REGTEST</code><em class="property"> = [&lt;bound method BitcoinDotComAPI.get_unspent_regtest of &lt;class 'bitcash.network.services.BitcoinDotComAPI'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.NetworkAPI.GET_UNSPENT_REGTEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1052,6 +1087,20 @@ the public key.</p>
 <dt id="bitcash.network.NetworkAPI.broadcast_tx">
 <em class="property">classmethod </em><code class="sig-name descname">broadcast_tx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tx_hex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.broadcast_tx" title="Permalink to this definition">¶</a></dt>
 <dd><p>Broadcasts a transaction to the blockchain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tx_hex</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A signed transaction in hex form.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bitcash.network.NetworkAPI.broadcast_tx_regtest">
+<em class="property">classmethod </em><code class="sig-name descname">broadcast_tx_regtest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tx_hex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.broadcast_tx_regtest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Broadcasts a transaction to the regtest network’s blockchain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>tx_hex</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A signed transaction in hex form.</p>
@@ -1094,6 +1143,23 @@ the public key.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="bitcash.network.NetworkAPI.get_balance_regtest">
+<em class="property">classmethod </em><code class="sig-name descname">get_balance_regtest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_balance_regtest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the balance of an address on the regtest network in satoshi.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_balance_testnet">
 <em class="property">classmethod </em><code class="sig-name descname">get_balance_testnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_balance_testnet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the balance of an address on the test network in satoshi.</p>
@@ -1114,6 +1180,24 @@ the public key.</p>
 <dt id="bitcash.network.NetworkAPI.get_raw_transaction">
 <em class="property">classmethod </em><code class="sig-name descname">get_raw_transaction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_raw_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the raw, unparsed transaction details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>txid</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The transaction id in question.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Transaction</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bitcash.network.NetworkAPI.get_raw_transaction_regtest">
+<em class="property">classmethod </em><code class="sig-name descname">get_raw_transaction_regtest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_raw_transaction_regtest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the raw, unparsed transaction details on the regtest
+network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>txid</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The transaction id in question.</p>
@@ -1163,6 +1247,24 @@ network.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="bitcash.network.NetworkAPI.get_transaction_regtest">
+<em class="property">classmethod </em><code class="sig-name descname">get_transaction_regtest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transaction_regtest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the full transaction details on the regtest
+network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>txid</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The transaction id in question.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Transaction</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_transaction_testnet">
 <em class="property">classmethod </em><code class="sig-name descname">get_transaction_testnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transaction_testnet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the full transaction details on the test
@@ -1184,6 +1286,24 @@ network.</p>
 <dt id="bitcash.network.NetworkAPI.get_transactions">
 <em class="property">classmethod </em><code class="sig-name descname">get_transactions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transactions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the ID of all transactions related to an address.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bitcash.network.NetworkAPI.get_transactions_regtest">
+<em class="property">classmethod </em><code class="sig-name descname">get_transactions_regtest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transactions_regtest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the ID of all transactions related to an address on the
+regtest network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</p>
@@ -1236,6 +1356,27 @@ network.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="bitcash.network.NetworkAPI.get_tx_amount_regtest">
+<em class="property">classmethod </em><code class="sig-name descname">get_tx_amount_regtest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txid</span></em>, <em class="sig-param"><span class="n">txindex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_tx_amount_regtest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the amount of a given transaction output on the
+regtest network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>txid</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The transaction id in question.</p></li>
+<li><p><strong>txindex</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – The transaction index in question.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Decimal</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="bitcash.network.NetworkAPI.get_tx_amount_testnet">
 <em class="property">classmethod </em><code class="sig-name descname">get_tx_amount_testnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txid</span></em>, <em class="sig-param"><span class="n">txindex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_tx_amount_testnet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the amount of a given transaction output on the
@@ -1260,6 +1401,24 @@ test network.</p>
 <dt id="bitcash.network.NetworkAPI.get_unspent">
 <em class="property">classmethod </em><code class="sig-name descname">get_unspent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_unspent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets all unspent transaction outputs belonging to an address.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bitcash.network.meta.Unspent" title="bitcash.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bitcash.network.NetworkAPI.get_unspent_regtest">
+<em class="property">classmethod </em><code class="sig-name descname">get_unspent_regtest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_unspent_regtest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all unspent transaction outputs belonging to an address on the
+regtest network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</p>

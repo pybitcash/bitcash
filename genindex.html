@@ -6,8 +6,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index &#8212; bitcash 0.5.4 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -127,6 +127,10 @@
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.broadcast_tx">broadcast_tx() (bitcash.network.NetworkAPI class method)</a>
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.BROADCAST_TX_MAIN">BROADCAST_TX_MAIN (bitcash.network.NetworkAPI attribute)</a>
+</li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.BROADCAST_TX_REGTEST">BROADCAST_TX_REGTEST (bitcash.network.NetworkAPI attribute)</a>
+</li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.broadcast_tx_regtest">broadcast_tx_regtest() (bitcash.network.NetworkAPI class method)</a>
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.BROADCAST_TX_TEST">BROADCAST_TX_TEST (bitcash.network.NetworkAPI attribute)</a>
 </li>
@@ -308,6 +312,10 @@
       </ul></li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_BALANCE_MAIN">GET_BALANCE_MAIN (bitcash.network.NetworkAPI attribute)</a>
 </li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_BALANCE_REGTEST">GET_BALANCE_REGTEST (bitcash.network.NetworkAPI attribute)</a>
+</li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_balance_regtest">get_balance_regtest() (bitcash.network.NetworkAPI class method)</a>
+</li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_BALANCE_TEST">GET_BALANCE_TEST (bitcash.network.NetworkAPI attribute)</a>
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_balance_testnet">get_balance_testnet() (bitcash.network.NetworkAPI class method)</a>
@@ -316,13 +324,19 @@
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_raw_transaction">get_raw_transaction() (bitcash.network.NetworkAPI class method)</a>
 </li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_raw_transaction_regtest">get_raw_transaction_regtest() (bitcash.network.NetworkAPI class method)</a>
+</li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_raw_transaction_testnet">get_raw_transaction_testnet() (bitcash.network.NetworkAPI class method)</a>
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_RAW_TX_MAIN">GET_RAW_TX_MAIN (bitcash.network.NetworkAPI attribute)</a>
 </li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_RAW_TX_REGTEST">GET_RAW_TX_REGTEST (bitcash.network.NetworkAPI attribute)</a>
+</li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_RAW_TX_TEST">GET_RAW_TX_TEST (bitcash.network.NetworkAPI attribute)</a>
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_transaction">get_transaction() (bitcash.network.NetworkAPI class method)</a>
+</li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_transaction_regtest">get_transaction_regtest() (bitcash.network.NetworkAPI class method)</a>
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_transaction_testnet">get_transaction_testnet() (bitcash.network.NetworkAPI class method)</a>
 </li>
@@ -338,6 +352,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_TRANSACTIONS_MAIN">GET_TRANSACTIONS_MAIN (bitcash.network.NetworkAPI attribute)</a>
 </li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_TRANSACTIONS_REGTEST">GET_TRANSACTIONS_REGTEST (bitcash.network.NetworkAPI attribute)</a>
+</li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_transactions_regtest">get_transactions_regtest() (bitcash.network.NetworkAPI class method)</a>
+</li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_TRANSACTIONS_TEST">GET_TRANSACTIONS_TEST (bitcash.network.NetworkAPI attribute)</a>
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_transactions_testnet">get_transactions_testnet() (bitcash.network.NetworkAPI class method)</a>
@@ -346,17 +364,27 @@
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_TX_AMOUNT_MAIN">GET_TX_AMOUNT_MAIN (bitcash.network.NetworkAPI attribute)</a>
 </li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_TX_AMOUNT_REGTEST">GET_TX_AMOUNT_REGTEST (bitcash.network.NetworkAPI attribute)</a>
+</li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_tx_amount_regtest">get_tx_amount_regtest() (bitcash.network.NetworkAPI class method)</a>
+</li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_TX_AMOUNT_TEST">GET_TX_AMOUNT_TEST (bitcash.network.NetworkAPI attribute)</a>
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_tx_amount_testnet">get_tx_amount_testnet() (bitcash.network.NetworkAPI class method)</a>
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_TX_MAIN">GET_TX_MAIN (bitcash.network.NetworkAPI attribute)</a>
 </li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_TX_REGTEST">GET_TX_REGTEST (bitcash.network.NetworkAPI attribute)</a>
+</li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_TX_TEST">GET_TX_TEST (bitcash.network.NetworkAPI attribute)</a>
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_unspent">get_unspent() (bitcash.network.NetworkAPI class method)</a>
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_UNSPENT_MAIN">GET_UNSPENT_MAIN (bitcash.network.NetworkAPI attribute)</a>
+</li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_UNSPENT_REGTEST">GET_UNSPENT_REGTEST (bitcash.network.NetworkAPI attribute)</a>
+</li>
+      <li><a href="dev/api.html#bitcash.network.NetworkAPI.get_unspent_regtest">get_unspent_regtest() (bitcash.network.NetworkAPI class method)</a>
 </li>
       <li><a href="dev/api.html#bitcash.network.NetworkAPI.GET_UNSPENT_TEST">GET_UNSPENT_TEST (bitcash.network.NetworkAPI attribute)</a>
 </li>
