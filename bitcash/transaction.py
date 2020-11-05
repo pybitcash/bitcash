@@ -140,9 +140,6 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
     for i, output in enumerate(outputs):
         dest, amount, currency = output
-        # LEGACYADDRESSDEPRECATION
-        # FIXME: Will be removed in an upcoming release, breaking compatibility with legacy addresses.
-        dest = cashaddress.to_cash_address(dest)
         outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))
 
     if not unspents:
