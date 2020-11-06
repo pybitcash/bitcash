@@ -75,4 +75,4 @@ by Travis after every successful commit to BitCash's ``master`` branch.
 ## Credits
 
 - [ofek](https://github.com/ofek/bit) for the original bit codebase.
-- [Additional](AUTHORS.rst)
+- [Additional](AUTHORS.md)
