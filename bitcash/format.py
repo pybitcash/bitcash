@@ -153,20 +153,6 @@ def address_to_public_key_hash(address):
     return bytes(address.payload)
 
 
-def get_version(address):
-    address = cashaddress.Address._cash_string(address)
-
-    if address.version == 'P2PKH':
-        return 'main'
-    elif address.version == 'P2PKH-TESTNET':
-        return 'test'
-    elif address.version == 'P2PKH-REGTEST':
-        return 'regtest'
-    else:
-        raise ValueError('{} does not correspond to a mainnet, testnet, nor '
-                         'regtest P2PKH address.'.format(address.version))
-
-
 def bytes_to_wif(private_key, version='main', compressed=False):
 
     if version == 'test':
