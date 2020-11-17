@@ -1,8 +1,11 @@
-from cashaddress import convert as cashaddress
 from coincurve import verify_signature as _vs
 
 from bitcash.base58 import b58decode_check, b58encode_check
-from bitcash.crypto import ripemd160_sha256
+from bitcash.crypto import (
+    ripemd160_sha256, convertbits, 
+    calculate_checksum, verify_checksum,
+    b32encode, b32decode
+)
 from bitcash.curve import x_to_y
 from bitcash.exceptions import InvalidAddress
 
@@ -30,6 +33,101 @@ PUBLIC_KEY_COMPRESSED_ODD_Y = b'\x03'
 PRIVATE_KEY_COMPRESSED_PUBKEY = b'\x01'
 
 
+class Address:
+    VERSIONS = {
+        'P2SH': {
+            'prefix': 'bitcoincash',
+            'version_bit': 8,
+            'network': 'mainnet'
+        },
+        'P2PKH': {
+            'prefix': 'bitcoincash',
+            'version_bit': 0,
+            'network': 'mainnet'
+        },
+        'P2SH-TESTNET': {
+            'prefix': 'bchtest',
+            'version_bit': 8,
+            'network': 'testnet'
+        },
+        'P2PKH-TESTNET': {
+            'prefix': 'bchtest',
+            'version_bit': 0,
+            'network': 'testnet'
+        },
+        'P2SH-REGTEST': {
+            'prefix': 'bchreg',
+            'version_bit': 8,
+            'network': 'regtest'
+        },
+        'P2PKH-REGTEST': {
+            'prefix': 'bchreg',
+            'version_bit': 0,
+            'network': 'regtest'
+        }
+    }
+
+    VERSION_SUFFIXES = {
+        'bitcoincash': '',
+        'bchtest': '-TESTNET',
+        'bchreg': '-REGTEST'
+    }
+
+    ADDRESS_TYPES = {
+        0: "P2PKH",
+        8: "P2SH"
+    }
+
+    def __init__(self, version, payload):
+        self.version = version
+        self.payload = payload
+        self.prefix = Address.VERSIONS[self.version]['prefix']
+
+    def __str__(self):
+        return 'version: {}\npayload: {}\nprefix: {}'.format(self.version, self.payload, self.prefix)
+
+    def cash_address(self):
+        version_bit = Address.VERSIONS[self.version]['version_bit']
+        payload = [version_bit] + self.payload
+        payload = convertbits(payload, 8, 5)
+        checksum = calculate_checksum(self.prefix, payload)
+        return self.prefix + ':' + b32encode(payload + checksum)
+
+    @staticmethod
+    def from_string(address):
+        try:
+            address = str(address)
+        except Exception:
+            raise InvalidAddress('Expected string as input')
+
+        if address.upper() != address and address.lower() != address:
+            raise InvalidAddress('Cash address contains uppercase and lowercase characters')
+
+        address = address.lower()
+        colon_count = address.count(':')
+        if colon_count == 0:
+            raise InvalidAddress('Cash address is missing prefix')
+        elif colon_count > 1:
+            raise InvalidAddress('Cash address contains more than one colon character')
+
+        prefix, base32string = address.split(':')
+        decoded = b32decode(base32string)
+
+        if not verify_checksum(prefix, decoded):
+            raise InvalidAddress('Bad cash address checksum for address {}'.format(address))
+        converted = convertbits(decoded, 5, 8)
+
+        try:
+            version = Address.ADDRESS_TYPES[converted[0]]
+        except:
+            InvalidAddress('Could not determine address version')
+
+        version += Address.VERSION_SUFFIXES[prefix]
+
+        payload = converted[1:-6]
+        return Address(version, payload)
+
+
 def verify_sig(signature, data, public_key):
     """Verifies some data was signed by the owner of a public key.
 
@@ -45,16 +143,12 @@ def verify_sig(signature, data, public_key):
 
 
 def address_to_public_key_hash(address):
-    if ":" not in address:
-        # Address must be a cash address, legacy no longer supported
-        raise InvalidAddress
-
-    address = cashaddress.Address._cash_string(address)
+    address = Address.from_string(address)
 
     if "P2PKH" not in address.version:
         # Bitcash currently only has support for P2PKH transaction types
         # P2SH and others will raise ValueError
-        raise ValueError
+        raise ValueError('Bitcash currently only supports P2PKH addresses')
 
     return bytes(address.payload)
 
@@ -134,21 +228,24 @@ def wif_checksum_check(wif):
 
 
 def public_key_to_address(public_key, version='main'):
-    if version == 'test':
-        version = 'P2PKH-TESTNET'
-    elif version == 'regtest':
-        version = 'P2PKH-REGTEST'
-    elif version == 'main':
-        version = 'P2PKH'
-    else:
-        raise ValueError('Invalid version.')
+    # Currently Bitcash only support P2PKH (not P2SH)
+    VERSIONS = {
+        'main': "P2PKH",
+        'test': "P2PKH-TESTNET",
+        'regtest': "P2PKH-REGTEST"
+    }
+
+    try:
+        version = VERSIONS[version]
+    except:
+        raise ValueError('Invalid version: {}'.format(version))
     # 33 bytes compressed, 65 uncompressed.
     length = len(public_key)
     if length not in (33, 65):
         raise ValueError('{} is an invalid length for a public key.'.format(length))
 
     payload = list(ripemd160_sha256(public_key))
-    address = cashaddress.Address(payload=payload, version=version)
+    address = Address(payload=payload, version=version)
     return address.cash_address()
 
 

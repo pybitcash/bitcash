@@ -1,5 +1,5 @@
 import pytest
-from cashaddress.convert import InvalidAddress
+from bitcash.exceptions import InvalidAddress
 
 from bitcash.format import (
     address_to_public_key_hash, bytes_to_wif, coords_to_public_key,
