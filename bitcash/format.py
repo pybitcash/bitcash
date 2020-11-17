@@ -79,6 +79,9 @@ class Address:
     }
 
     def __init__(self, version, payload):
+        if not version in Address.VERSIONS:
+            raise ValueError("Invalid address version provided")
+        
         self.version = version
         self.payload = payload
         self.prefix = Address.VERSIONS[self.version]['prefix']
