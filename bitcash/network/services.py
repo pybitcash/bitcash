@@ -45,7 +45,7 @@ class BitcoinDotComAPI:
         API = cls.network_endpoint(network) + cls.ADDRESS_PATH
         r = requests.get(API.format(address),
                          timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
+        r.raise_for_status()
         data = r.json()
         balance = data['balanceSat'] + data['unconfirmedBalanceSat']
         return balance
@@ -55,7 +55,7 @@ class BitcoinDotComAPI:
         API = cls.network_endpoint(network) + cls.ADDRESS_PATH
         r = requests.get(API.format(address),
                          timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
+        r.raise_for_status()
         return r.json()['transactions']
 
     @classmethod
@@ -63,7 +63,7 @@ class BitcoinDotComAPI:
         API = cls.network_endpoint(network) + cls.TX_DETAILS_PATH
         r = requests.get(API.format(txid),
                          timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
+        r.raise_for_status()
         response = r.json(parse_float=Decimal)
 
         tx = Transaction(response['txid'], response['blockheight'],
@@ -97,7 +97,7 @@ class BitcoinDotComAPI:
         API = cls.network_endpoint(network) + cls.TX_DETAILS_PATH
         r = requests.get(API.format(
             txid), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
+        r.raise_for_status()
         response = r.json(parse_float=Decimal)
         return (Decimal(response['vout'][txindex]['value']) * BCH_TO_SAT_MULTIPLIER).normalize()
 
@@ -106,7 +106,7 @@ class BitcoinDotComAPI:
         API = cls.network_endpoint(network) + cls.UNSPENT_PATH
         r = requests.get(API.format(address),
                          timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
+        r.raise_for_status()
         return [
             Unspent(currency_to_satoshi(tx['amount'], 'bch'),
                     tx['confirmations'],
@@ -121,7 +121,7 @@ class BitcoinDotComAPI:
         API = cls.network_endpoint(network) + cls.TX_DETAILS_PATH
         r = requests.get(API.format(txid),
             timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
+        r.raise_for_status()
         response = r.json(parse_float=Decimal)
         return response
 
@@ -168,7 +168,7 @@ class BitcoreAPI:
         API = cls.network_endpoint(network) + cls.UNSPENT_API
         r = requests.get(API.format(
             address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
+        r.raise_for_status()
         unspents = []
         for tx in r.json():
             # In weird conditions, the API will send back unspents
@@ -192,7 +192,7 @@ class BitcoreAPI:
         API = cls.network_endpoint(network) + cls.ADDRESS_API
         r = requests.get(API.format(
             address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
+        r.raise_for_status()
         return [tx['mintTxid'] for tx in r.json()]
 
     @classmethod
@@ -201,7 +201,7 @@ class BitcoreAPI:
         API = cls.network_endpoint(network) + cls.BALANCE_API
         r = requests.get(API.format(
             address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
+        r.raise_for_status()
         return r.json()['balance']
 
     @classmethod
@@ -209,7 +209,7 @@ class BitcoreAPI:
         API = cls.network_endpoint(network) + cls.TX_AMOUNT_API
         r = requests.get(API.format(
             txid), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
+        r.raise_for_status()
         response = r.json(parse_float=Decimal)
         return (Decimal(response['vout'][txindex]['value']) *
                 BCH_TO_SAT_MULTIPLIER).normalize()
