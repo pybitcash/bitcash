@@ -8,21 +8,38 @@ from bitcash.crypto import ECPrivateKey
 from bitcash.curve import Point
 from bitcash.format import verify_sig
 from bitcash.wallet import (
-    BaseKey, Key, PrivateKey, PrivateKeyTestnet, PrivateKeyRegtest, wif_to_key
+    BaseKey,
+    Key,
+    PrivateKey,
+    PrivateKeyTestnet,
+    PrivateKeyRegtest,
+    wif_to_key,
 )
 from bitcash.exceptions import InvalidAddress
 from .samples import (
-    PRIVATE_KEY_BYTES, PRIVATE_KEY_DER,
-    PRIVATE_KEY_HEX, PRIVATE_KEY_NUM, PRIVATE_KEY_PEM,
-    PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_X,
-    PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
-    WALLET_FORMAT_COMPRESSED_REGTEST, WALLET_FORMAT_MAIN,
-    WALLET_FORMAT_TEST, WALLET_FORMAT_REGTEST,
-    BITCOIN_CASHADDRESS, BITCOIN_CASHADDRESS_TEST, BITCOIN_CASHADDRESS_REGTEST,
-    BITCOIN_ADDRESS_TEST_PAY2SH
+    PRIVATE_KEY_BYTES,
+    PRIVATE_KEY_DER,
+    PRIVATE_KEY_HEX,
+    PRIVATE_KEY_NUM,
+    PRIVATE_KEY_PEM,
+    PUBLIC_KEY_COMPRESSED,
+    PUBLIC_KEY_UNCOMPRESSED,
+    PUBLIC_KEY_X,
+    PUBLIC_KEY_Y,
+    WALLET_FORMAT_COMPRESSED_MAIN,
+    WALLET_FORMAT_COMPRESSED_TEST,
+    WALLET_FORMAT_COMPRESSED_REGTEST,
+    WALLET_FORMAT_MAIN,
+    WALLET_FORMAT_TEST,
+    WALLET_FORMAT_REGTEST,
+    BITCOIN_CASHADDRESS,
+    BITCOIN_CASHADDRESS_TEST,
+    BITCOIN_CASHADDRESS_REGTEST,
+    BITCOIN_ADDRESS_TEST_PAY2SH,
+    BITCOIN_ADDRESS_REGTEST_PAY2SH,
 )
 
-TRAVIS = 'TRAVIS' in os.environ
+TRAVIS = "TRAVIS" in os.environ
 
 
 class TestWIFToKey:
@@ -71,7 +88,7 @@ class TestBaseKey:
 
     def test_init_wif_error(self):
         with pytest.raises(TypeError):
-            BaseKey(b'\x00')
+            BaseKey(b"\x00")
 
     def test_public_key_compressed(self):
         base_key = BaseKey(WALLET_FORMAT_COMPRESSED_MAIN)
@@ -129,7 +146,9 @@ class TestBaseKey:
         assert BaseKey(WALLET_FORMAT_MAIN).is_compressed() is False
 
     def test_equal(self):
-        assert BaseKey(WALLET_FORMAT_COMPRESSED_MAIN) == BaseKey(WALLET_FORMAT_COMPRESSED_MAIN)
+        assert BaseKey(WALLET_FORMAT_COMPRESSED_MAIN) == BaseKey(
+            WALLET_FORMAT_COMPRESSED_MAIN
+        )
 
 
 class TestPrivateKey:
@@ -191,7 +210,10 @@ class TestPrivateKey:
         assert key.to_int() == PRIVATE_KEY_NUM
 
     def test_repr(self):
-        assert repr(PrivateKey(WALLET_FORMAT_MAIN)) == '<PrivateKey: bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6>'
+        assert (
+            repr(PrivateKey(WALLET_FORMAT_MAIN))
+            == "<PrivateKey: bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6>"
+        )
 
 
 class TestPrivateKeyTestnet:
@@ -235,12 +257,13 @@ class TestPrivateKeyTestnet:
 
         initial = private_key.get_balance()
         current = initial
-        private_key.send([(BITCOIN_CASHADDRESS_TEST, 2000, 'satoshi')])
+        tries = 0
+        private_key.send([(BITCOIN_CASHADDRESS_TEST, 2000, "satoshi")])
 
         time.sleep(3)  # give some time to the indexer to update the balance
         current = private_key.get_balance()
 
-        logging.debug('Current: {}, Initial: {}'.format(current, initial))
+        logging.debug(f"Current: {current}, Initial: {initial}")
         assert current < initial
 
     @pytest.mark.skip
@@ -250,12 +273,13 @@ class TestPrivateKeyTestnet:
 
         initial = private_key.balance
         current = initial
-        private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1000, 'satoshi')])
+        tries = 0
+        private_key.send([("n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi", 1000, "satoshi")])
 
         time.sleep(3)  # give some time to the indexer to update the balance
         current = private_key.get_balance()
 
-        logging.debug('Current: {}, Initial: {}'.format(current, initial))
+        logging.debug(f"Current: {current}, Initial: {initial}")
         assert current < initial
 
     def test_send_pay2sh(self):
@@ -269,7 +293,7 @@ class TestPrivateKeyTestnet:
         private_key.get_unspents()
 
         with pytest.raises(InvalidAddress):
-            private_key.send([(BITCOIN_ADDRESS_TEST_PAY2SH, 1, 'mbch')])
+            private_key.send([(BITCOIN_ADDRESS_TEST_PAY2SH, 1, "mbch")])
 
     def test_from_hex(self):
         key = PrivateKeyTestnet.from_hex(PRIVATE_KEY_HEX)
@@ -292,7 +316,10 @@ class TestPrivateKeyTestnet:
         assert key.to_int() == PRIVATE_KEY_NUM
 
     def test_repr(self):
-        assert repr(PrivateKeyTestnet(WALLET_FORMAT_MAIN)) == '<PrivateKeyTestnet: bchtest:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqjxnsx26x>'
+        assert (
+            repr(PrivateKeyTestnet(WALLET_FORMAT_MAIN))
+            == "<PrivateKeyTestnet: bchtest:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqjxnsx26x>"
+        )
 
 
 class TestPrivateKeyRegtest:
@@ -342,17 +369,20 @@ class TestPrivateKeyRegtest:
 
         initial = private_key.get_balance()
         current = initial
-        private_key.send([(BITCOIN_CASHADDRESS_REGTEST, 2000, 'satoshi')])
+        tries = 0
+        private_key.send([(BITCOIN_CASHADDRESS_REGTEST, 2000, "satoshi")])
 
         time.sleep(3)  # give some time to the indexer to update the balance
         current = private_key.get_balance()
 
-        logging.debug('Current: {}, Initial: {}'.format(current, initial))
+        logging.debug(f"Current: {current}, Initial: {initial}")
         assert current < initial
 
     @pytest.mark.regtest
     def test_send(self):
         # This tests requires the local node to be continuously generating blocks
+        # marking 'skip' until auto-block generation is functional
+
         # Local node user will need to ensure the address is funded
         # first in order for this test to pass
         private_key = PrivateKeyRegtest(WALLET_FORMAT_COMPRESSED_REGTEST)
@@ -362,16 +392,22 @@ class TestPrivateKeyRegtest:
         current = initial
         # FIXME: Changed jpy to satoshi and 1 to 10,000 since we don't yet
         # have a rates API for BCH in place.
-        private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 2000, 'satoshi')])
+        private_key.send([("n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi", 2000, "satoshi")])
 
         time.sleep(3)  # give some time to the indexer to update the balance
         current = private_key.get_balance()
 
-        logging.debug('Current: {}, Initial: {}'.format(current, initial))
+        logging.debug(f"Current: {current}, Initial: {initial}")
         assert current < initial
 
     @pytest.mark.regtest
     def test_send_pay2sh(self):
+        # This tests requires the local node to be continuously generating blocks
+        # marking 'skip' until auto-block generation is functional
+
+        # Local node user will need to ensure the address is funded
+        # first in order for this test to pass
+
         """
         This tests requires the local node to be continuously generating blocks
         Local node user will need to ensure the address is funded
@@ -385,7 +421,7 @@ class TestPrivateKeyRegtest:
         private_key.get_unspents()
 
         with pytest.raises(InvalidAddress):
-            private_key.send([('2NFKbBHzzh32q5DcZJNgZE9sF7gYmtPbawk', 1, 'mbch')])
+            private_key.send([("2NFKbBHzzh32q5DcZJNgZE9sF7gYmtPbawk", 1, "mbch")])
 
     def test_from_hex(self):
         key = PrivateKeyRegtest.from_hex(PRIVATE_KEY_HEX)
@@ -408,4 +444,7 @@ class TestPrivateKeyRegtest:
         assert key.to_int() == PRIVATE_KEY_NUM
 
     def test_repr(self):
-        assert repr(PrivateKeyRegtest(WALLET_FORMAT_REGTEST)) == '<PrivateKeyRegtest: bchreg:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqg6939eeq>'
+        assert (
+            repr(PrivateKeyRegtest(WALLET_FORMAT_REGTEST))
+            == "<PrivateKeyRegtest: bchreg:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqg6939eeq>"
+        )
