@@ -17,11 +17,11 @@ def test_b58encode_check():
 class TestB58Decode:
     def test_b58decode_success(self):
         assert b58decode(BITCOIN_ADDRESS) == BINARY_ADDRESS
-        assert b58decode(BITCOIN_ADDRESS[:1]) == b'\x00\x00'
+        assert b58decode(BITCOIN_ADDRESS[:1]) == b"\x00\x00"
 
     def test_b58decode_failure(self):
         with pytest.raises(ValueError):
-            b58decode('l')
+            b58decode("l")
 
 
 class TestB58DecodeCheck:

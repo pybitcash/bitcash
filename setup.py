@@ -22,8 +22,7 @@ setup(
     maintainer='Teran McKinney',
     maintainer_email='sega01@go-beyond.org',
     url='https://github.com/pybitcash/bitcash',
-    download_url='https://github.com/pybitcash/bitcash/tarball/{}'.format(
-        version),
+    download_url=f'https://github.com/pybitcash/bitcash/tarball/{version}',
     license='MIT',
 
     keywords=[
