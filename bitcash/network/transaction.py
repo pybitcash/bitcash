@@ -1,5 +1,3 @@
-
-
 class Transaction:
     """
     Representation of a transaction returned from the network.
@@ -27,9 +25,16 @@ class Transaction:
 
     def __repr__(self):
         return "{} in block {} for {:.0f} satoshi ({:.0f} sent + {:.0f} fee) with {} input{} and {} output{}".format(
-                self.txid, self.block, self.amount_in, self.amount_out, self.amount_fee,
-                len(self.inputs), '' if len(self.inputs) == 1 else 's',
-                len(self.outputs), '' if len(self.outputs) == 1 else 's')
+            self.txid,
+            self.block,
+            self.amount_in,
+            self.amount_out,
+            self.amount_fee,
+            len(self.inputs),
+            "" if len(self.inputs) == 1 else "s",
+            len(self.outputs),
+            "" if len(self.outputs) == 1 else "s",
+        )
 
 
 class TxPart:
@@ -43,9 +48,9 @@ class TxPart:
         self.op_return = None
 
         if address is None and asm is not None:
-            if asm.startswith('OP_RETURN '):
+            if asm.startswith("OP_RETURN "):
                 self.op_return = asm[10:]
-            elif asm.startswith('return ['):
+            elif asm.startswith("return ["):
                 self.op_return = asm[8:-1]
 
     def message(self):
@@ -54,11 +59,10 @@ class TxPart:
         if self.op_return is None:
             return None
 
-        return bytearray.fromhex(self.op_return).decode('utf-8')
+        return bytearray.fromhex(self.op_return).decode("utf-8")
 
     def __repr__(self):
         if self.address is None and self.op_return is not None:
             return "OP_RETURN data with {:.0f} satoshi burned".format(self.amount)
         else:
             return "{} with {:.0f} satoshi".format(self.address, self.amount)
-

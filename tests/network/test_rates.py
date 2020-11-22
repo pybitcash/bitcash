@@ -2,9 +2,16 @@ from time import sleep, time
 
 import bitcash
 from bitcash.network.rates import (
-    RatesAPI, bch_to_satoshi, currency_to_satoshi, currency_to_satoshi_cached,
-    mbch_to_satoshi, satoshi_to_currency, satoshi_to_currency_cached,
-    satoshi_to_satoshi, set_rate_cache_time, ubch_to_satoshi
+    RatesAPI,
+    bch_to_satoshi,
+    currency_to_satoshi,
+    currency_to_satoshi_cached,
+    mbch_to_satoshi,
+    satoshi_to_currency,
+    satoshi_to_currency_cached,
+    satoshi_to_satoshi,
+    set_rate_cache_time,
+    ubch_to_satoshi,
 )
 from bitcash.utils import Decimal
 
@@ -45,25 +52,23 @@ def test_bch_to_satoshi():
 
 
 def test_currency_to_satoshi():
-    assert currency_to_satoshi(1, 'usd') > currency_to_satoshi(1, 'jpy')
+    assert currency_to_satoshi(1, "usd") > currency_to_satoshi(1, "jpy")
 
 
 class TestSatoshiToCurrency:
     def test_no_exponent(self):
-        assert satoshi_to_currency(1, 'bch') == '0.00000001'
+        assert satoshi_to_currency(1, "bch") == "0.00000001"
 
     def test_zero_places(self):
-        assert Decimal(satoshi_to_currency(100000, 'jpy')).as_tuple().exponent == 0
+        assert Decimal(satoshi_to_currency(100000, "jpy")).as_tuple().exponent == 0
 
 
 def test_satoshi_to_currency_cached():
-    assert satoshi_to_currency_cached(1, 'ubch') == '0.01'
+    assert satoshi_to_currency_cached(1, "ubch") == "0.01"
 
 
 def test_rates_close():
-    rates = sorted([
-        api_call() for api_call in RatesAPI.USD_RATES
-    ])
+    rates = sorted([api_call() for api_call in RatesAPI.USD_RATES])
     # Making sure the rates are less than 10% different
     assert rates[-1] / rates[0] < 1.1 and rates[-1] / rates[0] > 0.9
 
@@ -74,12 +79,12 @@ class TestRateCache:
 
         start_time = time()
         set_rate_cache_time(0)
-        currency_to_satoshi_cached(1, 'usd')
+        currency_to_satoshi_cached(1, "usd")
         initial_time = time() - start_time
 
         start_time = time()
         set_rate_cache_time(60)
-        currency_to_satoshi_cached(1, 'usd')
+        currency_to_satoshi_cached(1, "usd")
         cached_time = time() - start_time
 
         assert initial_time > cached_time
@@ -88,18 +93,18 @@ class TestRateCache:
         sleep(0.2)
 
         set_rate_cache_time(0)
-        currency_to_satoshi_cached(1, 'usd')
+        currency_to_satoshi_cached(1, "usd")
 
         start_time = time()
         set_rate_cache_time(60)
-        currency_to_satoshi_cached(1, 'usd')
+        currency_to_satoshi_cached(1, "usd")
         cached_time = time() - start_time
 
         sleep(0.2)
 
         start_time = time()
         set_rate_cache_time(0.1)
-        currency_to_satoshi_cached(1, 'usd')
+        currency_to_satoshi_cached(1, "usd")
         update_time = time() - start_time
 
         assert update_time > cached_time
