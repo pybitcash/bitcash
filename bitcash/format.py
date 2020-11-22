@@ -6,17 +6,17 @@ from bitcash.crypto import ripemd160_sha256
 from bitcash.curve import x_to_y
 from bitcash.exceptions import InvalidAddress
 
-MAIN_PUBKEY_HASH = b'\x00'
-MAIN_SCRIPT_HASH = b'\x05'
-MAIN_PRIVATE_KEY = b'\x80'
-MAIN_BIP32_PUBKEY = b'\x04\x88\xb2\x1e'
-MAIN_BIP32_PRIVKEY = b'\x04\x88\xad\xe4'
+MAIN_PUBKEY_HASH = b"\x00"
+MAIN_SCRIPT_HASH = b"\x05"
+MAIN_PRIVATE_KEY = b"\x80"
+MAIN_BIP32_PUBKEY = b"\x04\x88\xb2\x1e"
+MAIN_BIP32_PRIVKEY = b"\x04\x88\xad\xe4"
 
-TEST_PUBKEY_HASH = b'\x6f'
-TEST_SCRIPT_HASH = b'\xc4'
-TEST_PRIVATE_KEY = b'\xef'
-TEST_BIP32_PUBKEY = b'\x045\x87\xcf'
-TEST_BIP32_PRIVKEY = b'\x045\x83\x94'
+TEST_PUBKEY_HASH = b"\x6f"
+TEST_SCRIPT_HASH = b"\xc4"
+TEST_PRIVATE_KEY = b"\xef"
+TEST_BIP32_PUBKEY = b"\x045\x87\xcf"
+TEST_BIP32_PRIVKEY = b"\x045\x83\x94"
 
 REGTEST_PUBKEY_HASH = TEST_PUBKEY_HASH
 REGTEST_SCRIPT_HASH = TEST_SCRIPT_HASH
@@ -24,10 +24,10 @@ REGTEST_PRIVATE_KEY = TEST_PRIVATE_KEY
 REGTEST_BIP32_PUBKEY = TEST_BIP32_PUBKEY
 REGTEST_BIP32_PRIVKEY = TEST_BIP32_PRIVKEY
 
-PUBLIC_KEY_UNCOMPRESSED = b'\x04'
-PUBLIC_KEY_COMPRESSED_EVEN_Y = b'\x02'
-PUBLIC_KEY_COMPRESSED_ODD_Y = b'\x03'
-PRIVATE_KEY_COMPRESSED_PUBKEY = b'\x01'
+PUBLIC_KEY_UNCOMPRESSED = b"\x04"
+PUBLIC_KEY_COMPRESSED_EVEN_Y = b"\x02"
+PUBLIC_KEY_COMPRESSED_ODD_Y = b"\x03"
+PRIVATE_KEY_COMPRESSED_PUBKEY = b"\x01"
 
 
 def verify_sig(signature, data, public_key):
@@ -57,9 +57,9 @@ def address_to_public_key_hash(address):
 
 def bytes_to_wif(private_key, version='main', compressed=False):
 
-    if version == 'test':
+    if version == "test":
         prefix = TEST_PRIVATE_KEY
-    elif version == 'regtest':
+    elif version == "regtest":
         prefix = REGTEST_PRIVATE_KEY
     else:
         prefix = MAIN_PRIVATE_KEY
@@ -67,7 +67,7 @@ def bytes_to_wif(private_key, version='main', compressed=False):
     if compressed:
         suffix = PRIVATE_KEY_COMPRESSED_PUBKEY
     else:
-        suffix = b''
+        suffix = b""
 
     private_key = prefix + private_key + suffix
 
@@ -81,17 +81,19 @@ def wif_to_bytes(wif, regtest=False):
     version = private_key[:1]
 
     if version == MAIN_PRIVATE_KEY:
-        version = 'main'
+        version = "main"
     elif version == TEST_PRIVATE_KEY:
         # Regtest and testnet WIF formats are identical, so we
         # check the 'regtest' flag and manually set the version
         if regtest:
-            version = 'regtest'
+            version = "regtest"
         else:
-            version = 'test'
+            version = "test"
     else:
-        raise ValueError(f'{version} does not correspond to a mainnet,' \
-                         f'testnet, nor regtest address.')
+        raise ValueError(
+            f"{version} does not correspond to a mainnet,"
+            f"testnet, nor regtest address."
+        )
 
     # Remove version byte and, if present, compression flag.
     if len(wif) == 52 and private_key[-1] == 1:
@@ -115,6 +117,7 @@ def wif_checksum_check(wif):
     return False
 
 
+<<<<<<< HEAD
 def public_key_to_address(public_key, version='main'):
     # Currently Bitcash only support P2PKH (not P2SH)
     VERSIONS = {
@@ -127,10 +130,21 @@ def public_key_to_address(public_key, version='main'):
         version = VERSIONS[version]
     except:
         raise ValueError('Invalid version: {}'.format(version))
+=======
+def public_key_to_address(public_key, version="main"):
+    if version == "test":
+        version = "P2PKH-TESTNET"
+    elif version == "regtest":
+        version = "P2PKH-REGTEST"
+    elif version == "main":
+        version = "P2PKH"
+    else:
+        raise ValueError("Invalid version.")
+>>>>>>> Format with Black formatter
     # 33 bytes compressed, 65 uncompressed.
     length = len(public_key)
     if length not in (33, 65):
-        raise ValueError(f'{length} is an invalid length for a public key.')
+        raise ValueError(f"{length} is an invalid length for a public key.")
 
     payload = list(ripemd160_sha256(public_key))
     address = Address(payload=payload, version=version)
@@ -142,12 +156,16 @@ def public_key_to_coords(public_key):
     length = len(public_key)
 
     if length == 33:
-        flag, x = int.from_bytes(public_key[:1], 'big'), int.from_bytes(public_key[1:], 'big')
+        flag, x = int.from_bytes(public_key[:1], "big"), int.from_bytes(
+            public_key[1:], "big"
+        )
         y = x_to_y(x, flag & 1)
     elif length == 65:
-        x, y = int.from_bytes(public_key[1:33], 'big'), int.from_bytes(public_key[33:], 'big')
+        x, y = int.from_bytes(public_key[1:33], "big"), int.from_bytes(
+            public_key[33:], "big"
+        )
     else:
-        raise ValueError(f'{length} is an invalid length for a public key.')
+        raise ValueError(f"{length} is an invalid length for a public key.")
 
     return x, y
 
@@ -156,9 +174,9 @@ def coords_to_public_key(x, y, compressed=True):
 
     if compressed:
         y = PUBLIC_KEY_COMPRESSED_ODD_Y if y & 1 else PUBLIC_KEY_COMPRESSED_EVEN_Y
-        return y + x.to_bytes(32, 'big')
+        return y + x.to_bytes(32, "big")
 
-    return PUBLIC_KEY_UNCOMPRESSED + x.to_bytes(32, 'big') + y.to_bytes(32, 'big')
+    return PUBLIC_KEY_UNCOMPRESSED + x.to_bytes(32, "big") + y.to_bytes(32, "big")
 
 
 def point_to_public_key(point, compressed=True):

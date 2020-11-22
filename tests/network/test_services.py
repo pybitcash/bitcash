@@ -2,23 +2,28 @@ import pytest
 
 import bitcash
 from bitcash.network.services import (
-    BitcoinDotComAPI, BitcoreAPI, NetworkAPI, set_service_timeout
+    BitcoinDotComAPI,
+    BitcoreAPI,
+    NetworkAPI,
+    set_service_timeout,
 )
 from tests.utils import (
-    catch_errors_raise_warnings, decorate_methods, raise_connection_error
+    catch_errors_raise_warnings,
+    decorate_methods,
+    raise_connection_error,
 )
 
-MAIN_ADDRESS_USED1 = 'bitcoincash:qrg2nw20kxhspdlec82qxrgdegrq23hyuyjx2h29sy'
-MAIN_ADDRESS_USED2 = 'bitcoincash:qpr270a5sxphltdmggtj07v4nskn9gmg9yx4m5h7s4'
-MAIN_ADDRESS_UNUSED = 'bitcoincash:qzxumj0tjwwrep698rv4mnwa5ek3ddsgxuvcunqnjx'
-MAIN_TX = '9bccb8d6adf53ca49cea02118871e29d3b4e5cb157dc3a475dd364e30fb20993'
+MAIN_ADDRESS_USED1 = "bitcoincash:qrg2nw20kxhspdlec82qxrgdegrq23hyuyjx2h29sy"
+MAIN_ADDRESS_USED2 = "bitcoincash:qpr270a5sxphltdmggtj07v4nskn9gmg9yx4m5h7s4"
+MAIN_ADDRESS_UNUSED = "bitcoincash:qzxumj0tjwwrep698rv4mnwa5ek3ddsgxuvcunqnjx"
+MAIN_TX = "9bccb8d6adf53ca49cea02118871e29d3b4e5cb157dc3a475dd364e30fb20993"
 
-TEST_ADDRESS_USED1 = 'bchtest:qrnuzdzleru8c6qhpva20x9f2mp0u657luhfyxjep5'
-TEST_ADDRESS_USED2 = 'bchtest:qprralpnpx6zrx3w2aet97u0c6rcfrlp8v6jenepj5'
-TEST_ADDRESS_USED3 = 'bchtest:qpjm4n7m4r6aufkxxy5nqm5letejdm4f5sn6an6rsl'
-TEST_ADDRESS_UNUSED = 'bchtest:qpwn6qz29s5rv2uf0cxd7ygnwdttsuschczaz38yc5'
-TEST_TX = '09d0c9773c56fac218ae084226e9db8480d9b5c6f60cc0466431d6820d344adc'
-TEST_TX2 = '3c26deab2df023a8dbee15bf47701332f6661323ea117a58362b0ea9605129fd'
+TEST_ADDRESS_USED1 = "bchtest:qrnuzdzleru8c6qhpva20x9f2mp0u657luhfyxjep5"
+TEST_ADDRESS_USED2 = "bchtest:qprralpnpx6zrx3w2aet97u0c6rcfrlp8v6jenepj5"
+TEST_ADDRESS_USED3 = "bchtest:qpjm4n7m4r6aufkxxy5nqm5letejdm4f5sn6an6rsl"
+TEST_ADDRESS_UNUSED = "bchtest:qpwn6qz29s5rv2uf0cxd7ygnwdttsuschczaz38yc5"
+TEST_TX = "09d0c9773c56fac218ae084226e9db8480d9b5c6f60cc0466431d6820d344adc"
+TEST_TX2 = "3c26deab2df023a8dbee15bf47701332f6661323ea117a58362b0ea9605129fd"
 
 
 def all_items_common(seq):
@@ -53,12 +58,15 @@ class MockBackend(NetworkAPI):
 class TestNetworkAPI:
     # Mainnet
     def test_get_balance_main_equal(self):
-        results = [call(MAIN_ADDRESS_USED2, network='mainnet') for call in NetworkAPI.GET_BALANCE]
+        results = [
+            call(MAIN_ADDRESS_USED2, network="mainnet")
+            for call in NetworkAPI.GET_BALANCE
+        ]
         assert all(result == results[0] for result in results)
 
     def test_get_balance_main_failure(self):
         with pytest.raises(ConnectionError):
-            MockBackend.get_balance(MAIN_ADDRESS_USED2, network='mainnet')
+            MockBackend.get_balance(MAIN_ADDRESS_USED2, network="mainnet")
 
     # FIXME: Bitcore.io only returns unspents
     # def test_get_transactions_main_equal(self):
@@ -67,41 +75,50 @@ class TestNetworkAPI:
 
     def test_get_transactions_main_failure(self):
         with pytest.raises(ConnectionError):
-            MockBackend.get_transactions(MAIN_ADDRESS_USED1, network='mainnet')
+            MockBackend.get_transactions(MAIN_ADDRESS_USED1, network="mainnet")
 
     def test_get_unspent_main_equal(self):
-        results = [call(MAIN_ADDRESS_USED2, network='mainnet') for call in NetworkAPI.GET_UNSPENT]
+        results = [
+            call(MAIN_ADDRESS_USED2, network="mainnet")
+            for call in NetworkAPI.GET_UNSPENT
+        ]
         assert all_items_equal(results)
 
     def test_get_unspent_main_failure(self):
         with pytest.raises(ConnectionError):
-            MockBackend.get_unspent(MAIN_ADDRESS_USED1, network='mainnet')
+            MockBackend.get_unspent(MAIN_ADDRESS_USED1, network="mainnet")
 
     # Testnet
     def test_get_balance_test_equal(self):
-        results = [call(TEST_ADDRESS_USED2, network='testnet') for call in NetworkAPI.GET_BALANCE]
+        results = [
+            call(TEST_ADDRESS_USED2, network="testnet")
+            for call in NetworkAPI.GET_BALANCE
+        ]
         assert all(result == results[0] for result in results)
 
     def test_get_balance_test_failure(self):
         with pytest.raises(ConnectionError):
-            MockBackend.get_balance(TEST_ADDRESS_USED2, network='testnet')
+            MockBackend.get_balance(TEST_ADDRESS_USED2, network="testnet")
 
     # FIXME: Bitcore.io only returns 10 elements
     # def test_get_transactions_test_equal(self):
-        # results = [call(TEST_ADDRESS_USED2, network='testnet')[:100] for call in NetworkAPI.GET_TRANSACTIONS]
-        # assert all_items_common(results)
+    # results = [call(TEST_ADDRESS_USED2, network='testnet')[:100] for call in NetworkAPI.GET_TRANSACTIONS]
+    # assert all_items_common(results)
 
     def test_get_transactions_test_failure(self):
         with pytest.raises(ConnectionError):
-            MockBackend.get_transactions(TEST_ADDRESS_USED2, network='testnet')
+            MockBackend.get_transactions(TEST_ADDRESS_USED2, network="testnet")
 
     def test_get_unspent_test_equal(self):
-        results = [call(TEST_ADDRESS_USED3, network='testnet') for call in NetworkAPI.GET_UNSPENT]
+        results = [
+            call(TEST_ADDRESS_USED3, network="testnet")
+            for call in NetworkAPI.GET_UNSPENT
+        ]
         assert all_items_equal(results)
 
     def test_get_unspent_test_failure(self):
         with pytest.raises(ConnectionError):
-            MockBackend.get_unspent(TEST_ADDRESS_USED2, network='testnet')
+            MockBackend.get_unspent(TEST_ADDRESS_USED2, network="testnet")
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
@@ -110,111 +127,171 @@ class TestBitcoinDotComAPI:
     # Mainnet
 
     def test_get_balance_return_type(self):
-        assert isinstance(BitcoinDotComAPI.get_balance(MAIN_ADDRESS_USED1, network='mainnet'), int)
+        assert isinstance(
+            BitcoinDotComAPI.get_balance(MAIN_ADDRESS_USED1, network="mainnet"), int
+        )
 
     def test_get_balance_main_used(self):
-        assert BitcoinDotComAPI.get_balance(MAIN_ADDRESS_USED1, network='mainnet') > 0
+        assert BitcoinDotComAPI.get_balance(MAIN_ADDRESS_USED1, network="mainnet") > 0
 
     def test_get_balance_main_unused(self):
-        assert BitcoinDotComAPI.get_balance(MAIN_ADDRESS_UNUSED, network='mainnet') == 0
+        assert BitcoinDotComAPI.get_balance(MAIN_ADDRESS_UNUSED, network="mainnet") == 0
 
     def test_get_transactions_return_type(self):
-        assert iter(BitcoinDotComAPI.get_transactions(MAIN_ADDRESS_USED1, network='mainnet'))
+        assert iter(
+            BitcoinDotComAPI.get_transactions(MAIN_ADDRESS_USED1, network="mainnet")
+        )
 
     def test_get_transactions_main_used(self):
-        assert len(BitcoinDotComAPI.get_transactions(MAIN_ADDRESS_USED1, network='mainnet')) >= 218
+        assert (
+            len(
+                BitcoinDotComAPI.get_transactions(MAIN_ADDRESS_USED1, network="mainnet")
+            )
+            >= 218
+        )
 
     def test_get_transactions_main_unused(self):
-        assert len(BitcoinDotComAPI.get_transactions(MAIN_ADDRESS_UNUSED, network='mainnet')) == 0
+        assert (
+            len(
+                BitcoinDotComAPI.get_transactions(
+                    MAIN_ADDRESS_UNUSED, network="mainnet"
+                )
+            )
+            == 0
+        )
 
     def test_get_transaction(self):
-        assert len(str(BitcoinDotComAPI.get_transaction(MAIN_TX, network='mainnet'))) >= 156
+        assert (
+            len(str(BitcoinDotComAPI.get_transaction(MAIN_TX, network="mainnet")))
+            >= 156
+        )
 
     def test_get_unspent_return_type(self):
-        assert iter(BitcoinDotComAPI.get_unspent(MAIN_ADDRESS_USED1, network='mainnet'))
+        assert iter(BitcoinDotComAPI.get_unspent(MAIN_ADDRESS_USED1, network="mainnet"))
 
     def test_get_unspent_main_used(self):
-        assert len(BitcoinDotComAPI.get_unspent(MAIN_ADDRESS_USED2, network='mainnet')) >= 1
+        assert (
+            len(BitcoinDotComAPI.get_unspent(MAIN_ADDRESS_USED2, network="mainnet"))
+            >= 1
+        )
 
     def test_get_unspent_main_unused(self):
-        assert len(BitcoinDotComAPI.get_unspent(MAIN_ADDRESS_UNUSED, network='mainnet')) == 0
+        assert (
+            len(BitcoinDotComAPI.get_unspent(MAIN_ADDRESS_UNUSED, network="mainnet"))
+            == 0
+        )
 
     def test_get_raw_transaction(self):
-        assert BitcoinDotComAPI.get_raw_transaction(MAIN_TX, network='mainnet')['txid'] == MAIN_TX
+        assert (
+            BitcoinDotComAPI.get_raw_transaction(MAIN_TX, network="mainnet")["txid"]
+            == MAIN_TX
+        )
 
     # Testnet
-    
+
     def test_get_balance_test_used(self):
-        assert BitcoinDotComAPI.get_balance(TEST_ADDRESS_USED2, network='testnet') > 0
+        assert BitcoinDotComAPI.get_balance(TEST_ADDRESS_USED2, network="testnet") > 0
 
     def test_get_balance_test_unused(self):
-        assert BitcoinDotComAPI.get_balance(TEST_ADDRESS_UNUSED, network='testnet') == 0
+        assert BitcoinDotComAPI.get_balance(TEST_ADDRESS_UNUSED, network="testnet") == 0
 
     def test_get_transaction_testnet(self):
-        assert len(str(BitcoinDotComAPI.get_transaction(TEST_TX2, network='testnet'))) >= 156
+        assert (
+            len(str(BitcoinDotComAPI.get_transaction(TEST_TX2, network="testnet")))
+            >= 156
+        )
 
     def test_get_transactions_test_used(self):
-        assert len(BitcoinDotComAPI.get_transactions(TEST_ADDRESS_USED2, network='testnet')) >= 444
+        assert (
+            len(
+                BitcoinDotComAPI.get_transactions(TEST_ADDRESS_USED2, network="testnet")
+            )
+            >= 444
+        )
 
     def test_get_transactions_test_unused(self):
-        assert len(BitcoinDotComAPI.get_transactions(TEST_ADDRESS_UNUSED, network='testnet')) == 0
+        assert (
+            len(
+                BitcoinDotComAPI.get_transactions(
+                    TEST_ADDRESS_UNUSED, network="testnet"
+                )
+            )
+            == 0
+        )
 
     def test_get_unspent_test_used(self):
-        assert len(BitcoinDotComAPI.get_unspent(TEST_ADDRESS_USED2, network='testnet')) >= 194
+        assert (
+            len(BitcoinDotComAPI.get_unspent(TEST_ADDRESS_USED2, network="testnet"))
+            >= 194
+        )
 
     def test_get_unspent_test_unused(self):
-        assert len(BitcoinDotComAPI.get_unspent(TEST_ADDRESS_UNUSED, network='testnet')) == 0
+        assert (
+            len(BitcoinDotComAPI.get_unspent(TEST_ADDRESS_UNUSED, network="testnet"))
+            == 0
+        )
 
     def test_get_raw_transaction_testnet(self):
-        assert BitcoinDotComAPI.get_raw_transaction(TEST_TX, network='testnet')['txid'] == TEST_TX
+        assert (
+            BitcoinDotComAPI.get_raw_transaction(TEST_TX, network="testnet")["txid"]
+            == TEST_TX
+        )
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
 class TestBitcoreAPI:
     def test_get_balance_return_type(self):
-        assert isinstance(BitcoreAPI.get_balance(MAIN_ADDRESS_USED1, network='mainnet'), int)
+        assert isinstance(
+            BitcoreAPI.get_balance(MAIN_ADDRESS_USED1, network="mainnet"), int
+        )
 
     def test_get_balance_main_used(self):
-        assert BitcoreAPI.get_balance(MAIN_ADDRESS_USED1, network='mainnet') > 0
+        assert BitcoreAPI.get_balance(MAIN_ADDRESS_USED1, network="mainnet") > 0
 
     def test_get_balance_main_unused(self):
-        assert BitcoreAPI.get_balance(MAIN_ADDRESS_UNUSED, network='mainnet') == 0
+        assert BitcoreAPI.get_balance(MAIN_ADDRESS_UNUSED, network="mainnet") == 0
 
     def test_get_balance_test_used(self):
-        assert BitcoreAPI.get_balance(TEST_ADDRESS_USED2, network='testnet') > 0
+        assert BitcoreAPI.get_balance(TEST_ADDRESS_USED2, network="testnet") > 0
 
     def test_get_balance_test_unused(self):
-        assert BitcoreAPI.get_balance(TEST_ADDRESS_UNUSED, network='testnet') == 0
+        assert BitcoreAPI.get_balance(TEST_ADDRESS_UNUSED, network="testnet") == 0
 
     def test_get_transactions_return_type(self):
-        assert iter(BitcoreAPI.get_transactions(MAIN_ADDRESS_USED1, network='mainnet'))
+        assert iter(BitcoreAPI.get_transactions(MAIN_ADDRESS_USED1, network="mainnet"))
 
     # FIXME: Bitcore.io only returns 10 elements
     # def test_get_transactions_main_used(self):
     #     assert len(BitcoreAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 218
 
     def test_get_transactions_main_unused(self):
-        assert len(BitcoreAPI.get_transactions(MAIN_ADDRESS_UNUSED, network='mainnet')) == 0
+        assert (
+            len(BitcoreAPI.get_transactions(MAIN_ADDRESS_UNUSED, network="mainnet"))
+            == 0
+        )
 
     # FIXME: Bitcore.io only returns 10 elements
     # def test_get_transactions_test_used(self):
     #     assert len(BitcoreAPI.get_transactions_testnet(TEST_ADDRESS_USED2)) >= 444
 
     def test_get_transactions_test_unused(self):
-        assert len(BitcoreAPI.get_transactions(TEST_ADDRESS_UNUSED, network='testnet')) == 0
+        assert (
+            len(BitcoreAPI.get_transactions(TEST_ADDRESS_UNUSED, network="testnet"))
+            == 0
+        )
 
     def test_get_unspent_return_type(self):
-        assert iter(BitcoreAPI.get_unspent(MAIN_ADDRESS_USED1, network='mainnet'))
+        assert iter(BitcoreAPI.get_unspent(MAIN_ADDRESS_USED1, network="mainnet"))
 
     def test_get_unspent_main_used(self):
-        assert len(BitcoreAPI.get_unspent(MAIN_ADDRESS_USED2, network='mainnet')) >= 1
+        assert len(BitcoreAPI.get_unspent(MAIN_ADDRESS_USED2, network="mainnet")) >= 1
 
     def test_get_unspent_main_unused(self):
-        assert len(BitcoreAPI.get_unspent(MAIN_ADDRESS_UNUSED, network='mainnet')) == 0
+        assert len(BitcoreAPI.get_unspent(MAIN_ADDRESS_UNUSED, network="mainnet")) == 0
 
     # FIXME: Bitcore.io only returns 10 elements
     # def test_get_unspent_test_used(self):
     #     assert len(BitcoreAPI.get_unspent_testnet(TEST_ADDRESS_USED2)) >= 194
 
     def test_get_unspent_test_unused(self):
-        assert len(BitcoreAPI.get_unspent(TEST_ADDRESS_UNUSED, network='testnet')) == 0
+        assert len(BitcoreAPI.get_unspent(TEST_ADDRESS_UNUSED, network="testnet")) == 0

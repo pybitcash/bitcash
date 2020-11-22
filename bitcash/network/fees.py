@@ -5,9 +5,9 @@ DEFAULT_FEE_MEDIUM = 2
 DEFAULT_FEE_SLOW = 1
 
 
-FEE_SPEED_FAST = 'fast'
-FEE_SPEED_MEDIUM = 'medium'
-FEE_SPEED_SLOW = 'slow'
+FEE_SPEED_FAST = "fast"
+FEE_SPEED_MEDIUM = "medium"
+FEE_SPEED_SLOW = "slow"
 
 
 # FIXME: Not sure if this is better, bools are better, or creating its
@@ -26,4 +26,4 @@ def get_fee(speed=FEE_SPEED_MEDIUM):
     elif speed == FEE_SPEED_SLOW:
         return DEFAULT_FEE_SLOW
     else:
-        raise ValueError('Invalid speed argument.')
+        raise ValueError("Invalid speed argument.")

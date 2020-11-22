@@ -15,28 +15,27 @@ def generate_key_address_pair():  # pragma: no cover
     return bytes_to_wif(private_key.secret), address
 
 
-def generate_matching_address(prefix, cores='all'):  # pragma: no cover
+def generate_matching_address(prefix, cores="all"):  # pragma: no cover
 
     for char in prefix:
         if char not in BASE58_ALPHABET:
-            raise ValueError(f'{char} is an invalid base58 encoded ' \
-                             f'character.')
+            raise ValueError(f"{char} is an invalid base58 encoded " f"character.")
 
     if not prefix:
         return generate_key_address_pair()
-    elif not prefix.startswith('1'):
-        prefix = '1' + prefix
+    elif not prefix.startswith("1"):
+        prefix = "1" + prefix
 
     available_cores = cpu_count()
 
-    if cores == 'all':
+    if cores == "all":
         cores = available_cores
     elif 0 < int(cores) <= available_cores:
         cores = int(cores)
     else:
         cores = 1
 
-    counter = Value('i')
+    counter = Value("i")
     match = Event()
     queue = Queue()
 
@@ -44,8 +43,7 @@ def generate_matching_address(prefix, cores='all'):  # pragma: no cover
     for _ in range(cores):
         workers.append(
             Process(
-                target=generate_key_address_pairs,
-                args=(prefix, counter, match, queue)
+                target=generate_key_address_pairs, args=(prefix, counter, match, queue)
             )
         )
 
@@ -61,14 +59,12 @@ def generate_matching_address(prefix, cores='all'):  # pragma: no cover
                 continue
             break
         keys_generated = current
-        s = f'Keys generated: {keys_generated}\r'
+        s = f"Keys generated: {keys_generated}\r"
         sys.stdout.write(s)
         sys.stdout.flush()
 
     private_key, address = queue.get()
-    print(f'\n\n' \
-          f'WIF: {bytes_to_wif(private_key)}\n' \
-          f'Address: {address}')
+    print(f"\n\n" f"WIF: {bytes_to_wif(private_key)}\n" f"Address: {address}")
 
 
 def generate_key_address_pairs(prefix, counter, match, queue):  # pragma: no cover
@@ -84,7 +80,7 @@ def generate_key_address_pairs(prefix, counter, match, queue):  # pragma: no cov
 
         private_key = ECPrivateKey(context=context)
         address = b58encode_check(
-            b'\x00' + ripemd160_sha256(private_key.public_key.format())
+            b"\x00" + ripemd160_sha256(private_key.public_key.format())
         )
 
         if address.startswith(prefix):

@@ -9,7 +9,7 @@ def bitcash():
 
 
 @bitcash.command()
-@click.argument('prefix')
-@click.option('--cores', '-c', default='all')
+@click.argument("prefix")
+@click.option("--cores", "-c", default="all")
 def gen(prefix, cores):
     click.echo(generate_matching_address(prefix, cores))

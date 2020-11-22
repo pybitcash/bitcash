@@ -11,6 +11,7 @@ def decorate_methods(decorator, *args, **kwargs):
             if callable(getattr(cls, attr)):
                 setattr(cls, attr, decorator(getattr(cls, attr), *args, **kwargs))
         return cls
+
     return decorate
 
 
@@ -19,6 +20,7 @@ def catch_errors_raise_warnings(f, ignored_errors):  # pragma: no cover
         try:
             f(*args, **kwargs)
         except ignored_errors:
-            warnings.warn('Unreachable API from '.format(f.__name__), Warning)
+            warnings.warn("Unreachable API from ".format(f.__name__), Warning)
             assert True
+
     return wrapper
