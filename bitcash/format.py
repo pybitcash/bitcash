@@ -90,8 +90,8 @@ def wif_to_bytes(wif, regtest=False):
         else:
             version = 'test'
     else:
-        raise ValueError('{} does not correspond to a mainnet, testnet nor '
-                         'regtest address.'.format(version))
+        raise ValueError(f'{version} does not correspond to a mainnet,' \
+                         f'testnet, nor regtest address.')
 
     # Remove version byte and, if present, compression flag.
     if len(wif) == 52 and private_key[-1] == 1:
@@ -130,7 +130,7 @@ def public_key_to_address(public_key, version='main'):
     # 33 bytes compressed, 65 uncompressed.
     length = len(public_key)
     if length not in (33, 65):
-        raise ValueError('{} is an invalid length for a public key.'.format(length))
+        raise ValueError(f'{length} is an invalid length for a public key.')
 
     payload = list(ripemd160_sha256(public_key))
     address = Address(payload=payload, version=version)
@@ -147,7 +147,7 @@ def public_key_to_coords(public_key):
     elif length == 65:
         x, y = int.from_bytes(public_key[1:33], 'big'), int.from_bytes(public_key[33:], 'big')
     else:
-        raise ValueError('{} is an invalid length for a public key.'.format(length))
+        raise ValueError(f'{length} is an invalid length for a public key.')
 
     return x, y
 

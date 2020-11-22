@@ -55,13 +55,11 @@ class TxIn:
                 self.amount == other.amount)
 
     def __repr__(self):
-        return 'TxIn({}, {}, {}, {}, {})'.format(
-            repr(self.script),
-            repr(self.script_len),
-            repr(self.txid),
-            repr(self.txindex),
-            repr(self.amount)
-        )
+        return f'TxIn({repr(self.script)}, ' \
+               f'{repr(self.script_len)}, ' \
+               f'{repr(self.txid)}, ' \
+               f'{repr(self.txindex)}, ' \
+               f'{repr(self.amount)})'
 
 
 Output = namedtuple('Output', ('address', 'amount', 'currency'))
@@ -88,7 +86,7 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size=0):
 
     estimated_fee = estimated_size * satoshis
 
-    logging.debug('Estimated fee: {} satoshis for {} bytes'.format(estimated_fee, estimated_size))
+    logging.debug(f'Estimated fee: {estimated_fee} satoshis for {estimated_size} bytes')
 
     return estimated_fee
 
@@ -200,8 +198,8 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     if remaining > 0:
         outputs.append((leftover, remaining))
     elif remaining < 0:
-        raise InsufficientFunds('Balance {} is less than {} (including '
-                                'fee).'.format(total_in, total_out))
+        raise InsufficientFunds(f'Balance {total_in} is less than ' \
+                                f'{total_out} (including fee).')
 
     outputs.extend(messages)
 

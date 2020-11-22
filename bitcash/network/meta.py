@@ -28,10 +28,8 @@ class Unspent:
                 self.txindex == other.txindex)
 
     def __repr__(self):
-        return 'Unspent(amount={}, confirmations={}, script={}, txid={}, txindex={})'.format(
-            repr(self.amount),
-            repr(self.confirmations),
-            repr(self.script),
-            repr(self.txid),
-            repr(self.txindex)
-        )
+        return f'Unspent(amount={repr(self.amount)}, ' \
+               f'confirmations={repr(self.confirmations)}, ' \
+               f'script={repr(self.script)}, ' \
+               f'txid={repr(self.txid)}, ' \
+               f'txindex={repr(self.txindex)})'

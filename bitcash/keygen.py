@@ -19,8 +19,8 @@ def generate_matching_address(prefix, cores='all'):  # pragma: no cover
 
     for char in prefix:
         if char not in BASE58_ALPHABET:
-            raise ValueError('{} is an invalid base58 encoded '
-                             'character.'.format(char))
+            raise ValueError(f'{char} is an invalid base58 encoded ' \
+                             f'character.')
 
     if not prefix:
         return generate_key_address_pair()
@@ -61,14 +61,14 @@ def generate_matching_address(prefix, cores='all'):  # pragma: no cover
                 continue
             break
         keys_generated = current
-        s = 'Keys generated: {}\r'.format(keys_generated)
+        s = f'Keys generated: {keys_generated}\r'
         sys.stdout.write(s)
         sys.stdout.flush()
 
     private_key, address = queue.get()
-    print('\n\n'
-          'WIF: {}\n'
-          'Address: {}'.format(bytes_to_wif(private_key), address))
+    print(f'\n\n' \
+          f'WIF: {bytes_to_wif(private_key)}\n' \
+          f'Address: {address}')
 
 
 def generate_key_address_pairs(prefix, counter, match, queue):  # pragma: no cover

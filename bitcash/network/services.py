@@ -37,7 +37,7 @@ class BitcoinDotComAPI:
     @classmethod
     def network_endpoint(cls, network):
         if network not in NETWORKS:
-            raise InvalidNetwork("No endpoints found for network {}".format(network))
+            raise InvalidNetwork(f"No endpoints found for network {network}")
         return cls.NETWORK_ENDPOINTS[network]
 
     @classmethod
@@ -151,7 +151,7 @@ class BitcoreAPI:
     @classmethod
     def network_endpoint(cls, network):
         if network not in NETWORKS:
-            raise InvalidNetwork("No endpoints found for network {}".format(network))
+            raise InvalidNetwork(f"No endpoints found for network {network}")
         return cls.NETWORK_ENDPOINTS[network]
 
     @classmethod
