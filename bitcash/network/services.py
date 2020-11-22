@@ -23,9 +23,9 @@ class BitcoinDotComAPI:
     """ rest.bitcoin.com API """
 
     NETWORK_ENDPOINTS = {
-        'mainnet': os.getenv("BITCOINCOM_API_MAINNET") or 'https://rest.bitcoin.com/v2/',
-        'testnet': os.getenv("BITCOINCOM_API_TESTNET") or 'https://trest.bitcoin.com/v2/',
-        'regtest': os.getenv("BITCOINCOM_API_REGTEST") or 'http://localhost:12500/v2/'
+        'mainnet': os.getenv('BITCOINCOM_API_MAINNET', 'https://rest.bitcoin.com/v2/'),
+        'testnet': os.getenv('BITCOINCOM_API_TESTNET', 'https://trest.bitcoin.com/v2/'),
+        'regtest': os.getenv('BITCOINCOM_API_REGTEST', 'http://localhost:12500/v2/')
     }
     UNSPENT_PATH = 'address/utxo/{}'
     ADDRESS_PATH = 'address/details/{}'
@@ -135,8 +135,8 @@ class BitcoinDotComAPI:
 class BitcoreAPI:
     """ Insight API v8 """
     NETWORK_ENDPOINTS = {
-        'mainnet': os.getenv("BITCORE_API_MAINNET") or 'https://api.bitcore.io/api/BCH/mainnet/',
-        'testnet': os.getenv("BITCORE_API_TESTNET") or 'https://api.bitcore.io/api/BCH/testnet/'
+        'mainnet': os.getenv('BITCORE_API_MAINNET', 'https://api.bitcore.io/api/BCH/mainnet/'),
+        'testnet': os.getenv('BITCORE_API_TESTNET', 'https://api.bitcore.io/api/BCH/testnet/')
     }
 
     MAIN_ENDPOINT = 'https://api.bitcore.io/api/BCH/mainnet/'
