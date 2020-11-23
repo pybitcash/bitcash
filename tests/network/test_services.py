@@ -95,6 +95,13 @@ class TestNetworkAPI:
     # def test_get_transaction_testnet(self):
     #     assert isinstance(NetworkAPI.get_transaction_testnet(TEST_TX), Transaction) == True
 
+    def test_get_tx_amount(self):
+        assert NetworkAPI.get_tx_amount(MAIN_TX, 2) == 0
+
+    # FIXME: enable this when testnet APIs are fixed/replaced
+    # def test_get_tx_amount_testnet(self):
+    #     assert NetworkAPI.get_tx_amount_testnet(TEST_TX, 2) == 0
+
     def test_get_unspent_main_equal(self):
         results = [call(MAIN_ADDRESS_USED2) for call in NetworkAPI.GET_UNSPENT_MAIN]
         assert all_items_equal(results)
