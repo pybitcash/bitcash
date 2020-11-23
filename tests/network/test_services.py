@@ -4,6 +4,7 @@ import bitcash
 from bitcash.network.services import (
     BitcoinDotComAPI, BitcoreAPI, NetworkAPI, set_service_timeout
 )
+from bitcash.network.transaction import Transaction
 from tests.utils import (
     catch_errors_raise_warnings, decorate_methods, raise_connection_error
 )
@@ -86,6 +87,13 @@ class TestNetworkAPI:
     def test_get_transactions_test_failure(self):
         with pytest.raises(ConnectionError):
             MockBackend.get_transactions_testnet(TEST_ADDRESS_USED2)
+
+    def test_get_transaction(self):
+        assert isinstance(NetworkAPI.get_transaction(MAIN_TX), Transaction) == True
+
+    # FIXME: enable this when testnet APIs are fixed/replaced
+    # def test_get_transaction_testnet(self):
+    #     assert isinstance(NetworkAPI.get_transaction_testnet(TEST_TX), Transaction) == True
 
     def test_get_unspent_main_equal(self):
         results = [call(MAIN_ADDRESS_USED2) for call in NetworkAPI.GET_UNSPENT_MAIN]
