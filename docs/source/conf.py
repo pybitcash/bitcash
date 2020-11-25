@@ -52,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'bitcash'
-copyright = '2019, BitCash'
+copyright = '2020, BitCash'
 author = 'Teran McKinney'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -174,6 +174,6 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'bitcash', 'bitcash Documentation',
-     author, 'Teran McKinney', 'Bitcoin Cash for Python',
+     author, 'Teran McKinney', 'Corentin Mercier', 'Bitcoin Cash for Python',
      'Miscellaneous'),
 ]

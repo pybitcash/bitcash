@@ -4,6 +4,7 @@ import bitcash
 from bitcash.network.services import (
     BitcoinDotComAPI, BitcoreAPI, NetworkAPI, set_service_timeout
 )
+from bitcash.network.transaction import Transaction
 from tests.utils import (
     catch_errors_raise_warnings, decorate_methods, raise_connection_error
 )
@@ -12,6 +13,7 @@ MAIN_ADDRESS_USED1 = 'qrg2nw20kxhspdlec82qxrgdegrq23hyuyjx2h29sy'
 MAIN_ADDRESS_USED2 = 'qpr270a5sxphltdmggtj07v4nskn9gmg9yx4m5h7s4'
 MAIN_ADDRESS_UNUSED = 'qzxumj0tjwwrep698rv4mnwa5ek3ddsgxuvcunqnjx'
 MAIN_TX = '9bccb8d6adf53ca49cea02118871e29d3b4e5cb157dc3a475dd364e30fb20993'
+MAIN_TX2 = '10961ec0534bd9751371bfbab4af57cf3a6c7410df9c71c51665c75fca92f33c'
 TEST_ADDRESS_USED1 = 'qrnuzdzleru8c6qhpva20x9f2mp0u657luhfyxjep5'
 TEST_ADDRESS_USED2 = 'qprralpnpx6zrx3w2aet97u0c6rcfrlp8v6jenepj5'
 TEST_ADDRESS_USED3 = 'qpjm4n7m4r6aufkxxy5nqm5letejdm4f5sn6an6rsl'
@@ -86,6 +88,20 @@ class TestNetworkAPI:
         with pytest.raises(ConnectionError):
             MockBackend.get_transactions_testnet(TEST_ADDRESS_USED2)
 
+    def test_get_transaction(self):
+        assert isinstance(NetworkAPI.get_transaction(MAIN_TX), Transaction) == True
+
+    # FIXME: enable this when testnet APIs are fixed/replaced
+    # def test_get_transaction_testnet(self):
+    #     assert isinstance(NetworkAPI.get_transaction_testnet(TEST_TX), Transaction) == True
+
+    def test_get_tx_amount(self):
+        assert NetworkAPI.get_tx_amount(MAIN_TX, 2) == 0
+
+    # FIXME: enable this when testnet APIs are fixed/replaced
+    # def test_get_tx_amount_testnet(self):
+    #     assert NetworkAPI.get_tx_amount_testnet(TEST_TX, 2) == 0
+
     def test_get_unspent_main_equal(self):
         results = [call(MAIN_ADDRESS_USED2) for call in NetworkAPI.GET_UNSPENT_MAIN]
         assert all_items_equal(results)
@@ -140,6 +156,9 @@ class TestBitcoinDotComAPI:
 
     def test_get_transactions_test_unused(self):
         assert len(BitcoinDotComAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
+
+    def test_get_tx_amount(self):
+        assert BitcoinDotComAPI.get_tx_amount(MAIN_TX2, 1) == 546
 
     def test_get_unspent_return_type(self):
         assert iter(BitcoinDotComAPI.get_unspent(MAIN_ADDRESS_USED1))

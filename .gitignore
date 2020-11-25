@@ -13,3 +13,5 @@ __pycache__
 /docs/build
 /wheelhouse
 venv/
+/.tox
+htmlcov/
