@@ -64,7 +64,8 @@ documentation.</p>
 <li><p>Install <code class="docutils literal notranslate"><span class="pre">pytest</span></code> and <code class="docutils literal notranslate"><span class="pre">coverage</span></code> if you don’t have them already.</p></li>
 <li><p>Run <a class="reference external" href="https://github.com/pybitcash/bitcash/blob/master/run_tests.py">run_tests.py</a>
 which is located in the project directory. If any tests fail, and you
-are unable to diagnose the reason, please refer to <a class="reference internal" href="#filing-an-issue">Filing an Issue</a>.</p></li>
+are unable to diagnose the reason, please refer to <a class="reference internal" href="#filing-an-issue">Filing an Issue</a>.
+If you are working on <code class="docutils literal notranslate"><span class="pre">regtest</span></code>, run a local regtest node with a REST API and run tests using the <code class="docutils literal notranslate"><span class="pre">regtest</span></code> flag: <code class="docutils literal notranslate"><span class="pre">run_tests.py</span> <span class="pre">--regtest</span></code>.</p></li>
 <li><p>Complete your patch and write tests to verify your fix or feature is working.
 Please try to reduce the size and scope of your patch to make the review
 process go smoothly.</p></li>
@@ -89,14 +90,13 @@ files until the documentation looks properly formatted.</p></li>
 <h2>TODO<a class="headerlink" href="#todo" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Add optional caching with LMDB</p></li>
-<li><p>Implement <a class="reference external" href="https://github.com/bitcoincash/bips/blob/master/bip-0125.mediawiki">replace-by-fee</a></p></li>
 <li><p>Implement <a class="reference external" href="https://github.com/bitcoincash/bips/blob/master/bip-0065.mediawiki">future payments</a></p></li>
 <li><p>Implement <a class="reference external" href="https://github.com/bitcoincash/bips/blob/master/bip-0032.mediawiki">HD wallets</a></p></li>
 <li><p>Support getting unspents with confirmation limit</p></li>
 <li><p>Add CLI using <a class="reference external" href="https://github.com/pallets/click">Click</a></p></li>
 <li><p>direct network connection (ughh sockets)</p></li>
-<li><p>segwit</p></li>
 <li><p>Add GUI using <a class="reference external" href="https://github.com/kivy/kivy">Kivy</a></p></li>
+<li><p>Implement <a class="reference external" href="https://slp.dev">SLP</a></p></li>
 </ul>
 </div>
 </div>
@@ -234,7 +234,7 @@ files until the documentation looks properly formatted.</p></li>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2019, BitCash.
+      &copy;2020, BitCash.
       
       |
       <a href="../_sources/community/contributing.rst.txt"
