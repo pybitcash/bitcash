@@ -438,6 +438,109 @@ def sanitize_slp_tx_data(
     return unspents, outputs
 
 
+def sanitize_slp_create_tx_data(
+    address,
+    unspents,
+    outputs,
+    fee,
+    leftover,
+    combine=True,
+    combine_slp=True,
+    message=None,
+    compressed=True,
+    custom_pushdata=False,
+    slp_unspents=None,
+):
+    """
+    sanitize_tx_data()
+    fee is in satoshis per byte.
+    """
+
+    outputs = outputs.copy()
+
+    for i, output in enumerate(outputs):
+        dest, amount, currency = output
+        outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))
+
+    # Random
+    if not unspents:
+        raise ValueError("Transactions must have at least one unspent.")
+
+    # Temporary storage so all outputs precede messages.
+    messages = []
+    total_op_return_size = 0
+
+    if message and (custom_pushdata is False):
+        try:
+            message = message.encode("utf-8")
+        except AttributeError:
+            pass  # assume message is already a bytes-like object
+
+        message_chunks = chunk_data(message, MESSAGE_LIMIT)
+
+        for message in message_chunks:
+            messages.append((message, 0))
+            total_op_return_size += get_op_return_size(message, custom_pushdata=False)
+
+    elif message and (custom_pushdata is True):
+        if len(message) >= 220:
+            # FIXME add capability for >220 bytes for custom pushdata elements
+            raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
+        else:
+            messages.append((message, 0))
+            total_op_return_size += get_op_return_size(message, custom_pushdata=True)
+
+    # Include return address in fee estimate.
+    total_in = 0
+    num_outputs = len(outputs) + 1
+    sum_outputs = sum(out[1] for out in outputs)
+
+    if combine:
+        # calculated_fee is in total satoshis.
+        calculated_fee = estimate_tx_fee(
+            len(unspents), num_outputs, fee, compressed, total_op_return_size
+        )
+        total_out = sum_outputs + calculated_fee
+        unspents = unspents.copy()
+        total_in += sum(unspent.amount for unspent in unspents)
+
+    else:
+        unspents = sorted(unspents, key=lambda x: x.amount)
+
+        index = 0
+
+        for index, unspent in enumerate(unspents):
+            total_in += unspent.amount
+            calculated_fee = estimate_tx_fee(
+                len(unspents[: index + 1]),
+                num_outputs,
+                fee,
+                compressed,
+                total_op_return_size,
+            )
+            total_out = sum_outputs + calculated_fee
+
+            if total_in >= total_out:
+                break
+
+        unspents[:] = unspents[: index + 1]
+
+    remaining = total_in - total_out
+
+    if remaining > 0:
+        outputs.append((leftover, remaining))
+    elif remaining < 0:
+        raise InsufficientFunds(
+            "Balance {} is less than {} (including " "fee).".format(total_in, total_out)
+        )
+    if slp_unspents:
+        for unspent in slp_unspents:
+            unspents.insert(0, unspent)
+
+    outputs.insert(0, messages[0])
+    return unspents, outputs
+
+
 def construct_output_block(outputs, custom_pushdata=False):
 
     output_block = b""
