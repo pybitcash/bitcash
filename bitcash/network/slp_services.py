@@ -79,11 +79,16 @@ class SlpAPI:
             }
 
             path = cls.query_to_url(query, network)
-            r = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
-            if len(r.json()) > 0:
-                j = r.json()["g"]
+            get_balance_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+
+            # Check response json size to determine if empty response, prevents
+            # throwing error if calling index of empty array.
+            if len(get_balance_response.json()) > 0:
+                get_balance_json = get_balance_response.json()["g"]
                 return [
-                    (a["token"][0]["tokenDetails"]["name"], a["slpAmount"]) for a in j
+                    (
+                        token["token"][0]["tokenDetails"]["name"], token["slpAmount"]
+                    ) for token in get_balance_json
                 ]
             else:
                 return []
@@ -126,11 +131,16 @@ class SlpAPI:
             }
 
         path = cls.query_to_url(query, network)
-        r = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        get_balance_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
 
-        if len(r.json()) > 0:
-            j = r.json()["g"]
-            return [(a["token"][0]["tokenDetails"]["name"], a["slpAmount"]) for a in j]
+        # Check response json size to determine if empty response, prevents 
+        # throwing error if calling index of empty array.
+        if len(get_balance_response.json()) > 0:
+            get_balance_json = get_balance_response.json()["g"]
+            return [
+                (token["token"][0]["tokenDetails"]["name"], token["slpAmount"]) 
+                for token in get_balance_json
+                ]
         else:
             return []
 
@@ -147,21 +157,21 @@ class SlpAPI:
         }
 
         path = cls.query_to_url(query, network)
-        r = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
-        j = r.json()["t"]
+        get_token_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        get_token_json = get_token_response.json()["t"]
 
         return [
             (
-                a["tokenDetails"]["tokenIdHex"],
-                a["tokenDetails"]["documentUri"],
-                a["tokenDetails"]["documentSha256Hex"],
-                a["tokenDetails"]["symbol"],
-                a["tokenDetails"]["name"],
-                a["tokenDetails"]["genesisOrMintQuantity"],
-                a["tokenDetails"]["decimals"],
-                a["tokenDetails"]["versionType"],
+                token["tokenDetails"]["tokenIdHex"],
+                token["tokenDetails"]["documentUri"],
+                token["tokenDetails"]["documentSha256Hex"],
+                token["tokenDetails"]["symbol"],
+                token["tokenDetails"]["name"],
+                token["tokenDetails"]["genesisOrMintQuantity"],
+                token["tokenDetails"]["decimals"],
+                token["tokenDetails"]["versionType"],
             )
-            for a in j
+            for token in get_token_json
         ]
 
     @classmethod
@@ -208,10 +218,11 @@ class SlpAPI:
         }
 
         path = cls.query_to_url(query, network)
-        r = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
-        j = r.json()["g"]
+        get_utxo_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        get_utxo_json = get_utxo_response.json()["g"]
 
-        return [(a["token_balance"], a["address"], a["txid"], a["vout"]) for a in j]
+        return [(utxo["token_balance"], utxo["address"], utxo["txid"], utxo["vout"]) 
+            for utxo in get_utxo_json]
 
     @classmethod
     def get_all_slp_utxo_by_address(cls, address, network="mainnet", limit=100):
@@ -255,15 +266,14 @@ class SlpAPI:
         }
 
         path = cls.query_to_url(query, network)
-        r = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
-        j = r.json()["g"]
+        slp_utxo_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        slp_utxo_json = slp_utxo_response.json()["g"]
 
-        return [(a["token_balance"], a["address"], a["txid"], a["vout"]) for a in j]
+        return [(utxo["token_balance"], utxo["address"], utxo["txid"], utxo["vout"]) for utxo in slp_utxo_json]
 
     @classmethod
     def get_mint_baton(cls, tokenId=None, address=None, network="mainnet", limit=10):
-        # write error if both none
-        # TODO
+
         if tokenId:
             query = {
                 "v": 3,
@@ -294,10 +304,10 @@ class SlpAPI:
             }
 
             path = cls.query_to_url(query, network)
-            r = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
-            j = r.json()["g"]
+            mint_baton_utxo_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+            mint_baton_utxo_json = mint_baton_utxo_response.json()["g"]
 
-            return [(a["address"], a["txid"], a["vout"]) for a in j]
+            return [(tx["address"], tx["txid"], tx["vout"]) for tx in mint_baton_utxo_json]
 
         elif address:
             query = {
@@ -333,10 +343,11 @@ class SlpAPI:
             }
 
             path = cls.query_to_url(query, network)
-            r = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
-            j = r.json()["g"]
+            mint_baton_utxo_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+            mint_baton_utxo_json = mint_baton_utxo_response.json()["g"]
 
-            return [(a["address"], a["txid"], a["vout"]) for a in j]
+            return [(tx["address"], tx["txid"], tx["vout"]) 
+                for tx in mint_baton_utxo_json]
         else:
             raise ValueError("Must include either a tokenId or address")
 
@@ -370,8 +381,8 @@ class SlpAPI:
         }
 
         path = cls.query_to_url(query, network)
-        r = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
-        j = r.json()["c"]
+        tx_containing_op_return_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        tx_containing_op_return_json = tx_containing_op_return_response.json()["c"]
 
         # return [
         #     (
@@ -384,10 +395,11 @@ class SlpAPI:
         #     for a in j
         # ]
 
-        # Format this
+        # Not sure on what information we want from this call, format this
+        # Used for searching for secondary opreturn in a multi opreturn tx
         # TODO format this
 
-        return j
+        return tx_containing_op_return_json
 
     @classmethod
     def get_child_nft_by_parent_tokenId(
@@ -420,21 +432,21 @@ class SlpAPI:
         }
 
         path = cls.query_to_url(query, network)
-        r = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
-        j = r.json()["t"]
+        child_nft_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        child_nft_json = child_nft_response.json()["t"]
 
         return [
             (
-                a["tokenDetails"]["tokenIdHex"],
-                a["tokenDetails"]["documentUri"],
-                a["tokenDetails"]["documentSha256Hex"],
-                a["tokenDetails"]["symbol"],
-                a["tokenDetails"]["name"],
-                a["tokenDetails"]["genesisOrMintQuantity"],
-                a["tokenDetails"]["decimals"],
-                a["tokenDetails"]["versionType"],
+                token["tokenDetails"]["tokenIdHex"],
+                token["tokenDetails"]["documentUri"],
+                token["tokenDetails"]["documentSha256Hex"],
+                token["tokenDetails"]["symbol"],
+                token["tokenDetails"]["name"],
+                token["tokenDetails"]["genesisOrMintQuantity"],
+                token["tokenDetails"]["decimals"],
+                token["tokenDetails"]["versionType"],
             )
-            for a in j
+            for token in child_nft_json
         ]
 
     @classmethod
