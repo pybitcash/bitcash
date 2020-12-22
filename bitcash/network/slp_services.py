@@ -86,9 +86,8 @@ class SlpAPI:
             if len(get_balance_response.json()) > 0:
                 get_balance_json = get_balance_response.json()["g"]
                 return [
-                    (
-                        token["token"][0]["tokenDetails"]["name"], token["slpAmount"]
-                    ) for token in get_balance_json
+                    (token["token"][0]["tokenDetails"]["name"], token["slpAmount"])
+                    for token in get_balance_json
                 ]
             else:
                 return []
@@ -133,14 +132,14 @@ class SlpAPI:
         path = cls.query_to_url(query, network)
         get_balance_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
 
-        # Check response json size to determine if empty response, prevents 
+        # Check response json size to determine if empty response, prevents
         # throwing error if calling index of empty array.
         if len(get_balance_response.json()) > 0:
             get_balance_json = get_balance_response.json()["g"]
             return [
-                (token["token"][0]["tokenDetails"]["name"], token["slpAmount"]) 
+                (token["token"][0]["tokenDetails"]["name"], token["slpAmount"])
                 for token in get_balance_json
-                ]
+            ]
         else:
             return []
 
@@ -221,8 +220,10 @@ class SlpAPI:
         get_utxo_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
         get_utxo_json = get_utxo_response.json()["g"]
 
-        return [(utxo["token_balance"], utxo["address"], utxo["txid"], utxo["vout"]) 
-            for utxo in get_utxo_json]
+        return [
+            (utxo["token_balance"], utxo["address"], utxo["txid"], utxo["vout"])
+            for utxo in get_utxo_json
+        ]
 
     @classmethod
     def get_all_slp_utxo_by_address(cls, address, network="mainnet", limit=100):
@@ -269,7 +270,10 @@ class SlpAPI:
         slp_utxo_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
         slp_utxo_json = slp_utxo_response.json()["g"]
 
-        return [(utxo["token_balance"], utxo["address"], utxo["txid"], utxo["vout"]) for utxo in slp_utxo_json]
+        return [
+            (utxo["token_balance"], utxo["address"], utxo["txid"], utxo["vout"])
+            for utxo in slp_utxo_json
+        ]
 
     @classmethod
     def get_mint_baton(cls, tokenId=None, address=None, network="mainnet", limit=10):
@@ -307,7 +311,9 @@ class SlpAPI:
             mint_baton_utxo_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
             mint_baton_utxo_json = mint_baton_utxo_response.json()["g"]
 
-            return [(tx["address"], tx["txid"], tx["vout"]) for tx in mint_baton_utxo_json]
+            return [
+                (tx["address"], tx["txid"], tx["vout"]) for tx in mint_baton_utxo_json
+            ]
 
         elif address:
             query = {
@@ -346,8 +352,9 @@ class SlpAPI:
             mint_baton_utxo_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
             mint_baton_utxo_json = mint_baton_utxo_response.json()["g"]
 
-            return [(tx["address"], tx["txid"], tx["vout"]) 
-                for tx in mint_baton_utxo_json]
+            return [
+                (tx["address"], tx["txid"], tx["vout"]) for tx in mint_baton_utxo_json
+            ]
         else:
             raise ValueError("Must include either a tokenId or address")
 
@@ -381,7 +388,9 @@ class SlpAPI:
         }
 
         path = cls.query_to_url(query, network)
-        tx_containing_op_return_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        tx_containing_op_return_response = requests.get(
+            url=path, timeout=DEFAULT_TIMEOUT
+        )
         tx_containing_op_return_json = tx_containing_op_return_response.json()["c"]
 
         # return [
@@ -454,7 +463,6 @@ class SlpAPI:
 
         slp_utxos = SlpAPI.get_all_slp_utxo_by_address(slp_address, network=network)
 
-        print("baton call")
         baton_info = SlpAPI.get_mint_baton(address=slp_address, network=network)
         baton_tx = []
 

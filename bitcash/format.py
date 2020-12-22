@@ -50,9 +50,10 @@ def address_to_public_key_hash(address):
     if "P2PKH" not in address.version:
         # Bitcash currently only has support for P2PKH transaction types
         # P2SH and others will raise ValueError
-        raise ValueError('Bitcash currently only supports P2PKH addresses')
+        raise ValueError("Bitcash currently only supports P2PKH addresses")
 
     return bytes(address.payload)
+
 
 def bytes_to_wif(private_key, version="main", compressed=False):
 
@@ -116,21 +117,21 @@ def wif_checksum_check(wif):
     return False
 
 
-def public_key_to_address(public_key, version='main'):
+def public_key_to_address(public_key, version="main"):
     # Currently Bitcash only support P2PKH (not P2SH)
     VERSIONS = {
-        'main': "P2PKH",
-        'test': "P2PKH-TESTNET",
-        'regtest': "P2PKH-REGTEST",
-        'main-slp': "P2PKH-SLP",
-        'test-slp': "P2PKH-SLP-TESTNET",
-        'regtest-slp': "P2PKH-SLP-REGTEST",
+        "main": "P2PKH",
+        "test": "P2PKH-TESTNET",
+        "regtest": "P2PKH-REGTEST",
+        "main-slp": "P2PKH-SLP",
+        "test-slp": "P2PKH-SLP-TESTNET",
+        "regtest-slp": "P2PKH-SLP-REGTEST",
     }
 
     try:
         version = VERSIONS[version]
     except:
-        raise ValueError('Invalid version: {}'.format(version))
+        raise ValueError("Invalid version: {}".format(version))
     # 33 bytes compressed, 65 uncompressed.
     length = len(public_key)
     if length not in (33, 65):

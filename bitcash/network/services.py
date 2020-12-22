@@ -6,12 +6,9 @@ from decimal import Decimal
 from bitcash.exceptions import InvalidNetwork, InvalidAddress
 from bitcash.network import currency_to_satoshi
 from bitcash.network.meta import Unspent
+
 # from bitcash.network.transaction import Transaction, TxPart
-from bitcash.tx import (
-    Transaction,
-    TransactionInput,
-    TransactionOutput
-)
+from bitcash.tx import Transaction, TransactionInput, TransactionOutput
 
 DEFAULT_TIMEOUT = 30
 
@@ -191,7 +188,7 @@ class BitcoreAPI:
         "testnet": os.getenv(
             "BITCORE_API_TESTNET", "https://api.bitcore.io/api/BCH/testnet/"
         ),
-        "regtest": os.getenv("", "http://localhost:12500/api/BCH/regtest/")
+        "regtest": os.getenv("", "http://localhost:12500/api/BCH/regtest/"),
     }
 
     ADDRESS_API = "address/{}"
