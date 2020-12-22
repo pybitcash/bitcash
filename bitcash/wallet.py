@@ -160,6 +160,7 @@ class PrivateKey(BaseKey):
         super().__init__(wif=wif)
 
         self._address = None
+        self._slp_address = None
         self._scriptcode = None
         if network in NETWORKS.keys():
             self._network = network
@@ -169,15 +170,29 @@ class PrivateKey(BaseKey):
         self.unspents = []
         self.transactions = []
 
+    def __assign_address(self):
+        self._address = public_key_to_address(
+            self._public_key, version=self._network
+        )
+        self._slp_address = public_key_to_address(
+            self._public_key, version=f"{self._network}-slp"
+        )
+
     @property
     def address(self):
         """The public address you share with others to receive funds."""
         if self._address is None:
-            self._address = public_key_to_address(
-                self._public_key, version=self._network
-            )
+            self.__assign_address()
 
         return self._address
+
+    @property
+    def slp_address(self):
+        """The public address you share with others to receive funds."""
+        if self._address is None:
+            self.__assign_address()
+
+        return self._slp_address
 
     @property
     def scriptcode(self):

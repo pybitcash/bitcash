@@ -84,6 +84,11 @@ class Address:
             'version_bit': 0,
             'network': 'mainnet'
         },
+        'P2PKH-SLP': {
+            'prefix': 'simpleledger',
+            'version_bit': 0,
+            'network': 'mainnet'
+        },
         'P2SH-TESTNET': {
             'prefix': 'bchtest',
             'version_bit': 8,
@@ -91,6 +96,11 @@ class Address:
         },
         'P2PKH-TESTNET': {
             'prefix': 'bchtest',
+            'version_bit': 0,
+            'network': 'testnet'
+        },
+        'P2PKH-SLP-TESTNET': {
+            'prefix': 'slptest',
             'version_bit': 0,
             'network': 'testnet'
         },
@@ -103,13 +113,21 @@ class Address:
             'prefix': 'bchreg',
             'version_bit': 0,
             'network': 'regtest'
-        }
+        },
+        'P2PKH-SLP-REGTEST': {
+            'prefix': 'slpreg',
+            'version_bit': 0,
+            'network': 'regtest'
+        },
     }
 
     VERSION_SUFFIXES = {
         'bitcoincash': '',
         'bchtest': '-TESTNET',
-        'bchreg': '-REGTEST'
+        'bchreg': '-REGTEST',
+        'simpleledger:': '-SLP',
+        'slptest:': '-SLP-TESTNET',
+        'slpreg:': '-SLP-REGTEST',
     }
 
     ADDRESS_TYPES = {

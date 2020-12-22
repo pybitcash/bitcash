@@ -121,7 +121,10 @@ def public_key_to_address(public_key, version='main'):
     VERSIONS = {
         'main': "P2PKH",
         'test': "P2PKH-TESTNET",
-        'regtest': "P2PKH-REGTEST"
+        'regtest': "P2PKH-REGTEST",
+        'main-slp': "P2PKH-SLP",
+        'test-slp': "P2PKH-SLP-TESTNET",
+        'regtest-slp': "P2PKH-SLP-REGTEST",
     }
 
     try:
