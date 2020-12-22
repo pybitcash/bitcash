@@ -1,4 +1,5 @@
 import json
+import time
 import bitcash.slp_create as slp_create
 
 from bitcash.crypto import ECPrivateKey
@@ -621,6 +622,149 @@ class PrivateKey(BaseKey):
         NetworkAPI.broadcast_tx(tx_hex)
 
         return calc_txid(tx_hex)
+
+    def create_child_nft(
+        self,
+        tokenId,
+        address=None,
+        fee=None,
+        leftover=None,
+        combine=True,
+        message=None,
+        unspents=None,
+        slp_unspents=None,
+        custom_pushdata=False,
+    ):  # pragma: no cover
+        """Creates a signed P2PKH transaction and attempts to broadcast it on
+        the blockchain. This accepts the same arguments as
+        :func:`~bitcash.PrivateKey.create_transaction`.
+        :param outputs: A sequence of outputs you wish to send in the form
+                        ``(destination, amount, currency)``. The amount can
+                        be either an int, float, or string as long as it is
+                        a valid input to ``decimal.Decimal``. The currency
+                        must be :ref:`supported <supported currencies>`.
+        :type outputs: ``list`` of ``tuple``
+        :param fee: The number of satoshi per byte to pay to miners. By default
+                    Bitcash will poll `<https://bitcoincashfees.earn.com>`_ and use a fee
+                    that will allow your transaction to be confirmed as soon as
+                    possible.
+        :type fee: ``int``
+        :param leftover: The destination that will receive any change from the
+                         transaction. By default Bitcash will send any change to
+                         the same address you sent from.
+        :type leftover: ``str``
+        :param combine: Whether or not Bitcash should use all available UTXOs to
+                        make future transactions smaller and therefore reduce
+                        fees. By default Bitcash will consolidate UTXOs.
+        :type combine: ``bool``
+        :param message: A message to include in the transaction. This will be
+                        stored in the blockchain forever. Due to size limits,
+                        each message will be stored in chunks of 220 bytes.
+        :type message: ``str``
+        :param unspents: The UTXOs to use as the inputs. By default Bitcash will
+                         communicate with the blockchain itself.
+        :type unspents: ``list`` of :class:`~bitcash.network.meta.Unspent`
+        :returns: The transaction ID.
+        :rtype: ``str``
+        """
+
+        outputs = [(self.slp_address, 1)]
+
+        tx_hex = self.create_slp_transaction(
+            outputs,
+            tokenId,
+            fee=fee,
+            leftover=leftover,
+            combine=combine,
+            unspents=unspents,
+            slp_unspents=slp_unspents,
+        )
+
+        NetworkAPI.broadcast_tx(tx_hex)
+
+        # Grab previous txid to target the vout with the slp token
+        fanOutTxId = calc_txid(tx_hex)
+
+        # Sleep to allow node to populate
+        # This function performs two transactions concurrently
+        time.sleep(3)
+        self.get_balance()
+
+        fanOut = [fanOutTxId, 1]
+
+        # Searchs unspents for desired utxo
+        def _fan_utxo(unspent, fanOut):
+            return (unspent.txid, unspent.txindex) in [
+                (fanOut[0], fanOut[1]) for fan in fanOut
+            ]
+
+        fanUtxo = []
+        timeWaited = 0
+
+        # Loops to find unspent created above
+        # TODO add some output so user knows progress on what is happening here
+        while len(fanUtxo) == 0:
+            # The desired utxo
+            fanUtxo = [
+                unspent for unspent in self.slp_unspents if _fan_utxo(unspent, fanOut)
+            ]
+            time.sleep(2)
+            self.get_balance()
+            timeWaited += 2
+
+            # Change this to an appropriate number.
+            if timeWaited > 30:
+                raise Exception("Out of time")
+
+        slp_unspents = self.slp_unspents.copy()
+
+        # Clears previous slp_unspents to only include the desired utxo
+        slp_unspents[:] = fanUtxo
+
+        if address:
+            outputs = [(address, 1)]
+        else:
+            outputs = [(self.slp_address, 1)]
+
+        # Pulls Group NFT token details to populate ticker and name
+        tokenDetails = SlpAPI.get_token_by_id(tokenId, network=NETWORKS[self._network])[0]
+
+        # Change this for different child tickers/names
+        # TODO change this
+        op_return = slp_create.buildGenesisOpReturn(
+            tokenDetails[3], tokenDetails[4] + " child", "", "", 0, None, 1, 65
+        )
+
+        # Slice the 6a off the opreturn
+        op_return = bytes.fromhex(op_return[2:])
+
+        min_satoshi = 546
+
+        if address:
+            outputs = [(address, min_satoshi, "satoshi")]
+        else:
+            outputs = [(self.address, min_satoshi, "satoshi")]
+
+        unspents, outputs = sanitize_slp_create_tx_data(
+            address or self.address,
+            self.unspents,
+            outputs,
+            fee or get_fee(),
+            leftover or self.address,
+            combine=combine,
+            message=op_return,
+            compressed=self.is_compressed(),
+            custom_pushdata=custom_pushdata,
+            slp_unspents=slp_unspents,
+        )
+
+        time.sleep(2)
+        tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
+
+        NetworkAPI.broadcast_tx(tx_hex)
+
+        return calc_txid(tx_hex)
+
 
     def mint_slp(
         self,
