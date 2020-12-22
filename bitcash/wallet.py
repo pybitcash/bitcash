@@ -622,6 +622,122 @@ class PrivateKey(BaseKey):
 
         return calc_txid(tx_hex)
 
+    def mint_slp(
+        self,
+        tokenId,
+        amount,
+        keepBaton=True,
+        fee=None,
+        leftover=None,
+        combine=True,
+        message=None,
+        unspents=None,
+        custom_pushdata=False,
+    ):
+        """Creates a signed P2PKH transaction.
+        :param outputs: A sequence of outputs you wish to send in the form
+                        ``(destination, amount, currency)``. The amount can
+                        be either an int, float, or string as long as it is
+                        a valid input to ``decimal.Decimal``. The currency
+                        must be :ref:`supported <supported currencies>`.
+        :type outputs: ``list`` of ``tuple``
+        :param fee: The number of satoshi per byte to pay to miners. By default
+                    Bitcash will poll `<https://bitcoincashfees.earn.com>`_ and use a fee
+                    that will allow your transaction to be confirmed as soon as
+                    possible.
+        :type fee: ``int``
+        :param leftover: The destination that will receive any change from the
+                         transaction. By default Bitcash will send any change to
+                         the same address you sent from.
+        :type leftover: ``str``
+        :param combine: Whether or not Bitcash should use all available UTXOs to
+                        make future transactions smaller and therefore reduce
+                        fees. By default Bitcash will consolidate UTXOs.
+        :type combine: ``bool``
+        :param message: A message to include in the transaction. This will be
+                        stored in the blockchain forever. Due to size limits,
+                        each message will be stored in chunks of 220 bytes.
+        :type message: ``str``
+        :param unspents: The UTXOs to use as the inputs. By default Bitcash will
+                         communicate with the blockchain itself.
+        :type unspents: ``list`` of :class:`~bitcash.network.meta.Unspent`
+        :returns: The signed transaction as hex.
+        :rtype: ``str``
+        """
+
+        baton_vout = None
+
+        if keepBaton:
+            baton_vout = 2
+
+        tokenDetails = SlpAPI.get_token_by_id(tokenId, network=NETWORKS[self._network])[
+            0
+        ]
+        tokenType = tokenDetails[7]
+
+        op_return = slp_create.buildMintOpReturn(
+            tokenId, baton_vout, amount, token_type=tokenType
+        )
+
+        # Check that self.address contains mint baton
+        mint_baton_utxo = SlpAPI.get_mint_baton(
+            tokenId, network=NETWORKS[self._network]
+        )
+
+        if mint_baton_utxo:
+            address_with_baton = mint_baton_utxo[0][0]
+
+        else:
+            address_with_baton = None
+
+        if self.slp_address != address_with_baton:
+            raise ValueError("The baton is not on your address")
+
+        # Grab baton utxo from baton pool
+        def _baton_match(batons, baton_utxo):
+            return (batons.txid, batons.txindex) in [
+                (baton[1], baton[2]) for baton in baton_utxo
+            ]
+
+        batons = self.batons
+        baton_match = [i for i in batons if _baton_match(i, mint_baton_utxo)]
+
+        if unspents == None:
+            unspents = self.unspents
+
+        unspents.extend(baton_match)
+
+        # hacky but works, find a better way
+        # TODO: Find a better way
+        op_return = bytes.fromhex(op_return[2:])
+        # This strips the "6a" (OP_RETURN) off the string,
+        # and then converts it to bytes (needed for construct_output_block)
+
+        # the minimum amount of BCH required for a tx
+        min_satoshi = 546
+        outputs = [(self.address, min_satoshi, "satoshi")]
+
+        if keepBaton:
+            outputs.append((self.address, min_satoshi, "satoshi"))
+
+        unspents, outputs = sanitize_slp_create_tx_data(
+            self.address,
+            unspents,
+            outputs,
+            fee or get_fee(),
+            leftover or self.address,
+            combine=combine,
+            message=op_return,
+            compressed=self.is_compressed(),
+            custom_pushdata=custom_pushdata,
+        )
+
+        tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
+
+        NetworkAPI.broadcast_tx(tx_hex)
+
+        return calc_txid(tx_hex)
+
     @classmethod
     def prepare_transaction(
         cls,
