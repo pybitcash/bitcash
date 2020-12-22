@@ -34,7 +34,7 @@ class SlpAPI:
             url = cls.SLP_REG_ENDPOINT + path
         else:
             raise ValueError('"{}" is an invalid path')
-
+        print(url)
         return url
 
     @classmethod

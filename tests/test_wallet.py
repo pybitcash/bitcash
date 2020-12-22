@@ -3,10 +3,14 @@ import time
 import logging
 
 import pytest
+import unittest
+from unittest import mock
+import json
 
 from bitcash.crypto import ECPrivateKey
 from bitcash.curve import Point
 from bitcash.format import verify_sig
+from bitcash.network.meta import Unspent
 from bitcash.wallet import (
     BaseKey,
     Key,
@@ -37,9 +41,119 @@ from .samples import (
     BITCOIN_CASHADDRESS_REGTEST,
     BITCOIN_ADDRESS_TEST_PAY2SH,
     BITCOIN_ADDRESS_REGTEST_PAY2SH,
+    BITCOIN_SLP_ADDRESS,
+    BITCOIN_SLP_ADDRESS_REGTEST,
+    BITCOIN_SLP_ADDRESS_TEST,
+    WALLET_FORMAT_TEST_SLP,
+    TESTNET_TESTCOIN_TOKENID,
+    TESTNET_GET_BALANCE_BY_TOKEN_URL,
+    TESTNET_GET_BALANCE_BY_TOKEN_RESPONSE,
+    SLP_TESTS_ADDRESS_TEST,
+    MINT_TEST_TOKEN_DETAILS_TESTNET_URL,
+    MINT_TEST_TOKEN_DETAILS_TESTNET_RESPONSE,
+    MINT_TEST_BATON_UTXO_TESTNET_URL,
+    MINT_TEST_BATON_UTXO_TESTNET_RESPONSE,
+    SLP_TESTS_SEND_SLP_URL,
+    SLP_TESTS_SEND_SLP_RESPONSE,
+    SLP_TESTS_SEND_SLP_TOKEN_DETAILS_URL,
+    SLP_TESTS_SEND_SLP_TOKEN_DETAILS_RESPONSE
 )
 
 TRAVIS = "TRAVIS" in os.environ
+
+# Hard coded for consistent testing of function returns.
+# TODO move to different file
+SLP_TESTS_UNSPENTS = [
+    Unspent(
+        amount=992980,
+        confirmations=-1,
+        script="76a9148a4f72432f31d605b023a64b0cd3fb1b0a4dc61588ac",
+        txid="c1613a5224fb3dc489817b81ef8c0179e8fcf9d016d00799fc60591ec305001f",
+        txindex=2,
+    )
+]
+SLP_TESTS_SLP_UNSPENTS = [
+    Unspent(
+        amount=546,
+        confirmations=-1,
+        script="76a9148a4f72432f31d605b023a64b0cd3fb1b0a4dc61588ac",
+        txid="c1613a5224fb3dc489817b81ef8c0179e8fcf9d016d00799fc60591ec305001f",
+        txindex=1,
+    ),
+    Unspent(
+        amount=546,
+        confirmations=-1,
+        script="76a9148a4f72432f31d605b023a64b0cd3fb1b0a4dc61588ac",
+        txid="ebe4d53b26bdef8ddea7a55609c99cda5aaaa2c2909baefaa2bd295479c740ef",
+        txindex=2,
+    ),
+    Unspent(
+        amount=546,
+        confirmations=-1,
+        script="76a9148a4f72432f31d605b023a64b0cd3fb1b0a4dc61588ac",
+        txid="89ef48fb7d0d39be9ad748827f191d6197eba342c044185dad58295f75f8b8eb",
+        txindex=1,
+    ),
+]
+SLP_TESTS_BATON_UNSPENTS = [
+    Unspent(
+        amount=546,
+        confirmations=-1,
+        script="76a9148a4f72432f31d605b023a64b0cd3fb1b0a4dc61588ac",
+        txid="15cd6253c8ac838a4b9f9918fc84b0484a45b661a78ccc597a7653a0fc175d1f",
+        txindex=2,
+    ),
+    Unspent(
+        amount=546,
+        confirmations=-1,
+        script="76a9148a4f72432f31d605b023a64b0cd3fb1b0a4dc61588ac",
+        txid="89ef48fb7d0d39be9ad748827f191d6197eba342c044185dad58295f75f8b8eb",
+        txindex=2,
+    ),
+]
+SLP_TESTS_SEND_UNSPENTS = [
+    Unspent(
+        amount=992018, 
+        confirmations=-1, 
+        script='76a9148a4f72432f31d605b023a64b0cd3fb1b0a4dc61588ac', 
+        txid='ff7febe4abaf15771c9e5f402fdb3508810084d951f896d2470f42f57def07b4', 
+        txindex=3
+        )
+        ]
+SLP_TESTS_SEND_SLP_UNSPENTS = [Unspent(amount=546, confirmations=-1, script='76a9148a4f72432f31d605b023a64b0cd3fb1b0a4dc61588ac', txid='ff7febe4abaf15771c9e5f402fdb3508810084d951f896d2470f42f57def07b4', txindex=1),
+ Unspent(amount=546, confirmations=-1, script='76a9148a4f72432f31d605b023a64b0cd3fb1b0a4dc61588ac', txid='ff7febe4abaf15771c9e5f402fdb3508810084d951f896d2470f42f57def07b4', txindex=2),
+ Unspent(amount=546, confirmations=-1, script='76a9148a4f72432f31d605b023a64b0cd3fb1b0a4dc61588ac', txid='c1613a5224fb3dc489817b81ef8c0179e8fcf9d016d00799fc60591ec305001f', txindex=1),
+ Unspent(amount=546, confirmations=-1, script='76a9148a4f72432f31d605b023a64b0cd3fb1b0a4dc61588ac', txid='ebe4d53b26bdef8ddea7a55609c99cda5aaaa2c2909baefaa2bd295479c740ef', txindex=2)]
+SLP_TESTS_SEND_BATONS = [Unspent(amount=546, confirmations=-1, script='76a9148a4f72432f31d605b023a64b0cd3fb1b0a4dc61588ac', txid='89ef48fb7d0d39be9ad748827f191d6197eba342c044185dad58295f75f8b8eb', txindex=2)] 
+
+
+def mockedAPI(txhex):
+    # Skip broadcast
+    return
+
+def mocked_requests_get(*args, **kwargs):
+    class MockResponse:
+        def __init__(self, json_data, status_code):
+            self.json_data = json_data
+            self.status_code = status_code
+
+        def json(self):
+            return self.json_data
+
+        def raise_for_status(self):
+            return
+
+    # Mocked call to Testnet get_unspents for consistency
+    if kwargs["url"] == MINT_TEST_TOKEN_DETAILS_TESTNET_URL:
+        return MockResponse(json.loads(MINT_TEST_TOKEN_DETAILS_TESTNET_RESPONSE), 200)
+    elif kwargs["url"] == MINT_TEST_BATON_UTXO_TESTNET_URL:
+        return MockResponse(json.loads(MINT_TEST_BATON_UTXO_TESTNET_RESPONSE), 200)
+    elif kwargs["url"] == SLP_TESTS_SEND_SLP_URL:
+        return MockResponse(json.loads(SLP_TESTS_SEND_SLP_RESPONSE), 200)
+    elif kwargs["url"] == SLP_TESTS_SEND_SLP_TOKEN_DETAILS_URL:
+        return MockResponse(json.loads(SLP_TESTS_SEND_SLP_TOKEN_DETAILS_RESPONSE), 200)
+
+    return MockResponse(None, 404)
 
 
 class TestWIFToKey:
@@ -167,6 +281,10 @@ class TestPrivateKey:
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         assert private_key.address == BITCOIN_CASHADDRESS
 
+    def test_slp_address(self):
+        private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        assert private_key.slp_address == BITCOIN_SLP_ADDRESS
+
     def test_to_wif(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         assert private_key.to_wif() == WALLET_FORMAT_MAIN
@@ -178,6 +296,11 @@ class TestPrivateKey:
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         balance = int(private_key.get_balance())
         assert balance == private_key.balance
+
+    def test_get_slp_balance(self):
+        private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        slp_balance = private_key.get_slp_balance()
+        assert slp_balance == private_key.slp_balance
 
     def test_get_unspent(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
@@ -229,6 +352,10 @@ class TestPrivateKeyTestnet:
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
         assert private_key.address == BITCOIN_CASHADDRESS_TEST
 
+    def test_slp_address(self):
+        private_key = PrivateKey(WALLET_FORMAT_TEST)
+        assert private_key.slp_address == BITCOIN_SLP_ADDRESS
+
     def test_to_wif(self):
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
         assert private_key.to_wif() == WALLET_FORMAT_TEST
@@ -245,6 +372,11 @@ class TestPrivateKeyTestnet:
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
         unspent = private_key.get_unspents()
         assert unspent == private_key.unspents
+
+    def test_get_slp_balance(self):
+        private_key = PrivateKey(WALLET_FORMAT_TEST_SLP)
+        slp_balance = private_key.get_slp_balance()
+        assert slp_balance == private_key.slp_balance
 
     def test_get_transactions(self):
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
@@ -281,6 +413,68 @@ class TestPrivateKeyTestnet:
 
         logging.debug(f"Current: {current}, Initial: {initial}")
         assert current < initial
+
+
+    @mock.patch(
+        "bitcash.network.NetworkAPI.broadcast_tx", side_effect=mockedAPI
+    )
+    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    def test_send_slp(self, mock1, mock2):
+        # Broadcasting is mocked out
+        private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST_SLP)
+        private_key.unspents[:] = SLP_TESTS_SEND_UNSPENTS
+        private_key.slp_unspents = SLP_TESTS_SEND_SLP_UNSPENTS
+        private_key.batons = SLP_TESTS_SEND_BATONS
+        txid = private_key.send_slp(
+            [(BITCOIN_SLP_ADDRESS_TEST, 1)], tokenId=TESTNET_TESTCOIN_TOKENID
+        )
+
+        assert (
+            txid == "90a2bfd27ab2f05037d2d41c32f96ba8ceff22e9fc9adaef758229138be8048a"
+        )
+
+    @mock.patch(
+        "bitcash.network.NetworkAPI.broadcast_tx", side_effect=mockedAPI
+    )
+    def test_create_slp(self, mock_get):
+        private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST_SLP)
+        private_key.unspents[:] = SLP_TESTS_UNSPENTS
+        private_key.slp_unspents[:] = SLP_TESTS_SLP_UNSPENTS
+
+        ticker = "ttt"
+        token_name = "test"
+        document_url = "www.test.com"
+        document_hash = ""
+        decimals = 0
+        token_quant = 1000
+
+        txid = private_key.create_slp_token(
+            ticker, token_name, document_url, document_hash, decimals, token_quant
+        )
+
+        assert (
+            txid == "1ed2d64e0db3f13b6a1d7c3405f4a2bbdbac0288c1acfd67df9234bf961370ca"
+        )
+
+    @mock.patch(
+        "bitcash.network.NetworkAPI.broadcast_tx", side_effect=mockedAPI
+    )
+    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    def test_mint_slp(self, mock1, mock2):
+        private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST_SLP)
+        private_key.unspents[:] = SLP_TESTS_UNSPENTS
+        private_key.slp_unspents[:] = SLP_TESTS_SLP_UNSPENTS
+        private_key.batons[:] = SLP_TESTS_BATON_UNSPENTS
+
+        tokenId = TESTNET_TESTCOIN_TOKENID
+        amount = 1000
+        keepBaton = True
+
+        txid = private_key.mint_slp(tokenId, amount, keepBaton)
+
+        assert (
+            txid == "1e4b0380101927bc61eb1e71809a082bd8fcf1fceb9bba8c4116ecdda9f5373b"
+        )
 
     def test_send_pay2sh(self):
         """

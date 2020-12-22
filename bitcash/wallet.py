@@ -386,14 +386,14 @@ class PrivateKey(BaseKey):
         """
 
         unspents, outputs = sanitize_slp_tx_data(
-            self._address,
-            self._slp_address,
+            self.address,
+            self.slp_address,
             unspents or self.unspents,
             slp_unspents or self.slp_unspents,
             outputs,
             tokenId,
             fee or get_fee(),
-            leftover or self._address,
+            leftover or self.address,
             network=NETWORKS[self._network],
             combine=combine,
             message=message,
@@ -523,7 +523,7 @@ class PrivateKey(BaseKey):
             slp_unspents=slp_unspents,
         )
 
-        NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
+        # NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
 
         return calc_txid(tx_hex)
 
@@ -727,7 +727,9 @@ class PrivateKey(BaseKey):
             outputs = [(self.slp_address, 1)]
 
         # Pulls Group NFT token details to populate ticker and name
-        tokenDetails = SlpAPI.get_token_by_id(tokenId, network=NETWORKS[self._network])[0]
+        tokenDetails = SlpAPI.get_token_by_id(tokenId, network=NETWORKS[self._network])[
+            0
+        ]
 
         # Change this for different child tickers/names
         # TODO change this
@@ -764,7 +766,6 @@ class PrivateKey(BaseKey):
         NetworkAPI.broadcast_tx(tx_hex)
 
         return calc_txid(tx_hex)
-
 
     def mint_slp(
         self,
