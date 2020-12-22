@@ -117,7 +117,6 @@ def wif_checksum_check(wif):
     return False
 
 
-<<<<<<< HEAD
 def public_key_to_address(public_key, version='main'):
     # Currently Bitcash only support P2PKH (not P2SH)
     VERSIONS = {
@@ -130,17 +129,6 @@ def public_key_to_address(public_key, version='main'):
         version = VERSIONS[version]
     except:
         raise ValueError('Invalid version: {}'.format(version))
-=======
-def public_key_to_address(public_key, version="main"):
-    if version == "test":
-        version = "P2PKH-TESTNET"
-    elif version == "regtest":
-        version = "P2PKH-REGTEST"
-    elif version == "main":
-        version = "P2PKH"
-    else:
-        raise ValueError("Invalid version.")
->>>>>>> Format with Black formatter
     # 33 bytes compressed, 65 uncompressed.
     length = len(public_key)
     if length not in (33, 65):

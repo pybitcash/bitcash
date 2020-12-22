@@ -22,6 +22,9 @@ from bitcash.transaction import (
     OP_HASH160,
     OP_PUSH_20,
 )
+from bitcash.tx import (
+    Transaction
+)
 
 NETWORKS = {"main": "mainnet", "test": "testnet", "regtest": "regtest"}
 
@@ -225,6 +228,9 @@ class PrivateKey(BaseKey):
         self.unspents[:] = NetworkAPI.get_unspent(
             self.address, network=NETWORKS[self._network]
         )
+
+        # Remove SLP unspents
+
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -337,6 +343,16 @@ class PrivateKey(BaseKey):
         :returns: The transaction ID.
         :rtype: ``str``
         """
+
+        # tx = Transaction.from_outputs(
+        #     self.unspents,
+        #     outputs,
+        #     fees=fee,
+        #     leftover=leftover,
+        #     combine=combine,
+        #     message=message,
+        # )
+        # tx_hex = tx.to_hex()
 
         tx_hex = self.create_transaction(
             outputs,

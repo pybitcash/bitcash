@@ -6,7 +6,12 @@ from decimal import Decimal
 from bitcash.exceptions import InvalidNetwork, InvalidAddress
 from bitcash.network import currency_to_satoshi
 from bitcash.network.meta import Unspent
-from bitcash.network.transaction import Transaction, TxPart
+# from bitcash.network.transaction import Transaction, TxPart
+from bitcash.tx import (
+    Transaction,
+    TransactionInput,
+    TransactionOutput
+)
 
 DEFAULT_TIMEOUT = 30
 
@@ -64,32 +69,74 @@ class BitcoinDotComAPI:
         r.raise_for_status()
         response = r.json(parse_float=Decimal)
 
+        # tx = Transaction(
+        #     response["txid"],
+        #     response["blockheight"],
+        #     (Decimal(response["valueIn"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
+        #     (Decimal(response["valueOut"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
+        #     (Decimal(response["fees"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
+        # )
+
+        inputs = []
+        for vin in response["vin"]:
+            if "coinbase" in vin:
+                raise Exception("Coinbase not yet supported.")
+                # input = TransactionInput.from_coinbase(
+                #     vin["coinbase"],
+                #     vin["sequence"],
+                # )
+            else:
+                input = TransactionInput(
+                    vin["txid"],
+                    vin["vout"],
+                    vin["value"],
+                    vin["cashAddress"],
+                    vin["scriptSig"]["asm"],
+                    vin["sequence"],
+                )
+                # part = TxPart(txin["cashAddress"], txin["value"], txin["scriptSig"]["asm"])
+                # tx.add_input(part)
+            inputs.append(input)
+
+        outputs = []
+        for vout in response["vout"]:
+            # addr = None
+            # if (
+            #     "cashAddrs" in txout["scriptPubKey"]
+            #     and txout["scriptPubKey"]["cashAddrs"] is not None
+            # ):
+            #     addr = txout["scriptPubKey"]["cashAddrs"][0]
+
+            # part = TxPart(
+            #     addr,
+            #     (Decimal(txout["value"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
+            #     txout["scriptPubKey"]["asm"],
+            # )
+            # tx.add_output(part)
+            address = None
+            if (
+                "cashAddrs" in vout["scriptPubKey"]
+                and vout["scriptPubKey"]["cashAddrs"] is not None
+            ):
+                address = vout["scriptPubKey"]["cashAddrs"][0]
+
+            output = TransactionOutput(
+                address,
+                vout["value"],
+                # (Decimal(vout["value"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
+                vout["scriptPubKey"]["asm"],
+            )
+            outputs.append(output)
+
         tx = Transaction(
             response["txid"],
+            inputs,
+            outputs,
             response["blockheight"],
             (Decimal(response["valueIn"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
             (Decimal(response["valueOut"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
             (Decimal(response["fees"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
         )
-
-        for txin in response["vin"]:
-            part = TxPart(txin["cashAddress"], txin["value"], txin["scriptSig"]["asm"])
-            tx.add_input(part)
-
-        for txout in response["vout"]:
-            addr = None
-            if (
-                "cashAddrs" in txout["scriptPubKey"]
-                and txout["scriptPubKey"]["cashAddrs"] is not None
-            ):
-                addr = txout["scriptPubKey"]["cashAddrs"][0]
-
-            part = TxPart(
-                addr,
-                (Decimal(txout["value"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
-                txout["scriptPubKey"]["asm"],
-            )
-            tx.add_output(part)
 
         return tx
 
@@ -144,9 +191,9 @@ class BitcoreAPI:
         "testnet": os.getenv(
             "BITCORE_API_TESTNET", "https://api.bitcore.io/api/BCH/testnet/"
         ),
+        "regtest": os.getenv("", "http://localhost:12500/api/BCH/regtest/")
     }
 
-    MAIN_ENDPOINT = "https://api.bitcore.io/api/BCH/mainnet/"
     ADDRESS_API = "address/{}"
     BALANCE_API = ADDRESS_API + "/balance"
     UNSPENT_API = ADDRESS_API + "/?unspent=true"

@@ -77,6 +77,8 @@ def calc_txid(tx_hex):
     return bytes_to_hex(double_sha256(hex_to_bytes(tx_hex))[::-1])
 
 
+# TODO: This will internalize estimate_tx_fee(self) and properties determined
+# from Transaction object.
 def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size=0):
 
     if not satoshis:
