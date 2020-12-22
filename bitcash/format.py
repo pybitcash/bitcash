@@ -54,8 +54,7 @@ def address_to_public_key_hash(address):
 
     return bytes(address.payload)
 
-
-def bytes_to_wif(private_key, version='main', compressed=False):
+def bytes_to_wif(private_key, version="main", compressed=False):
 
     if version == "test":
         prefix = TEST_PRIVATE_KEY

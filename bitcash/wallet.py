@@ -228,7 +228,7 @@ class PrivateKey(BaseKey):
         self.unspents[:] = NetworkAPI.get_unspent(
             self.address, network=NETWORKS[self._network]
         )
-
+        
         # Remove SLP unspents
 
         self.balance = sum(unspent.amount for unspent in self.unspents)
