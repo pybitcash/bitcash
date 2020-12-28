@@ -97,7 +97,9 @@ class SlpAPI:
             if len(get_balance_response.json()) > 0:
                 get_balance_json = get_balance_response.json()["g"]
                 return [
-                    (token["token"][0]["tokenDetails"]["name"], token["slpAmount"])
+                    (token["token"][0]["tokenDetails"]["tokenIdHex"],
+                    token["token"][0]["tokenDetails"]["name"], 
+                    token["slpAmount"])
                     for token in get_balance_json
                 ]
             else:
@@ -149,7 +151,9 @@ class SlpAPI:
         if len(get_balance_response.json()) > 0:
             get_balance_json = get_balance_response.json()["g"]
             return [
-                (token["token"][0]["tokenDetails"]["name"], token["slpAmount"])
+                (token["token"][0]["tokenDetails"]["tokenIdHex"],
+                token["token"][0]["tokenDetails"]["name"],
+                token["slpAmount"])
                 for token in get_balance_json
             ]
         else:
