@@ -288,12 +288,10 @@ def sanitize_slp_tx_data(
 
     sum_slp_outputs = sum(slp_outputs)
 
-    print("slputxos call")
     slp_utxos = SlpAPI.get_utxo_by_tokenId(
         address=slp_address, tokenId=tokenId, network=network
     )
 
-    print("token info call")
     tokenInfo = SlpAPI.get_token_by_id(tokenId, network=network)
     tokenDecimals = int(tokenInfo[0][6])
 
@@ -324,13 +322,8 @@ def sanitize_slp_tx_data(
         unspent for unspent in slp_unspents if _is_tokenId_slp(unspent, slp_utxos)
     ]
 
-    print("slp in")
-    print(slp_total_in)
-    print("slp out")
-    print(slp_total_out)
     slp_remaining = slp_total_in - slp_total_out
 
-    print(slp_remaining)
     # tokenDetails = SlpAPI.get_token_by_id(tokenId, network=network)[0]
     tokenType = tokenInfo[0][7]
 
