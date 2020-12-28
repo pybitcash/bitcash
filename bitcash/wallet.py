@@ -625,7 +625,7 @@ class PrivateKey(BaseKey):
 
         tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
 
-        NetworkAPI.broadcast_tx(tx_hex)
+        NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
 
         return calc_txid(tx_hex)
 
@@ -686,7 +686,7 @@ class PrivateKey(BaseKey):
             slp_unspents=slp_unspents,
         )
 
-        NetworkAPI.broadcast_tx(tx_hex)
+        NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
 
         # Grab previous txid to target the vout with the slp token
         fanOutTxId = calc_txid(tx_hex)
@@ -769,7 +769,7 @@ class PrivateKey(BaseKey):
         time.sleep(2)
         tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
 
-        NetworkAPI.broadcast_tx(tx_hex)
+        NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
 
         return calc_txid(tx_hex)
 
@@ -885,7 +885,7 @@ class PrivateKey(BaseKey):
 
         tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
 
-        NetworkAPI.broadcast_tx(tx_hex)
+        NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
 
         return calc_txid(tx_hex)
 

@@ -127,7 +127,7 @@ SLP_TESTS_SEND_SLP_UNSPENTS = [Unspent(amount=546, confirmations=-1, script='76a
 SLP_TESTS_SEND_BATONS = [Unspent(amount=546, confirmations=-1, script='76a9148a4f72432f31d605b023a64b0cd3fb1b0a4dc61588ac', txid='89ef48fb7d0d39be9ad748827f191d6197eba342c044185dad58295f75f8b8eb', txindex=2)] 
 
 
-def mockedAPI(txhex):
+def mockedAPI(txhex, network):
     # Skip broadcast
     return
 
@@ -426,12 +426,32 @@ class TestPrivateKeyTestnet:
         private_key.slp_unspents = SLP_TESTS_SEND_SLP_UNSPENTS
         private_key.batons = SLP_TESTS_SEND_BATONS
         txid = private_key.send_slp(
-            [(BITCOIN_SLP_ADDRESS_TEST, 1)], tokenId=TESTNET_TESTCOIN_TOKENID
+            [(BITCOIN_SLP_ADDRESS_TEST, 1)], tokenId=TESTNET_TESTCOIN_TOKENID, combine=True
         )
 
         assert (
             txid == "90a2bfd27ab2f05037d2d41c32f96ba8ceff22e9fc9adaef758229138be8048a"
         )
+
+    @mock.patch(
+        "bitcash.network.NetworkAPI.broadcast_tx", side_effect=mockedAPI
+    )
+    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    def test_send_slp_no_combine(self, mock1, mock2):
+        # Broadcasting is mocked out
+        # Not combining results in different txid due to unspents
+        private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST_SLP)
+        private_key.unspents[:] = SLP_TESTS_SEND_UNSPENTS
+        private_key.slp_unspents = SLP_TESTS_SEND_SLP_UNSPENTS
+        private_key.batons = SLP_TESTS_SEND_BATONS
+        txid = private_key.send_slp(
+            [(BITCOIN_SLP_ADDRESS_TEST, 1)], tokenId=TESTNET_TESTCOIN_TOKENID, combine=False
+        )
+
+        assert (
+            txid == "3f9fd459b0eb38f37fd689c6991a609d9e22b68203136af2fdb40deb4dadb410"
+        )
+    
 
     @mock.patch(
         "bitcash.network.NetworkAPI.broadcast_tx", side_effect=mockedAPI
