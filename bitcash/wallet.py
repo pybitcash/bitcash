@@ -529,7 +529,7 @@ class PrivateKey(BaseKey):
             slp_unspents=slp_unspents,
         )
 
-        # NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
+        NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
 
         return calc_txid(tx_hex)
 

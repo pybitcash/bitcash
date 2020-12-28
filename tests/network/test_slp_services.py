@@ -78,7 +78,7 @@ MAIN_GET_BALANCE_RESPONSE = """
 {"g":[{"_id":"ac7bdca0161752c80c2c7de6fb5cd149054a078e6cd4b6381acc2016b8ff0e8d","slpAmount":"50000","token":[{"_id":"5fd8be0384e07624f24c1f2d","schema_version":79,"lastUpdatedBlock":666017,"tokenDetails":{"decimals":0,"tokenIdHex":"ac7bdca0161752c80c2c7de6fb5cd149054a078e6cd4b6381acc2016b8ff0e8d","timestamp":"2020-12-15 14:04:44","timestamp_unix":1608041084,"transactionType":"GENESIS","versionType":1,"documentUri":"mint.bitcoin.com","documentSha256Hex":null,"symbol":"TCC","name":"Test Coins","batonVout":2,"containsBaton":true,"genesisOrMintQuantity":"1000000","sendOutputs":null},"mintBatonUtxo":"ac7bdca0161752c80c2c7de6fb5cd149054a078e6cd4b6381acc2016b8ff0e8d:2","mintBatonStatus":"ALIVE","tokenStats":{"block_created":666018,"approx_txns_since_genesis":1},"_pruningState":{"pruneHeight":0,"sendCount":0,"mintCount":0}}]}]}
 """
 MAIN_GET_BALANCE_JSON = json.loads(MAIN_GET_BALANCE_RESPONSE)
-MAIN_GET_BALANCE = [("Test Coins", "50000")]
+MAIN_GET_BALANCE = [("ac7bdca0161752c80c2c7de6fb5cd149054a078e6cd4b6381acc2016b8ff0e8d", "Test Coins", "50000")]
 
 
 MAIN_GET_TOKEN_BY_ID_URL = "https://slpdb.fountainhead.cash/q/eyJ2IjogMywgInEiOiB7ImRiIjogWyJ0Il0sICJmaW5kIjogeyIkcXVlcnkiOiB7InRva2VuRGV0YWlscy50b2tlbklkSGV4IjogImFjN2JkY2EwMTYxNzUyYzgwYzJjN2RlNmZiNWNkMTQ5MDU0YTA3OGU2Y2Q0YjYzODFhY2MyMDE2YjhmZjBlOGQifX0sICJwcm9qZWN0IjogeyJ0b2tlbkRldGFpbHMiOiAxLCAidG9rZW5TdGF0cyI6IDEsICJfaWQiOiAwfSwgImxpbWl0IjogMTAwMH19"

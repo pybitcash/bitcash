@@ -27,10 +27,6 @@ class SlpAPI:
         "regtest": os.getenv("SLP_REG_ENDPOINT", "http://localhost:12300/q/"),
     }
 
-    SLP_MAIN_ENDPOINT = "https://slpdb.fountainhead.cash/q/"
-    SLP_TEST_ENDPOINT = "https://slpdb-testnet.fountainhead.cash/q/"
-    SLP_REG_ENDPOINT = "http://localhost:12300/q/"
-
     @classmethod
     def network_endpoint(cls, network):
         if network not in NETWORKS:
