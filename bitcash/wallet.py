@@ -256,8 +256,14 @@ class PrivateKey(BaseKey):
         :type currency: ``str``
         :rtype: ``str``
         """
-        self.slp_balance = SlpAPI.get_balance(
-            self.slp_address, tokenId=tokenId, network=NETWORKS[self._network]
+        if tokenId:
+            self.slp_balance = SlpAPI.get_balance(
+                self.slp_address, tokenId=tokenId, network=NETWORKS[self._network]
+            )
+            return self.slp_balance
+
+        self.slp_balance = SlpAPI.get_balance_address(
+            self.slp_address, network=NETWORKS[self._network]
         )
         return self.slp_balance
 

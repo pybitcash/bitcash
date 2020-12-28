@@ -1,5 +1,6 @@
 import logging
 import json
+import os
 
 import requests
 import base64
@@ -13,32 +14,42 @@ DEFAULT_TIMEOUT = 30
 
 BCH_TO_SAT_MULTIPLIER = 100000000
 
+NETWORKS = {"mainnet", "testnet", "regtest"}
+
 
 class SlpAPI:
+
+    NETWORK_ENDPOINTS = {
+        "mainnet": os.getenv("SLP_MAIN_ENDPOINT", "https://slpdb.fountainhead.cash/q/"),
+        "testnet": os.getenv(
+            "SLP_TEST_ENDPOINT", "https://slpdb-testnet.fountainhead.cash/q/"
+        ),
+        "regtest": os.getenv("SLP_REG_ENDPOINT", "http://localhost:12300/q/"),
+    }
+
     SLP_MAIN_ENDPOINT = "https://slpdb.fountainhead.cash/q/"
     SLP_TEST_ENDPOINT = "https://slpdb-testnet.fountainhead.cash/q/"
     SLP_REG_ENDPOINT = "http://localhost:12300/q/"
 
     @classmethod
+    def network_endpoint(cls, network):
+        if network not in NETWORKS:
+            raise InvalidNetwork(f"No endpoints found for network {network}")
+        return cls.NETWORK_ENDPOINTS[network]
+
+    @classmethod
     def query_to_url(cls, query, network):
         query_to_string = json.dumps(query)
-        b64 = base64.b64encode(query_to_string.encode("utf-8"))
-        path = str(b64)
-        path = path[2:-1]
+        query_b64 = base64.b64encode(query_to_string.encode("utf-8"))
+        b64_to_str = str(query_b64)
+        query_path = b64_to_str[2:-1]
 
-        if network == "mainnet":
-            url = cls.SLP_MAIN_ENDPOINT + path
-        elif network == "testnet":
-            url = cls.SLP_TEST_ENDPOINT + path
-        elif network == "regtest":
-            url = cls.SLP_REG_ENDPOINT + path
-        else:
-            raise ValueError('"{}" is an invalid path')
-        print(url)
+        url = cls.network_endpoint(network) + query_path
+
         return url
 
     @classmethod
-    def get_balance(cls, address, tokenId=None, network="mainnet", limit=100, skip=0):
+    def get_balance(cls, address, tokenId, network="mainnet", limit=100, skip=0):
 
         if tokenId:
             query = {
@@ -92,42 +103,43 @@ class SlpAPI:
             else:
                 return []
 
-        else:
-            query = {
-                "v": 3,
-                "q": {
-                    "db": ["g"],
-                    "aggregate": [
-                        {"$match": {"graphTxn.outputs.address": address}},
-                        {"$unwind": "$graphTxn.outputs"},
-                        {
-                            "$match": {
-                                "graphTxn.outputs.status": "UNSPENT",
-                                "graphTxn.outputs.address": address,
-                            }
-                        },
-                        {
-                            "$group": {
-                                "_id": "$tokenDetails.tokenIdHex",
-                                "slpAmount": {"$sum": "$graphTxn.outputs.slpAmount"},
-                            }
-                        },
-                        {"$sort": {"slpAmount": -1}},
-                        {"$match": {"slpAmount": {"$gt": 0}}},
-                        {
-                            "$lookup": {
-                                "from": "tokens",
-                                "localField": "_id",
-                                "foreignField": "tokenDetails.tokenIdHex",
-                                "as": "token",
-                            }
-                        },
-                    ],
-                    "sort": {"slpAmount": -1},
-                    "skip": skip,
-                    "limit": limit,
-                },
-            }
+    @classmethod
+    def get_balance_address(cls, address, network="mainnet", limit=100, skip=0):
+        query = {
+            "v": 3,
+            "q": {
+                "db": ["g"],
+                "aggregate": [
+                    {"$match": {"graphTxn.outputs.address": address}},
+                    {"$unwind": "$graphTxn.outputs"},
+                    {
+                        "$match": {
+                            "graphTxn.outputs.status": "UNSPENT",
+                            "graphTxn.outputs.address": address,
+                        }
+                    },
+                    {
+                        "$group": {
+                            "_id": "$tokenDetails.tokenIdHex",
+                            "slpAmount": {"$sum": "$graphTxn.outputs.slpAmount"},
+                        }
+                    },
+                    {"$sort": {"slpAmount": -1}},
+                    {"$match": {"slpAmount": {"$gt": 0}}},
+                    {
+                        "$lookup": {
+                            "from": "tokens",
+                            "localField": "_id",
+                            "foreignField": "tokenDetails.tokenIdHex",
+                            "as": "token",
+                        }
+                    },
+                ],
+                "sort": {"slpAmount": -1},
+                "skip": skip,
+                "limit": limit,
+            },
+        }
 
         path = cls.query_to_url(query, network)
         get_balance_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
