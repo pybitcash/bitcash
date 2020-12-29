@@ -766,7 +766,7 @@ class PrivateKey(BaseKey):
             slp_unspents=slp_unspents,
         )
 
-        time.sleep(2)
+
         tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
 
         NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])

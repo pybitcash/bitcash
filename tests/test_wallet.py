@@ -19,7 +19,7 @@ from bitcash.wallet import (
     PrivateKeyRegtest,
     wif_to_key,
 )
-from bitcash.exceptions import InvalidAddress
+from bitcash.exceptions import (InvalidAddress, InvalidNetwork)
 from .samples import (
     PRIVATE_KEY_BYTES,
     PRIVATE_KEY_DER,
@@ -277,6 +277,14 @@ class TestPrivateKey:
         assert private_key.unspents == []
         assert private_key.transactions == []
 
+    def test_init_network(self):
+        private_key = PrivateKey(network = "main")
+        assert private_key._network == "main"
+
+    def test_init_invalid_network(self):
+        with pytest.raises(InvalidNetwork):
+            private_key = PrivateKey(network = "invalid")
+
     def test_address(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         assert private_key.address == BITCOIN_CASHADDRESS
@@ -376,6 +384,11 @@ class TestPrivateKeyTestnet:
     def test_get_slp_balance(self):
         private_key = PrivateKey(WALLET_FORMAT_TEST_SLP)
         slp_balance = private_key.get_slp_balance()
+        assert slp_balance == private_key.slp_balance
+
+    def test_get_slp_balance_token(self):
+        private_key = PrivateKey(WALLET_FORMAT_TEST_SLP)
+        slp_balance = private_key.get_slp_balance(tokenId="12345")
         assert slp_balance == private_key.slp_balance
 
     def test_get_transactions(self):
@@ -488,9 +501,8 @@ class TestPrivateKeyTestnet:
 
         tokenId = TESTNET_TESTCOIN_TOKENID
         amount = 1000
-        keepBaton = True
 
-        txid = private_key.mint_slp(tokenId, amount, keepBaton)
+        txid = private_key.mint_slp(tokenId, amount, keepBaton=True)
 
         assert (
             txid == "1e4b0380101927bc61eb1e71809a082bd8fcf1fceb9bba8c4116ecdda9f5373b"
