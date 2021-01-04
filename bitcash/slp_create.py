@@ -1,4 +1,5 @@
 from collections import namedtuple
+from bitcash.exceptions import SlpSerializingError
 
 ###
 # SLP message creation functions below.

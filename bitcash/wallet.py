@@ -30,6 +30,7 @@ from bitcash.transaction import (
 from bitcash.tx import Transaction
 
 NETWORKS = {"main": "mainnet", "test": "testnet", "regtest": "regtest"}
+NFT_DELAY = 3
 
 
 def wif_to_key(wif, regtest=False):
@@ -358,6 +359,7 @@ class PrivateKey(BaseKey):
         message=None,
         unspents=None,
         slp_unspents=None,
+        non_standard=False,
         custom_pushdata=False,
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction.
@@ -404,10 +406,11 @@ class PrivateKey(BaseKey):
             combine=combine,
             message=message,
             compressed=self.is_compressed(),
-            custom_pushdata=True,
+            custom_pushdata=custom_pushdata,
+            non_standard=non_standard,
         )
 
-        return create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
+        return create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=custom_pushdata)
 
     def send(
         self,
@@ -485,6 +488,7 @@ class PrivateKey(BaseKey):
         message=None,
         unspents=None,
         slp_unspents=None,
+        non_standard=False,
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the blockchain. This accepts the same arguments as
@@ -525,8 +529,11 @@ class PrivateKey(BaseKey):
             fee=fee,
             leftover=leftover,
             combine=combine,
+            message=message,
             unspents=unspents,
             slp_unspents=slp_unspents,
+            non_standard=non_standard,
+            custom_pushdata=True,
         )
 
         NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
@@ -684,6 +691,7 @@ class PrivateKey(BaseKey):
             combine=combine,
             unspents=unspents,
             slp_unspents=slp_unspents,
+            custom_pushdata=True,
         )
 
         NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
@@ -693,7 +701,7 @@ class PrivateKey(BaseKey):
 
         # Sleep to allow node to populate
         # This function performs two transactions concurrently
-        time.sleep(3)
+        time.sleep(NFT_DELAY)
         self.get_balance()
 
         fanOut = [fanOutTxId, 1]
@@ -714,7 +722,7 @@ class PrivateKey(BaseKey):
             fanUtxo = [
                 unspent for unspent in self.slp_unspents if _fan_utxo(unspent, fanOut)
             ]
-            time.sleep(2)
+            time.sleep(NFT_DELAY)
             self.get_balance()
             timeWaited += 2
 

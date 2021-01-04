@@ -1,5 +1,6 @@
 import logging
 from collections import namedtuple
+from decimal import Decimal
 
 from bitcash.crypto import double_sha256, sha256
 from bitcash.exceptions import InsufficientFunds
@@ -260,6 +261,7 @@ def sanitize_slp_tx_data(
     message=None,
     compressed=True,
     custom_pushdata=False,
+    non_standard=False,
 ):
     """
     sanitize_tx_data()
@@ -298,13 +300,13 @@ def sanitize_slp_tx_data(
     if combine_slp:
         slp_total_in = 0
         for utxo in slp_utxos:
-            slp_total_in += int(float(utxo[0]) * (10 ** tokenDecimals))
+            slp_total_in += int(Decimal(utxo[0]) * (10 ** tokenDecimals))
 
     else:
         index = 0
 
         for index, unspent in enumerate(slp_utxos):
-            slp_total_in += int(float(utxo[0]) * (10 ** tokenDecimals))
+            slp_total_in += int(Decimal(utxo[0]) * (10 ** tokenDecimals))
 
             slp_total_out = sum_slp_outputs
 
@@ -363,33 +365,39 @@ def sanitize_slp_tx_data(
     op_return = bytes.fromhex(op_return[2:])
     # This strips the "6a" (OP_RETURN) off the string,
     # and then converts it to bytes (needed for construct_output_block)
-    message = op_return
+    message_list = []
+    message_list.append(op_return)
 
+    if non_standard:
+        message = bytes(message.encode("utf-8"))
+        message_list.append(message)
     messages = []
     total_op_return_size = 0
 
-    if message and (custom_pushdata is False):
-        try:
-            message = message.encode("utf-8")
-        except AttributeError:
-            pass  # assume message is already a bytes-like object
+    for message in message_list:
+        if message and (custom_pushdata is False):
+            try:
+                message = message.encode("utf-8")
+            except AttributeError:
+                pass  # assume message is already a bytes-like object
 
-        message_chunks = chunk_data(message, MESSAGE_LIMIT)
+            message_chunks = chunk_data(message, MESSAGE_LIMIT)
 
-        for message in message_chunks:
-            messages.append((message, 0))
-            total_op_return_size += get_op_return_size(message, custom_pushdata=False)
+            for message in message_chunks:
+                messages.append((message, 0))
+                total_op_return_size += get_op_return_size(message, custom_pushdata=False)
 
-    elif message and (custom_pushdata is True):
-        if len(message) >= 220:
-            # FIXME add capability for >220 bytes for custom pushdata elements
-            raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
-        else:
-            messages.append((message, 0))
-            total_op_return_size += get_op_return_size(message, custom_pushdata=True)
+        elif message and (custom_pushdata is True):
+            if len(message) >= 220:
+                # FIXME add capability for >220 bytes for custom pushdata elements
+                raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
+            else:
+                messages.append((message, 0))
+                total_op_return_size += get_op_return_size(message, custom_pushdata=True)
+        
+        num_outputs = len(outputs) + 1
 
     total_in = 0
-    num_outputs = len(outputs) + 1
 
     sum_outputs = sum(out[1] for out in outputs)
 
@@ -434,6 +442,8 @@ def sanitize_slp_tx_data(
         )
 
     outputs.insert(0, messages[0])
+    if non_standard:
+        outputs.append(messages[1])
 
     return unspents, outputs
 
