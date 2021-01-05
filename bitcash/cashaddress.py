@@ -1,19 +1,20 @@
 from bitcash.exceptions import InvalidAddress
 
-CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'
+CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
 
 
 def polymod(values):
     chk = 1
     generator = [
-        (0x01, 0x98f2bc8e61),
-        (0x02, 0x79b76d99e2),
-        (0x04, 0xf33e5fb3c4),
-        (0x08, 0xae2eabe2a8),
-        (0x10, 0x1e4f43e470)]
+        (0x01, 0x98F2BC8E61),
+        (0x02, 0x79B76D99E2),
+        (0x04, 0xF33E5FB3C4),
+        (0x08, 0xAE2EABE2A8),
+        (0x10, 0x1E4F43E470),
+    ]
     for value in values:
         top = chk >> 35
-        chk = ((chk & 0x07ffffffff) << 5) ^ value
+        chk = ((chk & 0x07FFFFFFFF) << 5) ^ value
         for i in generator:
             if top & i[0] != 0:
                 chk ^= i[1]
@@ -24,7 +25,7 @@ def calculate_checksum(prefix, payload):
     poly = polymod(prefix_expand(prefix) + payload + [0, 0, 0, 0, 0, 0, 0, 0])
     out = list()
     for i in range(8):
-        out.append((poly >> 5 * (7 - i)) & 0x1f)
+        out.append((poly >> 5 * (7 - i)) & 0x1F)
     return out
 
 
@@ -40,7 +41,7 @@ def b32decode(inputs):
 
 
 def b32encode(inputs):
-    out = ''
+    out = ""
     for char_code in inputs:
         out += CHARSET[char_code]
     return out
@@ -69,118 +70,93 @@ def convertbits(data, frombits, tobits, pad=True):
 
 
 def prefix_expand(prefix):
-    return [ord(x) & 0x1f for x in prefix] + [0]
+    return [ord(x) & 0x1F for x in prefix] + [0]
 
 
 class Address:
     VERSIONS = {
-        'P2SH': {
-            'prefix': 'bitcoincash',
-            'version_bit': 8,
-            'network': 'mainnet'
+        "P2SH": {"prefix": "bitcoincash", "version_bit": 8, "network": "mainnet"},
+        "P2PKH": {"prefix": "bitcoincash", "version_bit": 0, "network": "mainnet"},
+        "P2PKH-SLP": {"prefix": "simpleledger", "version_bit": 0, "network": "mainnet"},
+        "P2SH-TESTNET": {"prefix": "bchtest", "version_bit": 8, "network": "testnet"},
+        "P2PKH-TESTNET": {"prefix": "bchtest", "version_bit": 0, "network": "testnet"},
+        "P2PKH-SLP-TESTNET": {
+            "prefix": "slptest",
+            "version_bit": 0,
+            "network": "testnet",
         },
-        'P2PKH': {
-            'prefix': 'bitcoincash',
-            'version_bit': 0,
-            'network': 'mainnet'
-        },
-        'P2PKH-SLP': {
-            'prefix': 'simpleledger',
-            'version_bit': 0,
-            'network': 'mainnet'
-        },
-        'P2SH-TESTNET': {
-            'prefix': 'bchtest',
-            'version_bit': 8,
-            'network': 'testnet'
-        },
-        'P2PKH-TESTNET': {
-            'prefix': 'bchtest',
-            'version_bit': 0,
-            'network': 'testnet'
-        },
-        'P2PKH-SLP-TESTNET': {
-            'prefix': 'slptest',
-            'version_bit': 0,
-            'network': 'testnet'
-        },
-        'P2SH-REGTEST': {
-            'prefix': 'bchreg',
-            'version_bit': 8,
-            'network': 'regtest'
-        },
-        'P2PKH-REGTEST': {
-            'prefix': 'bchreg',
-            'version_bit': 0,
-            'network': 'regtest'
-        },
-        'P2PKH-SLP-REGTEST': {
-            'prefix': 'slpreg',
-            'version_bit': 0,
-            'network': 'regtest'
+        "P2SH-REGTEST": {"prefix": "bchreg", "version_bit": 8, "network": "regtest"},
+        "P2PKH-REGTEST": {"prefix": "bchreg", "version_bit": 0, "network": "regtest"},
+        "P2PKH-SLP-REGTEST": {
+            "prefix": "slpreg",
+            "version_bit": 0,
+            "network": "regtest",
         },
     }
 
     VERSION_SUFFIXES = {
-        'bitcoincash': '',
-        'bchtest': '-TESTNET',
-        'bchreg': '-REGTEST',
-        'simpleledger:': '-SLP',
-        'slptest:': '-SLP-TESTNET',
-        'slpreg:': '-SLP-REGTEST',
+        "bitcoincash": "",
+        "bchtest": "-TESTNET",
+        "bchreg": "-REGTEST",
+        "simpleledger": "-SLP",
+        "slptest": "-SLP-TESTNET",
+        "slpreg": "-SLP-REGTEST",
     }
 
-    ADDRESS_TYPES = {
-        0: "P2PKH",
-        8: "P2SH"
-    }
+    ADDRESS_TYPES = {0: "P2PKH", 8: "P2SH"}
 
     def __init__(self, version, payload):
         if not version in Address.VERSIONS:
             raise ValueError("Invalid address version provided")
-        
+
         self.version = version
         self.payload = payload
-        self.prefix = Address.VERSIONS[self.version]['prefix']
+        self.prefix = Address.VERSIONS[self.version]["prefix"]
 
     def __str__(self):
-        return f'version: {self.version}\npayload: {self.payload}\nprefix: {self.prefix}'
+        return (
+            f"version: {self.version}\npayload: {self.payload}\nprefix: {self.prefix}"
+        )
 
     def cash_address(self):
-        version_bit = Address.VERSIONS[self.version]['version_bit']
+        version_bit = Address.VERSIONS[self.version]["version_bit"]
         payload = [version_bit] + self.payload
         payload = convertbits(payload, 8, 5)
         checksum = calculate_checksum(self.prefix, payload)
-        return self.prefix + ':' + b32encode(payload + checksum)
+        return self.prefix + ":" + b32encode(payload + checksum)
 
     @staticmethod
     def from_string(address):
         try:
             address = str(address)
         except Exception:
-            raise InvalidAddress('Expected string as input')
+            raise InvalidAddress("Expected string as input")
 
         if address.upper() != address and address.lower() != address:
-            raise InvalidAddress('Cash address contains uppercase and lowercase characters')
+            raise InvalidAddress(
+                "Cash address contains uppercase and lowercase characters"
+            )
 
         address = address.lower()
-        colon_count = address.count(':')
+        colon_count = address.count(":")
         if colon_count == 0:
-            raise InvalidAddress('Cash address is missing prefix')
+            raise InvalidAddress("Cash address is missing prefix")
         elif colon_count > 1:
-            raise InvalidAddress('Cash address contains more than one colon character')
+            raise InvalidAddress("Cash address contains more than one colon character")
 
-        prefix, base32string = address.split(':')
+        prefix, base32string = address.split(":")
         decoded = b32decode(base32string)
 
         if not verify_checksum(prefix, decoded):
-            raise InvalidAddress('Bad cash address checksum for address {}'.format(address))
+            raise InvalidAddress(
+                "Bad cash address checksum for address {}".format(address)
+            )
         converted = convertbits(decoded, 5, 8)
 
         try:
             version = Address.ADDRESS_TYPES[converted[0]]
         except:
-            InvalidAddress('Could not determine address version')
+            InvalidAddress("Could not determine address version")
 
         version += Address.VERSION_SUFFIXES[prefix]
 

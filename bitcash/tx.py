@@ -1,10 +1,8 @@
 # Hello, world.
 
 from bitcash.format import *
-from bitcash.utils import (
-    int_to_unknown_bytes,
-    hex_to_bytes
-)
+from bitcash.utils import int_to_unknown_bytes, hex_to_bytes
+
 
 class FunctionalityNotYetImplemented(Exception):
     pass
@@ -28,7 +26,6 @@ MESSAGE_LIMIT = 220
 
 
 class Transaction:
-
     def __init__(
         self,
         txid=None,
@@ -38,8 +35,8 @@ class Transaction:
         valueIn=None,
         valueOut=None,
         message=None,
-        fees=None
-        ):
+        fees=None,
+    ):
         self._txid = txid
         self._inputs = inputs
         self._outputs = outputs
@@ -49,7 +46,7 @@ class Transaction:
         self._message = message
         self._fees = fees
         # self._slp = False
-    
+
     # @classmethod
     # def from_outputs(self, unspents, outputs):
     #     return Transaction(outputs)
@@ -69,7 +66,7 @@ class Transaction:
     @property
     def txOutputCount(self):
         return len(self._outputs)
-    
+
     def get_inputs(self):
         # TODO: finish
         raise FunctionalityNotYetImplemented(
@@ -102,16 +99,15 @@ class Transaction:
 
 
 class TransactionInput:
-
     def __init__(
         self,
         previousTransactionID,
         previousTransactionVout,
         previousTransactionAmount,
-        toCashAddress, # This may not be useful.
+        toCashAddress,  # This may not be useful.
         unlockingScript,
         sequence,
-        ):
+    ):
         self._previousTransactionID = previousTransactionID
         self._previousTransactionVout = previousTransactionVout
         self._previousTransactionAmount = previousTransactionAmount
@@ -122,8 +118,8 @@ class TransactionInput:
         self._is_slp_minting_baton = False
         self._sequence = sequence
 
-        self._coinbase = None # Not currently functional
-    
+        self._coinbase = None  # Not currently functional
+
     @property
     def isCoinbase(self):
         # Coinbase doesn't currently work, but leaving
@@ -142,11 +138,11 @@ class TransactionInput:
         sequence = SEQUENCE
 
         hex_block += (
-            self._previousTransactionID +
-            self._previousTransactionVout +
-            self.scriptLength +
-            self._unlockingScript +
-            sequence
+            self._previousTransactionID
+            + self._previousTransactionVout
+            + self.scriptLength
+            + self._unlockingScript
+            + sequence
         )
         return hex_block
 
@@ -155,11 +151,11 @@ class TransactionInput:
         # Coinbase doesn't currently work, but leaving
         # this function/property here for future use
         t = TransactionInput(
-            previousTransactionID = None,
-            previousTransactionVout = None,
-            previousTransactionAmount = None,
-            toCashAddress = None,
-            unlockingScript = None,
+            previousTransactionID=None,
+            previousTransactionVout=None,
+            previousTransactionAmount=None,
+            toCashAddress=None,
+            unlockingScript=None,
             sequence=sequence,
         )
         t._coinbase = coinbase
@@ -173,24 +169,18 @@ class TransactionInput:
         txindex = unspent.txindex.to_bytes(4, byteorder="little")
         amount = unspent.amount.to_bytes(8, byteorder="little")
 
-
         return TransactionInput(
             previousTransactionID,
             previousTransactionVout,
             previousTransactionAmount,
-            toCashAddress, # This may not be useful.
+            toCashAddress,  # This may not be useful.
             unlockingScript,
             sequence,
         )
 
 
 class TransactionOutput:
-    def __init__(
-        self,
-        address=None,
-        amount=None,
-        lockingScript=None
-        ):
+    def __init__(self, address=None, amount=None, lockingScript=None):
 
         self._amount: int = amount
         self._address: str = address
@@ -201,7 +191,6 @@ class TransactionOutput:
             if lockingScript.startswith("OP_RETURN "):
                 self._op_return = asm[10:]
 
-
     def message(self):
         """Attempt to decode the op_return value (if there is one) as a UTF-8 string."""
 
@@ -209,7 +198,7 @@ class TransactionOutput:
             return None
 
         return bytearray.fromhex(self._op_return).decode("utf-8")
-    
+
     def to_hex(self):
         block_hex = b""
 

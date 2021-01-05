@@ -8,3 +8,6 @@ class InvalidAddress(Exception):
 
 class InvalidNetwork(Exception):
     pass
+
+class SlpSerializingError(Exception):
+    pass
