@@ -471,6 +471,48 @@ class SlpAPI:
         ]
 
     @classmethod
+    def get_unconfirmed_spent_utxo_genesis_65(
+        cls, tokenId, address, network="mainnet"
+    ):
+        # Grabs inputs of unconfirmed type 65 genesis tx
+        # Work around for type 129 inputs on type 65 genesis
+        # not registering as spent
+        
+        query = {
+            "v": 3,
+            "q": {
+                "db": ["u"],
+                "aggregate": [
+                    {
+                        "$match": {
+                            "slp.detail.versionType": 65,
+                            "slp.detail.transactionType": "GENESIS"
+                        }
+                    },
+                    {
+                      "$unwind": "$in"
+                    }
+                ],
+                "project": {
+                  "txid" : "$tx.h",
+                  "vin index": "$in.i",
+                  "vin txid" : "$in.e.h",
+                  "utxo index" : "$in.e.i"
+                }
+            }
+        }
+
+        path = cls.query_to_url(query, network)
+        get_utxo_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        get_utxo_json = get_utxo_response.json()["u"]
+
+        return [
+            (utxo["txid"], utxo["vin index"], utxo["vin txid"], utxo["utxo index"])
+            for utxo in get_utxo_json
+        ]
+
+
+    @classmethod
     def filter_slp_txid(cls, address, slp_address, unspents, network="mainnet"):
 
         slp_utxos = SlpAPI.get_all_slp_utxo_by_address(slp_address, network=network)
