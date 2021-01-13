@@ -648,7 +648,6 @@ class PrivateKey(BaseKey):
         fee=None,
         leftover=None,
         combine=True,
-        message=None,
         unspents=None,
         slp_unspents=None,
         custom_pushdata=True,
