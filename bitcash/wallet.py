@@ -819,7 +819,6 @@ class PrivateKey(BaseKey):
             outputs.append((self.slp_address, 1))
             i+=1
         
-        print(outputs)
         tx_hex = self.create_slp_transaction(
             outputs,
             tokenId,

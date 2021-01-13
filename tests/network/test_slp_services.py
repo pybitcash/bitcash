@@ -451,7 +451,7 @@ class TestSlpAPI(unittest.TestCase):
     @mock.patch("requests.get", side_effect=mocked_requests_get)
     def test_get_utxo_by_tokenId(self, mock_get):
         results = SlpAPI.get_utxo_by_tokenId(
-            MAIN_SLP_ADDRESS_USED, MAIN_TEST_COIN_TOKENID, network=MAIN
+            address=MAIN_SLP_ADDRESS_USED, tokenId=MAIN_TEST_COIN_TOKENID, network=MAIN
         )
         assert results == MAIN_GET_UTXO_BY_TOKENID_RESULT
 
