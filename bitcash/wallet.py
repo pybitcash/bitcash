@@ -560,6 +560,8 @@ class PrivateKey(BaseKey):
         combine=True,
         unspents=None,
         custom_pushdata=False,
+        message=None,
+        non_standard=False,
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction.
         :param outputs: A sequence of outputs you wish to send in the form
@@ -628,10 +630,12 @@ class PrivateKey(BaseKey):
             outputs,
             fee or get_fee(),
             leftover or self.address,
+            op_return=op_return,
             combine=combine,
-            message=op_return,
+            message=message,
             compressed=self.is_compressed(),
             custom_pushdata=custom_pushdata,
+            non_standard=non_standard,
         )
 
         tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
@@ -651,6 +655,8 @@ class PrivateKey(BaseKey):
         unspents=None,
         slp_unspents=None,
         custom_pushdata=True,
+        message=None,
+        non_standard=False,
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the blockchain. This accepts the same arguments as
@@ -764,10 +770,12 @@ class PrivateKey(BaseKey):
                 fee or get_fee(),
                 leftover or self.address,
                 combine=combine,
-                message=op_return,
+                op_return=op_return,
+                message=message,
                 compressed=self.is_compressed(),
                 custom_pushdata=custom_pushdata,
                 slp_unspents=slp_unspents,
+                non_standard=non_standard,
             )
 
             tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
@@ -939,7 +947,8 @@ class PrivateKey(BaseKey):
             fee or get_fee(),
             leftover or self.address,
             combine=combine,
-            message=op_return,
+            op_return=op_return,
+            message=message,
             compressed=self.is_compressed(),
             custom_pushdata=custom_pushdata,
         )

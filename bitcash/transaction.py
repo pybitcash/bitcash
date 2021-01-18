@@ -370,8 +370,10 @@ def sanitize_slp_tx_data(
     message_list.append(op_return)
 
     if non_standard:
-        message = bytes(message.encode("utf-8"))
-        message_list.append(message)
+        for msg in message:
+            encoded_msg = bytes(msg.encode("utf-8"))
+            message_list.append(encoded_msg)
+
     messages = []
     total_op_return_size = 0
 
@@ -443,8 +445,12 @@ def sanitize_slp_tx_data(
         )
 
     outputs.insert(0, messages[0])
+    msg_i = 1
+    
     if non_standard:
-        outputs.append(messages[1])
+        while msg_i < len(messages):
+            outputs.append(messages[msg_i])
+            msg_i += 1
 
     return unspents, outputs
 
@@ -455,12 +461,14 @@ def sanitize_slp_create_tx_data(
     outputs,
     fee,
     leftover,
+    op_return,
     combine=True,
     combine_slp=True,
     message=None,
     compressed=True,
     custom_pushdata=False,
     slp_unspents=None,
+    non_standard=False,
 ):
     """
     sanitize_tx_data()
@@ -480,26 +488,34 @@ def sanitize_slp_create_tx_data(
     # Temporary storage so all outputs precede messages.
     messages = []
     total_op_return_size = 0
+    message_list = []
+    message_list.append(op_return)
 
-    if message and (custom_pushdata is False):
-        try:
-            message = message.encode("utf-8")
-        except AttributeError:
-            pass  # assume message is already a bytes-like object
+    if non_standard:
+        for msg in message:
+            encoded_msg = bytes(msg.encode("utf-8"))
+            message_list.append(encoded_msg)
 
-        message_chunks = chunk_data(message, MESSAGE_LIMIT)
+    for message in message_list:
+        if message and (custom_pushdata is False):
+            try:
+                message = message.encode("utf-8")
+            except AttributeError:
+                pass  # assume message is already a bytes-like object
 
-        for message in message_chunks:
-            messages.append((message, 0))
-            total_op_return_size += get_op_return_size(message, custom_pushdata=False)
+            message_chunks = chunk_data(message, MESSAGE_LIMIT)
 
-    elif message and (custom_pushdata is True):
-        if len(message) >= 220:
-            # FIXME add capability for >220 bytes for custom pushdata elements
-            raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
-        else:
-            messages.append((message, 0))
-            total_op_return_size += get_op_return_size(message, custom_pushdata=True)
+            for message in message_chunks:
+                messages.append((message, 0))
+                total_op_return_size += get_op_return_size(message, custom_pushdata=False)
+
+        elif message and (custom_pushdata is True):
+            if len(message) >= 220:
+                # FIXME add capability for >220 bytes for custom pushdata elements
+                raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
+            else:
+                messages.append((message, 0))
+                total_op_return_size += get_op_return_size(message, custom_pushdata=True)
 
     # Include return address in fee estimate.
     total_in = 0
@@ -549,6 +565,14 @@ def sanitize_slp_create_tx_data(
             unspents.insert(0, unspent)
 
     outputs.insert(0, messages[0])
+
+    msg_i = 1
+    
+    if non_standard:
+        while msg_i < len(messages):
+            outputs.append(messages[msg_i])
+            msg_i += 1
+
     return unspents, outputs
 
 

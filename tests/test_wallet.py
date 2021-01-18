@@ -708,7 +708,9 @@ class TestPrivateKeyRegtest:
     def test_child_nft(self, mock1, mock2):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_TEST)
         mock1.side_effect=[
-            mocked_get_balance(private_key, a), mocked_get_balance(private_key, b), mocked_get_balance(private_key, c)]
+            mocked_get_balance(private_key, test_child_nft_unspent_a),
+             mocked_get_balance(private_key, test_child_nft_unspent_b),
+             mocked_get_balance(private_key, test_child_nft_unspent_c)]
         
         private_key.unspents = [Unspent(amount=199981706, confirmations=0, script='76a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac', txid='ba54a43ff51beabfc935a7a8237e0c34e9543339231a79d7f13b4e4d6350345d', txindex=12)]
         private_key.slp_unspents = [Unspent(amount=546, confirmations=2, script='76a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac', txid='da9f49f9c271e10c9e021b9701df237d38dd2152e52c8e3100b0235cb04eca27', txindex=1),
@@ -732,8 +734,8 @@ class TestPrivateKeyRegtest:
         results = private_key.create_child_nft('ee19efbe5058d4f97e87800f8c629945416dfbb5326bcf8880ec64129117ba5d', 3)
         
         assert results[0] == '3fc51bcd51a6d6c9b533c6418d3bec8b2cbd3d81d42f800a398d11b2b9e817f2'
-        assert results[1] == 'bb23f4e4ba98ee91cbb15bc097e2eae60a50194aa57efac4b7a1c525830f01ea'
-        assert results[2] == 'a5ea6903923b5f0980695f4dcf1e7281ed91e6b7f35a7227581d1d753b51e7dd'
+        assert results[1] == 'a5ea6903923b5f0980695f4dcf1e7281ed91e6b7f35a7227581d1d753b51e7dd'
+        assert results[2] == '5b8660404ecb5e3a3ee0d981e1d04a264564af69eed0f7958eceb8bebed708be'
 
     def test_child_nft_not_enough_fanned(self, requests_mock):
         requests_mock.get(SLP_TESTS_CHILD_NFT_TOKEN_UTXOS_URL, 
