@@ -297,15 +297,16 @@ def sanitize_slp_tx_data(
     tokenInfo = SlpAPI.get_token_by_id(tokenId, network=network)
     tokenDecimals = int(tokenInfo[0][6])
 
-    if combine_slp:
-        slp_total_in = 0
+    slp_total_in = 0
+
+    if combine_slp:    
         for utxo in slp_utxos:
             slp_total_in += int(Decimal(utxo[0]) * (10 ** tokenDecimals))
 
     else:
         index = 0
 
-        for index, unspent in enumerate(slp_utxos):
+        for index, utxo in enumerate(slp_utxos):
             slp_total_in += int(Decimal(utxo[0]) * (10 ** tokenDecimals))
 
             slp_total_out = sum_slp_outputs

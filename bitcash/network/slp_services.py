@@ -186,47 +186,86 @@ class SlpAPI:
         ]
 
     @classmethod
-    def get_utxo_by_tokenId(cls, address, tokenId, network="mainnet", limit=100):
+    def get_utxo_by_tokenId(cls, tokenId, address=None, network="mainnet", limit=100):
 
-        query = {
-            "v": 3,
-            "q": {
-                "db": ["g"],
-                "aggregate": [
-                    {
-                        "$match": {
-                            "graphTxn.outputs": {
-                                "$elemMatch": {
-                                    "status": "UNSPENT",
-                                    "slpAmount": {"$gte": 0},
-                                }
-                            },
-                            "tokenDetails.tokenIdHex": tokenId,
-                        }
-                    },
-                    {"$unwind": "$graphTxn.outputs"},
-                    {
-                        "$match": {
-                            "graphTxn.outputs.status": "UNSPENT",
-                            "graphTxn.outputs.slpAmount": {"$gte": 0},
-                            "tokenDetails.tokenIdHex": tokenId,
-                        }
-                    },
-                    {
-                        "$project": {
-                            "token_balance": "$graphTxn.outputs.slpAmount",
-                            "address": "$graphTxn.outputs.address",
-                            "txid": "$graphTxn.txid",
-                            "vout": "$graphTxn.outputs.vout",
-                            "tokenId": "$tokenDetails.tokenIdHex",
-                        }
-                    },
-                    {"$match": {"address": address}},
-                    {"$sort": {"token_balance": -1}},
-                ],
-                "limit": limit,
-            },
-        }
+        if address:
+            query = {
+                "v": 3,
+                "q": {
+                    "db": ["g"],
+                    "aggregate": [
+                        {
+                            "$match": {
+                                "graphTxn.outputs": {
+                                    "$elemMatch": {
+                                        "status": "UNSPENT",
+                                        "slpAmount": {"$gte": 0},
+                                    }
+                                },
+                                "tokenDetails.tokenIdHex": tokenId,
+                            }
+                        },
+                        {"$unwind": "$graphTxn.outputs"},
+                        {
+                            "$match": {
+                                "graphTxn.outputs.status": "UNSPENT",
+                                "graphTxn.outputs.slpAmount": {"$gte": 0},
+                                "tokenDetails.tokenIdHex": tokenId,
+                            }
+                        },
+                        {
+                            "$project": {
+                                "token_balance": "$graphTxn.outputs.slpAmount",
+                                "address": "$graphTxn.outputs.address",
+                                "txid": "$graphTxn.txid",
+                                "vout": "$graphTxn.outputs.vout",
+                                "tokenId": "$tokenDetails.tokenIdHex",
+                            }
+                        },
+                        {"$match": {"address": address}},
+                        {"$sort": {"token_balance": -1}},
+                    ],
+                    "limit": limit,
+                },
+            }
+        else:
+            query = {
+                "v": 3,
+                "q": {
+                    "db": ["g"],
+                    "aggregate": [
+                        {
+                            "$match": {
+                                "graphTxn.outputs": {
+                                    "$elemMatch": {
+                                        "status": "UNSPENT",
+                                        "slpAmount": {"$gte": 0},
+                                    }
+                                },
+                                "tokenDetails.tokenIdHex": tokenId,
+                            }
+                        },
+                        {"$unwind": "$graphTxn.outputs"},
+                        {
+                            "$match": {
+                                "graphTxn.outputs.status": "UNSPENT",
+                                "graphTxn.outputs.slpAmount": {"$gte": 0},
+                                "tokenDetails.tokenIdHex": tokenId,
+                            }
+                        },
+                        {
+                            "$project": {
+                                "token_balance": "$graphTxn.outputs.slpAmount",
+                                "address": "$graphTxn.outputs.address",
+                                "txid": "$graphTxn.txid",
+                                "vout": "$graphTxn.outputs.vout",
+                                "tokenId": "$tokenDetails.tokenIdHex",
+                            }
+                        },
+                    ],
+                    "limit": limit,
+                },
+            }
 
         path = cls.query_to_url(query, network)
         get_utxo_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
@@ -469,6 +508,48 @@ class SlpAPI:
             )
             for token in child_nft_json
         ]
+
+    @classmethod
+    def get_unconfirmed_spent_utxo_genesis_65(
+        cls, tokenId, address, network="mainnet"
+    ):
+        # Grabs inputs of unconfirmed type 65 genesis tx
+        # Work around for type 129 inputs on type 65 genesis
+        # not registering as spent
+        
+        query = {
+            "v": 3,
+            "q": {
+                "db": ["u"],
+                "aggregate": [
+                    {
+                        "$match": {
+                            "slp.detail.versionType": 65,
+                            "slp.detail.transactionType": "GENESIS"
+                        }
+                    },
+                    {
+                      "$unwind": "$in"
+                    }
+                ],
+                "project": {
+                  "txid" : "$tx.h",
+                  "vin index": "$in.i",
+                  "vin txid" : "$in.e.h",
+                  "utxo index" : "$in.e.i"
+                }
+            }
+        }
+
+        path = cls.query_to_url(query, network)
+        get_utxo_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        get_utxo_json = get_utxo_response.json()["u"]
+
+        return [
+            (utxo["txid"], utxo["vin index"], utxo["vin txid"], utxo["utxo index"])
+            for utxo in get_utxo_json
+        ]
+
 
     @classmethod
     def filter_slp_txid(cls, address, slp_address, unspents, network="mainnet"):
