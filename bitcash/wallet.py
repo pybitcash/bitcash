@@ -559,7 +559,7 @@ class PrivateKey(BaseKey):
         leftover=None,
         combine=True,
         unspents=None,
-        custom_pushdata=False,
+        custom_pushdata=True,
         message=None,
         non_standard=False,
     ):  # pragma: no cover
@@ -727,9 +727,13 @@ class PrivateKey(BaseKey):
             return (unspent.txid, unspent.txindex) in [
                 (slp_utxo[2], slp_utxo[3]) for slp_utxo in specified_amount_fanned_token_slp_utxos
             ]
+        also_slp_utxos = [unspent for unspent in self.unspents if _is_slp(
+            unspent, specified_amount_fanned_token_slp_utxos)]
 
         slp_utxos = [unspent for unspent in self.slp_unspents if _is_slp(
             unspent, specified_amount_fanned_token_slp_utxos)]
+
+        slp_utxos.extend(also_slp_utxos)
         
         # Pulls Group NFT token details to populate ticker and name
         tokenDetails = SlpAPI.get_token_by_id(tokenId, network=NETWORKS[self._network])[
@@ -751,6 +755,14 @@ class PrivateKey(BaseKey):
         index = 0   
 
         while index < amount:
+
+            filtered_unspents = []
+            for utxo in self.unspents:
+                if utxo.amount > 546:
+                    filtered_unspents.append(utxo)
+
+            self.unspents = filtered_unspents
+            unspents = filtered_unspents
             
             # Clears previous slp_unspents to only include the desired utxo
             slp_unspents = []
@@ -777,7 +789,7 @@ class PrivateKey(BaseKey):
                 slp_unspents=slp_unspents,
                 non_standard=non_standard,
             )
-
+            
             tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
 
             NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
@@ -787,6 +799,19 @@ class PrivateKey(BaseKey):
             time.sleep(5)
 
             self.get_balance()
+
+            # for attempt in range(20):
+            #     try:
+            #         key1.get_balance()
+            #     except:
+            #         print("retrying")
+            #         print(attempt)
+            #         time.sleep(1)
+            #     else:
+            #         time.sleep(1)
+            #         break
+            # else:
+            #     raise(ConnectionError)
             
             index+=1
             
@@ -794,13 +819,13 @@ class PrivateKey(BaseKey):
             # for these purposes. Might be a better implementation "soon"
             # For now will filter out dust
 
-            filtered_unspents = []
-            for utxo in self.unspents:
-                if utxo.amount > 546:
-                    filtered_unspents.append(utxo)
+            # filtered_unspents = []
+            # for utxo in self.unspents:
+            #     if utxo.amount > 546:
+            #         filtered_unspents.append(utxo)
 
-            self.unspents = filtered_unspents
-            unspents = filtered_unspents
+            # self.unspents = filtered_unspents
+            # unspents = filtered_unspents
 
         return txids
 
