@@ -589,14 +589,14 @@ class SlpAPI:
         # Temporary names, need to replace
         # TODO: Refactor names
 
-        return {
-            "slp_utxos": slp_utxos,
-            "difference": utxo_without_slp_or_baton,
-            "baton": baton,
-        }
-
         # return {
-        #     "slp_utxos": slp_unspents,
-        #     "difference": bch_unspents,
-        #     "baton": batons,
+        #     "slp_utxos": slp_utxos,
+        #     "difference": utxo_without_slp_or_baton,
+        #     "baton": baton,
         # }
+
+        return {
+            "slp_utxos": slp_unspents,
+            "difference": bch_unspents,
+            "baton": batons,
+        }
