@@ -306,6 +306,7 @@ class SlpAPI:
                     {"$match": {"address": address}},
                     {"$sort": {"token_balance": -1}},
                 ],
+                "limit": 9999999
             },
         }
 

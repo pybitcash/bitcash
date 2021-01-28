@@ -1,6 +1,9 @@
 import json
 import time
 import bitcash.slp_create as slp_create
+import logging
+logging.basicConfig(filename='example.log', filemode="w",
+format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
 from bitcash.crypto import ECPrivateKey
 from bitcash.curve import Point
@@ -393,7 +396,8 @@ class PrivateKey(BaseKey):
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
-
+        logging.debug(f"Before sanitize unspents: {unspents}")
+        logging.debug(f"output: {outputs}")
         unspents, outputs = sanitize_slp_tx_data(
             self.address,
             self.slp_address,
@@ -411,7 +415,8 @@ class PrivateKey(BaseKey):
             custom_pushdata=custom_pushdata,
             non_standard=non_standard,
         )
-
+        logging.debug(f"Unspents after sanitize: {unspents}")
+        logging.debug(f"outputs after sanitize: {outputs}")
         return create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=custom_pushdata)
 
     def send(
@@ -539,9 +544,9 @@ class PrivateKey(BaseKey):
             non_standard=non_standard,
             custom_pushdata=True,
         )
-
+        print(f"Tx hex: {tx_hex}")
         NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
-
+        logging.debug(f"send slp txid : {tx_hex}")
         return calc_txid(tx_hex)
 
     def create_slp_token(
@@ -819,13 +824,13 @@ class PrivateKey(BaseKey):
             # for these purposes. Might be a better implementation "soon"
             # For now will filter out dust
 
-            # filtered_unspents = []
-            # for utxo in self.unspents:
-            #     if utxo.amount > 546:
-            #         filtered_unspents.append(utxo)
+            filtered_unspents = []
+            for utxo in self.unspents:
+                if utxo.amount > 546:
+                    filtered_unspents.append(utxo)
 
-            # self.unspents = filtered_unspents
-            # unspents = filtered_unspents
+            self.unspents = filtered_unspents
+            unspents = filtered_unspents
 
         return txids
 
