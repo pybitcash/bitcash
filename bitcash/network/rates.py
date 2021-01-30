@@ -246,15 +246,19 @@ class BitpayRates:
     def dop_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('dop')
 
-class LivecoinRates:
-    SINGLE_RATE = 'https://api.livecoin.net/exchange/ticker?currencyPair=BCH/{}'
+
+class CoinbaseRates:
+    """
+    API Documentation:
+    https://developers.coinbase.com/api/v2#get-currencies
+    """
+    SINGLE_RATE = 'https://api.coinbase.com/v2/exchange-rates?currency=BCH'
 
     @classmethod
     def currency_to_satoshi(cls, currency):
         r = requests.get(cls.SINGLE_RATE.format(currency))
-        if r.status_code != 200:
-            raise requests.exceptions.ConnectionError
-        rate = r.json()['last']
+        r.raise_for_status()
+        rate = r.json()['data']['rates'][currency]
         return int(ONE / Decimal(rate) * BCH)
 
     @classmethod
@@ -270,7 +274,7 @@ class RatesAPI:
                       requests.exceptions.HTTPError,
                       requests.exceptions.Timeout)
 
-    USD_RATES = [BitpayRates.usd_to_satoshi, LivecoinRates.usd_to_satoshi]
+    USD_RATES = [BitpayRates.usd_to_satoshi, CoinbaseRates.usd_to_satoshi]
     EUR_RATES = [BitpayRates.eur_to_satoshi]
     GBP_RATES = [BitpayRates.gbp_to_satoshi]
     JPY_RATES = [BitpayRates.jpy_to_satoshi]
@@ -299,8 +303,6 @@ class RatesAPI:
     UYU_RATES = [BitpayRates.uyu_to_satoshi]
     BOB_RATES = [BitpayRates.bob_to_satoshi]
     DOP_RATES = [BitpayRates.dop_to_satoshi]
-    
-    
 
     @classmethod
     def usd_to_satoshi(cls):  # pragma: no cover
@@ -532,7 +534,7 @@ class RatesAPI:
                 pass
 
         raise ConnectionError('All APIs are unreachable.')
-    
+
     @classmethod
     def mxn_to_satoshi(cls):  # pragma: no cover
 
@@ -542,7 +544,7 @@ class RatesAPI:
             except cls.IGNORED_ERRORS:
                 pass
         raise ConnectionError('All APIs are unreachable.')
-    
+
     @classmethod
     def ars_to_satoshi(cls):  # pragma: no cover
 
@@ -553,7 +555,7 @@ class RatesAPI:
                 pass
 
         raise ConnectionError('All APIs are unreachable.')
-    
+
     @classmethod
     def cop_to_satoshi(cls):  # pragma: no cover
 
@@ -653,7 +655,7 @@ EXCHANGE_RATES = {
     'uyu': RatesAPI.uyu_to_satoshi,
     'bob': RatesAPI.bob_to_satoshi,
     'pen': RatesAPI.pen_to_satoshi,
-    'dop': RatesAPI.dop_to_satoshi, 
+    'dop': RatesAPI.dop_to_satoshi,
     'clp': RatesAPI.clp_to_satoshi
 }
 
