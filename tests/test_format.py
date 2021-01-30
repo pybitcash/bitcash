@@ -159,6 +159,10 @@ class TestPublicKeyToAddress:
         with pytest.raises(ValueError):
             public_key_to_address(PUBLIC_KEY_COMPRESSED[:-1])
 
+    def test_public_key_to_address_incorrect_version(self):
+        with pytest.raises(ValueError):
+            public_key_to_address(PUBLIC_KEY_COMPRESSED, 'incorrect-version')
+
     def test_public_key_to_address_test_compressed(self):
         assert public_key_to_address(PUBLIC_KEY_COMPRESSED, version='test') == BITCOIN_CASHADDRESS_TEST_COMPRESSED
 
