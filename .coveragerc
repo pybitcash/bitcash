@@ -1,7 +1,6 @@
 [run]
 source =
     bitcash
-    tests/
 branch = True
 omit =
     bitcash/cli.py
