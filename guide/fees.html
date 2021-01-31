@@ -12,7 +12,6 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Advanced" href="advanced.html" />
@@ -33,12 +32,10 @@
     
   <div class="section" id="fees">
 <span id="id1"></span><h1>Fees<a class="headerlink" href="#fees" title="Permalink to this headline">¶</a></h1>
-<p>For now, bitcash provides a 2 satoshi/byte default fee.</p>
+<p>BitCash provides a 1 satoshi/byte default fee.</p>
 <p>Transactions will likely be confirmed in the next block.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash.network</span> <span class="kn">import</span> <span class="n">get_fee</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_fee</span><span class="p">()</span>
-<span class="go">2</span>
+<p>If you want to set a custom fee, pass a <cite>fee</cite> parameter to <cite>send()</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">send</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">fee</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

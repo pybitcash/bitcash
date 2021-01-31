@@ -12,7 +12,6 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="Authors" href="../community/authors.html" />
@@ -1719,7 +1718,7 @@ number of satoshi.</p>
 
 <dl class="py attribute">
 <dt id="bitcash.network.rates.RatesAPI.USD_RATES">
-<code class="sig-name descname">USD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.usd_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;, &lt;bound method LivecoinRates.usd_to_satoshi of &lt;class 'bitcash.network.rates.LivecoinRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.USD_RATES" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">USD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.usd_to_satoshi of &lt;class 'bitcash.network.rates.BitpayRates'&gt;&gt;, &lt;bound method CoinbaseRates.usd_to_satoshi of &lt;class 'bitcash.network.rates.CoinbaseRates'&gt;&gt;]</em><a class="headerlink" href="#bitcash.network.rates.RatesAPI.USD_RATES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -2037,23 +2036,6 @@ number of satoshi.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="fees">
-<h2>Fees<a class="headerlink" href="#fees" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="bitcash.network.get_fee">
-<code class="sig-prename descclassname">bitcash.network.</code><code class="sig-name descname">get_fee</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">speed</span><span class="o">=</span><span class="default_value">'medium'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.get_fee" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the recommended satoshi per byte fee.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>speed</strong> (<code class="docutils literal notranslate"><span class="pre">string</span></code>) – One of: ‘fast’, ‘medium’, ‘slow’.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
 <div class="section" id="utilities">
 <h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
@@ -2149,7 +2131,6 @@ number of satoshi.</p>
 <li><a class="reference internal" href="#keys">Keys</a></li>
 <li><a class="reference internal" href="#network">Network</a></li>
 <li><a class="reference internal" href="#exchange-rates">Exchange Rates</a></li>
-<li><a class="reference internal" href="#fees">Fees</a></li>
 <li><a class="reference internal" href="#utilities">Utilities</a></li>
 <li><a class="reference internal" href="#exceptions">Exceptions</a></li>
 </ul>
