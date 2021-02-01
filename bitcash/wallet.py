@@ -364,7 +364,7 @@ class PrivateKey(BaseKey):
         unspents=None,
         slp_unspents=None,
         non_standard=False,
-        custom_pushdata=False,
+        custom_pushdata=True,
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction.
         :param outputs: A sequence of outputs you wish to send in the form
@@ -396,8 +396,7 @@ class PrivateKey(BaseKey):
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
-        logging.debug(f"Before sanitize unspents: {unspents}")
-        logging.debug(f"output: {outputs}")
+
         unspents, outputs = sanitize_slp_tx_data(
             self.address,
             self.slp_address,
@@ -415,8 +414,7 @@ class PrivateKey(BaseKey):
             custom_pushdata=custom_pushdata,
             non_standard=non_standard,
         )
-        logging.debug(f"Unspents after sanitize: {unspents}")
-        logging.debug(f"outputs after sanitize: {outputs}")
+        
         return create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=custom_pushdata)
 
     def send(
@@ -544,9 +542,10 @@ class PrivateKey(BaseKey):
             non_standard=non_standard,
             custom_pushdata=True,
         )
-        print(f"Tx hex: {tx_hex}")
+
+        
         NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
-        logging.debug(f"send slp txid : {tx_hex}")
+    
         return calc_txid(tx_hex)
 
     def create_slp_token(
@@ -804,19 +803,6 @@ class PrivateKey(BaseKey):
             time.sleep(5)
 
             self.get_balance()
-
-            # for attempt in range(20):
-            #     try:
-            #         key1.get_balance()
-            #     except:
-            #         print("retrying")
-            #         print(attempt)
-            #         time.sleep(1)
-            #     else:
-            #         time.sleep(1)
-            #         break
-            # else:
-            #     raise(ConnectionError)
             
             index+=1
             

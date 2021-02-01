@@ -100,8 +100,6 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size=0):
 
     estimated_fee = estimated_size * satoshis
 
-    logging.debug(f"Estimated fee: {estimated_fee} satoshis for {estimated_size} bytes")
-
     return estimated_fee
 
 
@@ -268,9 +266,6 @@ def sanitize_slp_tx_data(
     sanitize_tx_data()
     fee is in satoshis per byte.
     """
-    logging.debug(f"inside sanitize slp")
-    logging.debug(f"unspents: {unspents}")
-    logging.debug(f"slp_unspents: {slp_unspents}")
     outputs = outputs.copy()
 
     temp_slp_outputs = []
@@ -366,25 +361,16 @@ def sanitize_slp_tx_data(
     if not matched_slp_unspents and not unspents:
         raise ValueError("Transactions must have at least one unspent.")
     
-
-    logging.debug(f"Inside sanitize before opreturn")
-    logging.debug(f"unspents: {unspents}")
-    logging.debug(f"slp_unspents: {slp_unspents} \n")
-
     op_return = bytes.fromhex(op_return[2:])
     # This strips the "6a" (OP_RETURN) off the string,
     # and then converts it to bytes (needed for construct_output_block)
     message_list = []
-    print(f"Op return: {op_return}")
     message_list.append(op_return)
 
     if non_standard:
         for msg in message:
-            print(f"message: {msg}")
-            hex_msg = hexlify(msg.encode("utf-8"))
-            # encoded_msg = bytes(hex_msg)
             message_list.append(msg.encode("utf-8"))
-            print(f"hex message: {hex_msg}")
+
 
     messages = []
     total_op_return_size = 0
@@ -414,13 +400,19 @@ def sanitize_slp_tx_data(
 
     total_in = 0
 
+
+
     sum_outputs = sum(out[1] for out in outputs)
+
+
 
     if combine:
         # calculated_fee is in total satoshis.
         calculated_fee = estimate_tx_fee(
-            len(unspents), num_outputs, fee, compressed, total_op_return_size
+            (len(unspents)+len(matched_slp_unspents)), num_outputs, fee, compressed, total_op_return_size
         )
+
+
         total_out = sum_outputs + calculated_fee
         unspents = unspents.copy()
         total_in += sum(unspent.amount for unspent in matched_slp_unspents)
@@ -463,12 +455,6 @@ def sanitize_slp_tx_data(
         while msg_i < len(messages):
             outputs.append(messages[msg_i])
             msg_i += 1
-
-    
-    logging.debug("at the end of sanitize")
-    logging.debug(f"unspents: {unspents}")
-    logging.debug(f"slp_unspents: {slp_unspents} \n")
-
     return unspents, outputs
 
 
@@ -506,15 +492,10 @@ def sanitize_slp_create_tx_data(
     messages = []
     total_op_return_size = 0
     message_list = []
-    print(f"type : {type(op_return)}")
-    print(f"OP RETURN: {op_return}")
     message_list.append(op_return)
 
     if non_standard:
         for msg in message:
-            print(f"message: {msg}")
-            encoded_msg = hexlify(msg.encode("utf-8"))
-            print(f"hex message: {encoded_msg}")
             message_list.append(msg.encode("utf-8"))
 
     for message in message_list:
