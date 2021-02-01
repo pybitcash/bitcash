@@ -9,6 +9,7 @@
   <img src="https://codecov.io/gh/pybitcash/bitcash/branch/master/graph/badge.svg" alt="Code Coverage">
   <img src="https://img.shields.io/pypi/pyversions/bitcash.svg?style=flat-square" alt="Python Versions">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="MIT license">
+  <a href="https://www.codefactor.io/repository/github/pybitcash/bitcash"><img src="https://www.codefactor.io/repository/github/pybitcash/bitcash/badge" alt="CodeFactor" /></a>
 </p>
 
 Forked from [Ofek's awesome Bit library](https://github.com/ofek/bit).
