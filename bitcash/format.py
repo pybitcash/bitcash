@@ -91,8 +91,7 @@ def wif_to_bytes(wif, regtest=False):
             version = "test"
     else:
         raise ValueError(
-            f"{version} does not correspond to a mainnet,"
-            f"testnet, nor regtest address."
+            f"{version} does not correspond to a mainnet"
         )
 
     # Remove version byte and, if present, compression flag.
