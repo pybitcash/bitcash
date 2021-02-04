@@ -14,7 +14,7 @@ ODD_HEX_NUM = 225248913302192562869270621870514764431976732013487544080065300317
 
 
 def test_decimal():
-    assert Decimal(0.8)==Decimal('0.8')
+    assert Decimal(0.8) == Decimal('0.8')
 
 
 class TestBytesToHex:
