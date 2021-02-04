@@ -297,7 +297,7 @@ def sanitize_slp_tx_data(
 
     slp_total_in = 0
 
-    if combine_slp:    
+    if combine_slp:
         for utxo in slp_utxos:
             slp_total_in += int(Decimal(utxo[0]) * (10 ** tokenDecimals))
 
@@ -360,7 +360,7 @@ def sanitize_slp_tx_data(
 
     if not matched_slp_unspents and not unspents:
         raise ValueError("Transactions must have at least one unspent.")
-    
+
     op_return = bytes.fromhex(op_return[2:])
     # This strips the "6a" (OP_RETURN) off the string,
     # and then converts it to bytes (needed for construct_output_block)
@@ -395,7 +395,7 @@ def sanitize_slp_tx_data(
             else:
                 messages.append((message, 0))
                 total_op_return_size += get_op_return_size(message, custom_pushdata=True)
-        
+
         num_outputs = len(outputs) + 1
 
     total_in = 0
@@ -450,7 +450,7 @@ def sanitize_slp_tx_data(
 
     outputs.insert(0, messages[0])
     msg_i = 1
-    
+
     if non_standard:
         while msg_i < len(messages):
             outputs.append(messages[msg_i])
@@ -464,7 +464,7 @@ def sanitize_slp_create_tx_data(
     outputs,
     fee,
     leftover,
-    op_return,
+    genesis_op_return,
     combine=True,
     combine_slp=True,
     message=None,
@@ -492,7 +492,7 @@ def sanitize_slp_create_tx_data(
     messages = []
     total_op_return_size = 0
     message_list = []
-    message_list.append(op_return)
+    message_list.append(genesis_op_return)
 
     if non_standard:
         for msg in message:
@@ -569,7 +569,7 @@ def sanitize_slp_create_tx_data(
     outputs.insert(0, messages[0])
 
     msg_i = 1
-    
+
     if non_standard:
         while msg_i < len(messages):
             outputs.append(messages[msg_i])
