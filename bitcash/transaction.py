@@ -459,14 +459,12 @@ def sanitize_slp_tx_data(
 
 
 def sanitize_slp_create_tx_data(
-    address,
     unspents,
     outputs,
     fee,
     leftover,
     genesis_op_return,
     combine=True,
-    combine_slp=True,
     message=None,
     compressed=True,
     custom_pushdata=False,
