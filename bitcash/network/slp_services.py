@@ -92,7 +92,7 @@ class SlpAPI:
                 get_balance_json = get_balance_response.json()["g"]
                 return [
                     (token["token"][0]["tokenDetails"]["tokenIdHex"],
-                    token["token"][0]["tokenDetails"]["name"], 
+                    token["token"][0]["tokenDetails"]["name"],
                     token["slpAmount"])
                     for token in get_balance_json
                 ]
@@ -500,7 +500,7 @@ class SlpAPI:
         # Grabs inputs of unconfirmed type 65 genesis tx
         # Work around for type 129 inputs on type 65 genesis
         # not registering as spent
-        
+
         query = {
             "v": 3,
             "q": {
@@ -545,7 +545,7 @@ class SlpAPI:
 
         if len(baton_info) > 0:
             for baton in baton_info:
-                baton_tx.append(("546", baton[0], baton[1], baton[2]))
+                baton_txs.append(("546", baton[0], baton[1], baton[2]))
 
         # Filters SLP out of unspent pool
         def _is_slp(unspent, slp_utxos):
