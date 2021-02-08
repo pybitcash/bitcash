@@ -619,7 +619,10 @@ def construct_output_block(outputs, custom_pushdata=False):
                 if type(dest) != bytes:
                     raise TypeError("custom pushdata must be of type: bytes")
                 else:
-                    script = OP_RETURN + int_to_unknown_bytes(len(dest), byteorder="little") + dest
+                    if dest[:5] == b'\x04SLP\x00':
+                        script = OP_RETURN + dest
+                    else:
+                        script = OP_RETURN + int_to_unknown_bytes(len(dest), byteorder="little") + dest
 
                 output_block += b"\x00\x00\x00\x00\x00\x00\x00\x00"
 
