@@ -785,7 +785,7 @@ class PrivateKey(BaseKey):
                 fee or get_fee(),
                 leftover or self.address,
                 combine=combine,
-                op_return=op_return,
+                genesis_op_return=op_return,
                 message=message,
                 compressed=self.is_compressed(),
                 custom_pushdata=custom_pushdata,

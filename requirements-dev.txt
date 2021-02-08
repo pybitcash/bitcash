@@ -7,3 +7,4 @@ coverage
 twine
 sphinx
 requests_mock
+pytest-flask
