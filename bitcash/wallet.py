@@ -414,7 +414,7 @@ class PrivateKey(BaseKey):
             custom_pushdata=custom_pushdata,
             non_standard=non_standard,
         )
-        
+
         return create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=custom_pushdata)
 
     def send(
@@ -543,9 +543,9 @@ class PrivateKey(BaseKey):
             custom_pushdata=True,
         )
 
-        
+
         NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
-    
+
         return calc_txid(tx_hex)
 
     def create_slp_token(
@@ -617,7 +617,7 @@ class PrivateKey(BaseKey):
         # hacky but works, find a better way
         # TODO: Find a better way
         op_return = bytes.fromhex(op_return[2:])
-
+        print("op_return >>>>", op_return)
         # This strips the "6a" (OP_RETURN) off the string,
         # and then converts it to bytes (needed for construct_output_block)
 
@@ -629,12 +629,11 @@ class PrivateKey(BaseKey):
             outputs.append((mint_baton_address, min_satoshi, "satoshi"))
 
         unspents, outputs = sanitize_slp_create_tx_data(
-            self.address,
             unspents or self.unspents,
             outputs,
             fee or get_fee(),
             leftover or self.address,
-            op_return=op_return,
+            genesis_op_return=op_return,
             combine=combine,
             message=message,
             compressed=self.is_compressed(),
@@ -643,7 +642,7 @@ class PrivateKey(BaseKey):
         )
 
         tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
-
+        print("tx_hex : ", tx_hex)
         NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
 
         return calc_txid(tx_hex)
@@ -694,7 +693,7 @@ class PrivateKey(BaseKey):
         :returns: The transaction ID.
         :rtype: ``str``
         """
-        
+
         # Grab utxos for specified token
         token_slp_utxos = SlpAPI.get_utxo_by_tokenId(
             address=self.slp_address, tokenId=tokenId, network=NETWORKS[self._network])
@@ -738,12 +737,12 @@ class PrivateKey(BaseKey):
             unspent, specified_amount_fanned_token_slp_utxos)]
 
         slp_utxos.extend(also_slp_utxos)
-        
+
         # Pulls Group NFT token details to populate ticker and name
         tokenDetails = SlpAPI.get_token_by_id(tokenId, network=NETWORKS[self._network])[
             0
         ]
-        
+
         slp_unspents = self.slp_unspents.copy()
 
         # Change this for different child tickers/names
@@ -756,7 +755,7 @@ class PrivateKey(BaseKey):
         op_return = bytes.fromhex(op_return[2:])
 
         txids = []
-        index = 0   
+        index = 0
 
         while index < amount:
 
@@ -767,7 +766,7 @@ class PrivateKey(BaseKey):
 
             self.unspents = filtered_unspents
             unspents = filtered_unspents
-            
+
             # Clears previous slp_unspents to only include the desired utxo
             slp_unspents = []
             slp_unspents.append(slp_utxos[index])
@@ -793,19 +792,19 @@ class PrivateKey(BaseKey):
                 slp_unspents=slp_unspents,
                 non_standard=non_standard,
             )
-            
+
             tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
 
             NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
             calced_tx_hex = calc_txid(tx_hex)
-            txids.append(calced_tx_hex) 
+            txids.append(calced_tx_hex)
 
             time.sleep(5)
 
             self.get_balance()
-            
+
             index+=1
-            
+
             # Spent group utxo isnt flagged as slp or SPENT when getting unspents, need to filter it out
             # for these purposes. Might be a better implementation "soon"
             # For now will filter out dust
@@ -841,7 +840,7 @@ class PrivateKey(BaseKey):
 
             outputs.append((self.slp_address, 1))
             i+=1
-        
+
         tx_hex = self.create_slp_transaction(
             outputs,
             tokenId,
