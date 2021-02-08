@@ -617,7 +617,6 @@ class PrivateKey(BaseKey):
         # hacky but works, find a better way
         # TODO: Find a better way
         op_return = bytes.fromhex(op_return[2:])
-        print("op_return >>>>", op_return)
         # This strips the "6a" (OP_RETURN) off the string,
         # and then converts it to bytes (needed for construct_output_block)
 
@@ -642,7 +641,6 @@ class PrivateKey(BaseKey):
         )
 
         tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
-        print("tx_hex : ", tx_hex)
         NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
 
         return calc_txid(tx_hex)
