@@ -17,7 +17,8 @@ from bitcash.utils import (
     int_to_varint,
 )
 
-VERSION_1 = 0x01 .to_bytes(4, byteorder="little")
+# VERSION_1 = 0x01 .to_bytes(4, byteorder="little")
+VERSION_1 = 0x02 .to_bytes(4, byteorder="little")
 SEQUENCE = 0xFFFFFFFF .to_bytes(4, byteorder="little")
 LOCK_TIME = 0x00 .to_bytes(4, byteorder="little")
 
@@ -374,6 +375,7 @@ def sanitize_slp_tx_data(
 
     messages = []
     total_op_return_size = 0
+    message_length = 0
 
     for message in message_list:
         if message and (custom_pushdata is False):
@@ -395,8 +397,20 @@ def sanitize_slp_tx_data(
             else:
                 messages.append((message, 0))
                 total_op_return_size += get_op_return_size(message, custom_pushdata=True)
+<<<<<<< Updated upstream
 
+=======
+        
+        message_length += len(message)
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
         num_outputs = len(outputs) + 1
+
+
+    if message_length >= 220:
+        raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
 
     total_in = 0
 
@@ -490,7 +504,15 @@ def sanitize_slp_create_tx_data(
     messages = []
     total_op_return_size = 0
     message_list = []
+<<<<<<< Updated upstream
     message_list.append(genesis_op_return)
+=======
+    message_list.append(op_return)
+    message_length = 0
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 
     if non_standard:
         for msg in message:
@@ -516,6 +538,8 @@ def sanitize_slp_create_tx_data(
             else:
                 messages.append((message, 0))
                 total_op_return_size += get_op_return_size(message, custom_pushdata=True)
+
+        message_length += len(message)
 
     # Include return address in fee estimate.
     total_in = 0
@@ -608,7 +632,7 @@ def construct_output_block(outputs, custom_pushdata=False):
                 if type(dest) != bytes:
                     raise TypeError("custom pushdata must be of type: bytes")
                 else:
-                    script = OP_RETURN + dest
+                    script = OP_RETURN + int_to_unknown_bytes(len(dest), byteorder="little") + dest
 
                 output_block += b"\x00\x00\x00\x00\x00\x00\x00\x00"
 
@@ -616,7 +640,7 @@ def construct_output_block(outputs, custom_pushdata=False):
         # CVarInt is what I believe we have here - No changes made. If incorrect - only breaks if 220 byte limit is increased.
         output_block += int_to_unknown_bytes(len(script), byteorder="little")
         output_block += script
-
+        
     return output_block
 
 
