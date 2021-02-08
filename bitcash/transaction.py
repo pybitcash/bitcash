@@ -397,15 +397,9 @@ def sanitize_slp_tx_data(
             else:
                 messages.append((message, 0))
                 total_op_return_size += get_op_return_size(message, custom_pushdata=True)
-<<<<<<< Updated upstream
 
-=======
-        
+
         message_length += len(message)
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
         num_outputs = len(outputs) + 1
 
 
@@ -504,15 +498,8 @@ def sanitize_slp_create_tx_data(
     messages = []
     total_op_return_size = 0
     message_list = []
-<<<<<<< Updated upstream
     message_list.append(genesis_op_return)
-=======
-    message_list.append(op_return)
     message_length = 0
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 
     if non_standard:
         for msg in message:

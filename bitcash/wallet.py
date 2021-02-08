@@ -629,12 +629,11 @@ class PrivateKey(BaseKey):
             outputs.append((mint_baton_address, min_satoshi, "satoshi"))
 
         unspents, outputs = sanitize_slp_create_tx_data(
-            self.address,
             unspents or self.unspents,
             outputs,
             fee or get_fee(),
             leftover or self.address,
-            op_return=op_return,
+            genesis_op_return=op_return,
             combine=combine,
             message=message,
             compressed=self.is_compressed(),
@@ -786,7 +785,7 @@ class PrivateKey(BaseKey):
                 fee or get_fee(),
                 leftover or self.address,
                 combine=combine,
-                op_return=op_return,
+                genesis_op_return=op_return,
                 message=message,
                 compressed=self.is_compressed(),
                 custom_pushdata=custom_pushdata,
