@@ -777,7 +777,6 @@ class PrivateKey(BaseKey):
                 outputs = [(self.address, min_satoshi, "satoshi")]
 
             unspents, outputs = sanitize_slp_create_tx_data(
-                address or self.address,
                 self.unspents,
                 outputs,
                 fee or get_fee(),
