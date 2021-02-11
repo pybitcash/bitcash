@@ -91,9 +91,11 @@ class SlpAPI:
             if len(get_balance_response.json()) > 0:
                 get_balance_json = get_balance_response.json()["g"]
                 return [
-                    (token["token"][0]["tokenDetails"]["tokenIdHex"],
-                    token["token"][0]["tokenDetails"]["name"],
-                    token["slpAmount"])
+                    (
+                        token["token"][0]["tokenDetails"]["tokenIdHex"],
+                        token["token"][0]["tokenDetails"]["name"],
+                        token["slpAmount"],
+                    )
                     for token in get_balance_json
                 ]
             else:
@@ -143,16 +145,20 @@ class SlpAPI:
         if len(get_balance_response.json()) > 0:
             get_balance_json = get_balance_response.json()["g"]
             return [
-                (token["token"][0]["tokenDetails"]["tokenIdHex"],
-                token["token"][0]["tokenDetails"]["name"],
-                token["slpAmount"])
+                (
+                    token["token"][0]["tokenDetails"]["tokenIdHex"],
+                    token["token"][0]["tokenDetails"]["name"],
+                    token["slpAmount"],
+                )
                 for token in get_balance_json
             ]
         else:
             return []
-     
+
     @classmethod
-    def get_balance_address_and_tokentype(cls, address, token_type, network="mainnet", limit=1000):
+    def get_balance_address_and_tokentype(
+        cls, address, token_type, network="mainnet", limit=1000
+    ):
         query = {
             "v": 3,
             "q": {
@@ -161,25 +167,21 @@ class SlpAPI:
                     {
                         "$match": {
                             "slp.detail.outputs.address": address,
-                            "slp.detail.versionType": token_type, 
-                            "slp.detail.transactionType": "GENESIS"
+                            "slp.detail.versionType": token_type,
+                            "slp.detail.transactionType": "GENESIS",
                         }
-                    }, {
-                        "$project": {
-                            "tokenId": "$tx.h", 
-                            "s1": "$out.s1"
-                        }
-                    }
+                    },
+                    {"$project": {"tokenId": "$tx.h", "s1": "$out.s1"}},
                 ],
-                "limit":limit
-            }
+                "limit": limit,
+            },
         }
 
         path = cls.query_to_url(query, network)
         get_group_token_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
 
         return get_group_token_response.json()
-    
+
     @classmethod
     def get_token_by_id(cls, tokenid, network="mainnet"):
         query = {
@@ -335,7 +337,7 @@ class SlpAPI:
                     {"$match": {"address": address}},
                     {"$sort": {"token_balance": -1}},
                 ],
-                "limit": 9999999
+                "limit": 9999999,
             },
         }
 
@@ -481,9 +483,7 @@ class SlpAPI:
         return tx_containing_op_return_json
 
     @classmethod
-    def get_child_nft_by_parent_tokenId(
-        cls, tokenId, network="mainnet"
-    ):
+    def get_child_nft_by_parent_tokenId(cls, tokenId, network="mainnet"):
 
         query = {
             "v": 3,
@@ -523,9 +523,7 @@ class SlpAPI:
         ]
 
     @classmethod
-    def get_unconfirmed_spent_utxo_genesis_65(
-        cls, tokenId, address, network="mainnet"
-    ):
+    def get_unconfirmed_spent_utxo_genesis_65(cls, tokenId, address, network="mainnet"):
         # Grabs inputs of unconfirmed type 65 genesis tx
         # Work around for type 129 inputs on type 65 genesis
         # not registering as spent
@@ -538,20 +536,18 @@ class SlpAPI:
                     {
                         "$match": {
                             "slp.detail.versionType": 65,
-                            "slp.detail.transactionType": "GENESIS"
+                            "slp.detail.transactionType": "GENESIS",
                         }
                     },
-                    {
-                      "$unwind": "$in"
-                    }
+                    {"$unwind": "$in"},
                 ],
                 "project": {
-                  "txid" : "$tx.h",
-                  "vin index": "$in.i",
-                  "vin txid" : "$in.e.h",
-                  "utxo index" : "$in.e.i"
-                }
-            }
+                    "txid": "$tx.h",
+                    "vin index": "$in.i",
+                    "vin txid": "$in.e.h",
+                    "utxo index": "$in.e.i",
+                },
+            },
         }
 
         path = cls.query_to_url(query, network)
@@ -562,7 +558,6 @@ class SlpAPI:
             (utxo["txid"], utxo["vin index"], utxo["vin txid"], utxo["utxo index"])
             for utxo in get_utxo_json
         ]
-
 
     @classmethod
     def filter_slp_txid(cls, address, slp_address, unspents, network="mainnet"):

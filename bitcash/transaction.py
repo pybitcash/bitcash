@@ -372,7 +372,6 @@ def sanitize_slp_tx_data(
         for msg in message:
             message_list.append(msg.encode("utf-8"))
 
-
     messages = []
     total_op_return_size = 0
     message_length = 0
@@ -388,38 +387,41 @@ def sanitize_slp_tx_data(
 
             for message in message_chunks:
                 messages.append((message, 0))
-                total_op_return_size += get_op_return_size(message, custom_pushdata=False)
+                total_op_return_size += get_op_return_size(
+                    message, custom_pushdata=False
+                )
 
         elif message and (custom_pushdata is True):
             if len(message) >= 220:
                 # FIXME add capability for >220 bytes for custom pushdata elements
-                raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
+                raise ValueError(
+                    "Currently cannot exceed 220 bytes with custom_pushdata."
+                )
             else:
                 messages.append((message, 0))
-                total_op_return_size += get_op_return_size(message, custom_pushdata=True)
-
+                total_op_return_size += get_op_return_size(
+                    message, custom_pushdata=True
+                )
 
         message_length += len(message)
         num_outputs = len(outputs) + 1
-
 
     if message_length >= 220:
         raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
 
     total_in = 0
 
-
-
     sum_outputs = sum(out[1] for out in outputs)
-
-
 
     if combine:
         # calculated_fee is in total satoshis.
         calculated_fee = estimate_tx_fee(
-            (len(unspents)+len(matched_slp_unspents)), num_outputs, fee, compressed, total_op_return_size
+            (len(unspents) + len(matched_slp_unspents)),
+            num_outputs,
+            fee,
+            compressed,
+            total_op_return_size,
         )
-
 
         total_out = sum_outputs + calculated_fee
         unspents = unspents.copy()
@@ -516,15 +518,21 @@ def sanitize_slp_create_tx_data(
 
             for message in message_chunks:
                 messages.append((message, 0))
-                total_op_return_size += get_op_return_size(message, custom_pushdata=False)
+                total_op_return_size += get_op_return_size(
+                    message, custom_pushdata=False
+                )
 
         elif message and (custom_pushdata is True):
             if len(message) >= 220:
                 # FIXME add capability for >220 bytes for custom pushdata elements
-                raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
+                raise ValueError(
+                    "Currently cannot exceed 220 bytes with custom_pushdata."
+                )
             else:
                 messages.append((message, 0))
-                total_op_return_size += get_op_return_size(message, custom_pushdata=True)
+                total_op_return_size += get_op_return_size(
+                    message, custom_pushdata=True
+                )
 
         message_length += len(message)
 
@@ -619,10 +627,14 @@ def construct_output_block(outputs, custom_pushdata=False):
                 if type(dest) != bytes:
                     raise TypeError("custom pushdata must be of type: bytes")
                 else:
-                    if dest[:5] == b'\x04SLP\x00':
+                    if dest[:5] == b"\x04SLP\x00":
                         script = OP_RETURN + dest
                     else:
-                        script = OP_RETURN + int_to_unknown_bytes(len(dest), byteorder="little") + dest
+                        script = (
+                            OP_RETURN
+                            + int_to_unknown_bytes(len(dest), byteorder="little")
+                            + dest
+                        )
 
                 output_block += b"\x00\x00\x00\x00\x00\x00\x00\x00"
 
@@ -630,7 +642,7 @@ def construct_output_block(outputs, custom_pushdata=False):
         # CVarInt is what I believe we have here - No changes made. If incorrect - only breaks if 220 byte limit is increased.
         output_block += int_to_unknown_bytes(len(script), byteorder="little")
         output_block += script
-        
+
     return output_block
 
 

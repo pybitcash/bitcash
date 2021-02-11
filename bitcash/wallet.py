@@ -2,8 +2,13 @@ import json
 import time
 import bitcash.slp_create as slp_create
 import logging
-logging.basicConfig(filename='example.log', filemode="w",
-format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+
+logging.basicConfig(
+    filename="example.log",
+    filemode="w",
+    format="%(name)s - %(levelname)s - %(message)s",
+    level=logging.DEBUG,
+)
 
 from bitcash.crypto import ECPrivateKey
 from bitcash.curve import Point
@@ -415,7 +420,9 @@ class PrivateKey(BaseKey):
             non_standard=non_standard,
         )
 
-        return create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=custom_pushdata)
+        return create_p2pkh_transaction(
+            self, unspents, outputs, custom_pushdata=custom_pushdata
+        )
 
     def send(
         self,
@@ -542,7 +549,6 @@ class PrivateKey(BaseKey):
             non_standard=non_standard,
             custom_pushdata=True,
         )
-
 
         NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
 
@@ -694,31 +700,36 @@ class PrivateKey(BaseKey):
 
         # Grab utxos for specified token
         token_slp_utxos = SlpAPI.get_utxo_by_tokenId(
-            address=self.slp_address, tokenId=tokenId, network=NETWORKS[self._network])
+            address=self.slp_address, tokenId=tokenId, network=NETWORKS[self._network]
+        )
 
         fanned_token_slp_utxos = []
 
         for utxo in token_slp_utxos:
-            if utxo[0] == '1':
+            if utxo[0] == "1":
                 fanned_token_slp_utxos.append(utxo)
 
         if len(fanned_token_slp_utxos) == 0:
-            raise(Exception("There are not any fanned group utxos."))
+            raise (Exception("There are not any fanned group utxos."))
 
         if len(fanned_token_slp_utxos) < amount:
-            raise(Exception("Not enough fanned group utxos."))
+            raise (Exception("Not enough fanned group utxos."))
 
         # cut out unconfirmed to work around slpdb not handling the spent group tokens
         unconfirmed = SlpAPI.get_unconfirmed_spent_utxo_genesis_65(
-            tokenId, self.slp_address, network=NETWORKS[self._network])
+            tokenId, self.slp_address, network=NETWORKS[self._network]
+        )
 
         def _is_unconfirmed(unspent, unconfirmed):
             return (unspent[2], unspent[3]) in [
                 (unconfirm[2], unconfirm[3]) for unconfirm in unconfirmed
             ]
 
-        confirmed_token_slp_utxos = [unspent for unspent in fanned_token_slp_utxos if not _is_unconfirmed(
-            unspent, unconfirmed)]
+        confirmed_token_slp_utxos = [
+            unspent
+            for unspent in fanned_token_slp_utxos
+            if not _is_unconfirmed(unspent, unconfirmed)
+        ]
 
         # slice the desired amount
         specified_amount_fanned_token_slp_utxos = confirmed_token_slp_utxos[:amount]
@@ -726,13 +737,21 @@ class PrivateKey(BaseKey):
         # map against unspent objects
         def _is_slp(unspent, specified_amount_fanned_token_slp_utxos):
             return (unspent.txid, unspent.txindex) in [
-                (slp_utxo[2], slp_utxo[3]) for slp_utxo in specified_amount_fanned_token_slp_utxos
+                (slp_utxo[2], slp_utxo[3])
+                for slp_utxo in specified_amount_fanned_token_slp_utxos
             ]
-        also_slp_utxos = [unspent for unspent in self.unspents if _is_slp(
-            unspent, specified_amount_fanned_token_slp_utxos)]
 
-        slp_utxos = [unspent for unspent in self.slp_unspents if _is_slp(
-            unspent, specified_amount_fanned_token_slp_utxos)]
+        also_slp_utxos = [
+            unspent
+            for unspent in self.unspents
+            if _is_slp(unspent, specified_amount_fanned_token_slp_utxos)
+        ]
+
+        slp_utxos = [
+            unspent
+            for unspent in self.slp_unspents
+            if _is_slp(unspent, specified_amount_fanned_token_slp_utxos)
+        ]
 
         slp_utxos.extend(also_slp_utxos)
 
@@ -790,7 +809,9 @@ class PrivateKey(BaseKey):
                 non_standard=non_standard,
             )
 
-            tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
+            tx_hex = create_p2pkh_transaction(
+                self, unspents, outputs, custom_pushdata=True
+            )
 
             NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
             calced_tx_hex = calc_txid(tx_hex)
@@ -800,7 +821,7 @@ class PrivateKey(BaseKey):
 
             self.get_balance()
 
-            index+=1
+            index += 1
 
             # Spent group utxo isnt flagged as slp or SPENT when getting unspents, need to filter it out
             # for these purposes. Might be a better implementation "soon"
@@ -836,7 +857,7 @@ class PrivateKey(BaseKey):
         while i < amount:
 
             outputs.append((self.slp_address, 1))
-            i+=1
+            i += 1
 
         tx_hex = self.create_slp_transaction(
             outputs,

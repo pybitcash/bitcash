@@ -90,9 +90,7 @@ def wif_to_bytes(wif, regtest=False):
         else:
             version = "test"
     else:
-        raise ValueError(
-            f"{version} does not correspond to a mainnet"
-        )
+        raise ValueError(f"{version} does not correspond to a mainnet")
 
     # Remove version byte and, if present, compression flag.
     if len(wif) == 52 and private_key[-1] == 1:
