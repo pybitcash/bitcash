@@ -779,13 +779,12 @@ class PrivateKey(BaseKey):
                 outputs = [(self.address, min_satoshi, "satoshi")]
 
             unspents, outputs = sanitize_slp_create_tx_data(
-                address or self.address,
                 self.unspents,
                 outputs,
                 fee or get_fee(),
                 leftover or self.address,
-                combine=combine,
                 genesis_op_return=op_return,
+                combine=combine,
                 message=message,
                 compressed=self.is_compressed(),
                 custom_pushdata=custom_pushdata,

@@ -150,7 +150,36 @@ class SlpAPI:
             ]
         else:
             return []
+     
+    @classmethod
+    def get_balance_address_and_tokentype(cls, address, token_type, network="mainnet", limit=1000):
+        query = {
+            "v": 3,
+            "q": {
+                "db": ["c", "u"],
+                "aggregate": [
+                    {
+                        "$match": {
+                            "slp.detail.outputs.address": address,
+                            "slp.detail.versionType": token_type, 
+                            "slp.detail.transactionType": "GENESIS"
+                        }
+                    }, {
+                        "$project": {
+                            "tokenId": "$tx.h", 
+                            "s1": "$out.s1"
+                        }
+                    }
+                ],
+                "limit":limit
+            }
+        }
 
+        path = cls.query_to_url(query, network)
+        get_group_token_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+
+        return get_group_token_response.json()
+    
     @classmethod
     def get_token_by_id(cls, tokenid, network="mainnet"):
         query = {
@@ -436,10 +465,10 @@ class SlpAPI:
 
         # return [
         #     (
-        #     a['token_balance'],
-        #     a['address'],
-        #     a['txid'],
-        #     a['vout']
+        #     a["token_balance"],
+        #     a["address"],
+        #     a["txid"],
+        #     a["vout"]
         #     )
 
         #     for a in j
