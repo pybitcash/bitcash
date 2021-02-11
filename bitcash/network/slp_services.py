@@ -45,7 +45,7 @@ class SlpAPI:
         return url
 
     @classmethod
-    def get_balance(cls, address, tokenId, network="mainnet", limit=100, skip=0):
+    def get_balance(cls, address, tokenId, network="mainnet"):
 
         if tokenId:
             query = {
@@ -80,8 +80,6 @@ class SlpAPI:
                         {"$match": {"_id": tokenId}},
                     ],
                     "sort": {"slpAmount": -1},
-                    "skip": 0,
-                    "limit": 10,
                 },
             }
 
@@ -93,16 +91,18 @@ class SlpAPI:
             if len(get_balance_response.json()) > 0:
                 get_balance_json = get_balance_response.json()["g"]
                 return [
-                    (token["token"][0]["tokenDetails"]["tokenIdHex"],
-                    token["token"][0]["tokenDetails"]["name"], 
-                    token["slpAmount"])
+                    (
+                        token["token"][0]["tokenDetails"]["tokenIdHex"],
+                        token["token"][0]["tokenDetails"]["name"],
+                        token["slpAmount"],
+                    )
                     for token in get_balance_json
                 ]
             else:
                 return []
 
     @classmethod
-    def get_balance_address(cls, address, network="mainnet", limit=100, skip=0):
+    def get_balance_address(cls, address, network="mainnet"):
         query = {
             "v": 3,
             "q": {
@@ -134,8 +134,6 @@ class SlpAPI:
                     },
                 ],
                 "sort": {"slpAmount": -1},
-                "skip": skip,
-                "limit": limit,
             },
         }
 
@@ -147,13 +145,42 @@ class SlpAPI:
         if len(get_balance_response.json()) > 0:
             get_balance_json = get_balance_response.json()["g"]
             return [
-                (token["token"][0]["tokenDetails"]["tokenIdHex"],
-                token["token"][0]["tokenDetails"]["name"],
-                token["slpAmount"])
+                (
+                    token["token"][0]["tokenDetails"]["tokenIdHex"],
+                    token["token"][0]["tokenDetails"]["name"],
+                    token["slpAmount"],
+                )
                 for token in get_balance_json
             ]
         else:
             return []
+
+    @classmethod
+    def get_balance_address_and_tokentype(
+        cls, address, token_type, network="mainnet", limit=1000
+    ):
+        query = {
+            "v": 3,
+            "q": {
+                "db": ["c", "u"],
+                "aggregate": [
+                    {
+                        "$match": {
+                            "slp.detail.outputs.address": address,
+                            "slp.detail.versionType": token_type,
+                            "slp.detail.transactionType": "GENESIS",
+                        }
+                    },
+                    {"$project": {"tokenId": "$tx.h", "s1": "$out.s1"}},
+                ],
+                "limit": limit,
+            },
+        }
+
+        path = cls.query_to_url(query, network)
+        get_group_token_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+
+        return get_group_token_response.json()
 
     @classmethod
     def get_token_by_id(cls, tokenid, network="mainnet"):
@@ -163,7 +190,6 @@ class SlpAPI:
                 "db": ["t"],
                 "find": {"$query": {"tokenDetails.tokenIdHex": tokenid}},
                 "project": {"tokenDetails": 1, "tokenStats": 1, "_id": 0},
-                "limit": 1000,
             },
         }
 
@@ -186,7 +212,7 @@ class SlpAPI:
         ]
 
     @classmethod
-    def get_utxo_by_tokenId(cls, tokenId, address=None, network="mainnet", limit=100):
+    def get_utxo_by_tokenId(cls, tokenId, address=None, network="mainnet"):
 
         if address:
             query = {
@@ -225,7 +251,6 @@ class SlpAPI:
                         {"$match": {"address": address}},
                         {"$sort": {"token_balance": -1}},
                     ],
-                    "limit": limit,
                 },
             }
         else:
@@ -263,7 +288,6 @@ class SlpAPI:
                             }
                         },
                     ],
-                    "limit": limit,
                 },
             }
 
@@ -277,7 +301,7 @@ class SlpAPI:
         ]
 
     @classmethod
-    def get_all_slp_utxo_by_address(cls, address, network="mainnet", limit=100):
+    def get_all_slp_utxo_by_address(cls, address, network="mainnet"):
 
         query = {
             "v": 3,
@@ -313,7 +337,7 @@ class SlpAPI:
                     {"$match": {"address": address}},
                     {"$sort": {"token_balance": -1}},
                 ],
-                "limit": limit,
+                "limit": 9999999,
             },
         }
 
@@ -327,7 +351,7 @@ class SlpAPI:
         ]
 
     @classmethod
-    def get_mint_baton(cls, tokenId=None, address=None, network="mainnet", limit=10):
+    def get_mint_baton(cls, tokenId=None, address=None, network="mainnet"):
 
         if tokenId:
             query = {
@@ -354,7 +378,6 @@ class SlpAPI:
                             }
                         },
                     ],
-                    "limit": limit,
                 },
             }
 
@@ -395,7 +418,6 @@ class SlpAPI:
                             }
                         },
                     ],
-                    "limit": limit,
                 },
             }
 
@@ -410,7 +432,7 @@ class SlpAPI:
             raise ValueError("Must include either a tokenId or address")
 
     @classmethod
-    def get_tx_by_opreturn(cls, op_return_segment, network="mainnet", limit=100):
+    def get_tx_by_opreturn(cls, op_return_segment, network="mainnet"):
 
         query = {
             "v": 3,
@@ -434,7 +456,6 @@ class SlpAPI:
                         }
                     },
                 ],
-                "limit": 10,
             },
         }
 
@@ -446,10 +467,10 @@ class SlpAPI:
 
         # return [
         #     (
-        #     a['token_balance'],
-        #     a['address'],
-        #     a['txid'],
-        #     a['vout']
+        #     a["token_balance"],
+        #     a["address"],
+        #     a["txid"],
+        #     a["vout"]
         #     )
 
         #     for a in j
@@ -462,9 +483,7 @@ class SlpAPI:
         return tx_containing_op_return_json
 
     @classmethod
-    def get_child_nft_by_parent_tokenId(
-        cls, tokenId, network="mainnet", skip=0, limit=100
-    ):
+    def get_child_nft_by_parent_tokenId(cls, tokenId, network="mainnet"):
 
         query = {
             "v": 3,
@@ -480,12 +499,6 @@ class SlpAPI:
                         "$sort": {
                             "tokenStats.block_created": -1,
                         },
-                    },
-                    {
-                        "$skip": skip,
-                    },
-                    {
-                        "$limit": limit,
                     },
                 ],
             },
@@ -510,13 +523,11 @@ class SlpAPI:
         ]
 
     @classmethod
-    def get_unconfirmed_spent_utxo_genesis_65(
-        cls, tokenId, address, network="mainnet"
-    ):
+    def get_unconfirmed_spent_utxo_genesis_65(cls, tokenId, address, network="mainnet"):
         # Grabs inputs of unconfirmed type 65 genesis tx
         # Work around for type 129 inputs on type 65 genesis
         # not registering as spent
-        
+
         query = {
             "v": 3,
             "q": {
@@ -525,20 +536,18 @@ class SlpAPI:
                     {
                         "$match": {
                             "slp.detail.versionType": 65,
-                            "slp.detail.transactionType": "GENESIS"
+                            "slp.detail.transactionType": "GENESIS",
                         }
                     },
-                    {
-                      "$unwind": "$in"
-                    }
+                    {"$unwind": "$in"},
                 ],
                 "project": {
-                  "txid" : "$tx.h",
-                  "vin index": "$in.i",
-                  "vin txid" : "$in.e.h",
-                  "utxo index" : "$in.e.i"
-                }
-            }
+                    "txid": "$tx.h",
+                    "vin index": "$in.i",
+                    "vin txid": "$in.e.h",
+                    "utxo index": "$in.e.i",
+                },
+            },
         }
 
         path = cls.query_to_url(query, network)
@@ -550,18 +559,17 @@ class SlpAPI:
             for utxo in get_utxo_json
         ]
 
-
     @classmethod
     def filter_slp_txid(cls, address, slp_address, unspents, network="mainnet"):
 
         slp_utxos = SlpAPI.get_all_slp_utxo_by_address(slp_address, network=network)
 
         baton_info = SlpAPI.get_mint_baton(address=slp_address, network=network)
-        baton_tx = []
+        baton_txs = []
 
         if len(baton_info) > 0:
             for baton in baton_info:
-                baton_tx.append(("546", baton[0], baton[1], baton[2]))
+                baton_txs.append(("546", baton[0], baton[1], baton[2]))
 
         # Filters SLP out of unspent pool
         def _is_slp(unspent, slp_utxos):
@@ -570,32 +578,50 @@ class SlpAPI:
             ]
 
         # Grabs UTXOs with batons attached
-        def _is_baton(unspent, baton_tx):
+        def _is_baton(unspent, baton_txs):
             return (unspent.txid, unspent.txindex) in [
-                (baton[2], baton[3]) for baton in baton_tx
+                (baton[2], baton[3]) for baton in baton_txs
             ]
 
-        # Filters baton out of unspent pool
+        # # Filters baton out of unspent pool
         def _filter_baton_out(unspent, baton_utxo):
             return (unspent.txid, unspent.txindex) in [
                 (batonutxo.txid, batonutxo.txindex) for batonutxo in baton_utxo
             ]
 
-        difference = [
-            unspent for unspent in unspents if not _is_slp(unspent, slp_utxos)
-        ]
+        bch_unspents = []
+        slp_unspents = []
+        batons = []
 
-        baton = [unspent for unspent in unspents if _is_baton(unspent, baton_tx)]
-        utxo_without_slp_or_baton = [
-            i for i in difference if not _filter_baton_out(i, baton)
-        ]
+        for unspent in unspents:
+            if _is_slp(unspent, slp_utxos):
+                slp_unspents.append(unspent)
+            elif _is_baton(unspent, baton_txs):
+                batons.append(unspent)
+            else:
+                bch_unspents.append(unspent)
 
-        slp_utxos = [unspent for unspent in unspents if _is_slp(unspent, slp_utxos)]
+        # difference = [
+        #     unspent for unspent in unspents if not _is_slp(unspent, slp_utxos)
+        # ]
+
+        # baton = [unspent for unspent in unspents if _is_baton(unspent, baton_txs)]
+        # utxo_without_slp_or_baton = [
+        #     i for i in difference if not _filter_baton_out(i, baton)
+        # ]
+        # slp_utxos = [unspent for unspent in unspents if _is_slp(unspent, slp_utxos)]
 
         # Temporary names, need to replace
         # TODO: Refactor names
+
+        # return {
+        #     "slp_utxos": slp_utxos,
+        #     "difference": utxo_without_slp_or_baton,
+        #     "baton": baton,
+        # }
+
         return {
-            "slp_utxos": slp_utxos,
-            "difference": utxo_without_slp_or_baton,
-            "baton": baton,
+            "slp_utxos": slp_unspents,
+            "difference": bch_unspents,
+            "baton": batons,
         }

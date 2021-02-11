@@ -1,6 +1,14 @@
 import json
 import time
 import bitcash.slp_create as slp_create
+import logging
+
+logging.basicConfig(
+    filename="example.log",
+    filemode="w",
+    format="%(name)s - %(levelname)s - %(message)s",
+    level=logging.DEBUG,
+)
 
 from bitcash.crypto import ECPrivateKey
 from bitcash.curve import Point
@@ -361,7 +369,7 @@ class PrivateKey(BaseKey):
         unspents=None,
         slp_unspents=None,
         non_standard=False,
-        custom_pushdata=False,
+        custom_pushdata=True,
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction.
         :param outputs: A sequence of outputs you wish to send in the form
@@ -412,7 +420,9 @@ class PrivateKey(BaseKey):
             non_standard=non_standard,
         )
 
-        return create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=custom_pushdata)
+        return create_p2pkh_transaction(
+            self, unspents, outputs, custom_pushdata=custom_pushdata
+        )
 
     def send(
         self,
@@ -559,7 +569,9 @@ class PrivateKey(BaseKey):
         leftover=None,
         combine=True,
         unspents=None,
-        custom_pushdata=False,
+        custom_pushdata=True,
+        message=None,
+        non_standard=False,
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction.
         :param outputs: A sequence of outputs you wish to send in the form
@@ -611,7 +623,6 @@ class PrivateKey(BaseKey):
         # hacky but works, find a better way
         # TODO: Find a better way
         op_return = bytes.fromhex(op_return[2:])
-
         # This strips the "6a" (OP_RETURN) off the string,
         # and then converts it to bytes (needed for construct_output_block)
 
@@ -623,19 +634,19 @@ class PrivateKey(BaseKey):
             outputs.append((mint_baton_address, min_satoshi, "satoshi"))
 
         unspents, outputs = sanitize_slp_create_tx_data(
-            self.address,
             unspents or self.unspents,
             outputs,
             fee or get_fee(),
             leftover or self.address,
+            genesis_op_return=op_return,
             combine=combine,
-            message=op_return,
+            message=message,
             compressed=self.is_compressed(),
             custom_pushdata=custom_pushdata,
+            non_standard=non_standard,
         )
 
         tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
-
         NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
 
         return calc_txid(tx_hex)
@@ -651,6 +662,8 @@ class PrivateKey(BaseKey):
         unspents=None,
         slp_unspents=None,
         custom_pushdata=True,
+        message=None,
+        non_standard=False,
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the blockchain. This accepts the same arguments as
@@ -684,34 +697,39 @@ class PrivateKey(BaseKey):
         :returns: The transaction ID.
         :rtype: ``str``
         """
-        
+
         # Grab utxos for specified token
         token_slp_utxos = SlpAPI.get_utxo_by_tokenId(
-            address=self.slp_address, tokenId=tokenId, network=NETWORKS[self._network])
+            address=self.slp_address, tokenId=tokenId, network=NETWORKS[self._network]
+        )
 
         fanned_token_slp_utxos = []
 
         for utxo in token_slp_utxos:
-            if utxo[0] == '1':
+            if utxo[0] == "1":
                 fanned_token_slp_utxos.append(utxo)
 
         if len(fanned_token_slp_utxos) == 0:
-            raise(Exception("There are not any fanned group utxos."))
+            raise (Exception("There are not any fanned group utxos."))
 
         if len(fanned_token_slp_utxos) < amount:
-            raise(Exception("Not enough fanned group utxos."))
+            raise (Exception("Not enough fanned group utxos."))
 
         # cut out unconfirmed to work around slpdb not handling the spent group tokens
         unconfirmed = SlpAPI.get_unconfirmed_spent_utxo_genesis_65(
-            tokenId, self.slp_address, network=NETWORKS[self._network])
+            tokenId, self.slp_address, network=NETWORKS[self._network]
+        )
 
         def _is_unconfirmed(unspent, unconfirmed):
             return (unspent[2], unspent[3]) in [
                 (unconfirm[2], unconfirm[3]) for unconfirm in unconfirmed
             ]
 
-        confirmed_token_slp_utxos = [unspent for unspent in fanned_token_slp_utxos if not _is_unconfirmed(
-            unspent, unconfirmed)]
+        confirmed_token_slp_utxos = [
+            unspent
+            for unspent in fanned_token_slp_utxos
+            if not _is_unconfirmed(unspent, unconfirmed)
+        ]
 
         # slice the desired amount
         specified_amount_fanned_token_slp_utxos = confirmed_token_slp_utxos[:amount]
@@ -719,17 +737,29 @@ class PrivateKey(BaseKey):
         # map against unspent objects
         def _is_slp(unspent, specified_amount_fanned_token_slp_utxos):
             return (unspent.txid, unspent.txindex) in [
-                (slp_utxo[2], slp_utxo[3]) for slp_utxo in specified_amount_fanned_token_slp_utxos
+                (slp_utxo[2], slp_utxo[3])
+                for slp_utxo in specified_amount_fanned_token_slp_utxos
             ]
 
-        slp_utxos = [unspent for unspent in self.slp_unspents if _is_slp(
-            unspent, specified_amount_fanned_token_slp_utxos)]
-        
+        also_slp_utxos = [
+            unspent
+            for unspent in self.unspents
+            if _is_slp(unspent, specified_amount_fanned_token_slp_utxos)
+        ]
+
+        slp_utxos = [
+            unspent
+            for unspent in self.slp_unspents
+            if _is_slp(unspent, specified_amount_fanned_token_slp_utxos)
+        ]
+
+        slp_utxos.extend(also_slp_utxos)
+
         # Pulls Group NFT token details to populate ticker and name
         tokenDetails = SlpAPI.get_token_by_id(tokenId, network=NETWORKS[self._network])[
             0
         ]
-        
+
         slp_unspents = self.slp_unspents.copy()
 
         # Change this for different child tickers/names
@@ -742,10 +772,18 @@ class PrivateKey(BaseKey):
         op_return = bytes.fromhex(op_return[2:])
 
         txids = []
-        index = 0   
+        index = 0
 
         while index < amount:
-            
+
+            filtered_unspents = []
+            for utxo in self.unspents:
+                if utxo.amount > 546:
+                    filtered_unspents.append(utxo)
+
+            self.unspents = filtered_unspents
+            unspents = filtered_unspents
+
             # Clears previous slp_unspents to only include the desired utxo
             slp_unspents = []
             slp_unspents.append(slp_utxos[index])
@@ -758,30 +796,33 @@ class PrivateKey(BaseKey):
                 outputs = [(self.address, min_satoshi, "satoshi")]
 
             unspents, outputs = sanitize_slp_create_tx_data(
-                address or self.address,
                 self.unspents,
                 outputs,
                 fee or get_fee(),
                 leftover or self.address,
+                genesis_op_return=op_return,
                 combine=combine,
-                message=op_return,
+                message=message,
                 compressed=self.is_compressed(),
                 custom_pushdata=custom_pushdata,
                 slp_unspents=slp_unspents,
+                non_standard=non_standard,
             )
 
-            tx_hex = create_p2pkh_transaction(self, unspents, outputs, custom_pushdata=True)
+            tx_hex = create_p2pkh_transaction(
+                self, unspents, outputs, custom_pushdata=True
+            )
 
             NetworkAPI.broadcast_tx(tx_hex, network=NETWORKS[self._network])
             calced_tx_hex = calc_txid(tx_hex)
-            txids.append(calced_tx_hex) 
+            txids.append(calced_tx_hex)
 
             time.sleep(5)
 
             self.get_balance()
-            
-            index+=1
-            
+
+            index += 1
+
             # Spent group utxo isnt flagged as slp or SPENT when getting unspents, need to filter it out
             # for these purposes. Might be a better implementation "soon"
             # For now will filter out dust
@@ -816,8 +857,8 @@ class PrivateKey(BaseKey):
         while i < amount:
 
             outputs.append((self.slp_address, 1))
-            i+=1
-        
+            i += 1
+
         tx_hex = self.create_slp_transaction(
             outputs,
             tokenId,
@@ -933,13 +974,13 @@ class PrivateKey(BaseKey):
             outputs.append((self.address, min_satoshi, "satoshi"))
 
         unspents, outputs = sanitize_slp_create_tx_data(
-            self.address,
             unspents,
             outputs,
             fee or get_fee(),
             leftover or self.address,
             combine=combine,
-            message=op_return,
+            genesis_op_return=op_return,
+            message=message,
             compressed=self.is_compressed(),
             custom_pushdata=custom_pushdata,
         )
