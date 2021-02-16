@@ -159,7 +159,7 @@ class SlpAPI:
     def get_balance_address_and_tokentype(
         cls, address, token_type, network="mainnet", limit=1000
     ):
-        if token_type==129:
+        if token_type == 129:
             query = {
                 "v": 3,
                 "q": {
@@ -171,25 +171,19 @@ class SlpAPI:
                                 "slp.detail.versionType": token_type,
                                 "slp.detail.transactionType": "GENESIS",
                             }
-                        }, {
+                        },
+                        {
                             "$project": {
-                                "tokenId": "$tx.h", 
-                                "denomination": {
-                                    "$arrayElemAt": [
-                                        "$out", 3
-                                    ]
-                                }, 
-                                "seats": {
-                                    "$arrayElemAt": [
-                                        "$out", 4
-                                    ]
-                                }
+                                "tokenId": "$tx.h",
+                                "denomination": {"$arrayElemAt": ["$out", 3]},
+                                "seats": {"$arrayElemAt": ["$out", 4]},
                             }
-                        }, {
+                        },
+                        {
                             "$project": {
-                                "tokenId": "$tokenId", 
-                                "denomination": "$denomination.s1", 
-                                "seats": "$seats.s1"
+                                "tokenId": "$tokenId",
+                                "denomination": "$denomination.s1",
+                                "seats": "$seats.s1",
                             }
                         },
                     ],
@@ -207,11 +201,11 @@ class SlpAPI:
                                 "slp.detail.outputs.address": address,
                                 "slp.detail.versionType": token_type,
                             }
-                        }, 
+                        },
                         {
                             "$project": {
                                 "tokenId": "$slp.detail.tokenIdHex",
-                                "name": "$slp.detail.name"
+                                "name": "$slp.detail.name",
                             }
                         },
                     ],
@@ -233,50 +227,44 @@ class SlpAPI:
         transactions.extend(unconfirmed)
         return transactions
 
-
     @classmethod
     def get_meta_details_off_child_nft(cls, tokenId, network="mainnet"):
         query = {
             "v": 3,
-            "q":{
+            "q": {
                 "db": ["c", "u"],
                 "aggregate": [
                     {
                         "$lookup": {
-                            "from": "tokens", 
-                            "localField": "slp.detail.tokenIdHex", 
-                            "foreignField": "tokenDetails.tokenIdHex", 
-                            "as": "tokenDetails"
+                            "from": "tokens",
+                            "localField": "slp.detail.tokenIdHex",
+                            "foreignField": "tokenDetails.tokenIdHex",
+                            "as": "tokenDetails",
                         }
-                    }, {
+                    },
+                    {
                         "$match": {
-                            "tx.h": tokenId, 
-                            "slp.detail.versionType": 65, 
-                            "slp.detail.transactionType": "GENESIS"
+                            "tx.h": tokenId,
+                            "slp.detail.versionType": 65,
+                            "slp.detail.transactionType": "GENESIS",
                         }
-                    }, {
+                    },
+                    {
                         "$project": {
-                            "nft txid": "$tx.h", 
-                            "return address": {
-                                "$arrayElemAt": [
-                                    "$out", 3
-                                ]
-                            }, 
-                            "message": {
-                                "$arrayElemAt": [
-                                    "$tokenDetails", 0
-                                ]
-                            }
+                            "nft txid": "$tx.h",
+                            "return address": {"$arrayElemAt": ["$out", 3]},
+                            "message": {"$arrayElemAt": ["$tokenDetails", 0]},
                         }
-                    }, {
+                    },
+                    {
                         "$project": {
-                            "nft txid": "$nft txid", 
-                            "return address": "$return address.s1", 
-                            "parentId": "$message.nftParentId"
+                            "nft txid": "$nft txid",
+                            "return address": "$return address.s1",
+                            "parentId": "$message.nftParentId",
                         }
-                    }
-                ]
-            }
+                    },
+                ],
+            },
         }
         path = cls.query_to_url(query, network)
         response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
@@ -291,7 +279,6 @@ class SlpAPI:
         transactions.extend(unconfirmed)
 
         return transactions
-
 
     @classmethod
     def get_token_by_id(cls, tokenid, network="mainnet"):
