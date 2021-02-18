@@ -159,6 +159,9 @@ class SlpAPI:
     def get_balance_address_and_tokentype(
         cls, address, token_type, network="mainnet", limit=1000
     ):
+        # Check whether the token is group or child NFT, as the meta data is different.
+        # In group we are projecting the denomination and seats while child is projecting
+        # tokenId and name
         if token_type == 129:
             query = {
                 "v": 3,
@@ -228,7 +231,7 @@ class SlpAPI:
         return transactions
 
     @classmethod
-    def get_meta_details_off_child_nft(cls, tokenId, network="mainnet"):
+    def get_meta_details_of_child_nft(cls, tokenId, network="mainnet"):
         query = {
             "v": 3,
             "q": {
