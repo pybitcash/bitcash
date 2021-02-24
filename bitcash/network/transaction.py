@@ -9,8 +9,8 @@ class Transaction:
         self.txid = txid
         self.block = block
 
-        if amount_in != amount_out + amount_fee:  # pragma: no cover
-            raise ArithmeticError("The amounts just don't add up!")
+        if amount_in != amount_out + amount_fee:
+            raise ArithmeticError("the amounts just don't add up!")
 
         self.amount_in = amount_in
         self.amount_out = amount_out
