@@ -155,6 +155,45 @@ class SlpAPI:
         else:
             return []
 
+
+    @classmethod
+    def get_token_fan_out_count(cls, token_id, network="mainnet", limit=1000):
+        # c2c8f750774094bfa90eab73b689f8ab5fc6ba9f85880091818890869fda6167
+        query={    
+            "v": 3, #version
+            "q": {  #query
+                "db": ["g"],    #table
+                "aggregate": [
+                {   # filter token
+                    "$match": {
+                        "tokenDetails.tokenIdHex": token_id
+                    }
+                }, {    # split outputs into separate documents
+                    "$unwind": {
+                        "path": "$graphTxn.outputs"
+                    }
+                }, {    # filter only unspents at quantity of 1
+                    "$match": {
+                        "graphTxn.outputs.status": "UNSPENT", 
+                        "graphTxn.outputs.slpAmount": 1
+                    }
+                }, {
+                    "$count": "amount"
+                }
+            ],
+            "limit":limit
+            }
+        }
+
+        path = cls.query_to_url(query, network)
+        get_token_fan_count_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        get_token_fan_count_json = get_token_fan_count_response.json()["g"][0]
+
+
+
+        # return get_token_fan_count_json
+        return {"amount": get_token_fan_count_json["amount"]}
+
     @classmethod
     def get_balance_address_and_tokentype(
         cls, address, token_type, network="mainnet", limit=1000
