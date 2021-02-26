@@ -17,6 +17,67 @@ def set_service_timeout(seconds):
     DEFAULT_TIMEOUT = seconds
 
 
+class InsomniaAPI:
+    """insomnia.fountainhead.cash API"""
+    # MAINNET
+    MAIN_ENDPOINT = 'https://insomnia.fountainhead.cash/v1/'
+    MAIN_BALANCE_API = MAIN_ENDPOINT + 'address/balance/{}'
+    MAIN_HISTORY_API = MAIN_ENDPOINT + 'address/history/{}'
+    MAIN_UNSPENT_API = MAIN_ENDPOINT + 'address/utxos/{}'
+    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/broadcast'  # this requires POST req
+    MAIN_RAW_API = MAIN_ENDPOINT + 'tx/data/{}'
+    MAIN_TX_API = MAIN_RAW_API + '?verbose=true'
+
+    # TESNET
+    TEST_ENDPOINT = 'https://insomnia-testnet.fountainhead.cash/v1/'
+    TEST_BALANCE_API = TEST_ENDPOINT + 'address/balance/{}'
+    TEST_HISTORY_API = TEST_ENDPOINT + 'address/history/{}'
+    TEST_UNSPENT_API = TEST_ENDPOINT + 'address/utxos/{}'
+    TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/broadcast'  # this requires POST req
+    TEST_RAW_API = TEST_ENDPOINT + 'tx/data/{}'
+    TEST_TX_API = TEST_RAW_API + '?verbose=true'
+
+    @classmethod
+    def get_balance(cls, address):
+        r = requests.get(cls.MAIN_BALANCE_API.format(address),
+                         timeout=DEFAULT_TIMEOUT)
+        r.raise_for_status()  # pragma: no cover
+        data = r.json()
+        balance = data['confirmed'] + data['unconfirmed']
+        return balance
+
+    @classmethod
+    def get_balance_testnet(cls, address):
+        r = requests.get(cls.TEST_BALANCE_API.format(address),
+                         timeout=DEFAULT_TIMEOUT)
+        r.raise_for_status()  # pragma: no cover
+        data = r.json()
+        balance = data['confirmed'] + data['unconfirmed']
+        return balance
+
+    @classmethod
+    def get_transactions(cls, address):
+        r = requests.get(cls.MAIN_HISTORY_API.format(address),
+                         timeout=DEFAULT_TIMEOUT)
+        r.raise_for_status()  # pragma: no cover
+        txs_dict = r.json()['txs']
+        txs = []
+        for tx in txs_dict:  # sanitize output (dict -> list)
+            txs.append(tx.get('tx_hash'))
+        return txs
+
+    @classmethod
+    def get_transactions_testnet(cls, address):
+        r = requests.get(cls.TEST_HISTORY_API.format(address),
+                         timeout=DEFAULT_TIMEOUT)
+        r.raise_for_status()  # pragma: no cover
+        txs_dict = r.json()['txs']
+        txs = []
+        for tx in txs_dict:  # sanitize output (dict -> list)
+            txs.append(tx.get('tx_hash'))
+        return txs
+
+
 class InsightAPI:
     MAIN_ENDPOINT = ''
     MAIN_ADDRESS_API = ''

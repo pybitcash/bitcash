@@ -2,7 +2,7 @@ import pytest
 
 import bitcash
 from bitcash.network.services import (
-    BitcoinDotComAPI, BitcoreAPI, NetworkAPI, set_service_timeout
+    InsomniaAPI, BitcoinDotComAPI, BitcoreAPI, NetworkAPI, set_service_timeout
 )
 from bitcash.network.transaction import Transaction
 from tests.utils import (
@@ -117,6 +117,35 @@ class TestNetworkAPI:
     def test_get_unspent_test_failure(self):
         with pytest.raises(ConnectionError):
             MockBackend.get_unspent_testnet(TEST_ADDRESS_USED2)
+
+
+class TestInsomniaAPI:
+    def test_get_balance_return_type(self):
+        assert isinstance(InsomniaAPI.get_balance(MAIN_ADDRESS_USED1), int)
+
+    def test_get_balance_main_used(self):
+        assert InsomniaAPI.get_balance(MAIN_ADDRESS_USED1) > 0
+
+    def test_get_balance_main_unused(self):
+        assert InsomniaAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
+
+    def test_get_balance_test_unused(self):
+        assert InsomniaAPI.get_balance_testnet(TEST_ADDRESS_UNUSED) == 0
+
+    def test_get_transactions_return_type(self):
+        assert iter(InsomniaAPI.get_transactions(MAIN_ADDRESS_USED1))
+
+    def test_get_transactions_main_used(self):
+        assert len(InsomniaAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 218
+
+    def test_get_transactions_main_unused(self):
+        assert len(InsomniaAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
+
+    def test_get_transactions_test_used(self):
+        assert len(InsomniaAPI.get_transactions_testnet(TEST_ADDRESS_USED2)) > 0
+
+    def test_get_transactions_test_unused(self):
+        assert len(InsomniaAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
