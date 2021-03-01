@@ -1,6 +1,6 @@
 from bitcash.utils import (
     Decimal, bytes_to_hex, chunk_data, flip_hex_byte_order, hex_to_bytes,
-    hex_to_int, int_to_hex, int_to_unknown_bytes
+    hex_to_int, int_to_hex, int_to_unknown_bytes, int_to_varint
 )
 
 BIG_INT = 123456789 ** 5
@@ -14,7 +14,7 @@ ODD_HEX_NUM = 225248913302192562869270621870514764431976732013487544080065300317
 
 
 def test_decimal():
-    assert Decimal(0.8)==Decimal('0.8')
+    assert Decimal(0.8) == Decimal('0.8')
 
 
 class TestBytesToHex:
@@ -45,6 +45,18 @@ class TestIntToHex:
 
     def test_upper(self):
         assert int_to_hex(BIG_INT, upper=True) == HEX.upper()
+
+
+class TestIntToVarInt:
+    def test_val_less_than_65535(self):
+        assert int_to_varint(65535) == b'\xfd\xff\xff'
+
+    def test_val_less_than_4294967295(self):
+        assert int_to_varint(4294967294) == b'\xfe\xfe\xff\xff\xff'
+
+    def test_val_more_than_4294967295(self):
+        assert (
+            int_to_varint(10000000000) == b'\xff\x00\xe4\x0bT\x02\x00\x00\x00')
 
 
 def test_hex_to_bytes():
