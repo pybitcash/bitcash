@@ -28,40 +28,12 @@ class InsightAPI:
     TX_PUSH_PARAM = ''
 
     @classmethod
-    def get_balance(cls, address):
-        r = requests.get(cls.MAIN_BALANCE_API.format(
-            address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
-        return r.json()
-
-    @classmethod
-    def get_transactions(cls, address):
-        r = requests.get(cls.MAIN_ADDRESS_API.format(
-            address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
-        return r.json()['transactions']
-
-    @classmethod
     def get_tx_amount(cls, txid, txindex):
         r = requests.get(cls.MAIN_TX_AMOUNT_API.format(
             txid), timeout=DEFAULT_TIMEOUT)
         r.raise_for_status()  # pragma: no cover
         response = r.json(parse_float=Decimal)
         return (Decimal(response['vout'][txindex]['value']) * BCH_TO_SAT_MULTIPLIER).normalize()
-
-    @classmethod
-    def get_unspent(cls, address):
-        r = requests.get(cls.MAIN_UNSPENT_API.format(
-            address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()  # pragma: no cover
-        return [
-            Unspent(currency_to_satoshi(tx['amount'], 'bch'),
-                    tx['confirmations'],
-                    tx['scriptPubKey'],
-                    tx['txid'],
-                    tx['vout'])
-            for tx in r.json()
-        ]
 
     @classmethod
     def broadcast_tx(cls, tx_hex):  # pragma: no cover
