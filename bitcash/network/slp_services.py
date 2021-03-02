@@ -187,12 +187,14 @@ class SlpAPI:
 
         path = cls.query_to_url(query, network)
         get_token_fan_count_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
-        get_token_fan_count_json = get_token_fan_count_response.json()["g"][0]
+        get_token_fan_count_json = get_token_fan_count_response.json()["g"]
 
+        if len(get_token_fan_count_json) > 0:
+            return {"amount": get_token_fan_count_json[0]["amount"]}
+        else:
 
-
-        # return get_token_fan_count_json
-        return {"amount": get_token_fan_count_json["amount"]}
+            return get_token_fan_count_json
+   
 
     @classmethod
     def get_balance_address_and_tokentype(
@@ -483,12 +485,16 @@ class SlpAPI:
 
         path = cls.query_to_url(query, network)
         slp_utxo_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
-        slp_utxo_json = slp_utxo_response.json()["g"]
+        slp_utxo_json = slp_utxo_response.json()
+        if len(slp_utxo_json) > 0:
+            json = slp_utxo_json["g"]
 
-        return [
-            (utxo["token_balance"], utxo["address"], utxo["txid"], utxo["vout"])
-            for utxo in slp_utxo_json
-        ]
+            return [
+                (utxo["token_balance"], utxo["address"], utxo["txid"], utxo["vout"])
+                for utxo in json
+            ]
+        else:
+            return []
 
     @classmethod
     def get_mint_baton(cls, tokenId=None, address=None, network="mainnet"):
