@@ -155,32 +155,174 @@ class SlpAPI:
         else:
             return []
 
+
+    @classmethod
+    def get_token_fan_out_count(cls, token_id, network="mainnet", limit=1000):
+        # c2c8f750774094bfa90eab73b689f8ab5fc6ba9f85880091818890869fda6167
+        query={    
+            "v": 3, #version
+            "q": {  #query
+                "db": ["g"],    #table
+                "aggregate": [
+                {   # filter token
+                    "$match": {
+                        "tokenDetails.tokenIdHex": token_id
+                    }
+                }, {    # split outputs into separate documents
+                    "$unwind": {
+                        "path": "$graphTxn.outputs"
+                    }
+                }, {    # filter only unspents at quantity of 1
+                    "$match": {
+                        "graphTxn.outputs.status": "UNSPENT", 
+                        "graphTxn.outputs.slpAmount": 1
+                    }
+                }, {
+                    "$count": "amount"
+                }
+            ],
+            "limit":limit
+            }
+        }
+
+        path = cls.query_to_url(query, network)
+        get_token_fan_count_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        get_token_fan_count_json = get_token_fan_count_response.json()["g"]
+
+        if len(get_token_fan_count_json) > 0:
+            return {"amount": get_token_fan_count_json[0]["amount"]}
+        else:
+
+            return get_token_fan_count_json
+   
+
     @classmethod
     def get_balance_address_and_tokentype(
         cls, address, token_type, network="mainnet", limit=1000
     ):
+        # Check whether the token is group or child NFT, as the meta data is different.
+        # In group we are projecting the denomination and seats while child is projecting
+        # tokenId and name
+        if token_type == 129:
+            query = {
+                "v": 3,
+                "q": {
+                    "db": ["c", "u"],
+                    "aggregate": [
+                        {
+                            "$match": {
+                                "slp.detail.outputs.address": address,
+                                "slp.detail.versionType": token_type,
+                                "slp.detail.transactionType": "GENESIS",
+                            }
+                        },
+                        {
+                            "$project": {
+                                "tokenId": "$tx.h",
+                                "denomination": {"$arrayElemAt": ["$out", 3]},
+                                "seats": {"$arrayElemAt": ["$out", 4]},
+                            }
+                        },
+                        {
+                            "$project": {
+                                "tokenId": "$tokenId",
+                                "denomination": "$denomination.s1",
+                                "seats": "$seats.s1",
+                            }
+                        },
+                    ],
+                    "limit": limit,
+                },
+            }
+        else:
+            query = {
+                "v": 3,
+                "q": {
+                    "db": ["c", "u"],
+                    "aggregate": [
+                        {
+                            "$match": {
+                                "slp.detail.outputs.address": address,
+                                "slp.detail.versionType": token_type,
+                            }
+                        },
+                        {
+                            "$project": {
+                                "tokenId": "$slp.detail.tokenIdHex",
+                                "name": "$slp.detail.name",
+                            }
+                        },
+                    ],
+                    "limit": limit,
+                },
+            }
+
+        path = cls.query_to_url(query, network)
+        get_group_token_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        json = get_group_token_response.json()
+
+        confirmed = []
+        confirmed.extend(json["c"])
+        unconfirmed = []
+        unconfirmed.extend(json["u"])
+
+        transactions = []
+        transactions.extend(confirmed)
+        transactions.extend(unconfirmed)
+        return transactions
+
+    @classmethod
+    def get_meta_details_of_child_nft(cls, tokenId, network="mainnet"):
         query = {
             "v": 3,
             "q": {
                 "db": ["c", "u"],
                 "aggregate": [
                     {
+                        "$lookup": {
+                            "from": "tokens",
+                            "localField": "slp.detail.tokenIdHex",
+                            "foreignField": "tokenDetails.tokenIdHex",
+                            "as": "tokenDetails",
+                        }
+                    },
+                    {
                         "$match": {
-                            "slp.detail.outputs.address": address,
-                            "slp.detail.versionType": token_type,
+                            "tx.h": tokenId,
+                            "slp.detail.versionType": 65,
                             "slp.detail.transactionType": "GENESIS",
                         }
                     },
-                    {"$project": {"tokenId": "$tx.h", "s1": "$out.s1"}},
+                    {
+                        "$project": {
+                            "nft txid": "$tx.h",
+                            "return address": {"$arrayElemAt": ["$out", 3]},
+                            "message": {"$arrayElemAt": ["$tokenDetails", 0]},
+                        }
+                    },
+                    {
+                        "$project": {
+                            "nft txid": "$nft txid",
+                            "return address": "$return address.s1",
+                            "parentId": "$message.nftParentId",
+                        }
+                    },
                 ],
-                "limit": limit,
             },
         }
-
         path = cls.query_to_url(query, network)
-        get_group_token_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
+        json = response.json()
+        confirmed = []
+        confirmed.extend(json["c"])
+        unconfirmed = []
+        unconfirmed.extend(json["u"])
 
-        return get_group_token_response.json()
+        transactions = []
+        transactions.extend(confirmed)
+        transactions.extend(unconfirmed)
+
+        return transactions
 
     @classmethod
     def get_token_by_id(cls, tokenid, network="mainnet"):
@@ -343,12 +485,16 @@ class SlpAPI:
 
         path = cls.query_to_url(query, network)
         slp_utxo_response = requests.get(url=path, timeout=DEFAULT_TIMEOUT)
-        slp_utxo_json = slp_utxo_response.json()["g"]
+        slp_utxo_json = slp_utxo_response.json()
+        if len(slp_utxo_json) > 0:
+            json = slp_utxo_json["g"]
 
-        return [
-            (utxo["token_balance"], utxo["address"], utxo["txid"], utxo["vout"])
-            for utxo in slp_utxo_json
-        ]
+            return [
+                (utxo["token_balance"], utxo["address"], utxo["txid"], utxo["vout"])
+                for utxo in json
+            ]
+        else:
+            return []
 
     @classmethod
     def get_mint_baton(cls, tokenId=None, address=None, network="mainnet"):
