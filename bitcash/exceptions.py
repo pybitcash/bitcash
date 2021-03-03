@@ -3,3 +3,6 @@ class InsufficientFunds(Exception):
 
 class InvalidAddress(Exception):
     pass
+
+class InvalidNetwork(Exception):
+    pass
