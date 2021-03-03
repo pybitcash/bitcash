@@ -142,9 +142,10 @@ class TestAddress:
 
     def test_address_unexpected(self):
         with pytest.raises(ValueError):
-            Address(
-                payload=list(PUBKEY_HASH), version="P2KPH"
-            ).cash_address() == BITCOIN_CASHADDRESS
+            assert (
+                Address(payload=list(PUBKEY_HASH), version="P2KPH").cash_address() 
+                == BITCOIN_CASHADDRESS
+            )
 
     def test_cashaddress_mainnet(self):
         assert (

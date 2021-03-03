@@ -122,9 +122,9 @@ class Address:
         address = address.lower()
         colon_count = address.count(":")
         if colon_count == 0:
-            raise InvalidAddress("Cash address is missing prefix")
+            raise InvalidAddress('Cash address is missing prefix')
         if colon_count > 1:
-            raise InvalidAddress("Cash address contains more than one colon character")
+            raise InvalidAddress('Cash address contains more than one colon character')
 
         prefix, base32string = address.split(":")
         decoded = b32decode(base32string)
