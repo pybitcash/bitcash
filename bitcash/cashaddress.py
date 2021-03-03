@@ -149,7 +149,7 @@ class Address:
         colon_count = address.count(':')
         if colon_count == 0:
             raise InvalidAddress('Cash address is missing prefix')
-        elif colon_count > 1:
+        if colon_count > 1:
             raise InvalidAddress('Cash address contains more than one colon character')
 
         prefix, base32string = address.split(':')
@@ -162,7 +162,7 @@ class Address:
         try:
             version = Address.ADDRESS_TYPES[converted[0]]
         except:
-            InvalidAddress('Could not determine address version')
+            raise InvalidAddress('Could not determine address version')
 
         version += Address.VERSION_SUFFIXES[prefix]
 
