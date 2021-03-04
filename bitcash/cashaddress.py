@@ -161,8 +161,8 @@ class Address:
 
         try:
             version = Address.ADDRESS_TYPES[converted[0]]
-        except:
-            InvalidAddress('Could not determine address version')
+        except Exception:
+            raise InvalidAddress('Could not determine address version')
 
         version += Address.VERSION_SUFFIXES[prefix]
 
