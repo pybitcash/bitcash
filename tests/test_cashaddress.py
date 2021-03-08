@@ -192,13 +192,13 @@ class TestAddress:
         )
 
     def test_convert_bits_invalid_data(self):
-        assert convertbits(CONVERT_BITS_INVALID_DATA_PAYLOAD, 8, 5) == None
+        assert convertbits(CONVERT_BITS_INVALID_DATA_PAYLOAD, 8, 5) is None
 
     def test_convert_bits_no_data(self):
         assert convertbits([], 8, 5) == []
 
     def test_convert_bits_no_data_no_pad(self):
-        assert convertbits([], 0, 1, pad=False) == None
+        assert convertbits([], 0, 1, pad=False) is None
 
     def test_convert_bits_no_pad(self):
         assert (
