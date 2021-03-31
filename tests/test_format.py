@@ -1,15 +1,16 @@
 import pytest
-from cashaddress.convert import InvalidAddress
+from bitcash.exceptions import InvalidAddress
 
 from bitcash.format import (
-    address_to_public_key_hash, bytes_to_wif, coords_to_public_key,
-    get_version, point_to_public_key, public_key_to_coords,
+    Address, address_to_public_key_hash, bytes_to_wif, coords_to_public_key,
+    point_to_public_key, public_key_to_coords,
     public_key_to_address, public_key_to_address, verify_sig,
     wif_checksum_check, wif_to_bytes
 )
 from .samples import (
     BITCOIN_ADDRESS, BITCOIN_ADDRESS_COMPRESSED, BITCOIN_CASHADDRESS_PAY2SH,
-    BITCOIN_ADDRESS_TEST_COMPRESSED, BITCOIN_ADDRESS_TEST,
+    BITCOIN_ADDRESS_TEST, BITCOIN_ADDRESS_TEST_COMPRESSED,
+    BITCOIN_ADDRESS_REGTEST, BITCOIN_ADDRESS_REGTEST_COMPRESSED,
     BITCOIN_CASHADDRESS_TEST_PAY2SH, BITCOIN_CASHADDRESS_REGTEST,
     BITCOIN_CASHADDRESS_REGTEST_COMPRESSED, BITCOIN_CASHADDRESS_REGTEST_PAY2SH,
     PRIVATE_KEY_BYTES, PUBKEY_HASH, BITCOIN_CASHADDRESS,
@@ -33,36 +34,6 @@ SIGNATURE_HIGH_S = (b'0E\x02 \x18NeS,"r\x1e\x01?\xa5\xa8C\xe4\xba\x07x \xc9\xf6'
                     b'\xf2M\xe7\x0e\xbaz\xd3\xa3\x94\xcc\xef\x17\x04\xb2\xfb0!'
                     b'\n\xc3\x1fa3\x83\x01\xc9\xbf\xbd\r)\x82')
 DATA = b'data'
-
-
-class TestGetVersion:
-    def test_mainnet(self):
-        assert get_version(BITCOIN_CASHADDRESS) == 'main'
-        assert get_version(BITCOIN_CASHADDRESS_COMPRESSED) == 'main'
-
-    def test_testnet(self):
-        assert get_version(BITCOIN_CASHADDRESS_TEST) == 'test'
-        assert get_version(BITCOIN_CASHADDRESS_TEST_COMPRESSED) == 'test'
-
-    def test_regtest(self):
-        assert get_version(BITCOIN_CASHADDRESS_REGTEST) == 'regtest'
-        assert get_version(BITCOIN_CASHADDRESS_REGTEST_COMPRESSED) == 'regtest'
-
-    def test_invalid(self):
-        with pytest.raises(InvalidAddress):
-            get_version('dg2dNAjuezub6iJVPNML5pW5ZQvtA9ocL')
-
-    def test_mainnet_pay2sh(self):
-        with pytest.raises(ValueError):
-            get_version(BITCOIN_CASHADDRESS_PAY2SH)
-
-    def test_testnet_pay2sh(self):
-        with pytest.raises(ValueError):
-            get_version(BITCOIN_CASHADDRESS_TEST_PAY2SH)
-
-    def test_regtest_pay2sh(self):
-        with pytest.raises(ValueError):
-            get_version(BITCOIN_CASHADDRESS_REGTEST_PAY2SH)
 
 
 class TestVerifySig:
@@ -204,7 +175,3 @@ def test_address_to_public_key_hash():
         address_to_public_key_hash(BITCOIN_CASHADDRESS_TEST_PAY2SH)
     with pytest.raises(ValueError):
         address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST_PAY2SH)
-
-
-
-# InvalidAddress
