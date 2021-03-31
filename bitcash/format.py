@@ -1,7 +1,7 @@
-from cashaddress import convert as cashaddress
 from coincurve import verify_signature as _vs
 
 from bitcash.base58 import b58decode_check, b58encode_check
+from bitcash.cashaddress import Address
 from bitcash.crypto import ripemd160_sha256
 from bitcash.curve import x_to_y
 from bitcash.exceptions import InvalidAddress
@@ -45,32 +45,14 @@ def verify_sig(signature, data, public_key):
 
 
 def address_to_public_key_hash(address):
-    if ":" not in address:
-        # Address must be a cash address, legacy no longer supported
-        raise InvalidAddress
-
-    address = cashaddress.Address._cash_string(address)
+    address = Address.from_string(address)
 
     if "P2PKH" not in address.version:
         # Bitcash currently only has support for P2PKH transaction types
         # P2SH and others will raise ValueError
-        raise ValueError
+        raise ValueError('Bitcash currently only supports P2PKH addresses')
 
     return bytes(address.payload)
-
-
-def get_version(address):
-    address = cashaddress.Address._cash_string(address)
-
-    if address.version == 'P2PKH':
-        return 'main'
-    elif address.version == 'P2PKH-TESTNET':
-        return 'test'
-    elif address.version == 'P2PKH-REGTEST':
-        return 'regtest'
-    else:
-        raise ValueError('{} does not correspond to a mainnet, testnet, nor '
-                         'regtest P2PKH address.'.format(address.version))
 
 
 def bytes_to_wif(private_key, version='main', compressed=False):
@@ -134,21 +116,24 @@ def wif_checksum_check(wif):
 
 
 def public_key_to_address(public_key, version='main'):
-    if version == 'test':
-        version = 'P2PKH-TESTNET'
-    elif version == 'regtest':
-        version = 'P2PKH-REGTEST'
-    elif version == 'main':
-        version = 'P2PKH'
-    else:
-        raise ValueError('Invalid version.')
+    # Currently Bitcash only support P2PKH (not P2SH)
+    VERSIONS = {
+        'main': "P2PKH",
+        'test': "P2PKH-TESTNET",
+        'regtest': "P2PKH-REGTEST"
+    }
+
+    try:
+        version = VERSIONS[version]
+    except:
+        raise ValueError('Invalid version: {}'.format(version))
     # 33 bytes compressed, 65 uncompressed.
     length = len(public_key)
     if length not in (33, 65):
         raise ValueError('{} is an invalid length for a public key.'.format(length))
 
     payload = list(ripemd160_sha256(public_key))
-    address = cashaddress.Address(payload=payload, version=version)
+    address = Address(payload=payload, version=version)
     return address.cash_address()
 
 

@@ -1,8 +1,6 @@
 import logging
 from collections import namedtuple
 
-from cashaddress import convert as cashaddress
-
 from bitcash.crypto import double_sha256, sha256
 from bitcash.exceptions import InsufficientFunds
 from bitcash.format import address_to_public_key_hash
