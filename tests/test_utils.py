@@ -60,14 +60,13 @@ class TestIntToHex:
 
 class TestIntToVarInt:
     def test_val_less_than_65535(self):
-        assert int_to_varint(65535) == b'\xfd\xff\xff'
+        assert int_to_varint(65535) == b"\xfd\xff\xff"
 
     def test_val_less_than_4294967295(self):
-        assert int_to_varint(4294967294) == b'\xfe\xfe\xff\xff\xff'
+        assert int_to_varint(4294967294) == b"\xfe\xfe\xff\xff\xff"
 
     def test_val_more_than_4294967295(self):
-        assert (
-            int_to_varint(10000000000) == b'\xff\x00\xe4\x0bT\x02\x00\x00\x00')
+        assert int_to_varint(10000000000) == b"\xff\x00\xe4\x0bT\x02\x00\x00\x00"
 
 
 def test_hex_to_bytes():

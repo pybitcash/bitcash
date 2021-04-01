@@ -249,19 +249,19 @@ class BitpayRates:
         return cls.currency_to_satoshi("dop")
 
 
-
 class CoinbaseRates:
     """
     API Documentation:
     https://developers.coinbase.com/api/v2#get-currencies
     """
-    SINGLE_RATE = 'https://api.coinbase.com/v2/exchange-rates?currency=BCH'
+
+    SINGLE_RATE = "https://api.coinbase.com/v2/exchange-rates?currency=BCH"
 
     @classmethod
     def currency_to_satoshi(cls, currency):
         r = requests.get(cls.SINGLE_RATE.format(currency))
         r.raise_for_status()
-        rate = r.json()['data']['rates'][currency]
+        rate = r.json()["data"]["rates"][currency]
         return int(ONE / Decimal(rate) * BCH)
 
     @classmethod

@@ -143,7 +143,7 @@ class TestAddress:
     def test_address_unexpected(self):
         with pytest.raises(ValueError):
             assert (
-                Address(payload=list(PUBKEY_HASH), version="P2KPH").cash_address() 
+                Address(payload=list(PUBKEY_HASH), version="P2KPH").cash_address()
                 == BITCOIN_CASHADDRESS
             )
 
