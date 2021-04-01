@@ -2,23 +2,46 @@ import pytest
 from bitcash.exceptions import InvalidAddress
 
 from bitcash.format import (
-    Address, address_to_public_key_hash, bytes_to_wif, coords_to_public_key,
-    point_to_public_key, public_key_to_coords,
-    public_key_to_address, public_key_to_address, verify_sig,
-    wif_checksum_check, wif_to_bytes
+    Address,
+    address_to_public_key_hash,
+    bytes_to_wif,
+    coords_to_public_key,
+    point_to_public_key,
+    public_key_to_coords,
+    public_key_to_address,
+    public_key_to_address,
+    verify_sig,
+    wif_checksum_check,
+    wif_to_bytes,
 )
 from .samples import (
-    BITCOIN_ADDRESS, BITCOIN_ADDRESS_COMPRESSED, BITCOIN_CASHADDRESS_PAY2SH,
-    BITCOIN_ADDRESS_TEST, BITCOIN_ADDRESS_TEST_COMPRESSED,
-    BITCOIN_ADDRESS_REGTEST, BITCOIN_ADDRESS_REGTEST_COMPRESSED,
-    BITCOIN_CASHADDRESS_TEST_PAY2SH, BITCOIN_CASHADDRESS_REGTEST,
-    BITCOIN_CASHADDRESS_REGTEST_COMPRESSED, BITCOIN_CASHADDRESS_REGTEST_PAY2SH,
-    PRIVATE_KEY_BYTES, PUBKEY_HASH, BITCOIN_CASHADDRESS,
-    BITCOIN_CASHADDRESS_TEST, BITCOIN_CASHADDRESS_TEST_COMPRESSED,
-    PUBKEY_HASH_COMPRESSED, PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED,
-    PUBLIC_KEY_X, PUBLIC_KEY_Y, BITCOIN_CASHADDRESS_COMPRESSED,
-    WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
-    WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST, WALLET_FORMAT_REGTEST
+    BITCOIN_ADDRESS,
+    BITCOIN_ADDRESS_COMPRESSED,
+    BITCOIN_CASHADDRESS_PAY2SH,
+    BITCOIN_ADDRESS_TEST,
+    BITCOIN_ADDRESS_TEST_COMPRESSED,
+    BITCOIN_ADDRESS_REGTEST,
+    BITCOIN_ADDRESS_REGTEST_COMPRESSED,
+    BITCOIN_CASHADDRESS_TEST_PAY2SH,
+    BITCOIN_CASHADDRESS_REGTEST,
+    BITCOIN_CASHADDRESS_REGTEST_COMPRESSED,
+    BITCOIN_CASHADDRESS_REGTEST_PAY2SH,
+    PRIVATE_KEY_BYTES,
+    PUBKEY_HASH,
+    BITCOIN_CASHADDRESS,
+    BITCOIN_CASHADDRESS_TEST,
+    BITCOIN_CASHADDRESS_TEST_COMPRESSED,
+    PUBKEY_HASH_COMPRESSED,
+    PUBLIC_KEY_COMPRESSED,
+    PUBLIC_KEY_UNCOMPRESSED,
+    PUBLIC_KEY_X,
+    PUBLIC_KEY_Y,
+    BITCOIN_CASHADDRESS_COMPRESSED,
+    WALLET_FORMAT_COMPRESSED_MAIN,
+    WALLET_FORMAT_COMPRESSED_TEST,
+    WALLET_FORMAT_MAIN,
+    WALLET_FORMAT_TEST,
+    WALLET_FORMAT_REGTEST,
 )
 
 VALID_SIGNATURE = (
@@ -165,7 +188,7 @@ class TestPublicKeyToAddress:
 
     def test_public_key_to_address_incorrect_version(self):
         with pytest.raises(ValueError):
-            public_key_to_address(PUBLIC_KEY_COMPRESSED, 'incorrect-version')
+            public_key_to_address(PUBLIC_KEY_COMPRESSED, "incorrect-version")
 
     def test_public_key_to_address_test_compressed(self):
         assert (

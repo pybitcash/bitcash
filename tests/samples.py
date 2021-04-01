@@ -67,13 +67,88 @@ WALLET_FORMAT_COMPRESSED_MAIN = "L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcU
 WALLET_FORMAT_COMPRESSED_TEST = "cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ"
 WALLET_FORMAT_COMPRESSED_REGTEST = WALLET_FORMAT_COMPRESSED_TEST
 
-WALLET_FORMAT_MAIN = '5KHxtARu5yr1JECrYGEA2YpCPdh1i9ciEgQayAF8kcqApkGzT9s'
-WALLET_FORMAT_TEST = '934bTuFSgCv9GHi9Ac84u9NA3J3isK9uadGY3nbe6MaDbnQdcbn'
+WALLET_FORMAT_MAIN = "5KHxtARu5yr1JECrYGEA2YpCPdh1i9ciEgQayAF8kcqApkGzT9s"
+WALLET_FORMAT_TEST = "934bTuFSgCv9GHi9Ac84u9NA3J3isK9uadGY3nbe6MaDbnQdcbn"
 WALLET_FORMAT_REGTEST = WALLET_FORMAT_TEST
 
-CONVERT_BITS_INVALID_DATA_PAYLOAD = [0, 146, 70, 27, 222, 98, 131, 256, 97,
-    236, 231, 221, 244, 219, 241, 224, 164, 139, 209, 19, 216]
-CONVERT_BITS_NO_PAD_PAYLOAD = [0, 146, 70, 27, 222, 98, 131, 25, 97, 236, 231,
-    221, 244, 219, 241, 224, 164, 139, 209, 19, 216]
-CONVERT_BITS_NO_PAD_RETURN = [0, 2, 9, 4, 12, 6, 30, 30, 12, 10, 1, 17, 18,
-    24, 15, 12, 28, 31, 14, 31, 9, 22, 31, 17, 28, 2, 18, 8, 23, 20, 8, 19, 27]
+CONVERT_BITS_INVALID_DATA_PAYLOAD = [
+    0,
+    146,
+    70,
+    27,
+    222,
+    98,
+    131,
+    256,
+    97,
+    236,
+    231,
+    221,
+    244,
+    219,
+    241,
+    224,
+    164,
+    139,
+    209,
+    19,
+    216,
+]
+CONVERT_BITS_NO_PAD_PAYLOAD = [
+    0,
+    146,
+    70,
+    27,
+    222,
+    98,
+    131,
+    25,
+    97,
+    236,
+    231,
+    221,
+    244,
+    219,
+    241,
+    224,
+    164,
+    139,
+    209,
+    19,
+    216,
+]
+CONVERT_BITS_NO_PAD_RETURN = [
+    0,
+    2,
+    9,
+    4,
+    12,
+    6,
+    30,
+    30,
+    12,
+    10,
+    1,
+    17,
+    18,
+    24,
+    15,
+    12,
+    28,
+    31,
+    14,
+    31,
+    9,
+    22,
+    31,
+    17,
+    28,
+    2,
+    18,
+    8,
+    23,
+    20,
+    8,
+    19,
+    27,
+]
