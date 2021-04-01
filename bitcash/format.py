@@ -50,32 +50,12 @@ def address_to_public_key_hash(address):
     if "P2PKH" not in address.version:
         # Bitcash currently only has support for P2PKH transaction types
         # P2SH and others will raise ValueError
-        raise ValueError('Bitcash currently only supports P2PKH addresses')
+        raise ValueError("Bitcash currently only supports P2PKH addresses")
 
     return bytes(address.payload)
 
 
-<<<<<<< HEAD
-def bytes_to_wif(private_key, version='main', compressed=False):
-=======
-def get_version(address):
-    address = cashaddress.Address._cash_string(address)
-
-    if address.version == "P2PKH":
-        return "main"
-    elif address.version == "P2PKH-TESTNET":
-        return "test"
-    elif address.version == "P2PKH-REGTEST":
-        return "regtest"
-    else:
-        raise ValueError(
-            f"{address.version} does not correspond to a mainnet, "
-            f"testnet, nor regtest P2PKH address."
-        )
-
-
 def bytes_to_wif(private_key, version="main", compressed=False):
->>>>>>> dab044a (Format with Black formatter)
 
     if version == "test":
         prefix = TEST_PRIVATE_KEY
@@ -137,30 +117,14 @@ def wif_checksum_check(wif):
     return False
 
 
-<<<<<<< HEAD
-def public_key_to_address(public_key, version='main'):
+def public_key_to_address(public_key, version="main"):
     # Currently Bitcash only support P2PKH (not P2SH)
-    VERSIONS = {
-        'main': "P2PKH",
-        'test': "P2PKH-TESTNET",
-        'regtest': "P2PKH-REGTEST"
-    }
+    VERSIONS = {"main": "P2PKH", "test": "P2PKH-TESTNET", "regtest": "P2PKH-REGTEST"}
 
     try:
         version = VERSIONS[version]
     except:
-        raise ValueError('Invalid version: {}'.format(version))
-=======
-def public_key_to_address(public_key, version="main"):
-    if version == "test":
-        version = "P2PKH-TESTNET"
-    elif version == "regtest":
-        version = "P2PKH-REGTEST"
-    elif version == "main":
-        version = "P2PKH"
-    else:
-        raise ValueError("Invalid version.")
->>>>>>> dab044a (Format with Black formatter)
+        raise ValueError("Invalid version: {}".format(version))
     # 33 bytes compressed, 65 uncompressed.
     length = len(public_key)
     if length not in (33, 65):
