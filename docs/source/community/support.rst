@@ -16,11 +16,4 @@ You can tweet `@merc1er <https://twitter.com/merc1er>`_ anytime.
 Telegram
 --------------
 
-Text Corentin Mercier on Telegram at ``@merc1er``
-
-Email
------
-
-You can also email `sega01@go-beyond.org <mailto:sega01@go-beyond.org>`_.
-Though, if you intend to ask a question that others may benefit from knowing
-the answer, please use a more public option.
+Text Corentin Mercier on Telegram at ``@merc1er`` or join the BitCash Telegram group at https://t.me/pybitcash
