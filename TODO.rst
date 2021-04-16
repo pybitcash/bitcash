@@ -1,8 +1,0 @@
-- Add optional caching with LMDB
-- Implement `future payments <https://github.com/bitcoincash/bips/blob/master/bip-0065.mediawiki>`_
-- Implement `HD wallets <https://github.com/bitcoincash/bips/blob/master/bip-0032.mediawiki>`_
-- Support getting unspents with confirmation limit
-- Add CLI using `Click <https://github.com/pallets/click>`_
-- direct network connection (ughh sockets)
-- Add GUI using `Kivy <https://github.com/kivy/kivy>`_
-- Implement `SLP <https://slp.dev>`_

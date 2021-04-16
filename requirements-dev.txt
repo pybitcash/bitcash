@@ -1,8 +1,0 @@
-# List of development dependencies (documentation, tests...)
-# Those ARE NOT required for installation, at runtime or to build from source
-
--e .[cli,cache]
-pytest
-coverage
-twine
-sphinx
