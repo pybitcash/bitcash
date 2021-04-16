@@ -55,8 +55,8 @@ Finally, bring this transaction back to your connected device and broadcast it.
     >>> from bitcash.network import NetworkAPI
     >>> NetworkAPI.broadcast_tx_testnet(tx_hex)
 
-Blockchain Storage
-------------------
+Blockchain Storage (OP_RETURN)
+------------------------------
 
 bitcash allows you to easily `store messages or data`_ in the blockchain itself
 using the ``message`` parameter of :func:`~bitcash.PrivateKey.create_transaction`
