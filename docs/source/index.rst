@@ -80,6 +80,7 @@ of best practices.
     guide/install
     guide/keys
     guide/network
+    guide/node
     guide/transactions
     guide/rates
     guide/fees
