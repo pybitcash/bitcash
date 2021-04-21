@@ -10,12 +10,6 @@ then
   exit 0
 fi
 
-if [ "$TRAVIS_PYTHON_VERSION" != "3.5" ]
-then
-  echo "This is not the designated environment to publish docs. Skipping docs publishing."
-  exit 0
-fi
-
 echo "Building docs..."
 
 rev=$(git rev-parse --short HEAD)
