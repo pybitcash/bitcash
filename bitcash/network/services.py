@@ -3,7 +3,7 @@ import os
 import requests
 from decimal import Decimal
 
-from bitcash.exceptions import InvalidNetwork, InvalidAddress
+from bitcash.exceptions import InvalidNetwork
 from bitcash.network import currency_to_satoshi
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
