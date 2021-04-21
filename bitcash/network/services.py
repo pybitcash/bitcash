@@ -3,7 +3,7 @@ import os
 import requests
 from decimal import Decimal
 
-from bitcash.exceptions import InvalidNetwork, InvalidAddress
+from bitcash.exceptions import InvalidNetwork
 from bitcash.network import currency_to_satoshi
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
@@ -24,7 +24,7 @@ class BitcoinDotComAPI:
     """ rest.bitcoin.com API """
 
     NETWORK_ENDPOINTS = {
-        "mainnet": os.getenv("BITCOINCOM_API_MAINNET", "https://rest.bitcoin.com/v2/"),
+        "mainnet": os.getenv("BITCOINCOM_API_MAINNET", "https://rest1.biggestfan.net/v2/"),
         "testnet": os.getenv("BITCOINCOM_API_TESTNET", "https://trest.bitcoin.com/v2/"),
         "regtest": os.getenv("BITCOINCOM_API_REGTEST", "http://localhost:12500/v2/"),
     }
