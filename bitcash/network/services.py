@@ -91,10 +91,10 @@ class NetworkAPI:
         for endpoint in get_endpoints_for(network):
             try:
                 return endpoint.get_balance(address)
-            except cls.IGNORED_ERRORS:
+            except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
-        raise ConnectionError("All APIs are unreachable.")
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
     @classmethod
     def get_transactions(cls, address, network="mainnet"):
@@ -109,10 +109,10 @@ class NetworkAPI:
         for endpoint in get_endpoints_for(network):
             try:
                 return endpoint.get_transactions(address)
-            except cls.IGNORED_ERRORS:
+            except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
-        raise ConnectionError("All APIs are unreachable.")
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
     @classmethod
     def get_transaction(cls, txid, network="mainnet"):
@@ -127,10 +127,10 @@ class NetworkAPI:
         for endpoint in get_endpoints_for(network):
             try:
                 return endpoint.get_transaction(txid)
-            except cls.IGNORED_ERRORS:
+            except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
-        raise ConnectionError("All APIs are unreachable.")
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
     @classmethod
     def get_tx_amount(cls, txid, txindex, network="mainnet"):
@@ -147,10 +147,10 @@ class NetworkAPI:
         for endpoint in get_endpoints_for(network):
             try:
                 return endpoint.get_tx_amount(txid, txindex)
-            except cls.IGNORED_ERRORS:
+            except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
-        raise ConnectionError("All APIs are unreachable.")
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
     @classmethod
     def get_unspent(cls, address, network="mainnet"):
@@ -165,10 +165,10 @@ class NetworkAPI:
         for endpoint in get_endpoints_for(network):
             try:
                 return endpoint.get_unspent(address)
-            except cls.IGNORED_ERRORS:
+            except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
-        raise ConnectionError("All APIs are unreachable.")
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
     @classmethod
     def get_raw_transaction(cls, txid, network="mainnet"):
@@ -183,10 +183,10 @@ class NetworkAPI:
         for endpoint in get_endpoints_for(network):
             try:
                 return endpoint.get_raw_transaction(txid)
-            except cls.IGNORED_ERRORS:
+            except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
-        raise ConnectionError("All APIs are unreachable.")
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
     @classmethod
     def broadcast_tx(cls, tx_hex, network="mainnet"):  # pragma: no cover

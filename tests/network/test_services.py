@@ -1,12 +1,17 @@
-import pytest
-
 import bitcash
+import os
+import pytest
+import time
+from bitcash.exceptions import InvalidEndpointURLProvided
+from bitcash.network.meta import Unspent
 from bitcash.network.services import (
     BitcoinDotComAPI,
     NetworkAPI,
+    get_endpoints_for,
     set_service_timeout,
 )
 from bitcash.network.transaction import Transaction
+from tests.samples import VALID_ENDPOINT_URLS, INVALID_ENDPOINT_URLS
 from tests.utils import (
     catch_errors_raise_warnings,
     decorate_methods,
@@ -26,17 +31,6 @@ TEST_TX = "09d0c9773c56fac218ae084226e9db8480d9b5c6f60cc0466431d6820d344adc"
 TEST_TX2 = "3c26deab2df023a8dbee15bf47701332f6661323ea117a58362b0ea9605129fd"
 
 
-def all_items_common(seq):
-    initial_set = set(seq[0])
-    intersection_lengths = [len(set(s) & initial_set) for s in seq]
-    return all_items_equal(intersection_lengths)
-
-
-def all_items_equal(seq):
-    initial_item = seq[0]
-    return all(item == initial_item for item in seq if item is not None)
-
-
 def test_set_service_timeout():
     original = bitcash.network.services.DEFAULT_TIMEOUT
     set_service_timeout(3)
@@ -50,67 +44,98 @@ def test_set_service_timeout():
 
 class MockBackend(NetworkAPI):
     IGNORED_ERRORS = NetworkAPI.IGNORED_ERRORS
-    GET_BALANCE = [raise_connection_error]
-    GET_TRANSACTIONS = [raise_connection_error]
-    GET_UNSPENT = [raise_connection_error]
+
+    @classmethod
+    def get_balance(cls, *args, **kwargs):
+        raise_connection_error()
+
+    @classmethod
+    def get_transactions(cls, *args, **kwargs):
+        raise_connection_error()
+
+    @classmethod
+    def get_transaction(cls, *args, **kwargs):
+        raise_connection_error()
+
+    @classmethod
+    def get_unspent(cls, *args, **kwargs):
+        raise_connection_error()
+
+    @classmethod
+    def get_tx_amount(cls, *args, **kwargs):
+        raise_connection_error()
+
+    @classmethod
+    def get_raw_transaction(cls, *args, **kwargs):
+        raise_connection_error()
 
 
 class TestNetworkAPI:
     # Mainnet
-    def test_get_balance_main_equal(self):
-        results = [
-            call(MAIN_ADDRESS_USED2, network="mainnet")
-            for call in NetworkAPI.GET_BALANCE
-        ]
-        assert all(result == results[0] for result in results)
+    def test_get_balance_mainnet(self):
+        time.sleep(1)
+        results = NetworkAPI.get_balance(MAIN_ADDRESS_USED2, network="mainnet")
+        assert type(results) == int
 
-    def test_get_balance_main_failure(self):
+    def test_get_balance_mainnet_failure(self):
         with pytest.raises(ConnectionError):
             MockBackend.get_balance(MAIN_ADDRESS_USED2, network="mainnet")
 
-    # FIXME: Bitcore.io only returns unspents
-    # def test_get_transactions_main_equal(self):
-    #     results = [call(MAIN_ADDRESS_USED1)[:100] for call in NetworkAPI.GET_TRANSACTIONS]
-    #     assert all_items_common(results)
+    def test_get_transactions_mainnet(self):
+        time.sleep(1)
+        results = NetworkAPI.get_transactions(MAIN_ADDRESS_USED1,
+                                              network="mainnet")
+        assert type(results) == list
+        assert len(results) > 0
 
-    def test_get_transactions_main_failure(self):
+    def test_get_transactions_mainnet_failure(self):
         with pytest.raises(ConnectionError):
             MockBackend.get_transactions(MAIN_ADDRESS_USED1, network="mainnet")
 
-    def test_get_transaction(self):
-        assert isinstance(NetworkAPI.get_transaction(MAIN_TX), Transaction) == True
+    def test_get_transaction_mainnet(self):
+        time.sleep(1)
+        assert isinstance(NetworkAPI.get_transaction(MAIN_TX, network="mainnet"), Transaction)
 
     # FIXME: enable this when testnet APIs are fixed/replaced
     # def test_get_transaction_testnet(self):
     #     assert isinstance(NetworkAPI.get_transaction_testnet(TEST_TX), Transaction) == True
 
-    def test_get_tx_amount(self):
+    def test_get_tx_amount_mainnet(self):
+        time.sleep(1)
         assert NetworkAPI.get_tx_amount(MAIN_TX, 2, network="mainnet") == 0
 
     # FIXME: enable this when testnet APIs are fixed/replaced
     # def test_get_tx_amount_testnet(self):
     #     assert NetworkAPI.get_tx_amount_testnet(TEST_TX, 2) == 0
 
-    def test_get_unspent_main_equal(self):
-        results = [
-            call(MAIN_ADDRESS_USED2, network="mainnet")
-            for call in NetworkAPI.GET_UNSPENT
-        ]
-        assert all_items_equal(results)
+    def test_get_unspent_mainnet(self):
+        time.sleep(1)
+        results = NetworkAPI.get_unspent(MAIN_ADDRESS_USED2, network="mainnet")
+        assert type(results) == list
+        for item in results:
+            assert isinstance(item, Unspent)
 
-    def test_get_unspent_main_failure(self):
+    def test_get_unspent_mainnet_failure(self):
         with pytest.raises(ConnectionError):
             MockBackend.get_unspent(MAIN_ADDRESS_USED1, network="mainnet")
 
-    # Testnet
-    def test_get_balance_test_equal(self):
-        results = [
-            call(TEST_ADDRESS_USED2, network="testnet")
-            for call in NetworkAPI.GET_BALANCE
-        ]
-        assert all(result == results[0] for result in results)
+    def test_get_raw_transaction_mainnet(self):
+        time.sleep(1)
+        results = NetworkAPI.get_raw_transaction(MAIN_TX, network="mainnet")
+        assert isinstance(results, dict)
+        assert len(results) == 15
+        
 
-    def test_get_balance_test_failure(self):
+    # Testnet
+    @pytest.mark.skip
+    def test_get_balance_testnet(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
+        time.sleep(1)
+        results = NetworkAPI.get_balance(TEST_ADDRESS_USED2, network="testnet")
+        assert type(results) == int
+
+    def test_get_balance_testnet_failure(self):
         with pytest.raises(ConnectionError):
             MockBackend.get_balance(TEST_ADDRESS_USED2, network="testnet")
 
@@ -123,14 +148,17 @@ class TestNetworkAPI:
         with pytest.raises(ConnectionError):
             MockBackend.get_transactions(TEST_ADDRESS_USED2, network="testnet")
 
-    def test_get_unspent_test_equal(self):
-        results = [
-            call(TEST_ADDRESS_USED3, network="testnet")
-            for call in NetworkAPI.GET_UNSPENT
-        ]
-        assert all_items_equal(results)
+    @pytest.mark.skip
+    def test_get_unspent_testnet(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
+        time.sleep(1)
+        results = NetworkAPI.get_unspent(TEST_ADDRESS_USED3, network="testnet")
+        assert type(results) == list
+        for item in results:
+            assert isinstance(item, Unspent)
 
-    def test_get_unspent_test_failure(self):
+    def test_get_unspent_testnet_failure(self):
         with pytest.raises(ConnectionError):
             MockBackend.get_unspent(TEST_ADDRESS_USED2, network="testnet")
 
@@ -139,117 +167,189 @@ class TestNetworkAPI:
 class TestBitcoinDotComAPI:
 
     # Mainnet
+    # Note: There are 1 second sleeps because the default mainnet API has
+    # rate limiting and will return 503 if we query it too quickly.
 
-    def test_get_balance_return_type(self):
-        assert isinstance(
-            BitcoinDotComAPI.get_balance(MAIN_ADDRESS_USED1, network="mainnet"), int
-        )
+    def test_invalid_endpoint_url_mainnet(self):
+        for url in INVALID_ENDPOINT_URLS:
+            with pytest.raises(InvalidEndpointURLProvided):
+                BitcoinDotComAPI(url)
 
-    def test_get_balance_main_used(self):
-        assert BitcoinDotComAPI.get_balance(MAIN_ADDRESS_USED1, network="mainnet") > 0
+    def test_get_single_endpoint_for_env_variable(self):
+        os.environ["BITCOINCOM_API_MAINNET"] = VALID_ENDPOINT_URLS[0]
+        endpoints = get_endpoints_for("mainnet")
+        assert len(endpoints) == 1
+        assert isinstance(endpoints[0], BitcoinDotComAPI)
+        os.environ.pop("BITCOINCOM_API_MAINNET")
 
-    def test_get_balance_main_unused(self):
-        assert BitcoinDotComAPI.get_balance(MAIN_ADDRESS_UNUSED, network="mainnet") == 0
+    def test_get_multiple_endpoint_for_env_variable(self):
+        os.environ["BITCOINCOM_API_MAINNET_1"] = VALID_ENDPOINT_URLS[0]
+        os.environ["BITCOINCOM_API_MAINNET_2"] = VALID_ENDPOINT_URLS[1]
+        endpoints = get_endpoints_for("mainnet")
+        assert len(endpoints) == 2
+        assert isinstance(endpoints[0], BitcoinDotComAPI)
+        assert isinstance(endpoints[1], BitcoinDotComAPI)
+        os.environ.pop("BITCOINCOM_API_MAINNET_1")
+        os.environ.pop("BITCOINCOM_API_MAINNET_2")
 
-    def test_get_transactions_return_type(self):
-        assert iter(
-            BitcoinDotComAPI.get_transactions(MAIN_ADDRESS_USED1, network="mainnet")
-        )
+    def test_get_balance_mainnet_return_type(self):
+        time.sleep(1)
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("mainnet"))
+        assert isinstance(endpoint.get_balance(MAIN_ADDRESS_USED1), int)
 
-    def test_get_transactions_main_used(self):
-        assert (
-            len(
-                BitcoinDotComAPI.get_transactions(MAIN_ADDRESS_USED1, network="mainnet")
-            )
-            >= 218
-        )
+    def test_get_balance_mainnet_used(self):
+        time.sleep(1)
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("mainnet"))
+        assert endpoint.get_balance(MAIN_ADDRESS_USED1) > 0
 
-    def test_get_transactions_main_unused(self):
-        assert (
-            len(
-                BitcoinDotComAPI.get_transactions(
-                    MAIN_ADDRESS_UNUSED, network="mainnet"
-                )
-            )
-            == 0
-        )
+    def test_get_balance_mainnet_unused(self):
+        time.sleep(1)
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("mainnet"))
+        assert endpoint.get_balance(MAIN_ADDRESS_UNUSED) == 0
 
-    def test_get_transaction(self):
-        assert (
-            len(str(BitcoinDotComAPI.get_transaction(MAIN_TX, network="mainnet")))
-            >= 156
-        )
+    def test_get_balance_mainnet_failure(self):
+        with pytest.raises(ConnectionError):
+            MockBackend.get_balance(MAIN_ADDRESS_USED2)
 
-    def test_get_tx_amount(self):
-        assert BitcoinDotComAPI.get_tx_amount(MAIN_TX2, 1, network="mainnet") == 546
+    def test_get_transactions_mainnet_return_type(self):
+        time.sleep(1)
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("mainnet"))
+        assert iter(endpoint.get_transactions(MAIN_ADDRESS_USED1))
 
-    def test_get_unspent_return_type(self):
-        assert iter(BitcoinDotComAPI.get_unspent(MAIN_ADDRESS_USED1, network="mainnet"))
+    def test_get_transactions_mainnet_used(self):
+        time.sleep(1)
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("mainnet"))
+        assert (len(endpoint.get_transactions(MAIN_ADDRESS_USED1)) >= 218)
 
-    def test_get_unspent_main_used(self):
-        assert (
-            len(BitcoinDotComAPI.get_unspent(MAIN_ADDRESS_USED2, network="mainnet"))
-            >= 1
-        )
+    def test_get_transactions_mainnet_unused(self):
+        time.sleep(1)
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("mainnet"))
+        assert (len(endpoint.get_transactions(MAIN_ADDRESS_UNUSED)) == 0)
 
-    def test_get_unspent_main_unused(self):
-        assert (
-            len(BitcoinDotComAPI.get_unspent(MAIN_ADDRESS_UNUSED, network="mainnet"))
-            == 0
-        )
+    def test_get_transactions_mainnet_failure(self):
+        with pytest.raises(ConnectionError):
+            MockBackend.get_transactions(MAIN_ADDRESS_USED1)
 
-    def test_get_raw_transaction(self):
-        assert (
-            BitcoinDotComAPI.get_raw_transaction(MAIN_TX, network="mainnet")["txid"]
-            == MAIN_TX
-        )
+    def test_get_transaction_mainnet(self):
+        time.sleep(1)
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("mainnet"))
+        assert len(str(endpoint.get_transaction(MAIN_TX))) >= 156
+
+    def test_get_transaction_mainnet_failure(self):
+        with pytest.raises(ConnectionError):
+            MockBackend.get_transaction(MAIN_TX)    
+
+    def test_get_tx_amount_mainnet(self):
+        time.sleep(1)
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("mainnet"))
+        assert endpoint.get_tx_amount(MAIN_TX2, 1) == 546
+
+    def test_get_tx_amount_mainnet_failure(self):
+        with pytest.raises(ConnectionError):
+            MockBackend.get_tx_amount(MAIN_TX2, 1)
+
+    def test_get_unspent_mainnet_return_type(self):
+        time.sleep(1)
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("mainnet"))
+        assert iter(endpoint.get_unspent(MAIN_ADDRESS_USED1))
+
+    def test_get_unspent_mainnet_used(self):
+        time.sleep(1)
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("mainnet"))
+        assert len(endpoint.get_unspent(MAIN_ADDRESS_USED2)) >= 1
+
+    def test_get_unspent_mainnet_unused(self):
+        time.sleep(1)
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("mainnet"))
+        assert len(endpoint.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
+
+    def test_get_unspent_mainnet_failure(self):
+        with pytest.raises(ConnectionError):
+            MockBackend.get_unspent(MAIN_ADDRESS_UNUSED)
+
+    def test_get_raw_transaction_mainnet(self):
+        time.sleep(1)
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("mainnet"))
+        assert endpoint.get_raw_transaction(MAIN_TX)["txid"] == MAIN_TX
+
+    def test_get_raw_transaction_mainnet_failure(self):
+        with pytest.raises(ConnectionError):
+            MockBackend.get_raw_transaction(MAIN_TX)
 
     # Testnet
 
-    def test_get_balance_test_used(self):
-        assert BitcoinDotComAPI.get_balance(TEST_ADDRESS_USED2, network="testnet") > 0
+    # @pytest.mark.skip
+    def test_get_balance_testnet_used(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("testnet"))
+        assert endpoint.get_balance(TEST_ADDRESS_USED2) > 0
 
-    def test_get_balance_test_unused(self):
-        assert BitcoinDotComAPI.get_balance(TEST_ADDRESS_UNUSED, network="testnet") == 0
+    # @pytest.mark.skip
+    def test_get_balance_testnet_unused(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("testnet"))
+        assert endpoint.get_balance(TEST_ADDRESS_UNUSED) == 0
 
+    # @pytest.mark.skip
     def test_get_transaction_testnet(self):
-        assert (
-            len(str(BitcoinDotComAPI.get_transaction(TEST_TX2, network="testnet")))
-            >= 156
-        )
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("testnet"))
+        assert len(str(endpoint.get_transaction(TEST_TX2))) >= 156
 
-    def test_get_transactions_test_used(self):
-        assert (
-            len(
-                BitcoinDotComAPI.get_transactions(TEST_ADDRESS_USED2, network="testnet")
-            )
-            >= 444
-        )
+    # @pytest.mark.skip
+    def test_get_transactions_testnet_used(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("testnet"))
+        assert len(endpoint.get_transactions(TEST_ADDRESS_USED2)) >= 444
 
-    def test_get_transactions_test_unused(self):
-        assert (
-            len(
-                BitcoinDotComAPI.get_transactions(
-                    TEST_ADDRESS_UNUSED, network="testnet"
-                )
-            )
-            == 0
-        )
+    # @pytest.mark.skip
+    def test_get_transactions_testnet_unused(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("testnet"))
+        assert len(endpoint.get_transactions(TEST_ADDRESS_UNUSED)) == 0
 
-    def test_get_unspent_test_used(self):
-        assert (
-            len(BitcoinDotComAPI.get_unspent(TEST_ADDRESS_USED2, network="testnet"))
-            >= 194
-        )
+    # @pytest.mark.skip
+    def test_get_unspent_testnet_used(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("testnet"))
+        assert len(endpoint.get_unspent(TEST_ADDRESS_USED2)) >= 194
 
-    def test_get_unspent_test_unused(self):
-        assert (
-            len(BitcoinDotComAPI.get_unspent(TEST_ADDRESS_UNUSED, network="testnet"))
-            == 0
-        )
+    # @pytest.mark.skip
+    def test_get_unspent_testnet_unused(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("testnet"))
+        assert len(endpoint.get_unspent(TEST_ADDRESS_UNUSED)) == 0
 
+    # @pytest.mark.skip
     def test_get_raw_transaction_testnet(self):
-        assert (
-            BitcoinDotComAPI.get_raw_transaction(TEST_TX, network="testnet")["txid"]
-            == TEST_TX
-        )
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
+        endpoint = BitcoinDotComAPI(
+            BitcoinDotComAPI.get_default_endpoint("testnet"))
+        assert endpoint.get_raw_transaction(TEST_TX)["txid"] == TEST_TX

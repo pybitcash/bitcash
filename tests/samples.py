@@ -26,6 +26,13 @@ BITCOIN_CASHADDRESS_REGTEST_COMPRESSED = (
 )
 BITCOIN_CASHADDRESS_REGTEST_PAY2SH = "bchreg:prezv854vnyallagz5zuz5lmjkle8x2rpqnpxygxa9"
 
+VALID_ENDPOINT_URLS = ["https://rest.bch.actorforth.org/v2/",
+                       "https://rest.bitcoin.com/v2/"]
+
+INVALID_ENDPOINT_URLS = ["htp://fakesite.com/v2",
+                         "https://bitcom.org/",
+                         42]
+
 PRIVATE_KEY_BYTES = b"\xc2\x8a\x9f\x80s\x8fw\rRx\x03\xa5f\xcfo\xc3\xed\xf6\xce\xa5\x86\xc4\xfcJR#\xa5\xady~\x1a\xc3"
 PRIVATE_KEY_DER = (
     b"0\x81\x84\x02\x01\x000\x10\x06\x07*\x86H\xce=\x02\x01\x06"
