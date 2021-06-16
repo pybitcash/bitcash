@@ -8,3 +8,7 @@ class InvalidAddress(Exception):
 
 class InvalidNetwork(Exception):
     pass
+
+
+class InvalidEndpointURLProvided(Exception):
+    pass
