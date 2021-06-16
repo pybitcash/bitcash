@@ -18,7 +18,7 @@ class BitcoinDotComAPI:
 
     def __init__(self, network_endpoint: str):
         try:
-            assert type(network_endpoint) == str
+            assert isinstance(network_endpoint, str)
             assert network_endpoint[:4] == "http"
             assert network_endpoint[-4:] == "/v2/"
         except AssertionError:

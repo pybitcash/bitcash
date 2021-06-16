@@ -75,7 +75,7 @@ class TestNetworkAPI:
     def test_get_balance_mainnet(self):
         time.sleep(1)
         results = NetworkAPI.get_balance(MAIN_ADDRESS_USED2, network="mainnet")
-        assert type(results) == int
+        assert isinstance(results, int)
 
     def test_get_balance_mainnet_failure(self):
         with pytest.raises(ConnectionError):
@@ -85,7 +85,7 @@ class TestNetworkAPI:
         time.sleep(1)
         results = NetworkAPI.get_transactions(MAIN_ADDRESS_USED1,
                                               network="mainnet")
-        assert type(results) == list
+        assert isinstance(results, list)
         assert len(results) > 0
 
     def test_get_transactions_mainnet_failure(self):
@@ -111,7 +111,7 @@ class TestNetworkAPI:
     def test_get_unspent_mainnet(self):
         time.sleep(1)
         results = NetworkAPI.get_unspent(MAIN_ADDRESS_USED2, network="mainnet")
-        assert type(results) == list
+        assert isinstance(results, list)
         for item in results:
             assert isinstance(item, Unspent)
 
@@ -133,7 +133,7 @@ class TestNetworkAPI:
         # TODO: Remove once a new Testnet endpoint is added
         time.sleep(1)
         results = NetworkAPI.get_balance(TEST_ADDRESS_USED2, network="testnet")
-        assert type(results) == int
+        assert isinstance(results, int)
 
     def test_get_balance_testnet_failure(self):
         with pytest.raises(ConnectionError):
@@ -154,7 +154,7 @@ class TestNetworkAPI:
         # TODO: Remove once a new Testnet endpoint is added
         time.sleep(1)
         results = NetworkAPI.get_unspent(TEST_ADDRESS_USED3, network="testnet")
-        assert type(results) == list
+        assert isinstance(results, list)
         for item in results:
             assert isinstance(item, Unspent)
 
