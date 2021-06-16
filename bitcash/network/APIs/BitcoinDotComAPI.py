@@ -3,12 +3,12 @@ from decimal import Decimal
 from bitcash.exceptions import InvalidEndpointURLProvided
 from bitcash.network import currency_to_satoshi
 from bitcash.network.meta import Unspent
-from bitcash.network.services import DEFAULT_TIMEOUT
 from bitcash.network.transaction import Transaction, TxPart
 
 # This class is the interface for Bitcash to interact with
 # Bitcoin.com based RESTful interfaces.
 
+DEFAULT_TIMEOUT = 30
 BCH_TO_SAT_MULTIPLIER = 100000000
 # TODO: Refactor all constants into a 'constants.py' file
 
