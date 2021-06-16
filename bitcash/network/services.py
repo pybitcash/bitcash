@@ -1,4 +1,3 @@
-import logging
 import os
 import requests
 from decimal import Decimal
@@ -134,103 +133,6 @@ class BitcoinDotComAPI:
         return True if r.status_code == 200 else False
 
 
-class BitcoreAPI:
-    """ Insight API v8 """
-
-    NETWORK_ENDPOINTS = {
-        "mainnet": os.getenv(
-            "BITCORE_API_MAINNET", "https://api.bitcore.io/api/BCH/mainnet/"
-        ),
-        "testnet": os.getenv(
-            "BITCORE_API_TESTNET", "https://api.bitcore.io/api/BCH/testnet/"
-        ),
-    }
-
-    MAIN_ENDPOINT = "https://api.bitcore.io/api/BCH/mainnet/"
-    ADDRESS_API = "address/{}"
-    BALANCE_API = ADDRESS_API + "/balance"
-    UNSPENT_API = ADDRESS_API + "/?unspent=true"
-    TX_PUSH_API = "tx/send"
-    TX_API = "tx/{}"
-    TX_AMOUNT_API = TX_API
-    TX_PUSH_PARAM = "rawTx"
-
-    @classmethod
-    def network_endpoint(cls, network):
-        if network not in NETWORKS:
-            raise InvalidNetwork(f"No endpoints found for network {network}")
-        return cls.NETWORK_ENDPOINTS[network]
-
-    @classmethod
-    def remove_prefix(cls, address):
-        if ":" in address:
-            address = address.split(":")[1]
-        return address
-        # else:
-        #     raise InvalidAddress(address)
-
-    @classmethod
-    def get_unspent(cls, address, network):
-        address = cls.remove_prefix(address)
-        API = cls.network_endpoint(network) + cls.UNSPENT_API
-        r = requests.get(API.format(address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        unspents = []
-        for tx in r.json():
-            # In weird conditions, the API will send back unspents
-            # without a scriptPubKey.
-            if "script" in tx:
-                unspents.append(
-                    Unspent(
-                        currency_to_satoshi(tx["value"], "satoshi"),
-                        tx["confirmations"],
-                        tx["script"],
-                        tx["mintTxid"],
-                        tx["mintIndex"],
-                    )
-                )
-            else:
-                logging.warning("Unspent without scriptPubKey.")
-
-        return unspents
-
-    @classmethod
-    def get_transactions(cls, address, network):
-        address = cls.remove_prefix(address)
-        API = cls.network_endpoint(network) + cls.ADDRESS_API
-        r = requests.get(API.format(address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        return [tx["mintTxid"] for tx in r.json()]
-
-    @classmethod
-    def get_balance(cls, address, network):
-        address = cls.remove_prefix(address)
-        API = cls.network_endpoint(network) + cls.BALANCE_API
-        r = requests.get(API.format(address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        return r.json()["balance"]
-
-    @classmethod
-    def get_tx_amount(cls, txid, txindex, network):
-        API = cls.network_endpoint(network) + cls.TX_AMOUNT_API
-        r = requests.get(API.format(txid), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        response = r.json(parse_float=Decimal)
-        return (
-            Decimal(response["vout"][txindex]["value"]) * BCH_TO_SAT_MULTIPLIER
-        ).normalize()
-
-    @classmethod
-    def broadcast_tx(cls, tx_hex, network):  # pragma: no cover
-        API = cls.network_endpoint(network) + cls.TX_PUSH_API
-        r = requests.post(
-            API,
-            json={cls.TX_PUSH_PARAM: tx_hex, "network": network, "coin": "BCH"},
-            timeout=DEFAULT_TIMEOUT,
-        )
-        return True if r.status_code == 200 else False
-
-
 class NetworkAPI:
     IGNORED_ERRORS = (
         requests.exceptions.RequestException,
@@ -247,16 +149,13 @@ class NetworkAPI:
         requests.exceptions.StreamConsumedError,
     )
 
-    GET_BALANCE = [BitcoinDotComAPI.get_balance, BitcoreAPI.get_balance]
-    GET_TRANSACTIONS = [BitcoinDotComAPI.get_transactions, BitcoreAPI.get_transactions]
-    GET_UNSPENT = [BitcoinDotComAPI.get_unspent, BitcoreAPI.get_unspent]
-    BROADCAST_TX = [BitcoinDotComAPI.broadcast_tx, BitcoreAPI.broadcast_tx]
-    GET_TX = [BitcoinDotComAPI.get_transaction, BitcoinDotComAPI.get_transaction]
-    GET_TX_AMOUNT = [BitcoinDotComAPI.get_tx_amount, BitcoreAPI.get_tx_amount]
-    GET_RAW_TX = [
-        BitcoinDotComAPI.get_raw_transaction,
-        BitcoinDotComAPI.get_raw_transaction,
-    ]
+    GET_BALANCE = [BitcoinDotComAPI.get_balance]
+    GET_TRANSACTIONS = [BitcoinDotComAPI.get_transactions]
+    GET_UNSPENT = [BitcoinDotComAPI.get_unspent]
+    BROADCAST_TX = [BitcoinDotComAPI.broadcast_tx]
+    GET_TX = [BitcoinDotComAPI.get_transaction]
+    GET_TX_AMOUNT = [BitcoinDotComAPI.get_tx_amount]
+    GET_RAW_TX = [BitcoinDotComAPI.get_raw_transaction]
 
     @classmethod
     def get_balance(cls, address, network="mainnet"):

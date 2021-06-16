@@ -3,7 +3,6 @@ import pytest
 import bitcash
 from bitcash.network.services import (
     BitcoinDotComAPI,
-    BitcoreAPI,
     NetworkAPI,
     set_service_timeout,
 )
@@ -254,62 +253,3 @@ class TestBitcoinDotComAPI:
             BitcoinDotComAPI.get_raw_transaction(TEST_TX, network="testnet")["txid"]
             == TEST_TX
         )
-
-
-@decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
-class TestBitcoreAPI:
-    def test_get_balance_return_type(self):
-        assert isinstance(
-            BitcoreAPI.get_balance(MAIN_ADDRESS_USED1, network="mainnet"), int
-        )
-
-    def test_get_balance_main_used(self):
-        assert BitcoreAPI.get_balance(MAIN_ADDRESS_USED1, network="mainnet") > 0
-
-    def test_get_balance_main_unused(self):
-        assert BitcoreAPI.get_balance(MAIN_ADDRESS_UNUSED, network="mainnet") == 0
-
-    def test_get_balance_test_used(self):
-        assert BitcoreAPI.get_balance(TEST_ADDRESS_USED2, network="testnet") > 0
-
-    def test_get_balance_test_unused(self):
-        assert BitcoreAPI.get_balance(TEST_ADDRESS_UNUSED, network="testnet") == 0
-
-    def test_get_transactions_return_type(self):
-        assert iter(BitcoreAPI.get_transactions(MAIN_ADDRESS_USED1, network="mainnet"))
-
-    # FIXME: Bitcore.io only returns 10 elements
-    # def test_get_transactions_main_used(self):
-    #     assert len(BitcoreAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 218
-
-    def test_get_transactions_main_unused(self):
-        assert (
-            len(BitcoreAPI.get_transactions(MAIN_ADDRESS_UNUSED, network="mainnet"))
-            == 0
-        )
-
-    # FIXME: Bitcore.io only returns 10 elements
-    # def test_get_transactions_test_used(self):
-    #     assert len(BitcoreAPI.get_transactions_testnet(TEST_ADDRESS_USED2)) >= 444
-
-    def test_get_transactions_test_unused(self):
-        assert (
-            len(BitcoreAPI.get_transactions(TEST_ADDRESS_UNUSED, network="testnet"))
-            == 0
-        )
-
-    def test_get_unspent_return_type(self):
-        assert iter(BitcoreAPI.get_unspent(MAIN_ADDRESS_USED1, network="mainnet"))
-
-    def test_get_unspent_main_used(self):
-        assert len(BitcoreAPI.get_unspent(MAIN_ADDRESS_USED2, network="mainnet")) >= 1
-
-    def test_get_unspent_main_unused(self):
-        assert len(BitcoreAPI.get_unspent(MAIN_ADDRESS_UNUSED, network="mainnet")) == 0
-
-    # FIXME: Bitcore.io only returns 10 elements
-    # def test_get_unspent_test_used(self):
-    #     assert len(BitcoreAPI.get_unspent_testnet(TEST_ADDRESS_USED2)) >= 194
-
-    def test_get_unspent_test_unused(self):
-        assert len(BitcoreAPI.get_unspent(TEST_ADDRESS_UNUSED, network="testnet")) == 0
