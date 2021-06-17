@@ -1,0 +1,33 @@
+name: Run tests
+
+on: push
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false  # still run the other versions of Python if one fails
+      matrix:
+        python: [3.6, 3.7, 3.8, 3.9]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Install coverage and pytest
+      run: pip install coverage pytest
+    - name: Run tests
+      run: |
+        python run_tests.py
+        coverage xml
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        file: ./coverage.xml
+        name: codecov-umbrella
+        fail_ci_if_error: true
