@@ -30,7 +30,7 @@ def get_endpoints_for(network):
     # Where 'N' is a number starting at 1 and increasing to
     # however many endpoints you'd like.
     # If neither of these env variables have been set, it returns
-    # the instantiated result of <NAME>.get_default_endpoint(network)
+    # the instantiated result of <NAME>.get_default_endpoints(network)
 
     endpoints = []
     for endpoint in ENDPOINT_ENV_VARIABLES.keys():
@@ -53,8 +53,8 @@ def get_endpoints_for(network):
                     finished = True
         else:
             defaults_endpoints = ENDPOINT_ENV_VARIABLES[endpoint].get_default_endpoints(network)
-            for default in defaults_endpoints:
-                endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](default))
+            for each in defaults_endpoints:
+                endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
 
     return endpoints
 

@@ -194,21 +194,24 @@ class TestBitcoinDotComAPI:
 
     def test_get_balance_mainnet_return_type(self):
         time.sleep(1)
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("mainnet"))
-        assert isinstance(endpoint.get_balance(MAIN_ADDRESS_USED1), int)
+        endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert isinstance(this_endpoint.get_balance(MAIN_ADDRESS_USED1), int)
 
     def test_get_balance_mainnet_used(self):
         time.sleep(1)
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("mainnet"))
-        assert endpoint.get_balance(MAIN_ADDRESS_USED1) > 0
+        endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert this_endpoint.get_balance(MAIN_ADDRESS_USED1) > 0
 
     def test_get_balance_mainnet_unused(self):
         time.sleep(1)
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("mainnet"))
-        assert endpoint.get_balance(MAIN_ADDRESS_UNUSED) == 0
+        endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert this_endpoint.get_balance(MAIN_ADDRESS_UNUSED) == 0
 
     def test_get_balance_mainnet_failure(self):
         with pytest.raises(ConnectionError):
@@ -216,21 +219,24 @@ class TestBitcoinDotComAPI:
 
     def test_get_transactions_mainnet_return_type(self):
         time.sleep(1)
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("mainnet"))
-        assert iter(endpoint.get_transactions(MAIN_ADDRESS_USED1))
+        endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert iter(this_endpoint.get_transactions(MAIN_ADDRESS_USED1))
 
     def test_get_transactions_mainnet_used(self):
         time.sleep(1)
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("mainnet"))
-        assert (len(endpoint.get_transactions(MAIN_ADDRESS_USED1)) >= 218)
+        endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert (len(this_endpoint.get_transactions(MAIN_ADDRESS_USED1)) >= 218)
 
     def test_get_transactions_mainnet_unused(self):
         time.sleep(1)
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("mainnet"))
-        assert (len(endpoint.get_transactions(MAIN_ADDRESS_UNUSED)) == 0)
+        endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert (len(this_endpoint.get_transactions(MAIN_ADDRESS_UNUSED)) == 0)
 
     def test_get_transactions_mainnet_failure(self):
         with pytest.raises(ConnectionError):
@@ -238,9 +244,10 @@ class TestBitcoinDotComAPI:
 
     def test_get_transaction_mainnet(self):
         time.sleep(1)
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("mainnet"))
-        assert len(str(endpoint.get_transaction(MAIN_TX))) >= 156
+        endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert len(str(this_endpoint.get_transaction(MAIN_TX))) >= 156
 
     def test_get_transaction_mainnet_failure(self):
         with pytest.raises(ConnectionError):
@@ -248,9 +255,10 @@ class TestBitcoinDotComAPI:
 
     def test_get_tx_amount_mainnet(self):
         time.sleep(1)
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("mainnet"))
-        assert endpoint.get_tx_amount(MAIN_TX2, 1) == 546
+        endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert this_endpoint.get_tx_amount(MAIN_TX2, 1) == 546
 
     def test_get_tx_amount_mainnet_failure(self):
         with pytest.raises(ConnectionError):
@@ -258,21 +266,24 @@ class TestBitcoinDotComAPI:
 
     def test_get_unspent_mainnet_return_type(self):
         time.sleep(1)
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("mainnet"))
-        assert iter(endpoint.get_unspent(MAIN_ADDRESS_USED1))
+        endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert iter(this_endpoint.get_unspent(MAIN_ADDRESS_USED1))
 
     def test_get_unspent_mainnet_used(self):
         time.sleep(1)
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("mainnet"))
-        assert len(endpoint.get_unspent(MAIN_ADDRESS_USED2)) >= 1
+        endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert len(this_endpoint.get_unspent(MAIN_ADDRESS_USED2)) >= 1
 
     def test_get_unspent_mainnet_unused(self):
         time.sleep(1)
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("mainnet"))
-        assert len(endpoint.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
+        endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert len(this_endpoint.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_unspent_mainnet_failure(self):
         with pytest.raises(ConnectionError):
@@ -280,9 +291,10 @@ class TestBitcoinDotComAPI:
 
     def test_get_raw_transaction_mainnet(self):
         time.sleep(1)
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("mainnet"))
-        assert endpoint.get_raw_transaction(MAIN_TX)["txid"] == MAIN_TX
+        endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert this_endpoint.get_raw_transaction(MAIN_TX)["txid"] == MAIN_TX
 
     def test_get_raw_transaction_mainnet_failure(self):
         with pytest.raises(ConnectionError):
@@ -294,62 +306,70 @@ class TestBitcoinDotComAPI:
     def test_get_balance_testnet_used(self):
         # Marking as skip because BitcoinCom Testnet is currently unreliable
         # TODO: Remove once a new Testnet endpoint is added
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("testnet"))
-        assert endpoint.get_balance(TEST_ADDRESS_USED2) > 0
+        endpoints = BitcoinDotComAPI.get_default_endpoints("testnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert this_endpoint.get_balance(TEST_ADDRESS_USED2) > 0
 
     # @pytest.mark.skip
     def test_get_balance_testnet_unused(self):
         # Marking as skip because BitcoinCom Testnet is currently unreliable
         # TODO: Remove once a new Testnet endpoint is added
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("testnet"))
-        assert endpoint.get_balance(TEST_ADDRESS_UNUSED) == 0
+        endpoints = BitcoinDotComAPI.get_default_endpoints("testnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert this_endpoint.get_balance(TEST_ADDRESS_UNUSED) == 0
 
     # @pytest.mark.skip
     def test_get_transaction_testnet(self):
         # Marking as skip because BitcoinCom Testnet is currently unreliable
         # TODO: Remove once a new Testnet endpoint is added
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("testnet"))
-        assert len(str(endpoint.get_transaction(TEST_TX2))) >= 156
+        endpoints = BitcoinDotComAPI.get_default_endpoints("testnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert len(str(this_endpoint.get_transaction(TEST_TX2))) >= 156
 
     # @pytest.mark.skip
     def test_get_transactions_testnet_used(self):
         # Marking as skip because BitcoinCom Testnet is currently unreliable
         # TODO: Remove once a new Testnet endpoint is added
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("testnet"))
-        assert len(endpoint.get_transactions(TEST_ADDRESS_USED2)) >= 444
+        endpoints = BitcoinDotComAPI.get_default_endpoints("testnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert len(this_endpoint.get_transactions(TEST_ADDRESS_USED2)) >= 444
 
     # @pytest.mark.skip
     def test_get_transactions_testnet_unused(self):
         # Marking as skip because BitcoinCom Testnet is currently unreliable
         # TODO: Remove once a new Testnet endpoint is added
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("testnet"))
-        assert len(endpoint.get_transactions(TEST_ADDRESS_UNUSED)) == 0
+        endpoints = BitcoinDotComAPI.get_default_endpoints("testnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert len(this_endpoint.get_transactions(TEST_ADDRESS_UNUSED)) == 0
 
     # @pytest.mark.skip
     def test_get_unspent_testnet_used(self):
         # Marking as skip because BitcoinCom Testnet is currently unreliable
         # TODO: Remove once a new Testnet endpoint is added
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("testnet"))
-        assert len(endpoint.get_unspent(TEST_ADDRESS_USED2)) >= 194
+        endpoints = BitcoinDotComAPI.get_default_endpoints("testnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert len(this_endpoint.get_unspent(TEST_ADDRESS_USED2)) >= 194
 
     # @pytest.mark.skip
     def test_get_unspent_testnet_unused(self):
         # Marking as skip because BitcoinCom Testnet is currently unreliable
         # TODO: Remove once a new Testnet endpoint is added
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("testnet"))
-        assert len(endpoint.get_unspent(TEST_ADDRESS_UNUSED)) == 0
+        endpoints = BitcoinDotComAPI.get_default_endpoints("testnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert len(this_endpoint.get_unspent(TEST_ADDRESS_UNUSED)) == 0
 
     # @pytest.mark.skip
     def test_get_raw_transaction_testnet(self):
         # Marking as skip because BitcoinCom Testnet is currently unreliable
         # TODO: Remove once a new Testnet endpoint is added
-        endpoint = BitcoinDotComAPI(
-            BitcoinDotComAPI.get_default_endpoint("testnet"))
-        assert endpoint.get_raw_transaction(TEST_TX)["txid"] == TEST_TX
+        endpoints = BitcoinDotComAPI.get_default_endpoints("testnet")
+        for endpoint in endpoints:
+            this_endpoint = BitcoinDotComAPI(endpoint)
+            assert this_endpoint.get_raw_transaction(TEST_TX)["txid"] == TEST_TX
