@@ -27,9 +27,10 @@ class BitcoinDotComAPI:
 
     # Default endpoints to use for this interface
     DEFAULT_ENDPOINTS = {
-        "mainnet": "https://rest.bch.actorforth.org/v2/",
-        "testnet": "https://trest.bitcoin.com/v2/",
-        "regtest": "http://localhost:12500/v2/",
+        "mainnet": ["https://rest.bch.actorforth.org/v2/",
+                    "https://rest.bitcoin.com/v2/"],
+        "testnet": ["https://trest.bitcoin.com/v2/"],
+        "regtest": ["http://localhost:12500/v2/"],
     }
 
     # Paths specific to rest.bitcoin.com-based endpoints
@@ -41,7 +42,7 @@ class BitcoinDotComAPI:
     }
 
     @classmethod
-    def get_default_endpoint(cls, network):
+    def get_default_endpoints(cls, network):
         return cls.DEFAULT_ENDPOINTS[network]
 
     def make_endpoint_url(self, path):

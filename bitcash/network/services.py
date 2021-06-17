@@ -52,12 +52,9 @@ def get_endpoints_for(network):
                 else:
                     finished = True
         else:
-            endpoints.append(
-                ENDPOINT_ENV_VARIABLES[endpoint](
-                    ENDPOINT_ENV_VARIABLES[endpoint].get_default_endpoint(
-                        network)
-                )
-            )
+            defaults_endpoints = ENDPOINT_ENV_VARIABLES[endpoint].get_default_endpoints(network)
+            for default in defaults_endpoints:
+                endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](default))
 
     return endpoints
 
