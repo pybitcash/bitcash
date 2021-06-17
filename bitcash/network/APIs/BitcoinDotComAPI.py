@@ -8,9 +8,8 @@ from bitcash.network.transaction import Transaction, TxPart
 # This class is the interface for Bitcash to interact with
 # Bitcoin.com based RESTful interfaces.
 
-DEFAULT_TIMEOUT = 30
 BCH_TO_SAT_MULTIPLIER = 100000000
-# TODO: Refactor all constants into a 'constants.py' file
+# TODO: Refactor constant above into a 'constants.py' file
 
 
 class BitcoinDotComAPI:
@@ -48,22 +47,22 @@ class BitcoinDotComAPI:
     def make_endpoint_url(self, path):
         return self.network_endpoint + self.PATHS[path]
 
-    def get_balance(self, address):
+    def get_balance(self, address, *args, **kwargs):
         api_url = self.make_endpoint_url("address").format(address)
-        r = requests.get(api_url, timeout=DEFAULT_TIMEOUT)
+        r = requests.get(api_url, *args, **kwargs)
         r.raise_for_status()
         data = r.json()
         return data["balanceSat"] + data["unconfirmedBalanceSat"]
 
-    def get_transactions(self, address):
+    def get_transactions(self, address, *args, **kwargs):
         api_url = self.make_endpoint_url("address").format(address)
-        r = requests.get(api_url, timeout=DEFAULT_TIMEOUT)
+        r = requests.get(api_url, *args, **kwargs)
         r.raise_for_status()
         return r.json()["transactions"]
 
-    def get_transaction(self, txid):
+    def get_transaction(self, txid, *args, **kwargs):
         api_url = self.make_endpoint_url("tx-details").format(txid)
-        r = requests.get(api_url, timeout=DEFAULT_TIMEOUT)
+        r = requests.get(api_url, *args, **kwargs)
         r.raise_for_status()
         response = r.json(parse_float=Decimal)
 
@@ -96,18 +95,18 @@ class BitcoinDotComAPI:
 
         return tx
 
-    def get_tx_amount(self, txid, txindex):
+    def get_tx_amount(self, txid, txindex, *args, **kwargs):
         api_url = self.make_endpoint_url("tx-details").format(txid)
-        r = requests.get(api_url, timeout=DEFAULT_TIMEOUT)
+        r = requests.get(api_url, *args, **kwargs)
         r.raise_for_status()
         response = r.json(parse_float=Decimal)
         return (
             Decimal(response["vout"][txindex]["value"]) * BCH_TO_SAT_MULTIPLIER
         ).normalize()
 
-    def get_unspent(self, address):
+    def get_unspent(self, address, *args, **kwargs):
         api_url = self.make_endpoint_url("unspent").format(address)
-        r = requests.get(api_url, timeout=DEFAULT_TIMEOUT)
+        r = requests.get(api_url, *args, **kwargs)
         r.raise_for_status()
         return [
             Unspent(
@@ -120,13 +119,13 @@ class BitcoinDotComAPI:
             for tx in r.json()["utxos"]
         ]
 
-    def get_raw_transaction(self, txid):
+    def get_raw_transaction(self, txid, *args, **kwargs):
         api_url = self.make_endpoint_url("tx-details").format(txid)
-        r = requests.get(api_url, timeout=DEFAULT_TIMEOUT)
+        r = requests.get(api_url, *args, **kwargs)
         r.raise_for_status()
         return r.json(parse_float=Decimal)
 
-    def broadcast_tx(self, tx_hex):  # pragma: no cover
+    def broadcast_tx(self, tx_hex, *args, **kwargs):  # pragma: no cover
         api_url = self.make_endpoint_url("raw-tx").format(tx_hex)
-        r = requests.get(api_url)
+        r = requests.get(api_url, *args, **kwargs)
         return r.status_code == 200

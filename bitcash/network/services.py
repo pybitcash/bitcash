@@ -90,7 +90,7 @@ class NetworkAPI:
 
         for endpoint in get_endpoints_for(network):
             try:
-                return endpoint.get_balance(address)
+                return endpoint.get_balance(address, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
@@ -108,7 +108,7 @@ class NetworkAPI:
 
         for endpoint in get_endpoints_for(network):
             try:
-                return endpoint.get_transactions(address)
+                return endpoint.get_transactions(address, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
@@ -126,7 +126,7 @@ class NetworkAPI:
 
         for endpoint in get_endpoints_for(network):
             try:
-                return endpoint.get_transaction(txid)
+                return endpoint.get_transaction(txid, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
@@ -146,7 +146,7 @@ class NetworkAPI:
 
         for endpoint in get_endpoints_for(network):
             try:
-                return endpoint.get_tx_amount(txid, txindex)
+                return endpoint.get_tx_amount(txid, txindex, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
@@ -164,7 +164,7 @@ class NetworkAPI:
 
         for endpoint in get_endpoints_for(network):
             try:
-                return endpoint.get_unspent(address)
+                return endpoint.get_unspent(address, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
@@ -182,7 +182,7 @@ class NetworkAPI:
 
         for endpoint in get_endpoints_for(network):
             try:
-                return endpoint.get_raw_transaction(txid)
+                return endpoint.get_raw_transaction(txid, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
@@ -200,7 +200,7 @@ class NetworkAPI:
 
         for endpoint in get_endpoints_for(network):
             try:
-                success = endpoint.broadcast_tx(tx_hex)
+                success = endpoint.broadcast_tx(tx_hex, timeout=DEFAULT_TIMEOUT)
                 if not success:
                     continue
                 return
