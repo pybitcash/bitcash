@@ -22,7 +22,7 @@ class BitcoinDotComAPI:
             assert network_endpoint[:4] == "http"
             assert network_endpoint[-4:] == "/v2/"
         except AssertionError:
-            raise InvalidEndpointURLProvided()
+            raise InvalidEndpointURLProvided(f"Provided endpoint '{network_endpoint}' is not a valid URL for a Bitcoin.com-based REST endpoint")
 
         self.network_endpoint = network_endpoint
 
