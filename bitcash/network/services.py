@@ -8,7 +8,7 @@ from bitcash.network.APIs.BitcoinDotComAPI import BitcoinDotComAPI
 ENDPOINT_ENV_VARIABLES = {"BITCOINCOM": BitcoinDotComAPI}
 
 # Default API call total time timeout
-DEFAULT_TIMEOUT = 4
+DEFAULT_TIMEOUT = 5
 
 BCH_TO_SAT_MULTIPLIER = 100000000
 
