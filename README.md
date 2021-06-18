@@ -5,7 +5,8 @@
   <a href="https://pypi.org/project/bitcash" target="_blank">
     <img src="https://img.shields.io/pypi/v/bitcash.svg?style=flat-square" alt="BitCash PyPi version">
   </a>
-  <img src="https://img.shields.io/travis/pybitcash/bitcash.svg?branch=master&style=flat-square" alt="Build status">
+  <img src="https://github.com/pybitcash/bitcash/actions/workflows/run_tests.yml/badge.svg" alt="Test status">
+  <img src="https://github.com/pybitcash/bitcash/actions/workflows/deploy_docs.yml/badge.svg" alt="Deploy docs">
   <img src="https://codecov.io/gh/pybitcash/bitcash/branch/master/graph/badge.svg" alt="Code Coverage">
   <img src="https://img.shields.io/pypi/pyversions/bitcash.svg?style=flat-square" alt="Python Versions">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="MIT license">
@@ -68,8 +69,7 @@ $ pip install bitcash  # pip3 if pip is Python 2 on your system.
 
 ## Documentation
 
-Docs are hosted by Github Pages and are automatically built and published
-by Travis after every successful commit to BitCash's ``master`` branch.
+Docs are hosted by Github Pages and are automatically built and published after every successful commit to BitCash's ``master`` branch.
 
 [Read the documentation](https://pybitcash.github.io/bitcash/)
 

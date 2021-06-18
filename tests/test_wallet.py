@@ -39,8 +39,6 @@ from .samples import (
     BITCOIN_ADDRESS_REGTEST_PAY2SH,
 )
 
-TRAVIS = "TRAVIS" in os.environ
-
 
 class TestWIFToKey:
     def test_compressed_main(self):
