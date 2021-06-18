@@ -6,6 +6,7 @@
     <img src="https://img.shields.io/pypi/v/bitcash.svg?style=flat-square" alt="BitCash PyPi version">
   </a>
   <img src="https://github.com/pybitcash/bitcash/actions/workflows/run_tests.yml/badge.svg" alt="Test status">
+  <img src="https://github.com/pybitcash/bitcash/actions/workflows/deploy_docs.yml/badge.svg" alt="Deploy docs">
   <img src="https://codecov.io/gh/pybitcash/bitcash/branch/master/graph/badge.svg" alt="Code Coverage">
   <img src="https://img.shields.io/pypi/pyversions/bitcash.svg?style=flat-square" alt="Python Versions">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="MIT license">
