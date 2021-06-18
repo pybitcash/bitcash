@@ -9,8 +9,8 @@ Version |version|.
 .. image:: https://img.shields.io/pypi/pyversions/bitcash.svg?style=flat-square
     :target: https://pypi.org/project/bitcash
 
-.. image:: https://travis-ci.org/pybitcash/bitcash.svg?branch=master
-    :target: https://travis-ci.org/pybitcash/bitcash
+.. image:: https://github.com/pybitcash/bitcash/actions/workflows/run_tests.yml/badge.svg
+    :target: https://github.com/pybitcash/bitcash/actions/workflows/run_tests.yml
 
 .. image:: https://img.shields.io/codecov/c/github/pybitcash/bitcash.svg?style=flat-square
 

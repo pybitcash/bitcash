@@ -12,21 +12,21 @@ Philosophy
 Continuous Integration
 ----------------------
 
-`Travis CI`_ is used for testing and `Codecov`_ is used for detailing code
+`GitHub actions`_ is used for testing and `Codecov`_ is used for detailing code
 coverage.
 
 Documentation
 -------------
 
 Docs are hosted by `GitHub Pages`_ and are automatically built and published
-by Travis after every successful commit to bitcash's ``master`` branch.
+by GitHub actions after every successful commit to bitcash's ``master`` branch.
 
 Version Scheme
 --------------
 
 BitCash tries to adhere to `semantic versioning`_ as much as possible.
 
-.. _Travis CI: https://travis-ci.org
+.. _GitHub actions: https://github.com/features/actions
 .. _Codecov: https://codecov.io
 .. _GitHub Pages: https://pages.github.com
-.. _semantic versioning: https://goo.gl/iQwd4o
+.. _semantic versioning: https://semver.org
