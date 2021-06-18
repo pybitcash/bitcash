@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Stay Informed &#8212; bitcash 0.6.3 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -30,23 +31,23 @@
   <div class="bodywrapper">
     <div class="body" role="main">
     
-  <div class="section" id="stay-informed">
+  <section id="stay-informed">
 <h1>Stay Informed<a class="headerlink" href="#stay-informed" title="Permalink to this headline">¶</a></h1>
 <p>Check the following sources often to keep up on new features and other changes.</p>
-<div class="section" id="github">
+<section id="github">
 <h2>GitHub<a class="headerlink" href="#github" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference external" href="https://github.com/pybitcash/bitcash">project page</a> on GitHub remains the best
 way to track the development of bitcash.</p>
-</div>
-<div class="section" id="twitter">
+</section>
+<section id="twitter">
 <h2>Twitter<a class="headerlink" href="#twitter" title="Permalink to this headline">¶</a></h2>
 <p>Feel free to follow <a class="reference external" href="https://twitter.com/merc1er">&#64;merc1er</a> on
 Twitter for occasional updates.</p>
-</div>
-</div>
-<div class="section" id="release-history">
+</section>
+</section>
+<section id="release-history">
 <h1>Release History<a class="headerlink" href="#release-history" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="unreleased-see-master">
+<section id="unreleased-see-master">
 <h2>Unreleased (see <a class="reference external" href="https://github.com/ofek/bitcash">master</a>)<a class="headerlink" href="#unreleased-see-master" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Add a get_transaction() function to network services that
@@ -59,31 +60,31 @@ size to 220 bytes.</p></li>
 <li><p>NetworkAPI.get_tx_amount() is now working and properly handles
 backends returning string or decimal values.</p></li>
 </ul>
-</div>
-<div class="section" id="id1">
+</section>
+<section id="id1">
 <h2>0.5.2 (2018-05-16)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>bccblock.info is offline, replace with cashexplorer.bitcoin.com.
 Hard fork happened yesterday. Not sure if bccblock.info was even ready
 for that.</p></li>
 </ul>
-</div>
-<div class="section" id="id2">
+</section>
+<section id="id2">
 <h2>0.5.1 (2018-03-11)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fix fee calculation with combined=False.</p></li>
 <li><p>Also lower fees since we can. Couple little tweaks.</p></li>
 <li><p>Delete a .orig file I had added before by mistake.</p></li>
 </ul>
-</div>
-<div class="section" id="id3">
+</section>
+<section id="id3">
 <h2>0.5.0 (2018-02-03)<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Breaking change! Add cashaddr support, return .address as
 cashaddr. That hopefully is all that breaks.</p></li>
 </ul>
-</div>
-<div class="section" id="id4">
+</section>
+<section id="id4">
 <h2>0.4.3 (2017-12-20)<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Switch from Bitpay to BCCBlock.info.
@@ -91,20 +92,20 @@ Bitpay API is unusable with their address format, unless we
 switch over. Not interested in doing that in the near future so
 I found another block explorer.</p></li>
 </ul>
-</div>
-<div class="section" id="id5">
+</section>
+<section id="id5">
 <h2>0.4.2 (2017-12-20)<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Raise exception when using pay2sh addresses.</p></li>
 </ul>
-</div>
-<div class="section" id="id6">
+</section>
+<section id="id6">
 <h2>0.4.1 (2017-11-01)<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Removed <code class="docutils literal notranslate"><span class="pre">blockr.io</span></code> network backend as <a class="reference external" href="https://www.coinbase.com">Coinbase</a> has shut it down.</p></li>
 </ul>
-</div>
-<div class="section" id="id7">
+</section>
+<section id="id7">
 <h2>0.4.0 (2017-04-19)<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Changed elliptic curve backend from OpenSSL to libsecp256k1. This results
@@ -115,37 +116,37 @@ in an order of magnitude faster key creation and signing/verifying.</p></li>
 signatures instead of raising an exception. Also, <code class="docutils literal notranslate"><span class="pre">strict</span></code> is no longer
 a parameter as BIP-62 compliance is now required.</p></li>
 </ul>
-</div>
-<div class="section" id="id8">
+</section>
+<section id="id8">
 <h2>0.3.1 (2017-03-21)<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><strong>Fixed</strong> <a class="reference internal" href="../guide/advanced.html#coldstorage"><span class="std std-ref">cold storage</span></a> workflow.</p></li>
 <li><p>Improved performance of private key instantiation.</p></li>
 </ul>
-</div>
-<div class="section" id="id9">
+</section>
+<section id="id9">
 <h2>0.3.0 (2017-03-20)<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Implemented a way to use private keys in <a class="reference internal" href="../guide/advanced.html#coldstorage"><span class="std std-ref">cold storage</span></a>.</p></li>
 <li><p>Changed the default timeout of services from 5 to 10 seconds.</p></li>
 <li><p>Fixed network service redundancy by failing if response code is not 200.</p></li>
 </ul>
-</div>
-<div class="section" id="id10">
+</section>
+<section id="id10">
 <h2>0.2.0 (2017-03-17)<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Improved stability of network tests.</p></li>
 <li><p>Added <a class="reference internal" href="../dev/api.html#bitcash.verify_sig" title="bitcash.verify_sig"><code class="xref py py-func docutils literal notranslate"><span class="pre">verify_sig()</span></code></a>.</p></li>
 <li><p>Refactored crypto to yield over an order of magnitude faster hashing.</p></li>
 </ul>
-</div>
-<div class="section" id="id11">
+</section>
+<section id="id11">
 <h2>0.1.0 (2017-03-15)<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Initial release.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
     <br>

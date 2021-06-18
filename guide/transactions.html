@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Transactions &#8212; bitcash 0.6.3 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -30,7 +31,7 @@
   <div class="bodywrapper">
     <div class="body" role="main">
     
-  <div class="section" id="transactions">
+  <section id="transactions">
 <span id="id1"></span><h1>Transactions<a class="headerlink" href="#transactions" title="Permalink to this headline">¶</a></h1>
 <p>Keys in bitcash allow 2 ways of handling transactions: a
 <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.create_transaction" title="bitcash.PrivateKey.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a> method that creates a signed
@@ -38,20 +39,20 @@ transaction and returns the aforementioned transaction in hex, and a
 <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.send" title="bitcash.PrivateKey.send"><code class="xref py py-func docutils literal notranslate"><span class="pre">send()</span></code></a> method that does the same thing but will
 attempt to broadcast the transaction, returning instead the transaction id
 for future lookup. Both methods take the exact same arguments.</p>
-<div class="section" id="outputs">
+<section id="outputs">
 <span id="outputsparam"></span><h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
 <p>The only required argument is a list of outputs.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">([(</span><span class="s1">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="s1">&#39;jpy&#39;</span><span class="p">)])</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="output-format">
+</section>
+<section id="output-format">
 <h2>Output Format<a class="headerlink" href="#output-format" title="Permalink to this headline">¶</a></h2>
 <p>Each output should be a tuple of arity 3 in the form <cite>(destination, amount, currency)</cite>.
 The amount can be either an int, float, or string as long as it is a valid input to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>. The currency must be <a class="reference internal" href="rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</p>
-</div>
-<div class="section" id="change-address">
+</section>
+<section id="change-address">
 <h2>Change Address<a class="headerlink" href="#change-address" title="Permalink to this headline">¶</a></h2>
 <p>Whenever you spend an <a class="reference external" href="https://en.bitcoin.it/wiki/Transaction#Input">unspent transaction output</a>, it must be used in its
 entirety.</p>
@@ -69,8 +70,8 @@ can specify where leftover funds go like this:</p>
 </div>
 <p>Whatever funds remain at this point (<cite>remaining = unspent - (sending + leftover)</cite>)
 will be collected by miners as a fee.</p>
-</div>
-<div class="section" id="fee">
+</section>
+<section id="fee">
 <span id="feeparam"></span><h2>Fee<a class="headerlink" href="#fee" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>“Miner fees are a small amount of digital currency that is included in
@@ -84,13 +85,13 @@ transactions to be verified quickly.”</p>
 </pre></div>
 </div>
 <p>For more information about transaction fees <a class="reference external" href="https://blog.blockchain.com/2016/12/15/bitcoin-transaction-fees-what-are-they-why-should-you-care">read this</a>.</p>
-</div>
-<div class="section" id="unspent-consolidation">
+</section>
+<section id="unspent-consolidation">
 <h2>Unspent Consolidation<a class="headerlink" href="#unspent-consolidation" title="Permalink to this headline">¶</a></h2>
 <p>By default bitcash will use all of your available UTXOs to make future transactions
 smaller and therefore reduce fees.</p>
 <p>If you don’t desire this behavior and only wish to use what is needed, do this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For example, if your had the following UTXOs available:</p>
@@ -109,16 +110,16 @@ you combine all funds, you’d be left with:</p>
 <span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="transfer-funds">
+</section>
+<section id="transfer-funds">
 <h2>Transfer Funds<a class="headerlink" href="#transfer-funds" title="Permalink to this headline">¶</a></h2>
 <p>If you want to send all available funds to another address or wish to simply
 move your coins, you can specify a leftover address and zero outputs like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">([],</span> <span class="n">leftover</span><span class="o">=</span><span class="s1">&#39;some_address&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="unspent">
+</section>
+<section id="unspent">
 <span id="unspentparam"></span><h2>Unspent<a class="headerlink" href="#unspent" title="Permalink to this headline">¶</a></h2>
 <p>If you already have a means of communicating with the blockchain, you can
 supply your own list of unspent transaction outputs by doing either:</p>
@@ -132,8 +133,8 @@ supply your own list of unspent transaction outputs by doing either:</p>
 </pre></div>
 </div>
 <p>Each item must be an instance of <a class="reference internal" href="../dev/api.html#bitcash.network.meta.Unspent" title="bitcash.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
     <br>
