@@ -1,14 +1,14 @@
-import logging
 import os
 import requests
-from decimal import Decimal
 
-from bitcash.exceptions import InvalidNetwork
-from bitcash.network import currency_to_satoshi
-from bitcash.network.meta import Unspent
-from bitcash.network.transaction import Transaction, TxPart
+# Import supported endpoint APIs
+from bitcash.network.APIs.BitcoinDotComAPI import BitcoinDotComAPI
 
-DEFAULT_TIMEOUT = 30
+# Dictionary of supported endpoint APIs
+ENDPOINT_ENV_VARIABLES = {"BITCOINCOM": BitcoinDotComAPI}
+
+# Default API call total time timeout
+DEFAULT_TIMEOUT = 5
 
 BCH_TO_SAT_MULTIPLIER = 100000000
 
@@ -20,215 +20,43 @@ def set_service_timeout(seconds):
     DEFAULT_TIMEOUT = seconds
 
 
-class BitcoinDotComAPI:
-    """ rest.bitcoin.com API """
+def get_endpoints_for(network):
+    # For each available interface in 'ENDPOINT_ENV_VARIABLES'
+    # this function will check, in order, if any env variables
+    # have been set for EITHER:
+    # <NAME>_API_<NETWORK>
+    # OR
+    # <NAME>_API_<NETWORK>_<N>
+    # Where 'N' is a number starting at 1 and increasing to
+    # however many endpoints you'd like.
+    # If neither of these env variables have been set, it returns
+    # the instantiated result of <NAME>.get_default_endpoints(network)
 
-    NETWORK_ENDPOINTS = {
-        "mainnet": os.getenv("BITCOINCOM_API_MAINNET", "https://rest1.biggestfan.net/v2/"),
-        "testnet": os.getenv("BITCOINCOM_API_TESTNET", "https://trest.bitcoin.com/v2/"),
-        "regtest": os.getenv("BITCOINCOM_API_REGTEST", "http://localhost:12500/v2/"),
-    }
-    UNSPENT_PATH = "address/utxo/{}"
-    ADDRESS_PATH = "address/details/{}"
-    RAW_TX_PATH = "rawtransactions/sendRawTransaction/{}"
-    TX_DETAILS_PATH = "transaction/details/{}"
-
-    TX_PUSH_PARAM = "rawtx"
-
-    @classmethod
-    def network_endpoint(cls, network):
-        if network not in NETWORKS:
-            raise InvalidNetwork(f"No endpoints found for network {network}")
-        return cls.NETWORK_ENDPOINTS[network]
-
-    @classmethod
-    def get_balance(cls, address, network):
-        API = cls.network_endpoint(network) + cls.ADDRESS_PATH
-        r = requests.get(API.format(address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        data = r.json()
-        balance = data["balanceSat"] + data["unconfirmedBalanceSat"]
-        return balance
-
-    @classmethod
-    def get_transactions(cls, address, network):
-        API = cls.network_endpoint(network) + cls.ADDRESS_PATH
-        r = requests.get(API.format(address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        return r.json()["transactions"]
-
-    @classmethod
-    def get_transaction(cls, txid, network):
-        API = cls.network_endpoint(network) + cls.TX_DETAILS_PATH
-        r = requests.get(API.format(txid), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        response = r.json(parse_float=Decimal)
-
-        tx = Transaction(
-            response["txid"],
-            response["blockheight"],
-            (Decimal(response["valueIn"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
-            (Decimal(response["valueOut"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
-            (Decimal(response["fees"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
-        )
-
-        for txin in response["vin"]:
-            part = TxPart(txin["cashAddress"], txin["value"], txin["scriptSig"]["asm"])
-            tx.add_input(part)
-
-        for txout in response["vout"]:
-            addr = None
-            if (
-                "cashAddrs" in txout["scriptPubKey"]
-                and txout["scriptPubKey"]["cashAddrs"] is not None
-            ):
-                addr = txout["scriptPubKey"]["cashAddrs"][0]
-
-            part = TxPart(
-                addr,
-                (Decimal(txout["value"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
-                txout["scriptPubKey"]["asm"],
-            )
-            tx.add_output(part)
-
-        return tx
-
-    @classmethod
-    def get_tx_amount(cls, txid, txindex, network):
-        API = cls.network_endpoint(network) + cls.TX_DETAILS_PATH
-        r = requests.get(API.format(txid), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        response = r.json(parse_float=Decimal)
-        return (
-            Decimal(response["vout"][txindex]["value"]) * BCH_TO_SAT_MULTIPLIER
-        ).normalize()
-
-    @classmethod
-    def get_unspent(cls, address, network):
-        API = cls.network_endpoint(network) + cls.UNSPENT_PATH
-        r = requests.get(API.format(address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        return [
-            Unspent(
-                currency_to_satoshi(tx["amount"], "bch"),
-                tx["confirmations"],
-                r.json()["scriptPubKey"],
-                tx["txid"],
-                tx["vout"],
-            )
-            for tx in r.json()["utxos"]
-        ]
-
-    @classmethod
-    def get_raw_transaction(cls, txid, network):
-        API = cls.network_endpoint(network) + cls.TX_DETAILS_PATH
-        r = requests.get(API.format(txid), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        response = r.json(parse_float=Decimal)
-        return response
-
-    @classmethod
-    def broadcast_tx(cls, tx_hex, network):  # pragma: no cover
-        API = cls.network_endpoint(network) + cls.RAW_TX_PATH
-        r = requests.get(API.format(tx_hex))
-        return True if r.status_code == 200 else False
-
-
-class BitcoreAPI:
-    """ Insight API v8 """
-
-    NETWORK_ENDPOINTS = {
-        "mainnet": os.getenv(
-            "BITCORE_API_MAINNET", "https://api.bitcore.io/api/BCH/mainnet/"
-        ),
-        "testnet": os.getenv(
-            "BITCORE_API_TESTNET", "https://api.bitcore.io/api/BCH/testnet/"
-        ),
-    }
-
-    MAIN_ENDPOINT = "https://api.bitcore.io/api/BCH/mainnet/"
-    ADDRESS_API = "address/{}"
-    BALANCE_API = ADDRESS_API + "/balance"
-    UNSPENT_API = ADDRESS_API + "/?unspent=true"
-    TX_PUSH_API = "tx/send"
-    TX_API = "tx/{}"
-    TX_AMOUNT_API = TX_API
-    TX_PUSH_PARAM = "rawTx"
-
-    @classmethod
-    def network_endpoint(cls, network):
-        if network not in NETWORKS:
-            raise InvalidNetwork(f"No endpoints found for network {network}")
-        return cls.NETWORK_ENDPOINTS[network]
-
-    @classmethod
-    def remove_prefix(cls, address):
-        if ":" in address:
-            address = address.split(":")[1]
-        return address
-        # else:
-        #     raise InvalidAddress(address)
-
-    @classmethod
-    def get_unspent(cls, address, network):
-        address = cls.remove_prefix(address)
-        API = cls.network_endpoint(network) + cls.UNSPENT_API
-        r = requests.get(API.format(address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        unspents = []
-        for tx in r.json():
-            # In weird conditions, the API will send back unspents
-            # without a scriptPubKey.
-            if "script" in tx:
-                unspents.append(
-                    Unspent(
-                        currency_to_satoshi(tx["value"], "satoshi"),
-                        tx["confirmations"],
-                        tx["script"],
-                        tx["mintTxid"],
-                        tx["mintIndex"],
+    endpoints = []
+    for endpoint in ENDPOINT_ENV_VARIABLES.keys():
+        if os.getenv(f"{endpoint}_API_{network}".upper()):
+            endpoints.append(
+                ENDPOINT_ENV_VARIABLES[endpoint](
+                    os.getenv(f"{endpoint}_API_{network}".upper())))
+        elif os.getenv(f"{endpoint}_API_{network}_1".upper()):
+            counter = 1
+            finished = False
+            while not finished:
+                next_endpoint = os.getenv(
+                    f"{endpoint}_API_{network}_{counter}".upper())
+                if next_endpoint:
+                    endpoints.append(
+                        ENDPOINT_ENV_VARIABLES[endpoint](next_endpoint)
                     )
-                )
-            else:
-                logging.warning("Unspent without scriptPubKey.")
+                    counter += 1
+                else:
+                    finished = True
+        else:
+            defaults_endpoints = ENDPOINT_ENV_VARIABLES[endpoint].get_default_endpoints(network)
+            for each in defaults_endpoints:
+                endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
 
-        return unspents
-
-    @classmethod
-    def get_transactions(cls, address, network):
-        address = cls.remove_prefix(address)
-        API = cls.network_endpoint(network) + cls.ADDRESS_API
-        r = requests.get(API.format(address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        return [tx["mintTxid"] for tx in r.json()]
-
-    @classmethod
-    def get_balance(cls, address, network):
-        address = cls.remove_prefix(address)
-        API = cls.network_endpoint(network) + cls.BALANCE_API
-        r = requests.get(API.format(address), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        return r.json()["balance"]
-
-    @classmethod
-    def get_tx_amount(cls, txid, txindex, network):
-        API = cls.network_endpoint(network) + cls.TX_AMOUNT_API
-        r = requests.get(API.format(txid), timeout=DEFAULT_TIMEOUT)
-        r.raise_for_status()
-        response = r.json(parse_float=Decimal)
-        return (
-            Decimal(response["vout"][txindex]["value"]) * BCH_TO_SAT_MULTIPLIER
-        ).normalize()
-
-    @classmethod
-    def broadcast_tx(cls, tx_hex, network):  # pragma: no cover
-        API = cls.network_endpoint(network) + cls.TX_PUSH_API
-        r = requests.post(
-            API,
-            json={cls.TX_PUSH_PARAM: tx_hex, "network": network, "coin": "BCH"},
-            timeout=DEFAULT_TIMEOUT,
-        )
-        return True if r.status_code == 200 else False
+    return endpoints
 
 
 class NetworkAPI:
@@ -247,17 +75,6 @@ class NetworkAPI:
         requests.exceptions.StreamConsumedError,
     )
 
-    GET_BALANCE = [BitcoinDotComAPI.get_balance, BitcoreAPI.get_balance]
-    GET_TRANSACTIONS = [BitcoinDotComAPI.get_transactions, BitcoreAPI.get_transactions]
-    GET_UNSPENT = [BitcoinDotComAPI.get_unspent, BitcoreAPI.get_unspent]
-    BROADCAST_TX = [BitcoinDotComAPI.broadcast_tx, BitcoreAPI.broadcast_tx]
-    GET_TX = [BitcoinDotComAPI.get_transaction, BitcoinDotComAPI.get_transaction]
-    GET_TX_AMOUNT = [BitcoinDotComAPI.get_tx_amount, BitcoreAPI.get_tx_amount]
-    GET_RAW_TX = [
-        BitcoinDotComAPI.get_raw_transaction,
-        BitcoinDotComAPI.get_raw_transaction,
-    ]
-
     @classmethod
     def get_balance(cls, address, network="mainnet"):
         """Gets the balance of an address in satoshi.
@@ -268,13 +85,13 @@ class NetworkAPI:
         :rtype: ``int``
         """
 
-        for api_call in cls.GET_BALANCE:
+        for endpoint in get_endpoints_for(network):
             try:
-                return api_call(address, network)
-            except cls.IGNORED_ERRORS:
+                return endpoint.get_balance(address, timeout=DEFAULT_TIMEOUT)
+            except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
-        raise ConnectionError("All APIs are unreachable.")
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
     @classmethod
     def get_transactions(cls, address, network="mainnet"):
@@ -286,13 +103,13 @@ class NetworkAPI:
         :rtype: ``list`` of ``str``
         """
 
-        for api_call in cls.GET_TRANSACTIONS:
+        for endpoint in get_endpoints_for(network):
             try:
-                return api_call(address, network)
-            except cls.IGNORED_ERRORS:
+                return endpoint.get_transactions(address, timeout=DEFAULT_TIMEOUT)
+            except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
-        raise ConnectionError("All APIs are unreachable.")
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
     @classmethod
     def get_transaction(cls, txid, network="mainnet"):
@@ -304,13 +121,13 @@ class NetworkAPI:
         :rtype: ``Transaction``
         """
 
-        for api_call in cls.GET_TX:
+        for endpoint in get_endpoints_for(network):
             try:
-                return api_call(txid, network)
-            except cls.IGNORED_ERRORS:
+                return endpoint.get_transaction(txid, timeout=DEFAULT_TIMEOUT)
+            except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
-        raise ConnectionError("All APIs are unreachable.")
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
     @classmethod
     def get_tx_amount(cls, txid, txindex, network="mainnet"):
@@ -324,13 +141,13 @@ class NetworkAPI:
         :rtype: ``Decimal``
         """
 
-        for api_call in cls.GET_TX_AMOUNT:
+        for endpoint in get_endpoints_for(network):
             try:
-                return api_call(txid, txindex, network)
-            except cls.IGNORED_ERRORS:
+                return endpoint.get_tx_amount(txid, txindex, timeout=DEFAULT_TIMEOUT)
+            except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
-        raise ConnectionError("All APIs are unreachable.")
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
     @classmethod
     def get_unspent(cls, address, network="mainnet"):
@@ -342,13 +159,13 @@ class NetworkAPI:
         :rtype: ``list`` of :class:`~bitcash.network.meta.Unspent`
         """
 
-        for api_call in cls.GET_UNSPENT:
+        for endpoint in get_endpoints_for(network):
             try:
-                return api_call(address, network)
-            except cls.IGNORED_ERRORS:
+                return endpoint.get_unspent(address, timeout=DEFAULT_TIMEOUT)
+            except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
-        raise ConnectionError("All APIs are unreachable.")
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
     @classmethod
     def get_raw_transaction(cls, txid, network="mainnet"):
@@ -360,13 +177,13 @@ class NetworkAPI:
         :rtype: ``Transaction``
         """
 
-        for api_call in cls.GET_RAW_TX:
+        for endpoint in get_endpoints_for(network):
             try:
-                return api_call(txid, network)
-            except cls.IGNORED_ERRORS:
+                return endpoint.get_raw_transaction(txid, timeout=DEFAULT_TIMEOUT)
+            except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
-        raise ConnectionError("All APIs are unreachable.")
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
     @classmethod
     def broadcast_tx(cls, tx_hex, network="mainnet"):  # pragma: no cover
@@ -378,16 +195,16 @@ class NetworkAPI:
         """
         success = None
 
-        for api_call in cls.BROADCAST_TX:
+        for endpoint in get_endpoints_for(network):
             try:
-                success = api_call(tx_hex, network)
+                success = endpoint.broadcast_tx(tx_hex, timeout=DEFAULT_TIMEOUT)
                 if not success:
                     continue
                 return
             except cls.IGNORED_ERRORS:
                 pass
 
-        if success is False:
+        if not success:
             raise ConnectionError(
                 "Transaction broadcast failed, or " "Unspents were already used."
             )

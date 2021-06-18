@@ -176,16 +176,19 @@ class TestPrivateKey:
 
     def test_get_balance(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        time.sleep(1)  # Needed due to API rate limiting
         balance = int(private_key.get_balance())
         assert balance == private_key.balance
 
     def test_get_unspent(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        time.sleep(1)  # Needed due to API rate limiting
         unspent = private_key.get_unspents()
         assert unspent == private_key.unspents
 
     def test_get_transactions(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        time.sleep(1)  # Needed due to API rate limiting
         transactions = private_key.get_transactions()
         assert transactions == private_key.transactions
 
@@ -236,17 +239,26 @@ class TestPrivateKeyTestnet:
         private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
         assert private_key.to_wif() == WALLET_FORMAT_COMPRESSED_TEST
 
+    @pytest.mark.skip
     def test_get_balance(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
         balance = int(private_key.get_balance())
         assert balance == private_key.balance
 
+    @pytest.mark.skip
     def test_get_unspent(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
         unspent = private_key.get_unspents()
         assert unspent == private_key.unspents
 
+    @pytest.mark.skip
     def test_get_transactions(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
         transactions = private_key.get_transactions()
         assert transactions == private_key.transactions
@@ -282,7 +294,10 @@ class TestPrivateKeyTestnet:
         logging.debug(f"Current: {current}, Initial: {initial}")
         assert current < initial
 
+    @pytest.mark.skip
     def test_send_pay2sh(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
         """
         We don't yet support pay2sh, so we must throw an exception if we get one.
         Otherwise, we could send coins into an unrecoverable blackhole, needlessly.
