@@ -52,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'bitcash'
-copyright = '2020, BitCash'
+copyright = '2021, BitCash'
 author = 'Teran McKinney'
 
 # The version info for the project you're documenting, acts as replacement for
