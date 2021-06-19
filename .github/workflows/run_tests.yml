@@ -4,6 +4,7 @@ on: push
 
 jobs:
   test:
+    environment: actions
     strategy:
       fail-fast: false  # still run the other versions of Python if one fails
       matrix:
