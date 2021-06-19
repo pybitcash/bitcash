@@ -34,6 +34,7 @@ jobs:
         fail_ci_if_error: true
     - name: Publish to PyPI
       uses: casperdcl/deploy-pypi@v2
+      if: ${{ matrix.python == 3.9 }}
       with:
         password: ${{ secrets.PYPI_TOKEN }}
         pip: wheel -w dist/ --no-deps .
