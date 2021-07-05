@@ -20,7 +20,7 @@ NETWORKS = {"mainnet", "testnet", "regtest"}
 class SlpAPI:
 
     NETWORK_ENDPOINTS = {
-        "mainnet": os.getenv("SLP_MAIN_ENDPOINT", "https://slpdb.fountainhead.cash/q/"),
+        "mainnet": os.getenv("SLP_MAIN_ENDPOINT", "https://slpdb.bch.actorforth.org/q/"),
         "testnet": os.getenv(
             "SLP_TEST_ENDPOINT", "https://slpdb-testnet.fountainhead.cash/q/"
         ),

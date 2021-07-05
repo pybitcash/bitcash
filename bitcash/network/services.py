@@ -26,7 +26,7 @@ class BitcoinDotComAPI:
     """ rest.bitcoin.com API """
 
     NETWORK_ENDPOINTS = {
-        "mainnet": os.getenv("BITCOINCOM_API_MAINNET", "https://rest.bitcoin.com/v2/"),
+        "mainnet": os.getenv("BITCOINCOM_API_MAINNET", "https://rest.bch.actorforth.org/v2/"),
         "testnet": os.getenv("BITCOINCOM_API_TESTNET", "https://trest.bitcoin.com/v2/"),
         "regtest": os.getenv("BITCOINCOM_API_REGTEST", "http://localhost:12500/v2/"),
     }
