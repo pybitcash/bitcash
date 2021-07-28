@@ -51,9 +51,9 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "bitcash"
-copyright = "2019, BitCash"
-author = "Teran McKinney"
+project = 'bitcash'
+copyright = '2021, BitCash'
+author = 'Teran McKinney'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -171,13 +171,7 @@ man_pages = [(master_doc, "bitcash", "bitcash Documentation", [author], 1)]
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (
-        master_doc,
-        "bitcash",
-        "bitcash Documentation",
-        author,
-        "Teran McKinney",
-        "Bitcoin Cash for Python",
-        "Miscellaneous",
-    ),
+    (master_doc, 'bitcash', 'bitcash Documentation',
+     author, 'Teran McKinney', 'Corentin Mercier', 'Bitcoin Cash for Python',
+     'Miscellaneous'),
 ]

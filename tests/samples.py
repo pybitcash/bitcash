@@ -37,6 +37,12 @@ TESTNET_GET_BALANCE_BY_TOKEN_URL = "https://slpdb-testnet.fountainhead.cash/q/ey
 TESTNET_GET_BALANCE_BY_TOKEN_RESPONSE = """{"g":[{"_id":"15cd6253c8ac838a4b9f9918fc84b0484a45b661a78ccc597a7653a0fc175d1f","slpAmount":"999998","token":[{"_id":"5fd9761f863a80b74964c521","schema_version":79,"lastUpdatedBlock":1426052,"tokenDetails":{"decimals":0,"tokenIdHex":"15cd6253c8ac838a4b9f9918fc84b0484a45b661a78ccc597a7653a0fc175d1f","timestamp":"2020-12-16 02:57:10","timestamp_unix":1608087430,"transactionType":"GENESIS","versionType":1,"documentUri":"","documentSha256Hex":null,"symbol":"TNC","name":"Test Coin","batonVout":2,"containsBaton":true,"genesisOrMintQuantity":"1000000","sendOutputs":null},"mintBatonUtxo":"15cd6253c8ac838a4b9f9918fc84b0484a45b661a78ccc597a7653a0fc175d1f:2","mintBatonStatus":"ALIVE","tokenStats":{"block_created":1425938,"approx_txns_since_genesis":2},"_pruningState":{"pruneHeight":0,"sendCount":0,"mintCount":0}}]}]}"""
 TESTNET_GET_BALANCE_BY_TOKEN_RESULT = [("Test Coin", "999998")]
 
+VALID_ENDPOINT_URLS = ["https://rest.bch.actorforth.org/v2/",
+                       "https://rest.bitcoin.com/v2/"]
+
+INVALID_ENDPOINT_URLS = ["htp://fakesite.com/v2",
+                         "https://bitcom.org/",
+                         42]
 
 PRIVATE_KEY_BYTES = b"\xc2\x8a\x9f\x80s\x8fw\rRx\x03\xa5f\xcfo\xc3\xed\xf6\xce\xa5\x86\xc4\xfcJR#\xa5\xady~\x1a\xc3"
 PRIVATE_KEY_DER = (
@@ -113,3 +119,84 @@ SLP_TESTS_CHILD_NFT_TOKEN_DETAILS_RESPONSE = """{"t":[{"tokenDetails":{"decimals
 
 SLP_TESTS_CHILD_NFT_NOT_ENOUGH_FANNED_RESPONSE = """{"g":[{"_id":"5ffd8f3113b5fed9176f751f","token_balance":"9985","address":"slpreg:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq46lqw4qf","txid":"ba54a43ff51beabfc935a7a8237e0c34e9543339231a79d7f13b4e4d6350345d","vout":11,"tokenId":"ee19efbe5058d4f97e87800f8c629945416dfbb5326bcf8880ec64129117ba5d"},{"_id":"5ffd8f3113b5fed9176f751f","token_balance":"1","address":"slpreg:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq46lqw4qf","txid":"ba54a43ff51beabfc935a7a8237e0c34e9543339231a79d7f13b4e4d6350345d","vout":1,"tokenId":"ee19efbe5058d4f97e87800f8c629945416dfbb5326bcf8880ec64129117ba5d"}]}"""
 SLP_TESTS_CHILD_NFT_NO_FANNED_RESPONSE = """{"g":[{"_id":"5ffd8f3113b5fed9176f751f","token_balance":"9985","address":"slpreg:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq46lqw4qf","txid":"ba54a43ff51beabfc935a7a8237e0c34e9543339231a79d7f13b4e4d6350345d","vout":11,"tokenId":"ee19efbe5058d4f97e87800f8c629945416dfbb5326bcf8880ec64129117ba5d"},{"_id":"5ffd8f3113b5fed9176f751f","token_balance":"1","address":"slpreg:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq46lqw4qf","txid":"ba54a43ff51beabfc935a7a8237e0c34e9543339231a79d7f13b4e4d6350345d","vout":1,"tokenId":"ee19efbe5058d4f97e87800f8c629945416dfbb5326bcf8880ec64129117ba5d"}]}"""
+CONVERT_BITS_INVALID_DATA_PAYLOAD = [
+    0,
+    146,
+    70,
+    27,
+    222,
+    98,
+    131,
+    256,
+    97,
+    236,
+    231,
+    221,
+    244,
+    219,
+    241,
+    224,
+    164,
+    139,
+    209,
+    19,
+    216,
+]
+CONVERT_BITS_NO_PAD_PAYLOAD = [
+    0,
+    146,
+    70,
+    27,
+    222,
+    98,
+    131,
+    25,
+    97,
+    236,
+    231,
+    221,
+    244,
+    219,
+    241,
+    224,
+    164,
+    139,
+    209,
+    19,
+    216,
+]
+CONVERT_BITS_NO_PAD_RETURN = [
+    0,
+    2,
+    9,
+    4,
+    12,
+    6,
+    30,
+    30,
+    12,
+    10,
+    1,
+    17,
+    18,
+    24,
+    15,
+    12,
+    28,
+    31,
+    14,
+    31,
+    9,
+    22,
+    31,
+    17,
+    28,
+    2,
+    18,
+    8,
+    23,
+    20,
+    8,
+    19,
+    27,
+]

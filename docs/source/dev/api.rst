@@ -70,12 +70,6 @@ Exchange Rates
     :members:
     :undoc-members:
 
-Fees
-----
-
-.. autofunction:: bitcash.network.get_fee
-.. autofunction:: bitcash.network.get_fee_cached
-
 Utilities
 ---------
 

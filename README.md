@@ -5,10 +5,12 @@
   <a href="https://pypi.org/project/bitcash" target="_blank">
     <img src="https://img.shields.io/pypi/v/bitcash.svg?style=flat-square" alt="BitCash PyPi version">
   </a>
-  <img src="https://img.shields.io/travis/pybitcash/bitcash.svg?branch=master&style=flat-square" alt="Build status">
+  <img src="https://github.com/pybitcash/bitcash/actions/workflows/run_tests.yml/badge.svg" alt="Test status">
+  <img src="https://github.com/pybitcash/bitcash/actions/workflows/deploy_docs.yml/badge.svg" alt="Deploy docs">
   <img src="https://codecov.io/gh/pybitcash/bitcash/branch/master/graph/badge.svg" alt="Code Coverage">
   <img src="https://img.shields.io/pypi/pyversions/bitcash.svg?style=flat-square" alt="Python Versions">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="MIT license">
+  <a href="https://www.codefactor.io/repository/github/pybitcash/bitcash"><img src="https://www.codefactor.io/repository/github/pybitcash/bitcash/badge" alt="CodeFactor" /></a>
 </p>
 
 Forked from [Ofek's awesome Bit library](https://github.com/ofek/bit).
@@ -58,7 +60,7 @@ If you are intrigued, continue reading. If not, continue all the same!
 ## Installation
 
 BitCash is distributed on `PyPI` as a universal wheel and is available on Linux/macOS
-and Windows and supports Python 3.5+ and PyPy3.5-v5.7.1+. `pip` >= 8.1.2 is required.
+and Windows and supports Python 3.6+ and PyPy3.6-v5.7.1+.
 
 
 ```shell
@@ -67,8 +69,7 @@ $ pip install bitcash  # pip3 if pip is Python 2 on your system.
 
 ## Documentation
 
-Docs are hosted by Github Pages and are automatically built and published
-by Travis after every successful commit to BitCash's ``master`` branch.
+Docs are hosted by Github Pages and are automatically built and published after every successful commit to BitCash's ``master`` branch.
 
 [Read the documentation](https://pybitcash.github.io/bitcash/)
 

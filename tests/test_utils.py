@@ -7,6 +7,7 @@ from bitcash.utils import (
     hex_to_int,
     int_to_hex,
     int_to_unknown_bytes,
+    int_to_varint,
 )
 
 BIG_INT = 123456789 ** 5
@@ -55,6 +56,17 @@ class TestIntToHex:
 
     def test_upper(self):
         assert int_to_hex(BIG_INT, upper=True) == HEX.upper()
+
+
+class TestIntToVarInt:
+    def test_val_less_than_65535(self):
+        assert int_to_varint(65535) == b"\xfd\xff\xff"
+
+    def test_val_less_than_4294967295(self):
+        assert int_to_varint(4294967294) == b"\xfe\xfe\xff\xff\xff"
+
+    def test_val_more_than_4294967295(self):
+        assert int_to_varint(10000000000) == b"\xff\x00\xe4\x0bT\x02\x00\x00\x00"
 
 
 def test_hex_to_bytes():

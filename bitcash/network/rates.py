@@ -249,15 +249,19 @@ class BitpayRates:
         return cls.currency_to_satoshi("dop")
 
 
-class LivecoinRates:
-    SINGLE_RATE = "https://api.livecoin.net/exchange/ticker?currencyPair=BCH/{}"
+class CoinbaseRates:
+    """
+    API Documentation:
+    https://developers.coinbase.com/api/v2#get-currencies
+    """
+
+    SINGLE_RATE = "https://api.coinbase.com/v2/exchange-rates?currency=BCH"
 
     @classmethod
     def currency_to_satoshi(cls, currency):
         r = requests.get(cls.SINGLE_RATE.format(currency))
-        if r.status_code != 200:
-            raise requests.exceptions.ConnectionError
-        rate = r.json()["last"]
+        r.raise_for_status()
+        rate = r.json()["data"]["rates"][currency]
         return int(ONE / Decimal(rate) * BCH)
 
     @classmethod
@@ -276,7 +280,7 @@ class RatesAPI:
         requests.exceptions.Timeout,
     )
 
-    USD_RATES = [BitpayRates.usd_to_satoshi, LivecoinRates.usd_to_satoshi]
+    USD_RATES = [BitpayRates.usd_to_satoshi, CoinbaseRates.usd_to_satoshi]
     EUR_RATES = [BitpayRates.eur_to_satoshi]
     GBP_RATES = [BitpayRates.gbp_to_satoshi]
     JPY_RATES = [BitpayRates.jpy_to_satoshi]

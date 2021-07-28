@@ -17,8 +17,7 @@ from bitcash.utils import (
     int_to_varint,
 )
 
-# VERSION_1 = 0x01 .to_bytes(4, byteorder="little")
-VERSION_1 = 0x02 .to_bytes(4, byteorder="little")
+VERSION_1 = 0x01 .to_bytes(4, byteorder="little")
 SEQUENCE = 0xFFFFFFFF .to_bytes(4, byteorder="little")
 LOCK_TIME = 0x00 .to_bytes(4, byteorder="little")
 
@@ -100,6 +99,8 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size=0):
     )
 
     estimated_fee = estimated_size * satoshis
+
+    logging.debug(f"Estimated fee: {estimated_fee} satoshis for {estimated_size} bytes")
 
     return estimated_fee
 

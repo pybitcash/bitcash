@@ -1,6 +1,6 @@
 import pytest
 
-from bitcash.cashaddress import Address
+from bitcash.cashaddress import Address, convertbits
 from bitcash.exceptions import InvalidAddress
 
 from .samples import (
@@ -18,7 +18,16 @@ from .samples import (
     BITCOIN_CASHADDRESS_TEST_COMPRESSED,
     BITCOIN_CASHADDRESS_REGTEST,
     BITCOIN_CASHADDRESS_REGTEST_COMPRESSED,
+    CONVERT_BITS_INVALID_DATA_PAYLOAD,
+    CONVERT_BITS_NO_PAD_PAYLOAD,
+    CONVERT_BITS_NO_PAD_RETURN,
 )
+
+
+class BadStr:
+    # Class needed to raise exception on str()
+    def __str__(self):
+        raise Exception("Bad string")
 
 
 class TestAddress:
@@ -87,6 +96,14 @@ class TestAddress:
             )
         with pytest.raises(InvalidAddress):
             Address.from_string("Hello world!")
+        with pytest.raises(InvalidAddress, match="Expected string as input"):
+            Address.from_string(BadStr())
+        with pytest.raises(InvalidAddress):
+            Address.from_string("bchreg::1234")
+        with pytest.raises(InvalidAddress, match="Could not determine address version"):
+            Address.from_string(
+                "bitcoincash:qxfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqedjjrtq6"
+            )
 
     def test_address_mainnet(self):
         assert Address(payload=list(PUBKEY_HASH), version="P2PKH").payload == list(
@@ -125,9 +142,10 @@ class TestAddress:
 
     def test_address_unexpected(self):
         with pytest.raises(ValueError):
-            Address(
-                payload=list(PUBKEY_HASH), version="P2KPH"
-            ).cash_address() == BITCOIN_CASHADDRESS
+            assert (
+                Address(payload=list(PUBKEY_HASH), version="P2KPH").cash_address()
+                == BITCOIN_CASHADDRESS
+            )
 
     def test_cashaddress_mainnet(self):
         assert (
@@ -171,4 +189,25 @@ class TestAddress:
         assert (
             Address(payload=list(PUBKEY_HASH), version="P2PKH-REGTEST").cash_address()
             != BITCOIN_CASHADDRESS_TEST
+        )
+
+    def test_convert_bits_invalid_data(self):
+        assert convertbits(CONVERT_BITS_INVALID_DATA_PAYLOAD, 8, 5) is None
+
+    def test_convert_bits_no_data(self):
+        assert convertbits([], 8, 5) == []
+
+    def test_convert_bits_no_data_no_pad(self):
+        assert convertbits([], 0, 1, pad=False) is None
+
+    def test_convert_bits_no_pad(self):
+        assert (
+            convertbits(CONVERT_BITS_NO_PAD_PAYLOAD, 8, 5, pad=False)
+            == CONVERT_BITS_NO_PAD_RETURN
+        )
+
+    def test_address_str(self):
+        assert (
+            str(Address(version="P2PKH", payload=[]))
+            == "version: P2PKH\npayload: []\nprefix: bitcoincash"
         )

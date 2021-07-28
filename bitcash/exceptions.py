@@ -10,5 +10,5 @@ class InvalidNetwork(Exception):
     pass
 
 
-class SlpSerializingError(Exception):
+class InvalidEndpointURLProvided(Exception):
     pass

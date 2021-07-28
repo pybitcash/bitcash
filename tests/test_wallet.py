@@ -485,6 +485,7 @@ class TestPrivateKey:
 
     def test_get_balance(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        time.sleep(1)  # Needed due to API rate limiting
         balance = int(private_key.get_balance())
         assert balance == private_key.balance
 
@@ -495,11 +496,13 @@ class TestPrivateKey:
 
     def test_get_unspent(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        time.sleep(1)  # Needed due to API rate limiting
         unspent = private_key.get_unspents()
         assert unspent == private_key.unspents
 
     def test_get_transactions(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        time.sleep(1)  # Needed due to API rate limiting
         transactions = private_key.get_transactions()
         assert transactions == private_key.transactions
 
@@ -554,12 +557,18 @@ class TestPrivateKeyTestnet:
         private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
         assert private_key.to_wif() == WALLET_FORMAT_COMPRESSED_TEST
 
+    @pytest.mark.skip
     def test_get_balance(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
         balance = int(private_key.get_balance())
         assert balance == private_key.balance
 
+    @pytest.mark.skip
     def test_get_unspent(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
         unspent = private_key.get_unspents()
         assert unspent == private_key.unspents
@@ -576,6 +585,8 @@ class TestPrivateKeyTestnet:
 
     @pytest.mark.skip
     def test_get_transactions(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
         transactions = private_key.get_transactions()
         assert transactions == private_key.transactions
@@ -686,7 +697,10 @@ class TestPrivateKeyTestnet:
             txid == "1e4b0380101927bc61eb1e71809a082bd8fcf1fceb9bba8c4116ecdda9f5373b"
         )
 
+    @pytest.mark.skip
     def test_send_pay2sh(self):
+        # Marking as skip because BitcoinCom Testnet is currently unreliable
+        # TODO: Remove once a new Testnet endpoint is added
         """
         We don't yet support pay2sh, so we must throw an exception if we get one.
         Otherwise, we could send coins into an unrecoverable blackhole, needlessly.
@@ -746,29 +760,27 @@ class TestPrivateKeyRegtest:
         private_key = PrivateKeyRegtest(WALLET_FORMAT_COMPRESSED_REGTEST)
         assert private_key.to_wif() == WALLET_FORMAT_COMPRESSED_REGTEST
 
-    @pytest.mark.skip
+    @pytest.mark.regtest
     def test_get_balance(self):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_REGTEST)
         balance = int(private_key.get_balance())
         assert balance == private_key.balance
 
-    @pytest.mark.skip
+    @pytest.mark.regtest
     def test_get_unspent(self):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_REGTEST)
         unspent = private_key.get_unspents()
         assert unspent == private_key.unspents
 
-    @pytest.mark.skip
+    @pytest.mark.regtest
     def test_get_transactions(self):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_REGTEST)
         transactions = private_key.get_transactions()
         assert transactions == private_key.transactions
 
-    @pytest.mark.skip
+    @pytest.mark.regtest
     def test_send_cashaddress(self):
         # This tests requires the local node to be continuously generating blocks
-        # marking 'skip' until auto-block generation is functional
-
         # Local node user will need to ensure the address is funded
         # first in order for this test to pass
         private_key = PrivateKeyRegtest(WALLET_FORMAT_COMPRESSED_REGTEST)
@@ -784,7 +796,7 @@ class TestPrivateKeyRegtest:
         logging.debug(f"Current: {current}, Initial: {initial}")
         assert current < initial
 
-    @pytest.mark.skip
+    @pytest.mark.regtest
     def test_send(self):
         # This tests requires the local node to be continuously generating blocks
         # marking 'skip' until auto-block generation is functional
@@ -796,7 +808,6 @@ class TestPrivateKeyRegtest:
 
         initial = private_key.balance
         current = initial
-        tries = 0
         # FIXME: Changed jpy to satoshi and 1 to 10,000 since we don't yet
         # have a rates API for BCH in place.
         private_key.send([("n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi", 2000, "satoshi")])
@@ -1028,7 +1039,7 @@ class TestPrivateKeyRegtest:
 
             assert exec.value.message == "There are not any fanned group utxos."
 
-    @pytest.mark.skip
+    @pytest.mark.regtest
     def test_send_pay2sh(self):
         # This tests requires the local node to be continuously generating blocks
         # marking 'skip' until auto-block generation is functional
@@ -1037,6 +1048,9 @@ class TestPrivateKeyRegtest:
         # first in order for this test to pass
 
         """
+        This tests requires the local node to be continuously generating blocks
+        Local node user will need to ensure the address is funded
+        first in order for this test to pass
         We don't yet support pay2sh, so we must throw an exception if we get one.
         Otherwise, we could send coins into an unrecoverable blackhole, needlessly.
         pay2sh addresses begin with 2 in testnet and 3 on mainnet.

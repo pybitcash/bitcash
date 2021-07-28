@@ -39,6 +39,7 @@ from bitcash.tx import Transaction
 
 NETWORKS = {"main": "mainnet", "test": "testnet", "regtest": "regtest"}
 NFT_DELAY = 3
+DEFAULT_FEE = 1
 
 
 def wif_to_key(wif, regtest=False):
@@ -195,7 +196,9 @@ class PrivateKey(BaseKey):
     def address(self):
         """The public address you share with others to receive funds."""
         if self._address is None:
-            self.__assign_address()
+            self._address = public_key_to_address(
+                self._public_key, version=self._network
+            )
 
         return self._address
 
@@ -285,8 +288,6 @@ class PrivateKey(BaseKey):
             self.address, network=NETWORKS[self._network]
         )
 
-        # Remove SLP unspents
-
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -345,7 +346,7 @@ class PrivateKey(BaseKey):
         unspents, outputs = sanitize_tx_data(
             unspents or self.unspents,
             outputs,
-            fee or get_fee(),
+            fee or DEFAULT_FEE,
             leftover or self.address,
             combine=combine,
             message=message,

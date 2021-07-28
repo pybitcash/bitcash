@@ -34,6 +34,7 @@ Code
 2. Run `run_tests.py <https://github.com/pybitcash/bitcash/blob/master/run_tests.py>`_
    which is located in the project directory. If any tests fail, and you
    are unable to diagnose the reason, please refer to `Filing an Issue`_.
+   If you are working on ``regtest``, run a local regtest node with a REST API and run tests using the ``regtest`` flag: ``run_tests.py --regtest``.
 3. Complete your patch and write tests to verify your fix or feature is working.
    Please try to reduce the size and scope of your patch to make the review
    process go smoothly.
