@@ -3,13 +3,6 @@ import unittest
 from unittest import mock
 import json
 
-import bitcash
-from bitcash.network.services import (
-    BitcoinDotComAPI,
-    BitcoreAPI,
-    NetworkAPI,
-    set_service_timeout,
-)
 from bitcash.network.slp_services import SlpAPI
 
 from tests.utils import (
@@ -19,12 +12,7 @@ from tests.utils import (
 )
 from bitcash.network.meta import Unspent
 from bitcash.wallet import (
-    BaseKey,
-    Key,
-    PrivateKey,
     PrivateKeyTestnet,
-    PrivateKeyRegtest,
-    wif_to_key,
 )
 from tests.samples import WALLET_FORMAT_TEST_SLP
 
@@ -335,40 +323,62 @@ FILTER_RESULT_BATON = [
 #     SLP_TEST_ENDPOINT = "raise_connection_error"
 #     SLP_REG_ENDPOINT = "raise_connection_error"
 
-
-def mocked_requests_get(*args, **kwargs):
-    class MockResponse:
+class MockResponse:
         def __init__(self, json_data, status_code):
             self.json_data = json_data
             self.status_code = status_code
 
         def json(self):
             return self.json_data
+        
 
-    if kwargs["url"] == MAIN_GET_BALANCE_URL:
-        return MockResponse(MAIN_GET_BALANCE_JSON, 200)
-    elif kwargs["url"] == MAIN_GET_TOKEN_BY_ID_URL:
-        return MockResponse(MAIN_GET_TOKEN_BY_ID_JSON, 200)
-    elif kwargs["url"] == MAIN_GET_MINT_BATON_URL:
-        return MockResponse(MAIN_GET_MINT_BATON_JSON, 200)
-    elif kwargs["url"] == TEST_GET_MINT_BATON_URL:
-        return MockResponse(TEST_GET_MINT_BATON_JSON, 200)
-    elif kwargs["url"] == MAIN_GET_TX_BY_OPRETURN_URL:
-        return MockResponse(MAIN_GET_TX_BY_OPRETURN_JSON, 200)
-    elif kwargs["url"] == MAIN_GET_ALL_SLP_UTXOS_BY_ADDRESS_URL:
-        return MockResponse(MAIN_GET_ALL_SLP_UTXOS_BY_ADDRESS_JSON, 200)
-    elif kwargs["url"] == MAIN_GET_UTXO_BY_TOKENID_URL:
-        return MockResponse(MAIN_GET_UTXO_BY_TOKENID_JSON, 200)
-    elif kwargs["url"] == MAIN_GET_CHILD_NFT_BY_PARENT_TOKENID_URL:
-        return MockResponse(MAIN_GET_CHILD_NFT_BY_PARENT_TOKENID_JSON, 200)
-    elif kwargs["url"] == TEST_GET_MINT_BATON_BY_ADDRESS_URL:
-        return MockResponse(TEST_GET_MINT_BATON_BY_ADDRESS_JSON, 200)
-    elif kwargs["url"] == FILTER_SLP_UTXOS_URL:
-        return MockResponse(FILTER_SLP_UTXOS_JSON, 200)
-    elif kwargs["url"] == FILTER_BATON_URL:
-        return MockResponse(FILTER_BATON_URL, 200)
+def mocked_requests_get(*args, **kwargs):
+    case = {
+        "main_get_balance": MockResponse(MAIN_GET_BALANCE_JSON, 200),
+        "main_get_token_by_id": MockResponse(MAIN_GET_TOKEN_BY_ID_JSON, 200),
+        "mint_baton_utxo": MockResponse(MAIN_GET_MINT_BATON_JSON,200),
+        "testnet_mint_baton": MockResponse(TEST_GET_MINT_BATON_JSON,200),
+        "get_tx_by_opreturn": MockResponse(MAIN_GET_TX_BY_OPRETURN_JSON,200),
+        "get_slp_utxo_by_address": MockResponse(MAIN_GET_ALL_SLP_UTXOS_BY_ADDRESS_JSON,200),
+        "get_utxo_by_tokenid": MockResponse(MAIN_GET_UTXO_BY_TOKENID_JSON,200),
+        "get_child_nft_by_parent_tokenid": MockResponse(MAIN_GET_CHILD_NFT_BY_PARENT_TOKENID_JSON,200),
+        "mint_baton_by_address": MockResponse(TEST_GET_MINT_BATON_BY_ADDRESS_JSON,200),
+        "filter_slp_utxos": MockResponse(FILTER_SLP_UTXOS_JSON,200),
+        "filter_baton": MockResponse(FILTER_BATON_JSON,200),
+        "exception": Exception
+        }
 
-    return MockResponse(None, 404)
+    return case.get(kwargs.get("key"))
+
+# def mocked_requests_get(*args, **kwargs):
+    
+#     print(f"args: {args}")
+#     print(f"kwargs: {kwargs}")
+    
+#     if kwargs["url"] == MAIN_GET_BALANCE_URL:
+#         return MockResponse(MAIN_GET_BALANCE_JSON, 200)
+#     elif kwargs["url"] == MAIN_GET_TOKEN_BY_ID_URL:
+#         return MockResponse(MAIN_GET_TOKEN_BY_ID_JSON, 200)
+#     elif kwargs["url"] == MAIN_GET_MINT_BATON_URL:
+#         return MockResponse(MAIN_GET_MINT_BATON_JSON, 200)
+#     elif kwargs["url"] == TEST_GET_MINT_BATON_URL:
+#         return MockResponse(TEST_GET_MINT_BATON_JSON, 200)
+#     elif kwargs["url"] == MAIN_GET_TX_BY_OPRETURN_URL:
+#         return MockResponse(MAIN_GET_TX_BY_OPRETURN_JSON, 200)
+#     elif kwargs["url"] == MAIN_GET_ALL_SLP_UTXOS_BY_ADDRESS_URL:
+#         return MockResponse(MAIN_GET_ALL_SLP_UTXOS_BY_ADDRESS_JSON, 200)
+#     elif kwargs["url"] == MAIN_GET_UTXO_BY_TOKENID_URL:
+#         return MockResponse(MAIN_GET_UTXO_BY_TOKENID_JSON, 200)
+#     elif kwargs["url"] == MAIN_GET_CHILD_NFT_BY_PARENT_TOKENID_URL:
+#         return MockResponse(MAIN_GET_CHILD_NFT_BY_PARENT_TOKENID_JSON, 200)
+#     elif kwargs["url"] == TEST_GET_MINT_BATON_BY_ADDRESS_URL:
+#         return MockResponse(TEST_GET_MINT_BATON_BY_ADDRESS_JSON, 200)
+#     elif kwargs["url"] == FILTER_SLP_UTXOS_URL:
+#         return MockResponse(FILTER_SLP_UTXOS_JSON, 200)
+#     elif kwargs["url"] == FILTER_BATON_URL:
+#         return MockResponse(FILTER_BATON_URL, 200)
+
+#     return MockResponse(None, 404)
 
 
 def mocked_connection_error(url, timeout):
@@ -386,8 +396,11 @@ class TestSlpAPI(unittest.TestCase):
     #     with pytest.raises(ConnectionError):
     #         MockBackend.get_balance(TEST_SLP_ADDRESS_USED, network=TEST)
 
-    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    @mock.patch("requests.get")
     def test_get_balance_main_token_equal(self, mock_get):
+        mock_get.side_effect = [
+            mocked_requests_get(key="main_get_balance")
+        ]
         results = SlpAPI.get_balance(
             MAIN_SLP_ADDRESS_USED, tokenId=MAIN_TEST_COIN_TOKENID, network=MAIN
         )
@@ -400,8 +413,11 @@ class TestSlpAPI(unittest.TestCase):
                 MAIN_SLP_ADDRESS_USED, tokenId=MAIN_TEST_COIN_TOKENID, network=MAIN
             )
 
-    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    @mock.patch("requests.get")
     def test_get_token_by_id(self, mock_get):
+        mock_get.side_effect = [
+            mocked_requests_get(key="main_get_token_by_id")
+        ]
         results = SlpAPI.get_token_by_id(MAIN_TEST_COIN_TOKENID, network=MAIN)
         assert results == MAIN__GET_TOKEN_BY_ID_RESULT
 
@@ -410,8 +426,11 @@ class TestSlpAPI(unittest.TestCase):
         with pytest.raises(ConnectionError):
             SlpAPI.get_token_by_id(MAIN_TEST_COIN_TOKENID, network=MAIN)
 
-    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    @mock.patch("requests.get")
     def test_get_mint_baton_utxo(self, mock_get):
+        mock_get.side_effect = [
+            mocked_requests_get(key="mint_baton_utxo")
+        ]
         results = SlpAPI.get_mint_baton(tokenId=MAIN_TEST_COIN_TOKENID, network=MAIN)
         assert results == MAIN_GET_MINT_BATON_RESULT
 
@@ -420,8 +439,11 @@ class TestSlpAPI(unittest.TestCase):
         with pytest.raises(ConnectionError):
             SlpAPI.get_mint_baton(tokenId=MAIN_TEST_COIN_TOKENID, network=MAIN)
 
-    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    @mock.patch("requests.get")
     def test_get_mint_baton_utxo_testnet(self, mock_get):
+        mock_get.side_effect = [
+            mocked_requests_get(key="testnet_mint_baton")
+        ]
         results = SlpAPI.get_mint_baton(tokenId=TESTNET_TEST_COIN_TOKENID, network=TEST)
         assert results == TEST_GET_MINT_BATON_RESULT
 
@@ -430,8 +452,11 @@ class TestSlpAPI(unittest.TestCase):
         with pytest.raises(ConnectionError):
             SlpAPI.get_mint_baton(tokenId=TESTNET_TEST_COIN_TOKENID, network=TEST)
 
-    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    @mock.patch("requests.get")
     def test_get_tx_by_op_return(self, mock_get):
+        mock_get.side_effect = [
+            mocked_requests_get(key="get_tx_by_opreturn")
+        ]
         results = SlpAPI.get_tx_by_opreturn(
             op_return_segment=MAIN_OP_RETURN, network=MAIN
         )
@@ -442,8 +467,11 @@ class TestSlpAPI(unittest.TestCase):
         with pytest.raises(ConnectionError):
             SlpAPI.get_tx_by_opreturn(MAIN_OP_RETURN)
 
-    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    @mock.patch("requests.get")
     def test_get_all_slp_utxos_by_address_equal(self, mock_get):
+        mock_get.side_effect = [
+            mocked_requests_get(key="get_slp_utxo_by_address")
+        ]
         results = SlpAPI.get_all_slp_utxo_by_address(
             MAIN_SLP_ADDRESS_USED, network=MAIN
         )
@@ -454,8 +482,11 @@ class TestSlpAPI(unittest.TestCase):
         with pytest.raises(ConnectionError):
             SlpAPI.get_all_slp_utxo_by_address(MAIN_SLP_ADDRESS_USED, network=MAIN)
 
-    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    @mock.patch("requests.get")
     def test_get_utxo_by_tokenId(self, mock_get):
+        mock_get.side_effect = [
+            mocked_requests_get(key="get_utxo_by_tokenid")
+        ]
         results = SlpAPI.get_utxo_by_tokenId(
             address=MAIN_SLP_ADDRESS_USED, tokenId=MAIN_TEST_COIN_TOKENID, network=MAIN
         )
@@ -470,8 +501,11 @@ class TestSlpAPI(unittest.TestCase):
 
     @mock.patch("requests.get", side_effect=mocked_requests_get)
     def test_get_child_nft_by_parent_tokenid(self, mock_get):
+        mock_get.side_effect = [
+            mocked_requests_get(key="get_child_nft_by_parent_tokenid")
+        ]
         results = SlpAPI.get_child_nft_by_parent_tokenId(
-            tokenId=MAIN_TEMPORARY_GROUP_NFT_TEST_COIN_TOKENID, network=MAIN, limit=1
+            tokenId=MAIN_TEMPORARY_GROUP_NFT_TEST_COIN_TOKENID, network=MAIN
         )
         assert results == MAIN_GET_CHILD_NFT_BY_PARENT_TOKENID_RESULT
 
@@ -480,12 +514,14 @@ class TestSlpAPI(unittest.TestCase):
         with pytest.raises(ConnectionError):
             SlpAPI.get_child_nft_by_parent_tokenId(
                 tokenId=MAIN_TEMPORARY_GROUP_NFT_TEST_COIN_TOKENID,
-                network=MAIN,
-                limit=1,
+                network=MAIN
             )
 
-    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    @mock.patch("requests.get")
     def test_get_mint_baton_by_address(self, mock_get):
+        mock_get.side_effect = [
+            mocked_requests_get(key="mint_baton_by_address")
+        ]
         results = SlpAPI.get_mint_baton(address=TESTNET_BATON_ADDRESS, network=TEST)
         assert results == TEST_GET_MINT_BATON_BY_ADDRESS_RESULT
 
@@ -494,8 +530,12 @@ class TestSlpAPI(unittest.TestCase):
         with pytest.raises(ConnectionError):
             SlpAPI.get_mint_baton(address=TESTNET_BATON_ADDRESS, network=TEST)
 
-    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    @mock.patch("requests.get")
     def test_filter(self, mock_get):
+        mock_get.side_effect = [
+            mocked_requests_get(key="filter_slp_utxos"),
+            mocked_requests_get(key="filter_baton")
+        ]
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST_SLP)
         private_key.unspents[:] = FILTER_UNSPENTS
 

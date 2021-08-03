@@ -9,6 +9,7 @@ from decimal import Decimal
 from bitcash.network import currency_to_satoshi, NetworkAPI
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
+from bitcash.exceptions import InvalidNetwork
 
 DEFAULT_TIMEOUT = 30
 
@@ -709,7 +710,6 @@ class SlpAPI:
     def filter_slp_txid(cls, address, slp_address, unspents, network="mainnet"):
 
         slp_utxos = SlpAPI.get_all_slp_utxo_by_address(slp_address, network=network)
-
         baton_info = SlpAPI.get_mint_baton(address=slp_address, network=network)
         baton_txs = []
 

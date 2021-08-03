@@ -20,7 +20,7 @@ from bitcash.format import (
     wif_to_bytes,
     address_to_public_key_hash,
 )
-from bitcash.network import NetworkAPI, get_fee, satoshi_to_currency_cached
+from bitcash.network import NetworkAPI, satoshi_to_currency_cached
 from bitcash.network.slp_services import SlpAPI
 from bitcash.network.meta import Unspent
 from bitcash.transaction import (
@@ -205,7 +205,7 @@ class PrivateKey(BaseKey):
     @property
     def slp_address(self):
         """The public address you share with others to receive funds."""
-        if self._address is None:
+        if self._slp_address is None:
             self.__assign_address()
 
         return self._slp_address
@@ -410,7 +410,7 @@ class PrivateKey(BaseKey):
             slp_unspents or self.slp_unspents,
             outputs,
             tokenId,
-            fee or get_fee(),
+            fee,
             leftover or self.address,
             network=NETWORKS[self._network],
             combine=combine,
@@ -637,7 +637,7 @@ class PrivateKey(BaseKey):
         unspents, outputs = sanitize_slp_create_tx_data(
             unspents or self.unspents,
             outputs,
-            fee or get_fee(),
+            fee,
             leftover or self.address,
             genesis_op_return=op_return,
             combine=combine,
@@ -664,7 +664,7 @@ class PrivateKey(BaseKey):
         slp_unspents=None,
         custom_pushdata=True,
         message=None,
-        non_standard=False,
+        non_standard=False, # TODO: remove this, multi op return is official now
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the blockchain. This accepts the same arguments as
@@ -799,7 +799,7 @@ class PrivateKey(BaseKey):
             unspents, outputs = sanitize_slp_create_tx_data(
                 self.unspents,
                 outputs,
-                fee or get_fee(),
+                fee,
                 leftover or self.address,
                 genesis_op_return=op_return,
                 combine=combine,
@@ -977,7 +977,7 @@ class PrivateKey(BaseKey):
         unspents, outputs = sanitize_slp_create_tx_data(
             unspents,
             outputs,
-            fee or get_fee(),
+            fee,
             leftover or self.address,
             combine=combine,
             genesis_op_return=op_return,
@@ -1043,7 +1043,7 @@ class PrivateKey(BaseKey):
         unspents, outputs = sanitize_tx_data(
             unspents or NetworkAPI.get_unspent(address),
             outputs,
-            fee or get_fee(),
+            fee,
             leftover or address,
             combine=combine,
             message=message,

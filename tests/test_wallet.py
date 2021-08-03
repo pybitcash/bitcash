@@ -285,6 +285,7 @@ def mocked_get_balance(key, i):
     return
 
 
+
 def mocked_requests_get(*args, **kwargs):
     class MockResponse:
         def __init__(self, json_data, status_code):
@@ -293,33 +294,58 @@ def mocked_requests_get(*args, **kwargs):
 
         def json(self):
             return self.json_data
+    
+    case = {
+        "mint_test_token_details": MockResponse(json.loads(MINT_TEST_TOKEN_DETAILS_TESTNET_RESPONSE), 200),
+        "mint_test_baton_utxo": MockResponse(json.loads(MINT_TEST_BATON_UTXO_TESTNET_RESPONSE), 200),
+        "send_slp": MockResponse(json.loads(SLP_TESTS_SEND_SLP_RESPONSE), 200),
+        "send_slp_token_details": MockResponse(json.loads(SLP_TESTS_SEND_SLP_TOKEN_DETAILS_RESPONSE), 200),
+        "fan_group_utxo": MockResponse(json.loads(SLP_TESTS_FAN_GROUP_UTXO_RESPONSE), 200),
+        "fan_group_token_info": MockResponse(json.loads(SLP_TESTS_FAN_GROUP_TOKEN_INFO_RESPONSE), 200),
+        "child_nft_token_utxos": MockResponse(json.loads(SLP_TESTS_CHILD_NFT_TOKEN_UTXOS_RESPONSE), 200),
+        "child_nft_unconfirmed_inputs": MockResponse(json.loads(SLP_TESTS_CHILD_NFT_UNCONFIRMED_TYPE_65_INPUTS_RESPONSE), 200),
+        "child_nft_token_details": MockResponse(json.loads(SLP_TESTS_CHILD_NFT_TOKEN_DETAILS_RESPONSE), 200),
+        "nft_fanned": MockResponse(json.loads(SLP_TESTS_CHILD_NFT_TOKEN_UTXOS_RESPONSE), 200),
+        "exception": Exception
+        }
 
-        def raise_for_status(self):
-            return
+    return case.get(kwargs.get("key"))
 
-    # Mocked call to Testnet get_unspents for consistency
-    if kwargs["url"] == MINT_TEST_TOKEN_DETAILS_TESTNET_URL:
-        return MockResponse(json.loads(MINT_TEST_TOKEN_DETAILS_TESTNET_RESPONSE), 200)
-    elif kwargs["url"] == MINT_TEST_BATON_UTXO_TESTNET_URL:
-        return MockResponse(json.loads(MINT_TEST_BATON_UTXO_TESTNET_RESPONSE), 200)
-    elif kwargs["url"] == SLP_TESTS_SEND_SLP_URL:
-        return MockResponse(json.loads(SLP_TESTS_SEND_SLP_RESPONSE), 200)
-    elif kwargs["url"] == SLP_TESTS_SEND_SLP_TOKEN_DETAILS_URL:
-        return MockResponse(json.loads(SLP_TESTS_SEND_SLP_TOKEN_DETAILS_RESPONSE), 200)
-    elif kwargs["url"] == SLP_TESTS_FAN_GROUP_UTXO_URL:
-        return MockResponse(json.loads(SLP_TESTS_FAN_GROUP_UTXO_RESPONSE), 200)
-    elif kwargs["url"] == SLP_TESTS_FAN_GROUP_TOKEN_INFO_URL:
-        return MockResponse(json.loads(SLP_TESTS_FAN_GROUP_TOKEN_INFO_RESPONSE), 200)
-    elif kwargs["url"] == SLP_TESTS_CHILD_NFT_TOKEN_UTXOS_URL:
-        return MockResponse(json.loads(SLP_TESTS_CHILD_NFT_TOKEN_UTXOS_RESPONSE), 200)
-    elif kwargs["url"] == SLP_TESTS_CHILD_NFT_UNCONFIRMED_TYPE_65_INPUTS_URL:
-        return MockResponse(
-            json.loads(SLP_TESTS_CHILD_NFT_UNCONFIRMED_TYPE_65_INPUTS_RESPONSE), 200
-        )
-    elif kwargs["url"] == SLP_TESTS_CHILD_NFT_TOKEN_DETAILS_URL:
-        return MockResponse(json.loads(SLP_TESTS_CHILD_NFT_TOKEN_DETAILS_RESPONSE), 200)
+# def mocked_requests_get(*args, **kwargs):
+    # class MockResponse:
+    #     def __init__(self, json_data, status_code):
+    #         self.json_data = json_data
+    #         self.status_code = status_code
 
-    return MockResponse(None, 404)
+    #     def json(self):
+    #         return self.json_data
+
+    #     def raise_for_status(self):
+    #         return
+
+    # # Mocked call to Testnet get_unspents for consistency
+    # if kwargs["url"] == MINT_TEST_TOKEN_DETAILS_TESTNET_URL:
+    #     return MockResponse(json.loads(MINT_TEST_TOKEN_DETAILS_TESTNET_RESPONSE), 200)
+    # elif kwargs["url"] == MINT_TEST_BATON_UTXO_TESTNET_URL:
+    #     return MockResponse(json.loads(MINT_TEST_BATON_UTXO_TESTNET_RESPONSE), 200)
+    # elif kwargs["url"] == SLP_TESTS_SEND_SLP_URL:
+    #     return MockResponse(json.loads(SLP_TESTS_SEND_SLP_RESPONSE), 200)
+    # elif kwargs["url"] == SLP_TESTS_SEND_SLP_TOKEN_DETAILS_URL:
+    #     return MockResponse(json.loads(SLP_TESTS_SEND_SLP_TOKEN_DETAILS_RESPONSE), 200)
+    # elif kwargs["url"] == SLP_TESTS_FAN_GROUP_UTXO_URL:
+    #     return MockResponse(json.loads(SLP_TESTS_FAN_GROUP_UTXO_RESPONSE), 200)
+    # elif kwargs["url"] == SLP_TESTS_FAN_GROUP_TOKEN_INFO_URL:
+    #     return MockResponse(json.loads(SLP_TESTS_FAN_GROUP_TOKEN_INFO_RESPONSE), 200)
+    # elif kwargs["url"] == SLP_TESTS_CHILD_NFT_TOKEN_UTXOS_URL:
+    #     return MockResponse(json.loads(SLP_TESTS_CHILD_NFT_TOKEN_UTXOS_RESPONSE), 200)
+    # elif kwargs["url"] == SLP_TESTS_CHILD_NFT_UNCONFIRMED_TYPE_65_INPUTS_URL:
+    #     return MockResponse(
+    #         json.loads(SLP_TESTS_CHILD_NFT_UNCONFIRMED_TYPE_65_INPUTS_RESPONSE), 200
+    #     )
+    # elif kwargs["url"] == SLP_TESTS_CHILD_NFT_TOKEN_DETAILS_URL:
+    #     return MockResponse(json.loads(SLP_TESTS_CHILD_NFT_TOKEN_DETAILS_RESPONSE), 200)
+
+    # return MockResponse(None, 404)
 
 
 def mocked_requests_get_additional(*args, **kwargs):
@@ -489,6 +515,7 @@ class TestPrivateKey:
         balance = int(private_key.get_balance())
         assert balance == private_key.balance
 
+    @pytest.mark.skip
     def test_get_slp_balance(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         slp_balance = private_key.get_slp_balance()
@@ -622,9 +649,13 @@ class TestPrivateKeyTestnet:
         logging.debug(f"Current: {current}, Initial: {initial}")
         assert current < initial
 
-    @mock.patch("bitcash.network.NetworkAPI.broadcast_tx", side_effect=mockedAPI)
-    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    @mock.patch("bitcash.wallet.NetworkAPI.broadcast_tx", side_effect=mockedAPI)
+    @mock.patch("requests.get")
     def test_send_slp(self, mock1, mock2):
+        mock1.side_effect = [
+            mocked_requests_get(key="send_slp"),
+            mocked_requests_get(key="send_slp_token_details"),
+        ]
         # Broadcasting is mocked out
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST_SLP)
         private_key.unspents[:] = SLP_TESTS_SEND_UNSPENTS
@@ -637,14 +668,18 @@ class TestPrivateKeyTestnet:
         )
 
         assert (
-            txid == "90a2bfd27ab2f05037d2d41c32f96ba8ceff22e9fc9adaef758229138be8048a"
+            txid == "65a77c1963ece4a0f2a043d9499f2539d32fd056f681bddbae6e1ffed1ac4086"
         )
 
-    @mock.patch("bitcash.network.NetworkAPI.broadcast_tx", side_effect=mockedAPI)
+    @mock.patch("bitcash.wallet.NetworkAPI.broadcast_tx", side_effect=mockedAPI)
     @mock.patch("requests.get", side_effect=mocked_requests_get)
     def test_send_slp_no_combine(self, mock1, mock2):
         # Broadcasting is mocked out
         # Not combining results in different txid due to unspents
+        mock1.side_effect = [
+            mocked_requests_get(key="send_slp"),
+            mocked_requests_get(key="send_slp_token_details"),
+        ]
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST_SLP)
         private_key.unspents[:] = SLP_TESTS_SEND_UNSPENTS
         private_key.slp_unspents = SLP_TESTS_SEND_SLP_UNSPENTS
@@ -656,10 +691,10 @@ class TestPrivateKeyTestnet:
         )
 
         assert (
-            txid == "3f9fd459b0eb38f37fd689c6991a609d9e22b68203136af2fdb40deb4dadb410"
+            txid == "ab4fdf333c9ba130cab1acd88d298c03ccf9b312eb9449f5aa8f114f34f2dc54"
         )
 
-    @mock.patch("bitcash.network.NetworkAPI.broadcast_tx", side_effect=mockedAPI)
+    @mock.patch("bitcash.wallet.NetworkAPI.broadcast_tx", side_effect=mockedAPI)
     def test_create_slp(self, mock_get):
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST_SLP)
         private_key.unspents[:] = SLP_TESTS_UNSPENTS
@@ -677,12 +712,16 @@ class TestPrivateKeyTestnet:
         )
 
         assert (
-            txid == "1ed2d64e0db3f13b6a1d7c3405f4a2bbdbac0288c1acfd67df9234bf961370ca"
+            txid == "faae15d31c71131f65a7b6430c4b7ab5db761a6ce752252974e399ea248b23b3"
         )
 
-    @mock.patch("bitcash.network.NetworkAPI.broadcast_tx", side_effect=mockedAPI)
-    @mock.patch("requests.get", side_effect=mocked_requests_get)
+    @mock.patch("bitcash.wallet.NetworkAPI.broadcast_tx", side_effect=mockedAPI)
+    @mock.patch("requests.get")
     def test_mint_slp(self, mock1, mock2):
+        mock1.side_effect = [
+            mocked_requests_get(key="mint_test_token_details"),
+            mocked_requests_get(key="mint_test_baton_utxo"),
+        ]
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST_SLP)
         private_key.unspents[:] = SLP_TESTS_UNSPENTS
         private_key.slp_unspents[:] = SLP_TESTS_SLP_UNSPENTS
@@ -694,7 +733,7 @@ class TestPrivateKeyTestnet:
         txid = private_key.mint_slp(tokenId, amount, keepBaton=True)
 
         assert (
-            txid == "1e4b0380101927bc61eb1e71809a082bd8fcf1fceb9bba8c4116ecdda9f5373b"
+            txid == "4fd43d88b984aca92d40b1b145a039bdbc99771cdccbdfd02c96ccf52cb58d46"
         )
 
     @pytest.mark.skip
@@ -818,13 +857,18 @@ class TestPrivateKeyRegtest:
         logging.debug(f"Current: {current}, Initial: {initial}")
         assert current < initial
 
-    @mock.patch("bitcash.network.NetworkAPI.broadcast_tx", side_effect=mockedAPI)
+    @mock.patch("bitcash.wallet.NetworkAPI.broadcast_tx", side_effect=mockedAPI)
     @mock.patch("requests.get", side_effect=mocked_requests_get)
     def test_fan_group_nft(
         self,
         mock1,
         mock2,
     ):
+        mock1.side_effect = [
+            mocked_requests_get(key="fan_group_utxo"),
+            mocked_requests_get(key="fan_group_token_info")
+        ]
+        
         private_key = PrivateKeyRegtest(WALLET_FORMAT_TEST)
         private_key.unspents = SLP_TESTS_FAN_GROUP_UNSPENTS
         private_key.slp_unspents = SLP_TESTS_FAN_GROUP_SLP_UNSPENTS
@@ -835,17 +879,23 @@ class TestPrivateKeyRegtest:
 
         assert (
             results
-            == "858525e76c8e3ebe1ebf0715676c7ce030ca3db364a53b6f01790b8b0e40d476"
+            == "bf90bf9533843ce422a61b623190d0e672ba1e40da808c8925bb2c7624cfc269"
         )
 
-    @mock.patch("bitcash.network.NetworkAPI.broadcast_tx", side_effect=mockedAPI)
+    @mock.patch("bitcash.wallet.NetworkAPI.broadcast_tx", side_effect=mockedAPI)
+    @mock.patch("requests.get")
     @mock.patch.object(PrivateKey, "get_balance", autospec=True)
-    def test_child_nft(self, mock1, mock2):
+    def test_child_nft(self, mock1, mock2, mock3):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_TEST)
         mock1.side_effect = [
             mocked_get_balance(private_key, test_child_nft_unspent_a),
             mocked_get_balance(private_key, test_child_nft_unspent_b),
             mocked_get_balance(private_key, test_child_nft_unspent_c),
+        ]
+        mock2.side_effect = [
+            mocked_requests_get(key="nft_fanned"),
+            mocked_requests_get(key="child_nft_unconfirmed_inputs"),
+            mocked_requests_get(key="child_nft_token_details")
         ]
 
         private_key.unspents = [
@@ -978,15 +1028,15 @@ class TestPrivateKeyRegtest:
 
         assert (
             results[0]
-            == "3fc51bcd51a6d6c9b533c6418d3bec8b2cbd3d81d42f800a398d11b2b9e817f2"
+            == "dcf86307eda27f6265d19e0cffa29f026839103fb20868edfca68594c7a42c1b"
         )
         assert (
             results[1]
-            == "a5ea6903923b5f0980695f4dcf1e7281ed91e6b7f35a7227581d1d753b51e7dd"
+            == "d8b7837429e20bd2f94e221887793a636aa9f8e8ed3b444c525e39cad0cebae0"
         )
         assert (
             results[2]
-            == "5b8660404ecb5e3a3ee0d981e1d04a264564af69eed0f7958eceb8bebed708be"
+            == "1d7c9076c30053e665e1768ae1b9795600e825bbb2e87334196f2418b4228ab7"
         )
 
     def test_child_nft_not_enough_fanned(self, requests_mock):
