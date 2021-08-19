@@ -1,6 +1,7 @@
 import logging
 import os
 import requests
+import time
 
 from bitcash.exceptions import InvalidNetwork, InvalidAddress
 from bitcash.network import currency_to_satoshi
@@ -93,10 +94,11 @@ class NetworkAPI:
         """
 
         for endpoint in get_endpoints_for(network):
-            try:
-                return endpoint.get_balance(address, timeout=DEFAULT_TIMEOUT)
-            except cls.IGNORED_ERRORS:  # pragma: no cover
-                pass
+            for i in range(3):  # randomly returns API is unreachable
+                try:
+                    return endpoint.get_balance(address, timeout=DEFAULT_TIMEOUT)
+                except cls.IGNORED_ERRORS:  # pragma: no cover
+                    pass
 
         raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
@@ -167,10 +169,12 @@ class NetworkAPI:
         """
 
         for endpoint in get_endpoints_for(network):
-            try:
-                return endpoint.get_unspent(address, timeout=DEFAULT_TIMEOUT)
-            except cls.IGNORED_ERRORS:  # pragma: no cover
-                pass
+            for i in range(3):  # randomly returns API is unreachable
+                try:
+                    return endpoint.get_unspent(address, timeout=DEFAULT_TIMEOUT)
+                except cls.IGNORED_ERRORS:  # pragma: no cover
+                    time.sleep(0.5)
+                    pass
 
         raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
@@ -185,10 +189,12 @@ class NetworkAPI:
         """
 
         for endpoint in get_endpoints_for(network):
-            try:
-                return endpoint.get_raw_transaction(txid, timeout=DEFAULT_TIMEOUT)
-            except cls.IGNORED_ERRORS:  # pragma: no cover
-                pass
+            for i in range(3):  # randomly returns API is unreachable
+                try:
+                    return endpoint.get_raw_transaction(txid, timeout=DEFAULT_TIMEOUT)
+                except cls.IGNORED_ERRORS:  # pragma: no cover
+                    time.sleep(0.5)
+                    pass
 
         raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
