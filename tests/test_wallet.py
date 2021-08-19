@@ -3,9 +3,7 @@ import time
 import logging
 
 import pytest
-import unittest
 from unittest import mock
-import requests_mock
 import json
 
 from bitcash.crypto import ECPrivateKey
