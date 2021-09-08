@@ -44,6 +44,9 @@ def test_set_service_timeout():
 
 class MockBackend(NetworkAPI):
     IGNORED_ERRORS = NetworkAPI.IGNORED_ERRORS
+    GET_BALANCE = [raise_connection_error]
+    GET_TRANSACTIONS = [raise_connection_error]
+    GET_UNSPENT = [raise_connection_error]
 
     @classmethod
     def get_balance(cls, *args, **kwargs):

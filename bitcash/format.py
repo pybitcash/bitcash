@@ -119,7 +119,14 @@ def wif_checksum_check(wif):
 
 def public_key_to_address(public_key, version="main"):
     # Currently Bitcash only support P2PKH (not P2SH)
-    VERSIONS = {"main": "P2PKH", "test": "P2PKH-TESTNET", "regtest": "P2PKH-REGTEST"}
+    VERSIONS = {
+        "main": "P2PKH",
+        "test": "P2PKH-TESTNET",
+        "regtest": "P2PKH-REGTEST",
+        "main-slp": "P2PKH-SLP",
+        "test-slp": "P2PKH-SLP-TESTNET",
+        "regtest-slp": "P2PKH-SLP-REGTEST",
+    }
 
     try:
         version = VERSIONS[version]

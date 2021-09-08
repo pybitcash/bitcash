@@ -77,13 +77,31 @@ class Address:
     VERSIONS = {
         "P2SH": {"prefix": "bitcoincash", "version_bit": 8, "network": "mainnet"},
         "P2PKH": {"prefix": "bitcoincash", "version_bit": 0, "network": "mainnet"},
+        "P2PKH-SLP": {"prefix": "simpleledger", "version_bit": 0, "network": "mainnet"},
         "P2SH-TESTNET": {"prefix": "bchtest", "version_bit": 8, "network": "testnet"},
         "P2PKH-TESTNET": {"prefix": "bchtest", "version_bit": 0, "network": "testnet"},
+        "P2PKH-SLP-TESTNET": {
+            "prefix": "slptest",
+            "version_bit": 0,
+            "network": "testnet",
+        },
         "P2SH-REGTEST": {"prefix": "bchreg", "version_bit": 8, "network": "regtest"},
         "P2PKH-REGTEST": {"prefix": "bchreg", "version_bit": 0, "network": "regtest"},
+        "P2PKH-SLP-REGTEST": {
+            "prefix": "slpreg",
+            "version_bit": 0,
+            "network": "regtest",
+        },
     }
 
-    VERSION_SUFFIXES = {"bitcoincash": "", "bchtest": "-TESTNET", "bchreg": "-REGTEST"}
+    VERSION_SUFFIXES = {
+        "bitcoincash": "",
+        "bchtest": "-TESTNET",
+        "bchreg": "-REGTEST",
+        "simpleledger": "-SLP",
+        "slptest": "-SLP-TESTNET",
+        "slpreg": "-SLP-REGTEST",
+    }
 
     ADDRESS_TYPES = {0: "P2PKH", 8: "P2SH"}
 

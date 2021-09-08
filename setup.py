@@ -1,20 +1,20 @@
 from setuptools import find_packages, setup
 
-with open('bitcash/__init__.py', 'r') as f:
+with open("bitcash/__init__.py", "r") as f:
     for line in f:
         if line.startswith('__version__'):
             version = line.strip().split('= ')[1].strip("\"")
             break
 
 try:
-    long_description = open('README.md', 'r').read()
+    long_description = open("README.md", "r").read()
 except Exception:
-    long_description = 'Bitcoin Cash... failed to read README.md'
+    long_description = "Bitcoin Cash... failed to read README.md"
 
 setup(
     name='BitCash',
     version=version,
-    description='Bitcoin Cash made easier.',
+    description="Bitcoin Cash made easier.",
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Teran McKinney',
@@ -26,13 +26,12 @@ setup(
     license='MIT',
 
     keywords=[
-        'bitcoincash',
-        'cryptocurrency',
-        'payments',
-        'tools',
-        'wallet',
+        "bitcoincash",
+        "cryptocurrency",
+        "payments",
+        "tools",
+        "wallet",
     ],
-
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -50,15 +49,12 @@ setup(
 
     install_requires=['coincurve>=4.3.0', 'requests'],
     extras_require={
-        'cli': ('appdirs', 'click', 'privy', 'tinydb'),
-        'cache': ('lmdb', ),
+        "cli": ("appdirs", "click", "privy", "tinydb"),
+        "cache": ("lmdb",),
     },
-    tests_require=['pytest'],
-
+    tests_require=["pytest"],
     packages=find_packages(),
     entry_points={
-        'console_scripts': (
-            'bitcash = bitcash.cli:bitcash',
-        ),
+        "console_scripts": ("bitcash = bitcash.cli:bitcash",),
     },
 )
