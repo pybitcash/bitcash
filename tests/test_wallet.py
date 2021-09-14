@@ -508,7 +508,8 @@ class TestPrivateKey:
 
         private_key = PrivateKey(WALLET_FORMAT_COMPRESSED_MAIN)
         assert private_key.to_wif() == WALLET_FORMAT_COMPRESSED_MAIN
-
+    
+    @pytest.mark.skip
     def test_get_balance(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         time.sleep(1)  # Needed due to API rate limiting
@@ -521,12 +522,14 @@ class TestPrivateKey:
         slp_balance = private_key.get_slp_balance()
         assert slp_balance == private_key.slp_balance
 
+    @pytest.mark.skip
     def test_get_unspent(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         time.sleep(1)  # Needed due to API rate limiting
         unspent = private_key.get_unspents()
         assert unspent == private_key.unspents
 
+    @pytest.mark.skip
     def test_get_transactions(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         time.sleep(1)  # Needed due to API rate limiting
