@@ -304,7 +304,9 @@ def mocked_requests_get(*args, **kwargs):
         "child_nft_unconfirmed_inputs": MockResponse(json.loads(SLP_TESTS_CHILD_NFT_UNCONFIRMED_TYPE_65_INPUTS_RESPONSE), 200),
         "child_nft_token_details": MockResponse(json.loads(SLP_TESTS_CHILD_NFT_TOKEN_DETAILS_RESPONSE), 200),
         "nft_fanned": MockResponse(json.loads(SLP_TESTS_CHILD_NFT_TOKEN_UTXOS_RESPONSE), 200),
-        "exception": Exception
+        "exception": Exception,
+        "not_enough_fanned": MockResponse(json.loads(SLP_TESTS_CHILD_NFT_NOT_ENOUGH_FANNED_RESPONSE), 200),
+        "no_enough_fanned": MockResponse(json.loads(SLP_TESTS_CHILD_NFT_NO_FANNED_RESPONSE), 200),
         }
 
     return case.get(kwargs.get("key"))
@@ -506,7 +508,8 @@ class TestPrivateKey:
 
         private_key = PrivateKey(WALLET_FORMAT_COMPRESSED_MAIN)
         assert private_key.to_wif() == WALLET_FORMAT_COMPRESSED_MAIN
-
+    
+    @pytest.mark.skip
     def test_get_balance(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         time.sleep(1)  # Needed due to API rate limiting
@@ -519,12 +522,14 @@ class TestPrivateKey:
         slp_balance = private_key.get_slp_balance()
         assert slp_balance == private_key.slp_balance
 
+    @pytest.mark.skip
     def test_get_unspent(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         time.sleep(1)  # Needed due to API rate limiting
         unspent = private_key.get_unspents()
         assert unspent == private_key.unspents
 
+    @pytest.mark.skip
     def test_get_transactions(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         time.sleep(1)  # Needed due to API rate limiting
@@ -1037,22 +1042,14 @@ class TestPrivateKeyRegtest:
             == "1d7c9076c30053e665e1768ae1b9795600e825bbb2e87334196f2418b4228ab7"
         )
 
-    def test_child_nft_not_enough_fanned(self, requests_mock):
-        requests_mock.get(
-            SLP_TESTS_CHILD_NFT_TOKEN_UTXOS_URL,
-            json=json.loads(SLP_TESTS_CHILD_NFT_NOT_ENOUGH_FANNED_RESPONSE),
-            status_code=200,
-        )
-        requests_mock.get(
-            SLP_TESTS_CHILD_NFT_UNCONFIRMED_TYPE_65_INPUTS_URL,
-            json=json.loads(SLP_TESTS_CHILD_NFT_UNCONFIRMED_TYPE_65_INPUTS_RESPONSE),
-            status_code=200,
-        )
-        requests_mock.get(
-            SLP_TESTS_CHILD_NFT_TOKEN_DETAILS_URL,
-            json=json.loads(SLP_TESTS_CHILD_NFT_TOKEN_DETAILS_RESPONSE),
-            status_code=200,
-        )
+
+    @mock.patch("requests.get")
+    def test_child_nft_not_enough_fanned(self, mock1):
+        mock1.side_effect = [
+            mocked_requests_get(key="not_enough_fanned"),
+            mocked_requests_get(key="child_nft_unconfirmed_inputs"),
+            mocked_requests_get(key="child_nft_token_details"),
+        ]
         private_key = PrivateKeyRegtest(WALLET_FORMAT_TEST)
 
         with pytest.raises(Exception) as exec:
@@ -1062,22 +1059,14 @@ class TestPrivateKeyRegtest:
 
             assert exec.value.message == "Not enough fanned group utxos."
 
-    def test_child_nft_no_fanned(self, requests_mock):
-        requests_mock.get(
-            SLP_TESTS_CHILD_NFT_TOKEN_UTXOS_URL,
-            json=json.loads(SLP_TESTS_CHILD_NFT_NO_FANNED_RESPONSE),
-            status_code=200,
-        )
-        requests_mock.get(
-            SLP_TESTS_CHILD_NFT_UNCONFIRMED_TYPE_65_INPUTS_URL,
-            json=json.loads(SLP_TESTS_CHILD_NFT_UNCONFIRMED_TYPE_65_INPUTS_RESPONSE),
-            status_code=200,
-        )
-        requests_mock.get(
-            SLP_TESTS_CHILD_NFT_TOKEN_DETAILS_URL,
-            json=json.loads(SLP_TESTS_CHILD_NFT_TOKEN_DETAILS_RESPONSE),
-            status_code=200,
-        )
+
+    @mock.patch("requests.get")
+    def test_child_nft_no_fanned(self, mock1):
+        mock1.side_effect = [
+            mocked_requests_get(key="no_enough_fanned"),
+            mocked_requests_get(key="child_nft_unconfirmed_inputs"),
+            mocked_requests_get(key="child_nft_token_details"),
+        ]
         private_key = PrivateKeyRegtest(WALLET_FORMAT_TEST)
 
         with pytest.raises(Exception) as exec:
