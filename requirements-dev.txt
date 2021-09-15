@@ -2,8 +2,7 @@
 # Those ARE NOT required for installation, at runtime or to build from source
 
 -e .[cli,cache]
-pytest==6.24
+pytest==6.2.4
 coverage==5.5
 twine==3.4.2
 sphinx==4.1.2
-requests_mock==1.9.3
