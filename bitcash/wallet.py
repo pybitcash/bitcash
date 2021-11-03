@@ -236,27 +236,36 @@ class PrivateKey(BaseKey):
         """
         return satoshi_to_currency_cached(self.balance, currency)
 
-    def get_balance(self, currency="satoshi"):
+    def get_balance(self, currency="satoshi", get_slp=True):
         """Fetches the current balance by calling
         :func:`~bitcash.PrivateKey.get_balance` and returns it using
         :func:`~bitcash.PrivateKey.balance_as`.
 
         :param currency: One of the :ref:`supported currencies`.
         :type currency: ``str``
-        :rtype: ``str``
+
+
+        :param get_slp: If True then grab any SLP balances. Default is True.
+        :type get_slp: ``bool``
+
+        :rtype: ``str``        
         """
         self.unspents[:] = NetworkAPI.get_unspent(
             self.address, network=NETWORKS[self._network]
         )
-        filtered_unspents = SlpAPI.filter_slp_txid(
-            self.address,
-            self.slp_address,
-            self.unspents,
-            network=NETWORKS[self._network],
-        )
-        self.unspents = filtered_unspents["difference"]
-        self.slp_unspents = filtered_unspents["slp_utxos"]
-        self.batons = filtered_unspents["baton"]
+
+        if get_slp:
+            filtered_unspents = SlpAPI.filter_slp_txid(
+                self.address,
+                self.slp_address,
+                self.unspents,
+                network=NETWORKS[self._network],
+            )
+            self.unspents = filtered_unspents["difference"]
+            self.slp_unspents = filtered_unspents["slp_utxos"]
+            self.batons = filtered_unspents["baton"]
+
+
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.balance_as(currency)
 
