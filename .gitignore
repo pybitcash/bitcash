@@ -8,6 +8,7 @@ __pycache__
 /.coverage
 /.pytest_cache
 /bitcash.egg-info
+BitCash.egg-info/
 /build
 /dist
 /docs/build
