@@ -131,8 +131,7 @@ class TestNetworkAPI:
         time.sleep(1)
         results = NetworkAPI.get_raw_transaction(MAIN_TX, network="mainnet")
         assert isinstance(results, dict)
-        assert len(results) == 15
-        
+        assert len(results) == 16
 
     # Testnet
     @pytest.mark.skip
@@ -267,7 +266,7 @@ class TestBitcoinDotComAPI:
 
     def test_get_transaction_mainnet_failure(self):
         with pytest.raises(ConnectionError):
-            MockBackend.get_transaction(MAIN_TX)    
+            MockBackend.get_transaction(MAIN_TX)
 
     @pytest.mark.skip
     def test_get_tx_amount_mainnet(self):

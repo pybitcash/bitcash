@@ -71,7 +71,7 @@ $ pip install bitcash  # pip3 if pip is Python 2 on your system.
 
 Docs are hosted by Github Pages and are automatically built and published after every successful commit to BitCash's ``master`` branch.
 
-[Read the documentation](https://pybitcash.github.io/bitcash/)
+[Read the documentation](https://bitcash.dev)
 
 ## Credits
 
