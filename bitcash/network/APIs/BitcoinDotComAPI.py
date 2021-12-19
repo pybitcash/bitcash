@@ -37,7 +37,7 @@ class BitcoinDotComAPI:
     PATHS = {
         "unspent": "address/utxo/{}",
         "address": "address/details/{}",
-        "raw-tx": "rawtransactions/sendRawTransaction/{}",
+        "raw-tx": "rawtransactions/sendRawTransaction",
         "tx-details": "transaction/details/{}",
     }
 
@@ -127,6 +127,6 @@ class BitcoinDotComAPI:
         return r.json(parse_float=Decimal)
 
     def broadcast_tx(self, tx_hex, *args, **kwargs):  # pragma: no cover
-        api_url = self.make_endpoint_url("raw-tx").format(tx_hex)
-        r = requests.get(api_url, *args, **kwargs)
+        api_url = self.make_endpoint_url("raw-tx")
+        r = requests.post(api_url, json={"hexes": [tx_hex]}, *args, **kwargs)
         return r.status_code == 200
