@@ -1,4 +1,4 @@
-import requests
+from bitcash.network import session
 from decimal import Decimal
 from bitcash.exceptions import InvalidEndpointURLProvided
 from bitcash.network import currency_to_satoshi
@@ -50,20 +50,20 @@ class BitcoinDotComAPI:
 
     def get_balance(self, address, *args, **kwargs):
         api_url = self.make_endpoint_url("address").format(address)
-        r = requests.get(api_url, *args, **kwargs)
+        r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()
         data = r.json()
         return data["balanceSat"] + data["unconfirmedBalanceSat"]
 
     def get_transactions(self, address, *args, **kwargs):
         api_url = self.make_endpoint_url("address").format(address)
-        r = requests.get(api_url, *args, **kwargs)
+        r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()
         return r.json()["transactions"]
 
     def get_transaction(self, txid, *args, **kwargs):
         api_url = self.make_endpoint_url("tx-details").format(txid)
-        r = requests.get(api_url, *args, **kwargs)
+        r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()
         response = r.json(parse_float=Decimal)
 
@@ -98,7 +98,7 @@ class BitcoinDotComAPI:
 
     def get_tx_amount(self, txid, txindex, *args, **kwargs):
         api_url = self.make_endpoint_url("tx-details").format(txid)
-        r = requests.get(api_url, *args, **kwargs)
+        r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()
         response = r.json(parse_float=Decimal)
         return (
@@ -107,7 +107,7 @@ class BitcoinDotComAPI:
 
     def get_unspent(self, address, *args, **kwargs):
         api_url = self.make_endpoint_url("unspent").format(address)
-        r = requests.get(api_url, *args, **kwargs)
+        r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()
         return [
             Unspent(
@@ -122,11 +122,11 @@ class BitcoinDotComAPI:
 
     def get_raw_transaction(self, txid, *args, **kwargs):
         api_url = self.make_endpoint_url("tx-details").format(txid)
-        r = requests.get(api_url, *args, **kwargs)
+        r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()
         return r.json(parse_float=Decimal)
 
     def broadcast_tx(self, tx_hex, *args, **kwargs):  # pragma: no cover
         api_url = self.make_endpoint_url("raw-tx")
-        r = requests.post(api_url, json={"hexes": [tx_hex]}, *args, **kwargs)
+        r = session.post(api_url, json={"hexes": [tx_hex]}, *args, **kwargs)
         return r.status_code == 200

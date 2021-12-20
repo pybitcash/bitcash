@@ -4,7 +4,7 @@ from functools import wraps
 from time import time
 
 import requests
-
+from bitcash.network import session
 from bitcash.utils import Decimal
 
 DEFAULT_CACHE_TIME = 60
@@ -127,7 +127,7 @@ class BitpayRates:
     @classmethod
     def currency_to_satoshi(cls, currency):
         headers = {"x-accept-version": "2.0.0", "Accept": "application/json"}
-        r = requests.get(cls.SINGLE_RATE + currency, headers=headers)
+        r = session.get(cls.SINGLE_RATE + currency, headers=headers)
         r.raise_for_status()
         rate = r.json()["data"]["rate"]
         return int(ONE / Decimal(rate) * BCH)
@@ -259,7 +259,7 @@ class CoinbaseRates:
 
     @classmethod
     def currency_to_satoshi(cls, currency):
-        r = requests.get(cls.SINGLE_RATE.format(currency))
+        r = session.get(cls.SINGLE_RATE.format(currency))
         r.raise_for_status()
         rate = r.json()["data"]["rates"][currency]
         return int(ONE / Decimal(rate) * BCH)
