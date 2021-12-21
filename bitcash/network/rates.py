@@ -4,7 +4,7 @@ from functools import wraps
 from time import time
 
 import requests
-from bitcash.network import session
+from bitcash.network.http import session
 from bitcash.utils import Decimal
 
 DEFAULT_CACHE_TIME = 60

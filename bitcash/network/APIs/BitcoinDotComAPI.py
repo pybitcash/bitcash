@@ -1,4 +1,4 @@
-from bitcash.network import session
+from bitcash.network.http import session
 from decimal import Decimal
 from bitcash.exceptions import InvalidEndpointURLProvided
 from bitcash.network import currency_to_satoshi
