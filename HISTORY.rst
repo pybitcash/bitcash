@@ -16,6 +16,9 @@ Unreleased (see `master <https://github.com/ofek/bitcash>`_)
 - NetworkAPI.get_tx_amount() is now working and properly handles
   backends returning string or decimal values.
 
+- Add public/private key encryption using ECIES encryption decryption
+  methods
+
 0.5.2 (2018-05-16)
 ------------------
 
