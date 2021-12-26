@@ -31,7 +31,7 @@ def sha512(bytestr):
 
 # ECIES encryption/decryption methods; AES-128-CBC with PKCS7 is used
 # as the cipher; hmac-sha256 is used as the mac
-# Implementation follows the Electron-Cash implementaion of the same
+# Implementation follows the Electron-Cash implementation of the same
 def aes_encrypt_with_iv(key, iv, data):
     """Provides AES-CBC encryption of data with key and iv
 
