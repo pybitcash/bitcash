@@ -56,20 +56,6 @@ def address_to_public_key_hash(address):
     return bytes(address.payload)
 
 
-def version_of_address(address):
-    """Return version of a str address
-    """
-    address = Address.from_string(address)
-
-    if "P2PKH" in address.version:
-        return "P2PKH"
-    elif "P2SH" in address.version:
-        return "P2SH"
-    else:
-        raise ValueError("Bitcash currently only supports"
-                         " P2PKH/P2SH addresses")
-
-
 def bytes_to_wif(private_key, version="main", compressed=False):
 
     if version == "test":
