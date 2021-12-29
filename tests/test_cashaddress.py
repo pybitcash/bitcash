@@ -211,3 +211,10 @@ class TestAddress:
             str(Address(version="P2PKH", payload=[]))
             == "version: P2PKH\npayload: []\nprefix: bitcoincash"
         )
+
+    def test_eq(self):
+        address = Address.from_string(BITCOIN_CASHADDRESS)
+        assert address == BITCOIN_CASHADDRESS
+        assert address == address
+        with pytest.raises(ValueError):
+            address == 1
