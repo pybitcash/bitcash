@@ -16,6 +16,7 @@ from bitcash.wallet import (
     wif_to_key,
 )
 from bitcash.exceptions import InvalidAddress
+from bitcash.network.meta import Unspent
 from .samples import (
     PRIVATE_KEY_BYTES,
     PRIVATE_KEY_DER,
@@ -216,6 +217,39 @@ class TestPrivateKey:
             == "<PrivateKey: bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6>"
         )
 
+    def test_pay2sh(self):
+        # tx:af386b52b9804c4d37d0bcf9ca124b34264d2f0a306ea11ee74c90d939402cb7
+        unspents_original = [
+            Unspent(5691944, 1, "aa", "aa", 0),
+            Unspent(17344, 0, "ab", "ab", 0)]
+        outputs_original = [
+            ('bitcoincash:prseh0a4aejjcewhc665wjqhppgwrz2lw5txgn666a',
+             11065,
+             "satoshi"),
+        ]
+
+        key = wif_to_key('cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ')
+        tx = key.create_transaction(
+            outputs_original,
+            unspents=unspents_original,
+            fee=1,
+            leftover="bitcoincash:qpqpu8xr56gmccalfssssjm2pcpv6d2fhur48wjdzf",
+        )
+        out = tx[476:]
+        
+        # test outputs
+        assert out[:2] == "02"
+        # P2SH output value
+        assert int.from_bytes(bytes.fromhex(out[2:18]), 'little') == 11065
+        # P2SH locking script
+        assert out[18:66] == '17a914e19bbfb5ee652c65d7c6b54748170850e1895f7587'
+        # leftover value
+        assert int.from_bytes(bytes.fromhex(out[66:82]),
+                              'little') == 5697851
+        # leftover P2PKH locking script
+        _ = '1976a914401e1cc3a691bc63bf4c21084b6a0e02cd3549bf88ac'
+        assert out[82:-8] == _
+
 
 class TestPrivateKeyTestnet:
     def test_init_default(self):
@@ -291,22 +325,6 @@ class TestPrivateKeyTestnet:
 
         logging.debug(f"Current: {current}, Initial: {initial}")
         assert current < initial
-
-    @pytest.mark.skip
-    def test_send_pay2sh(self):
-        # Marking as skip because BitcoinCom Testnet is currently unreliable
-        # TODO: Remove once a new Testnet endpoint is added
-        """
-        We don't yet support pay2sh, so we must throw an exception if we get one.
-        Otherwise, we could send coins into an unrecoverable blackhole, needlessly.
-        pay2sh addresses begin with 2 in testnet and 3 on mainnet.
-        """
-
-        private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
-        private_key.get_unspents()
-
-        with pytest.raises(InvalidAddress):
-            private_key.send([(BITCOIN_ADDRESS_TEST_PAY2SH, 1, "mbch")])
 
     def test_from_hex(self):
         key = PrivateKeyTestnet.from_hex(PRIVATE_KEY_HEX)
@@ -412,29 +430,6 @@ class TestPrivateKeyRegtest:
 
         logging.debug(f"Current: {current}, Initial: {initial}")
         assert current < initial
-
-    @pytest.mark.regtest
-    def test_send_pay2sh(self):
-        # This tests requires the local node to be continuously generating blocks
-        # marking 'skip' until auto-block generation is functional
-
-        # Local node user will need to ensure the address is funded
-        # first in order for this test to pass
-
-        """
-        This tests requires the local node to be continuously generating blocks
-        Local node user will need to ensure the address is funded
-        first in order for this test to pass
-        We don't yet support pay2sh, so we must throw an exception if we get one.
-        Otherwise, we could send coins into an unrecoverable blackhole, needlessly.
-        pay2sh addresses begin with 2 in testnet and 3 on mainnet.
-        """
-
-        private_key = PrivateKeyRegtest(WALLET_FORMAT_COMPRESSED_REGTEST)
-        private_key.get_unspents()
-
-        with pytest.raises(InvalidAddress):
-            private_key.send([("2NFKbBHzzh32q5DcZJNgZE9sF7gYmtPbawk", 1, "mbch")])
 
     def test_from_hex(self):
         key = PrivateKeyRegtest.from_hex(PRIVATE_KEY_HEX)

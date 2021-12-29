@@ -13,6 +13,7 @@ from bitcash.format import (
     verify_sig,
     wif_checksum_check,
     wif_to_bytes,
+    version_of_address,
 )
 from .samples import (
     BITCOIN_ADDRESS,
@@ -28,6 +29,7 @@ from .samples import (
     BITCOIN_CASHADDRESS_REGTEST_PAY2SH,
     PRIVATE_KEY_BYTES,
     PUBKEY_HASH,
+    PUBKEY_HASH_P2SH,
     BITCOIN_CASHADDRESS,
     BITCOIN_CASHADDRESS_TEST,
     BITCOIN_CASHADDRESS_TEST_COMPRESSED,
@@ -250,9 +252,24 @@ def test_address_to_public_key_hash():
         address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST_COMPRESSED)
         == PUBKEY_HASH_COMPRESSED
     )
-    with pytest.raises(ValueError):
+    assert(
         address_to_public_key_hash(BITCOIN_CASHADDRESS_PAY2SH)
-    with pytest.raises(ValueError):
+        == PUBKEY_HASH_P2SH
+    )
+    assert(
         address_to_public_key_hash(BITCOIN_CASHADDRESS_TEST_PAY2SH)
-    with pytest.raises(ValueError):
+        == PUBKEY_HASH_P2SH
+    )
+    assert(
         address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST_PAY2SH)
+        == PUBKEY_HASH_P2SH
+    )
+
+
+def test_version_of_address():
+    assert "P2SH" == version_of_address(BITCOIN_CASHADDRESS_REGTEST_PAY2SH)
+    assert "P2SH" == version_of_address(BITCOIN_CASHADDRESS_TEST_PAY2SH)
+    assert "P2SH" == version_of_address(BITCOIN_CASHADDRESS_PAY2SH)
+    assert "P2PKH" == version_of_address(BITCOIN_CASHADDRESS)
+    assert "P2PKH" == version_of_address(BITCOIN_CASHADDRESS_TEST)
+    assert "P2PKH" == version_of_address(BITCOIN_CASHADDRESS_REGTEST)

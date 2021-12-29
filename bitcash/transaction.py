@@ -3,7 +3,7 @@ from collections import namedtuple
 
 from bitcash.crypto import double_sha256, sha256
 from bitcash.exceptions import InsufficientFunds
-from bitcash.format import address_to_public_key_hash
+from bitcash.format import address_to_public_key_hash, version_of_address
 from bitcash.network.rates import currency_to_satoshi_cached
 from bitcash.utils import (
     bytes_to_hex,
@@ -30,6 +30,7 @@ OP_0 = b"\x00"
 OP_CHECKLOCKTIMEVERIFY = b"\xb1"
 OP_CHECKSIG = b"\xac"
 OP_DUP = b"v"
+OP_EQUAL = b"\x87"
 OP_EQUALVERIFY = b"\x88"
 OP_HASH160 = b"\xa9"
 OP_PUSH_20 = b"\x14"
@@ -77,24 +78,37 @@ def calc_txid(tx_hex):
     return bytes_to_hex(double_sha256(hex_to_bytes(tx_hex))[::-1])
 
 
-def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size=0):
+def estimate_tx_fee(
+    n_in,
+    n_out_p2pkh,
+    n_out_p2sh,
+    satoshis,
+    compressed,
+    op_return_size=0
+):
 
     if not satoshis:
         return 0
+
+    n_out = n_out_p2sh + n_out_p2pkh
 
     estimated_size = (
         4
         + n_in * (148 if compressed else 180)  # version
         + len(int_to_unknown_bytes(n_in, byteorder="little"))
-        + n_out * 34  # excluding op_return outputs, dealt with separately
+        # excluding op_return outputs, dealt with separately
+        + n_out_p2pkh * 34
+        + n_out_p2sh * 32
         + len(int_to_unknown_bytes(n_out, byteorder="little"))
-        + op_return_size  # grand total size of op_return outputs(s) and related field(s)
+        # grand total size of op_return outputs(s) and related field(s)
+        + op_return_size
         + 4  # time lock
     )
 
     estimated_fee = estimated_size * satoshis
 
-    logging.debug(f"Estimated fee: {estimated_fee} satoshis for {estimated_size} bytes")
+    logging.debug(f"Estimated fee: {estimated_fee}"
+                  f" satoshis for {estimated_size} bytes")
 
     return estimated_fee
 
@@ -194,13 +208,24 @@ def sanitize_tx_data(
 
     # Include return address in fee estimate.
     total_in = 0
-    num_outputs = len(outputs) + 1
+    is_p2pkh = lambda x: 'P2PKH' == version_of_address(x)
+    num_p2pkh_outputs = sum(map(is_p2pkh, [out[0] for out in outputs]))
+    # Bitcash only supports P2PKH utxos, return address is added as P2PKH
+    num_p2pkh_outputs += 1
+    # counting P2SH outs, will adjust fee estimate
+    is_p2sh = lambda x: 'P2SH' == version_of_address(x)
+    num_p2sh_outputs = sum(map(is_p2sh, [out[0] for out in outputs]))
     sum_outputs = sum(out[1] for out in outputs)
 
     if combine:
         # calculated_fee is in total satoshis.
         calculated_fee = estimate_tx_fee(
-            len(unspents), num_outputs, fee, compressed, total_op_return_size
+            len(unspents),
+            num_p2pkh_outputs,
+            num_p2sh_outputs,
+            fee,
+            compressed,
+            total_op_return_size
         )
         total_out = sum_outputs + calculated_fee
         unspents = unspents.copy()
@@ -215,7 +240,8 @@ def sanitize_tx_data(
             total_in += unspent.amount
             calculated_fee = estimate_tx_fee(
                 len(unspents[: index + 1]),
-                num_outputs,
+                num_p2pkh_outputs,
+                num_p2sh_outputs,
                 fee,
                 compressed,
                 total_op_return_size,
@@ -250,14 +276,22 @@ def construct_output_block(outputs, custom_pushdata=False):
 
         # Real recipient
         if amount:
-            script = (
-                OP_DUP
-                + OP_HASH160
-                + OP_PUSH_20
-                + address_to_public_key_hash(dest)
-                + OP_EQUALVERIFY
-                + OP_CHECKSIG
-            )
+            if "P2PKH" == version_of_address(dest):
+                script = (
+                    OP_DUP
+                    + OP_HASH160
+                    + OP_PUSH_20
+                    + address_to_public_key_hash(dest)
+                    + OP_EQUALVERIFY
+                    + OP_CHECKSIG
+                )
+            elif "P2SH" == version_of_address(dest):
+                script = (
+                    OP_HASH160
+                    + OP_PUSH_20
+                    + address_to_public_key_hash(dest)
+                    + OP_EQUAL
+                )
 
             output_block += amount.to_bytes(8, byteorder="little")
 
