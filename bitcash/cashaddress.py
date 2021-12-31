@@ -158,3 +158,97 @@ class Address:
 
         payload = converted[1:-6]
         return Address(version, payload)
+
+
+def parse_cashaddress(data):
+    """ Parse CashAddress address URI, with params attached
+
+    :param data: Cashaddress uri to be parsed
+    :type data: `str`
+    :returns: cashaddress address, and parameters
+    :rtype: (`str`, `dict`)
+
+    >>> parse_cashaddress(
+            'bchtest:qzvsaasdvw6mt9j2rs3gyps673gj86flev3z0s40ln?'
+            'amount=0.1337&label=Satoshi-Nakamoto&message=Donation%20xyz'
+        )
+    (<bitcash.cashaddress.Address>,
+     {'amount': '0.1337',
+      'label': 'Satoshi-Nakamoto',
+      'message': 'Donation xyz'
+     }
+    )
+    >>> parse_cashaddress(
+            'bchtest:?label=Satoshi-Nakamoto&message=Donation%20xyz'
+        )
+    (None,
+     {'label': 'Satoshi-Nakamoto',
+      'message': 'Donation xyz'
+     }
+    )
+    """
+    import urllib
+
+    uri = urllib.parse.urlparse(data)
+    if uri.scheme not in Address.VERSION_SUFFIXES:
+        raise InvalidAddress("Invalid address scheme")
+
+    if uri.path == "":
+        address = None
+    else:
+        address = Address.from_string(f"{uri.scheme}:{uri.path}")
+    query = urllib.parse.parse_qs(uri.query)
+
+    for key, values in query.items():
+        if len(values) == 1:
+            query[key] = values[0]
+
+    return address, query
+
+
+def generate_cashaddress(address, params=None):
+    """Generates cashaddress uri from address and params
+
+    :param address: cashaddress
+    :type address: `str`
+    :param params: dictionary of parameters to be attached
+    :type params: `dict`
+    :returns: cashaddress uri
+    :rtype: str
+
+    >>> generate_cashaddress(
+            "bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6",
+            {
+                "amount": 0.1,
+            }
+    )
+    "bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6?amount=0.1"
+    >>> generate_cashaddress(
+            "bitcoincash:",
+            {"message": "Satoshi Nakamoto"}
+    )
+    "bitcoincash:?message=Satoshi%20Nakamoto"
+    """
+    import urllib
+
+    uri = urllib.parse.urlparse(address)
+    if uri.path != "":
+        # testing address
+        _ = Address.from_string(f"{uri.scheme}:{uri.path}")
+    elif uri.scheme not in Address.VERSION_SUFFIXES:
+        raise InvalidAddress("Invalid address scheme")
+
+    if params is None:
+        return uri.geturl()
+
+    param_list = []
+    for key, values in params.items():
+        if isinstance(values, str) or not hasattr(values, "__iter__"):
+            values = [values]
+        for value in values:
+            param_list.append((key, value))
+
+    query = urllib.parse.urlencode(param_list)
+    uri = uri._replace(query=query)
+
+    return uri.geturl()
