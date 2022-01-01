@@ -32,7 +32,7 @@ def sha512(bytestr):
 # ECIES encryption/decryption methods; AES-128-CBC with PKCS7 is used
 # as the cipher; hmac-sha256 is used as the mac
 # Implementation follows the Electron-Cash implementation of the same
-def aes_encrypt_with_iv(key, iv, data):
+def _aes_encrypt_with_iv(key, iv, data):
     """Provides AES-CBC encryption of data with key and iv
 
     :param key: key for the encryption
@@ -48,7 +48,7 @@ def aes_encrypt_with_iv(key, iv, data):
     return aes.feed(data) + aes.feed()
 
 
-def aes_decrypt_with_iv(key, iv, data):
+def _aes_decrypt_with_iv(key, iv, data):
     """Provides AES-CBC decryption of data with key and iv
 
     :param key: key for the decryption
@@ -87,7 +87,7 @@ def ecies_encrypt(message, pubkey):
 
     # aes key and iv, and hmac key
     iv, key_e, key_m = key[0:16], key[16:32], key[32:]
-    ciphertext = aes_encrypt_with_iv(key_e, iv, message)
+    ciphertext = _aes_encrypt_with_iv(key_e, iv, message)
     encrypted = (
         b'BIE1'
         + ephemeral.public_key.format()
@@ -129,4 +129,4 @@ def ecies_decrypt(encrypted, secret):
         raise ValueError("Invalid HMAC bytes")
 
     # decrypting
-    return aes_decrypt_with_iv(key_e, iv, ciphertext)
+    return _aes_decrypt_with_iv(key_e, iv, ciphertext)

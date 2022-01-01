@@ -1,8 +1,8 @@
 import pytest
 
 from bitcash.crypto import (
-    aes_encrypt_with_iv,
-    aes_decrypt_with_iv,
+    _aes_encrypt_with_iv,
+    _aes_decrypt_with_iv,
     ecies_encrypt,
     ecies_decrypt
 )
@@ -33,15 +33,15 @@ SECRET2 = (
 class TestAes:
     def test_aes_success(self):
         message = b'test'
-        encrypted_message = aes_encrypt_with_iv(KEY_AES, IV, message)
-        decrypted_message = aes_decrypt_with_iv(KEY_AES, IV, encrypted_message)
+        encrypted_message = _aes_encrypt_with_iv(KEY_AES, IV, message)
+        decrypted_message = _aes_decrypt_with_iv(KEY_AES, IV, encrypted_message)
         assert message == decrypted_message
 
     def test_aes_fail(self):
         message = b'test'
-        encrypted_message = aes_encrypt_with_iv(KEY_AES, IV, message)
+        encrypted_message = _aes_encrypt_with_iv(KEY_AES, IV, message)
         with pytest.raises(ValueError):
-            decrypted_message = aes_decrypt_with_iv(KEY_AES2,
+            decrypted_message = _aes_decrypt_with_iv(KEY_AES2,
                                                     IV,
                                                     encrypted_message)
 
