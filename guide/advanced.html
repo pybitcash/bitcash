@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Advanced &#8212; bitcash 0.6.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -32,9 +33,9 @@
     <div class="body" role="main">
     
   <section id="advanced">
-<span id="id1"></span><h1>Advanced<a class="headerlink" href="#advanced" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Advanced<a class="headerlink" href="#advanced" title="Permalink to this heading">¶</a></h1>
 <section id="server-integration">
-<h2>Server Integration<a class="headerlink" href="#server-integration" title="Permalink to this headline">¶</a></h2>
+<h2>Server Integration<a class="headerlink" href="#server-integration" title="Permalink to this heading">¶</a></h2>
 <p>If you only want to use bitcash for its raw speed to lessen the load on your
 servers, you don’t have to use any of our network capabilities.</p>
 <ul class="simple">
@@ -47,7 +48,7 @@ mbch, or bch.</p></li>
 </ul>
 </section>
 <section id="offline-transactions">
-<span id="coldstorage"></span><h2>Offline Transactions<a class="headerlink" href="#offline-transactions" title="Permalink to this headline">¶</a></h2>
+<span id="coldstorage"></span><h2>Offline Transactions<a class="headerlink" href="#offline-transactions" title="Permalink to this heading">¶</a></h2>
 <p>bitcash supports the signing of transactions for keys in cold storage. First you
 need to prepare a transaction while connected to the internet using the
 <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.prepare_transaction" title="bitcash.PrivateKey.prepare_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_transaction()</span></code></a> class method of a private key.
@@ -78,7 +79,7 @@ private key.</p>
 </div>
 </section>
 <section id="blockchain-storage-op-return">
-<h2>Blockchain Storage (OP_RETURN)<a class="headerlink" href="#blockchain-storage-op-return" title="Permalink to this headline">¶</a></h2>
+<h2>Blockchain Storage (OP_RETURN)<a class="headerlink" href="#blockchain-storage-op-return" title="Permalink to this heading">¶</a></h2>
 <p>bitcash allows you to easily <a class="reference external" href="https://en.bitcoin.it/wiki/OP_RETURN">store messages or data</a> in the blockchain itself
 using the <code class="docutils literal notranslate"><span class="pre">message</span></code> parameter of <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.create_transaction" title="bitcash.PrivateKey.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a>
 or <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.send" title="bitcash.PrivateKey.send"><code class="xref py py-func docutils literal notranslate"><span class="pre">send()</span></code></a>:</p>
@@ -90,7 +91,7 @@ of each datum must not exceed 40 bytes. Therefore, your resulting byte string
 will be stored in chunks to adhere to this property if it is too long.</p>
 </section>
 <section id="services-timeout">
-<h2>Services Timeout<a class="headerlink" href="#services-timeout" title="Permalink to this headline">¶</a></h2>
+<h2>Services Timeout<a class="headerlink" href="#services-timeout" title="Permalink to this heading">¶</a></h2>
 <p>If you want to change the default timeout of 5 seconds for service API calls:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">set_service_timeout</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">set_service_timeout</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
@@ -98,36 +99,12 @@ will be stored in chunks to adhere to this property if it is too long.</p>
 </div>
 </section>
 <section id="cache-times">
-<span id="id2"></span><h2>Cache Times<a class="headerlink" href="#cache-times" title="Permalink to this headline">¶</a></h2>
+<span id="id2"></span><h2>Cache Times<a class="headerlink" href="#cache-times" title="Permalink to this heading">¶</a></h2>
 <p>If you want to change the default cache time of exchange rates (60 seconds)
 or recommended fees (10 minutes):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">set_fee_cache_time</span><span class="p">,</span> <span class="n">set_rate_cache_time</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">set_rate_cache_time</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">set_fee_cache_time</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="hex-to-wif">
-<span id="hextowif"></span><h2>Hex to WIF<a class="headerlink" href="#hex-to-wif" title="Permalink to this headline">¶</a></h2>
-<p>If you store your keys as hex instead of WIF you lose the ability to retain
-metadata. To convert your hex keys to WIF to use certain properties, do this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">Key</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash.format</span> <span class="kn">import</span> <span class="n">hex_to_wif</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Compressed by default</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key1</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">wif</span> <span class="o">=</span> <span class="n">hex_to_wif</span><span class="p">(</span><span class="n">key1</span><span class="o">.</span><span class="n">to_hex</span><span class="p">(),</span> <span class="n">compressed</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key2</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="n">wif</span><span class="p">)</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Same point on curve</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key1</span> <span class="o">==</span> <span class="n">key2</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Different public keys for derivation of address</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key1</span><span class="o">.</span><span class="n">address</span>
-<span class="go">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key2</span><span class="o">.</span><span class="n">address</span>
-<span class="go">&#39;bitcoincash:qzryhmmxxmmjjccsj3zfhh06md4zkpdyngw2wrvnh4&#39;</span>
 </pre></div>
 </div>
 </section>
@@ -194,19 +171,20 @@ metadata. To convert your hex keys to WIF to use certain properties, do this:</p
   <li><a href="https://github.com/kennethreitz/requests">Requests</a></li>
   <li><a href="#">CashAddress</a></li>
 </ul>
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">Advanced</a><ul>
 <li><a class="reference internal" href="#server-integration">Server Integration</a></li>
 <li><a class="reference internal" href="#offline-transactions">Offline Transactions</a></li>
 <li><a class="reference internal" href="#blockchain-storage-op-return">Blockchain Storage (OP_RETURN)</a></li>
 <li><a class="reference internal" href="#services-timeout">Services Timeout</a></li>
 <li><a class="reference internal" href="#cache-times">Cache Times</a></li>
-<li><a class="reference internal" href="#hex-to-wif">Hex to WIF</a></li>
 </ul>
 </li>
 </ul>
-<div class="relations">
+
+  </div><div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
@@ -231,7 +209,7 @@ metadata. To convert your hex keys to WIF to use certain properties, do this:</p
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
+<script>document.getElementById('searchbox').style.display = "block"</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 
 <!-- Alabaster (krTheme++) Hacks -->
 

@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Developer Interface &#8212; bitcash 0.6.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -31,13 +32,13 @@
     <div class="body" role="main">
     
   <section id="module-bitcash">
-<span id="developer-interface"></span><span id="api"></span><h1>Developer Interface<a class="headerlink" href="#module-bitcash" title="Permalink to this headline">¶</a></h1>
+<span id="developer-interface"></span><span id="api"></span><h1>Developer Interface<a class="headerlink" href="#module-bitcash" title="Permalink to this heading">¶</a></h1>
 <section id="keys">
-<span id="keysapi"></span><h2>Keys<a class="headerlink" href="#keys" title="Permalink to this headline">¶</a></h2>
+<span id="keysapi"></span><h2>Keys<a class="headerlink" href="#keys" title="Permalink to this heading">¶</a></h2>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="bitcash.Key">
 <span class="sig-prename descclassname"><span class="pre">bitcash.</span></span><span class="sig-name descname"><span class="pre">Key</span></span><a class="headerlink" href="#bitcash.Key" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#bitcash.PrivateKey" title="bitcash.wallet.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">bitcash.wallet.PrivateKey</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#bitcash.PrivateKey" title="bitcash.wallet.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a></p>
 </dd></dl>
 
 <dl class="py class">
@@ -45,13 +46,13 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bitcash.</span></span><span class="sig-name descname"><span class="pre">PrivateKey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wif</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'main'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class represents a BitcoinCash private key. <code class="docutils literal notranslate"><span class="pre">Key</span></code> is an alias.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>wif</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A private key serialized to the Wallet Import Format. If the
 argument is not supplied, a new private key will be created.
 The WIF compression flag will be adhered to, but the version
 byte is disregarded. Compression will be used by all new keys.</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – If <code class="docutils literal notranslate"><span class="pre">wif</span></code> is not a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
 </dd>
 </dl>
@@ -66,10 +67,10 @@ byte is disregarded. Compression will be used by all new keys.</p>
 <span class="sig-name descname"><span class="pre">balance_as</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">currency</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.balance_as" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns your balance as a formatted string in a particular currency.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -80,7 +81,7 @@ byte is disregarded. Compression will be used by all new keys.</p>
 <span class="sig-name descname"><span class="pre">create_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fee</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leftover</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unspents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_pushdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.create_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>outputs</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
 <code class="docutils literal notranslate"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
@@ -104,10 +105,10 @@ each message will be stored in chunks of 220 bytes.</p></li>
 communicate with the blockchain itself.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The signed transaction as hex.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -117,10 +118,10 @@ communicate with the blockchain itself.</p></li>
 <dt class="sig sig-object py" id="bitcash.PrivateKey.from_bytes">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bytestr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_bytes" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>bytestr</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as hex.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#bitcash.PrivateKey" title="bitcash.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a></p>
 </dd>
 </dl>
@@ -130,10 +131,10 @@ communicate with the blockchain itself.</p></li>
 <dt class="sig sig-object py" id="bitcash.PrivateKey.from_der">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_der</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">der</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_der" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>der</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as DER.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#bitcash.PrivateKey" title="bitcash.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a></p>
 </dd>
 </dl>
@@ -143,10 +144,10 @@ communicate with the blockchain itself.</p></li>
 <dt class="sig sig-object py" id="bitcash.PrivateKey.from_hex">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hexed</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_hex" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>hexed</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A private key previously encoded as hex.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#bitcash.PrivateKey" title="bitcash.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a></p>
 </dd>
 </dl>
@@ -156,10 +157,10 @@ communicate with the blockchain itself.</p></li>
 <dt class="sig sig-object py" id="bitcash.PrivateKey.from_int">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_int" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>num</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – A private key in raw integer form.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#bitcash.PrivateKey" title="bitcash.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a></p>
 </dd>
 </dl>
@@ -169,10 +170,10 @@ communicate with the blockchain itself.</p></li>
 <dt class="sig sig-object py" id="bitcash.PrivateKey.from_pem">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_pem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.from_pem" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pem</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as PEM.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#bitcash.PrivateKey" title="bitcash.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a></p>
 </dd>
 </dl>
@@ -185,10 +186,10 @@ communicate with the blockchain itself.</p></li>
 <a class="reference internal" href="#bitcash.PrivateKey.get_balance" title="bitcash.PrivateKey.get_balance"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_balance()</span></code></a> and returns it using
 <a class="reference internal" href="#bitcash.PrivateKey.balance_as" title="bitcash.PrivateKey.balance_as"><code class="xref py py-func docutils literal notranslate"><span class="pre">balance_as()</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -199,7 +200,7 @@ communicate with the blockchain itself.</p></li>
 <span class="sig-name descname"><span class="pre">get_transactions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.get_transactions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches transaction history.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">str</span></code> transaction IDs</p>
 </dd>
 </dl>
@@ -210,7 +211,7 @@ communicate with the blockchain itself.</p></li>
 <span class="sig-name descname"><span class="pre">get_unspents</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.get_unspents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches all available unspent transaction outputs.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bitcash.network.meta.Unspent" title="bitcash.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a></p>
 </dd>
 </dl>
@@ -222,7 +223,7 @@ communicate with the blockchain itself.</p></li>
 <dd><p>Returns whether or not this private key corresponds to a compressed
 public key.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -233,7 +234,7 @@ public key.</p>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepare_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fee</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leftover</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unspents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.prepare_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepares a P2PKH transaction for offline signing.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address the funds will be sent from.</p></li>
 <li><p><strong>outputs</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
@@ -261,10 +262,10 @@ each message will be stored in chunks of 220 bytes.</p></li>
 communicate with the blockchain itself.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>JSON storing data required to create an offline transaction.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -294,7 +295,7 @@ communicate with the blockchain itself.</p></li>
 the blockchain. This accepts the same arguments as
 <a class="reference internal" href="#bitcash.PrivateKey.create_transaction" title="bitcash.PrivateKey.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>outputs</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
 <code class="docutils literal notranslate"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
@@ -319,10 +320,10 @@ each message will be stored in chunks of 220 bytes.</p></li>
 communicate with the blockchain itself.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The transaction ID.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -334,13 +335,13 @@ communicate with the blockchain itself.</p></li>
 <dd><p>Signs some data which can be verified later by others using
 the public key.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The message to sign.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A signature compliant with BIP-62.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
 </dl>
@@ -352,13 +353,13 @@ the public key.</p>
 <dd><p>Creates a signed P2PKH transaction using previously prepared
 transaction data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>tx_data</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Output of <a class="reference internal" href="#bitcash.PrivateKey.prepare_transaction" title="bitcash.PrivateKey.prepare_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_transaction()</span></code></a>.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The signed transaction as hex.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -368,7 +369,7 @@ transaction data.</p>
 <dt class="sig sig-object py" id="bitcash.PrivateKey.to_bytes">
 <span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.to_bytes" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
 </dl>
@@ -378,7 +379,7 @@ transaction data.</p>
 <dt class="sig sig-object py" id="bitcash.PrivateKey.to_der">
 <span class="sig-name descname"><span class="pre">to_der</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.to_der" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
 </dl>
@@ -388,7 +389,7 @@ transaction data.</p>
 <dt class="sig sig-object py" id="bitcash.PrivateKey.to_hex">
 <span class="sig-name descname"><span class="pre">to_hex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.to_hex" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -398,7 +399,7 @@ transaction data.</p>
 <dt class="sig sig-object py" id="bitcash.PrivateKey.to_int">
 <span class="sig-name descname"><span class="pre">to_int</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.to_int" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 </dd>
 </dl>
@@ -408,7 +409,7 @@ transaction data.</p>
 <dt class="sig sig-object py" id="bitcash.PrivateKey.to_pem">
 <span class="sig-name descname"><span class="pre">to_pem</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.to_pem" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
 </dl>
@@ -424,13 +425,13 @@ transaction data.</p>
 <span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKey.verify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies some data was signed by this private key.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signature</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The signature to verify.</p></li>
 <li><p><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The data that was supposedly signed.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -444,13 +445,13 @@ transaction data.</p>
 <dd><p>This class represents a testnet BitcoinCash private key. <strong>Note:</strong> coins
 on the test network have no monetary value!</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>wif</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A private key serialized to the Wallet Import Format. If the
 argument is not supplied, a new private key will be created.
 The WIF compression flag will be adhered to, but the version
 byte is disregarded. Compression will be used by all new keys.</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – If <code class="docutils literal notranslate"><span class="pre">wif</span></code> is not a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
 </dd>
 </dl>
@@ -465,10 +466,10 @@ byte is disregarded. Compression will be used by all new keys.</p>
 <span class="sig-name descname"><span class="pre">balance_as</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">currency</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.balance_as" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns your balance as a formatted string in a particular currency.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -479,7 +480,7 @@ byte is disregarded. Compression will be used by all new keys.</p>
 <span class="sig-name descname"><span class="pre">create_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fee</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leftover</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unspents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_pushdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.create_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>outputs</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
 <code class="docutils literal notranslate"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
@@ -504,10 +505,10 @@ each message will be stored in chunks of 220 bytes.</p></li>
 communicate with the blockchain itself.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The signed transaction as hex.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -517,10 +518,10 @@ communicate with the blockchain itself.</p></li>
 <dt class="sig sig-object py" id="bitcash.PrivateKeyTestnet.from_bytes">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bytestr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_bytes" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>bytestr</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as hex.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#bitcash.PrivateKeyTestnet" title="bitcash.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a></p>
 </dd>
 </dl>
@@ -530,10 +531,10 @@ communicate with the blockchain itself.</p></li>
 <dt class="sig sig-object py" id="bitcash.PrivateKeyTestnet.from_der">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_der</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">der</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_der" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>der</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as DER.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#bitcash.PrivateKeyTestnet" title="bitcash.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a></p>
 </dd>
 </dl>
@@ -543,10 +544,10 @@ communicate with the blockchain itself.</p></li>
 <dt class="sig sig-object py" id="bitcash.PrivateKeyTestnet.from_hex">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hexed</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_hex" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>hexed</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A private key previously encoded as hex.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#bitcash.PrivateKeyTestnet" title="bitcash.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a></p>
 </dd>
 </dl>
@@ -556,10 +557,10 @@ communicate with the blockchain itself.</p></li>
 <dt class="sig sig-object py" id="bitcash.PrivateKeyTestnet.from_int">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_int" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>num</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – A private key in raw integer form.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#bitcash.PrivateKeyTestnet" title="bitcash.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a></p>
 </dd>
 </dl>
@@ -569,10 +570,10 @@ communicate with the blockchain itself.</p></li>
 <dt class="sig sig-object py" id="bitcash.PrivateKeyTestnet.from_pem">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_pem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.from_pem" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pem</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as PEM.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#bitcash.PrivateKeyTestnet" title="bitcash.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a></p>
 </dd>
 </dl>
@@ -585,10 +586,10 @@ communicate with the blockchain itself.</p></li>
 <a class="reference internal" href="#bitcash.PrivateKey.get_balance" title="bitcash.PrivateKey.get_balance"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_balance()</span></code></a> and returns it using
 <a class="reference internal" href="#bitcash.PrivateKey.balance_as" title="bitcash.PrivateKey.balance_as"><code class="xref py py-func docutils literal notranslate"><span class="pre">balance_as()</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -599,7 +600,7 @@ communicate with the blockchain itself.</p></li>
 <span class="sig-name descname"><span class="pre">get_transactions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.get_transactions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches transaction history.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">str</span></code> transaction IDs</p>
 </dd>
 </dl>
@@ -610,7 +611,7 @@ communicate with the blockchain itself.</p></li>
 <span class="sig-name descname"><span class="pre">get_unspents</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.get_unspents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches all available unspent transaction outputs.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bitcash.network.meta.Unspent" title="bitcash.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a></p>
 </dd>
 </dl>
@@ -622,7 +623,7 @@ communicate with the blockchain itself.</p></li>
 <dd><p>Returns whether or not this private key corresponds to a compressed
 public key.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -633,7 +634,7 @@ public key.</p>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepare_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fee</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leftover</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unspents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.prepare_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepares a P2PKH transaction for offline signing.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address the funds will be sent from.</p></li>
 <li><p><strong>outputs</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
@@ -661,10 +662,10 @@ each message will be stored in chunks of 220 bytes.</p></li>
 communicate with the blockchain itself.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>JSON storing data required to create an offline transaction.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -694,7 +695,7 @@ communicate with the blockchain itself.</p></li>
 the blockchain. This accepts the same arguments as
 <a class="reference internal" href="#bitcash.PrivateKey.create_transaction" title="bitcash.PrivateKey.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>outputs</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
 <code class="docutils literal notranslate"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
@@ -719,10 +720,10 @@ each message will be stored in chunks of 220 bytes.</p></li>
 communicate with the blockchain itself.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The transaction ID.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -734,13 +735,13 @@ communicate with the blockchain itself.</p></li>
 <dd><p>Signs some data which can be verified later by others using
 the public key.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The message to sign.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A signature compliant with BIP-62.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
 </dl>
@@ -752,13 +753,13 @@ the public key.</p>
 <dd><p>Creates a signed P2PKH transaction using previously prepared
 transaction data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>tx_data</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Output of <a class="reference internal" href="#bitcash.PrivateKey.prepare_transaction" title="bitcash.PrivateKey.prepare_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_transaction()</span></code></a>.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The signed transaction as hex.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -768,7 +769,7 @@ transaction data.</p>
 <dt class="sig sig-object py" id="bitcash.PrivateKeyTestnet.to_bytes">
 <span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.to_bytes" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
 </dl>
@@ -778,7 +779,7 @@ transaction data.</p>
 <dt class="sig sig-object py" id="bitcash.PrivateKeyTestnet.to_der">
 <span class="sig-name descname"><span class="pre">to_der</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.to_der" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
 </dl>
@@ -788,7 +789,7 @@ transaction data.</p>
 <dt class="sig sig-object py" id="bitcash.PrivateKeyTestnet.to_hex">
 <span class="sig-name descname"><span class="pre">to_hex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.to_hex" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -798,7 +799,7 @@ transaction data.</p>
 <dt class="sig sig-object py" id="bitcash.PrivateKeyTestnet.to_int">
 <span class="sig-name descname"><span class="pre">to_int</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.to_int" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 </dd>
 </dl>
@@ -808,7 +809,7 @@ transaction data.</p>
 <dt class="sig sig-object py" id="bitcash.PrivateKeyTestnet.to_pem">
 <span class="sig-name descname"><span class="pre">to_pem</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.to_pem" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
 </dl>
@@ -824,13 +825,13 @@ transaction data.</p>
 <span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.verify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies some data was signed by this private key.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signature</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The signature to verify.</p></li>
 <li><p><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The data that was supposedly signed.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -845,13 +846,13 @@ transaction data.</p>
 provides all necessary cryptographic functionality. You shouldn’t use
 this class directly.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>wif</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A private key serialized to the Wallet Import Format. If the
 argument is not supplied, a new private key will be created.
 The WIF compression flag will be adhered to, but the version
 byte is disregarded. Compression will be used by all new keys.</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – If <code class="docutils literal notranslate"><span class="pre">wif</span></code> is not a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
 </dd>
 </dl>
@@ -861,7 +862,7 @@ byte is disregarded. Compression will be used by all new keys.</p>
 <dd><p>Returns whether or not this private key corresponds to a compressed
 public key.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -885,13 +886,13 @@ public key.</p>
 <dd><p>Signs some data which can be verified later by others using
 the public key.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The message to sign.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A signature compliant with BIP-62.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
 </dl>
@@ -901,7 +902,7 @@ the public key.</p>
 <dt class="sig sig-object py" id="bitcash.wallet.BaseKey.to_bytes">
 <span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.to_bytes" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
 </dl>
@@ -911,7 +912,7 @@ the public key.</p>
 <dt class="sig sig-object py" id="bitcash.wallet.BaseKey.to_der">
 <span class="sig-name descname"><span class="pre">to_der</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.to_der" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
 </dl>
@@ -921,7 +922,7 @@ the public key.</p>
 <dt class="sig sig-object py" id="bitcash.wallet.BaseKey.to_hex">
 <span class="sig-name descname"><span class="pre">to_hex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.to_hex" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -931,7 +932,7 @@ the public key.</p>
 <dt class="sig sig-object py" id="bitcash.wallet.BaseKey.to_int">
 <span class="sig-name descname"><span class="pre">to_int</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.to_int" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 </dd>
 </dl>
@@ -941,7 +942,7 @@ the public key.</p>
 <dt class="sig sig-object py" id="bitcash.wallet.BaseKey.to_pem">
 <span class="sig-name descname"><span class="pre">to_pem</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.to_pem" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
 </dl>
@@ -952,13 +953,13 @@ the public key.</p>
 <span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.wallet.BaseKey.verify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies some data was signed by this private key.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signature</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The signature to verify.</p></li>
 <li><p><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The data that was supposedly signed.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -968,7 +969,7 @@ the public key.</p>
 
 </section>
 <section id="network">
-<h2>Network<a class="headerlink" href="#network" title="Permalink to this headline">¶</a></h2>
+<h2>Network<a class="headerlink" href="#network" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bitcash.network.NetworkAPI">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bitcash.network.</span></span><span class="sig-name descname"><span class="pre">NetworkAPI</span></span><a class="headerlink" href="#bitcash.network.NetworkAPI" title="Permalink to this definition">¶</a></dt>
@@ -982,10 +983,10 @@ the public key.</p>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">broadcast_tx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tx_hex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mainnet'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.broadcast_tx" title="Permalink to this definition">¶</a></dt>
 <dd><p>Broadcasts a transaction to the blockchain.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>tx_hex</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A signed transaction in hex form.</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
 </dd>
 </dl>
@@ -996,13 +997,13 @@ the public key.</p>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mainnet'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_balance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the balance of an address in satoshi.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 </dd>
 </dl>
@@ -1013,13 +1014,13 @@ the public key.</p>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_raw_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">txid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mainnet'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_raw_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the raw, unparsed transaction details.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>txid</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The transaction id in question.</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Transaction</span></code></p>
 </dd>
 </dl>
@@ -1030,13 +1031,13 @@ the public key.</p>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">txid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mainnet'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the full transaction details.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>txid</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The transaction id in question.</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Transaction</span></code></p>
 </dd>
 </dl>
@@ -1047,13 +1048,13 @@ the public key.</p>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_transactions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mainnet'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_transactions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the ID of all transactions related to an address.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -1064,16 +1065,16 @@ the public key.</p>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tx_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">txid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">txindex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mainnet'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_tx_amount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the amount of a given transaction output.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>txid</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The transaction id in question.</p></li>
 <li><p><strong>txindex</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – The transaction index in question.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Decimal</span></code></p>
 </dd>
 </dl>
@@ -1084,13 +1085,13 @@ the public key.</p>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_unspent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mainnet'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.NetworkAPI.get_unspent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets all unspent transaction outputs belonging to an address.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ConnectionError</strong> – If all API services fail.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bitcash.network.meta.Unspent" title="bitcash.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a></p>
 </dd>
 </dl>
@@ -1141,7 +1142,7 @@ the public key.</p>
 
 </section>
 <section id="exchange-rates">
-<h2>Exchange Rates<a class="headerlink" href="#exchange-rates" title="Permalink to this headline">¶</a></h2>
+<h2>Exchange Rates<a class="headerlink" href="#exchange-rates" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bitcash.network.currency_to_satoshi">
 <span class="sig-prename descclassname"><span class="pre">bitcash.network.</span></span><span class="sig-name descname"><span class="pre">currency_to_satoshi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">currency</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.network.currency_to_satoshi" title="Permalink to this definition">¶</a></dt>
@@ -1149,13 +1150,13 @@ the public key.</p>
 satoshi. The amount can be either an int, float, or string as long as
 it is a valid input to <code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>amount</strong> – The quantity of currency.</p></li>
 <li><p><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 </dd>
 </dl>
@@ -1169,13 +1170,13 @@ satoshi. The amount can be either an int, float, or string as long as
 it is a valid input to <code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>. Results are cached
 using a decorator for 60 seconds by default. See <a class="reference internal" href="../guide/advanced.html#cache-times"><span class="std std-ref">Cache Times</span></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>amount</strong> – The quantity of currency.</p></li>
 <li><p><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 </dd>
 </dl>
@@ -1187,13 +1188,13 @@ using a decorator for 60 seconds by default. See <a class="reference internal" h
 <dd><p>Converts a given number of satoshi to another currency as a formatted
 string rounded down to the proper number of decimal places.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>num</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – The number of satoshi.</p></li>
 <li><p><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -1206,13 +1207,13 @@ string rounded down to the proper number of decimal places.</p>
 string rounded down to the proper number of decimal places. Results are
 cached using a decorator for 60 seconds by default. See <a class="reference internal" href="../guide/advanced.html#cache-times"><span class="std std-ref">Cache Times</span></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>num</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – The number of satoshi.</p></li>
 <li><p><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -1684,20 +1685,20 @@ number of satoshi.</p>
 
 </section>
 <section id="utilities">
-<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
+<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bitcash.verify_sig">
 <span class="sig-prename descclassname"><span class="pre">bitcash.</span></span><span class="sig-name descname"><span class="pre">verify_sig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">public_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bitcash.verify_sig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies some data was signed by the owner of a public key.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signature</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The signature to verify.</p></li>
 <li><p><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The data that was supposedly signed.</p></li>
 <li><p><strong>public_key</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The public key.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if all checks pass, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
 </dd>
 </dl>
@@ -1705,7 +1706,7 @@ number of satoshi.</p>
 
 </section>
 <section id="exceptions">
-<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this heading">¶</a></h2>
 <dl class="py exception">
 <dt class="sig sig-object py" id="bitcash.exceptions.InsufficientFunds">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bitcash.exceptions.</span></span><span class="sig-name descname"><span class="pre">InsufficientFunds</span></span><a class="headerlink" href="#bitcash.exceptions.InsufficientFunds" title="Permalink to this definition">¶</a></dt>
@@ -1772,8 +1773,9 @@ number of satoshi.</p>
   <li><a href="https://github.com/kennethreitz/requests">Requests</a></li>
   <li><a href="#">CashAddress</a></li>
 </ul>
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">Developer Interface</a><ul>
 <li><a class="reference internal" href="#keys">Keys</a></li>
 <li><a class="reference internal" href="#network">Network</a></li>
@@ -1783,7 +1785,8 @@ number of satoshi.</p>
 </ul>
 </li>
 </ul>
-<div class="relations">
+
+  </div><div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
@@ -1807,7 +1810,7 @@ number of satoshi.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
+<script>document.getElementById('searchbox').style.display = "block"</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 
 <!-- Alabaster (krTheme++) Hacks -->
 

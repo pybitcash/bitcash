@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Keys &#8212; bitcash 0.6.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -32,13 +33,13 @@
     <div class="body" role="main">
     
   <section id="keys">
-<span id="id1"></span><h1>Keys<a class="headerlink" href="#keys" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Keys<a class="headerlink" href="#keys" title="Permalink to this heading">¶</a></h1>
 <p>BitCash assumes the easiest way to reason about BitcoinCash is in the basic unit of a
 <a class="reference external" href="https://en.bitcoin.it/wiki/Private_key">private key</a> and, therefore, all functionality (viewing balance, making
 transactions, etc.) is wrapped up in this class for convenience. You shouldn’t
 have to use anything else.</p>
 <section id="what-is-a-private-key">
-<h2>What is a private key?<a class="headerlink" href="#what-is-a-private-key" title="Permalink to this headline">¶</a></h2>
+<h2>What is a private key?<a class="headerlink" href="#what-is-a-private-key" title="Permalink to this heading">¶</a></h2>
 <p>A private key is a derived point on an <a class="reference external" href="https://en.wikipedia.org/wiki/Elliptic_curve">elliptic curve</a>. BitcoinCash and other
 cryptocurrencies use the <a class="reference external" href="https://en.wikipedia.org/wiki/SECG">SEC</a> defined curve <a class="reference external" href="https://en.bitcoin.it/wiki/Secp256k1">secp256k1</a> due to its
 properties that allow for particularly fast computation. The secret part
@@ -48,7 +49,7 @@ on the curve from that value.</p>
 <p><strong>This value must be kept secret or you risk losing your funds permanently!</strong></p>
 </section>
 <section id="types">
-<h2>Types<a class="headerlink" href="#types" title="Permalink to this headline">¶</a></h2>
+<h2>Types<a class="headerlink" href="#types" title="Permalink to this heading">¶</a></h2>
 <p>bitcash defines 2 kinds of private keys: <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey" title="bitcash.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a>, aliased as
 simply <a class="reference internal" href="../dev/api.html#bitcash.Key" title="bitcash.Key"><code class="xref py py-class docutils literal notranslate"><span class="pre">Key</span></code></a>, and <a class="reference internal" href="../dev/api.html#bitcash.PrivateKeyTestnet" title="bitcash.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a>. Both classes
 have the exact same functionality.</p>
@@ -66,7 +67,7 @@ will use BitcoinCash’s test network where coins have no value. As such, the de
 address will also be different.</p>
 </section>
 <section id="creation">
-<h2>Creation<a class="headerlink" href="#creation" title="Permalink to this headline">¶</a></h2>
+<h2>Creation<a class="headerlink" href="#creation" title="Permalink to this heading">¶</a></h2>
 <p>Creation of a new private key is as simple as:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">Key</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
@@ -74,7 +75,7 @@ address will also be different.</p>
 </div>
 </section>
 <section id="public-point">
-<h2>Public Point<a class="headerlink" href="#public-point" title="Permalink to this headline">¶</a></h2>
+<h2>Public Point<a class="headerlink" href="#public-point" title="Permalink to this heading">¶</a></h2>
 <p>Each unique value applied to the curve will yield a unique point. As this
 is a one-way function, there is no known way to derive the private value
 from the point.</p>
@@ -86,10 +87,9 @@ from the point.</p>
 <p>You will never use this directly.</p>
 </section>
 <section id="public-key">
-<h2>Public Key<a class="headerlink" href="#public-key" title="Permalink to this headline">¶</a></h2>
+<h2>Public Key<a class="headerlink" href="#public-key" title="Permalink to this heading">¶</a></h2>
 <p>A public key is a public point serialized to bytes. By default all keys will
-use the compressed version unless <a class="reference internal" href="advanced.html#hextowif"><span class="std std-ref">you explicitly need otherwise</span></a>.
-This reduces the size of each transaction and thus fees.</p>
+use the compressed version. This reduces the size of each transaction and thus fees.</p>
 <p>Access it like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_key</span>
 <span class="go">b&#39;\x03\xd6\xc4\x88\xab[S\x1d_\xb1H\x12\xbe\x19C\x08\x16\x90~@\x9fv-\x95\xf0w\x87\xfdB\x81\xa3\xd2B&#39;</span>
@@ -99,7 +99,7 @@ This reduces the size of each transaction and thus fees.</p>
 derive your address and is needed in the construction of every transaction.</p>
 </section>
 <section id="address">
-<h2>Address<a class="headerlink" href="#address" title="Permalink to this headline">¶</a></h2>
+<h2>Address<a class="headerlink" href="#address" title="Permalink to this heading">¶</a></h2>
 <p>All keys possess an <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.address" title="bitcash.PrivateKey.address"><code class="xref py py-func docutils literal notranslate"><span class="pre">address()</span></code></a> property which is derived from your public key:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
 <span class="go">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span>
@@ -108,9 +108,9 @@ derive your address and is needed in the construction of every transaction.</p>
 <p>This is what you share with others to receive payments.</p>
 </section>
 <section id="formats">
-<h2>Formats<a class="headerlink" href="#formats" title="Permalink to this headline">¶</a></h2>
+<h2>Formats<a class="headerlink" href="#formats" title="Permalink to this heading">¶</a></h2>
 <section id="wif">
-<h3>WIF<a class="headerlink" href="#wif" title="Permalink to this headline">¶</a></h3>
+<h3>WIF<a class="headerlink" href="#wif" title="Permalink to this heading">¶</a></h3>
 <p>The <a class="reference external" href="https://en.bitcoin.it/wiki/Private_key#Base58_Wallet_Import_format">wallet import format</a> is the primary way of representing private keys. This
 format stores the secret value as well as some metadata such as whether or not the
 public key should be compressed.</p>
@@ -138,7 +138,7 @@ want to force the use of a particular class, you can do this:</p>
 </div>
 </section>
 <section id="hex">
-<h3>Hex<a class="headerlink" href="#hex" title="Permalink to this headline">¶</a></h3>
+<h3>Hex<a class="headerlink" href="#hex" title="Permalink to this heading">¶</a></h3>
 <p>Import:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_hex</span><span class="p">(</span><span class="s1">&#39;c28a9f80738f770d527803a566cf6fc3edf6cea586c4fc4a5223a5ad797e1ac3&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
@@ -153,7 +153,7 @@ want to force the use of a particular class, you can do this:</p>
 </div>
 </section>
 <section id="integer">
-<h3>Integer<a class="headerlink" href="#integer" title="Permalink to this headline">¶</a></h3>
+<h3>Integer<a class="headerlink" href="#integer" title="Permalink to this heading">¶</a></h3>
 <p>Import:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_int</span><span class="p">(</span><span class="mi">87993618360805341115891506172036624893404292644470266399436498750715784469187</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
@@ -168,7 +168,7 @@ want to force the use of a particular class, you can do this:</p>
 </div>
 </section>
 <section id="pem">
-<h3>PEM<a class="headerlink" href="#pem" title="Permalink to this headline">¶</a></h3>
+<h3>PEM<a class="headerlink" href="#pem" title="Permalink to this heading">¶</a></h3>
 <p>Import:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_pem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
@@ -183,7 +183,7 @@ want to force the use of a particular class, you can do this:</p>
 </div>
 </section>
 <section id="der">
-<h3>DER<a class="headerlink" href="#der" title="Permalink to this headline">¶</a></h3>
+<h3>DER<a class="headerlink" href="#der" title="Permalink to this heading">¶</a></h3>
 <p>Import:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_der</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
@@ -261,8 +261,9 @@ want to force the use of a particular class, you can do this:</p>
   <li><a href="https://github.com/kennethreitz/requests">Requests</a></li>
   <li><a href="#">CashAddress</a></li>
 </ul>
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">Keys</a><ul>
 <li><a class="reference internal" href="#what-is-a-private-key">What is a private key?</a></li>
 <li><a class="reference internal" href="#types">Types</a></li>
@@ -281,7 +282,8 @@ want to force the use of a particular class, you can do this:</p>
 </ul>
 </li>
 </ul>
-<div class="relations">
+
+  </div><div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
@@ -306,7 +308,7 @@ want to force the use of a particular class, you can do this:</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
+<script>document.getElementById('searchbox').style.display = "block"</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 
 <!-- Alabaster (krTheme++) Hacks -->
 

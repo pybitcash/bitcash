@@ -71,8 +71,7 @@ Public Key
 ----------
 
 A public key is a public point serialized to bytes. By default all keys will
-use the compressed version unless :ref:`you explicitly need otherwise <hextowif>`.
-This reduces the size of each transaction and thus fees.
+use the compressed version. This reduces the size of each transaction and thus fees.
 
 Access it like so:
 

@@ -94,32 +94,4 @@ or recommended fees (10 minutes):
     >>> set_rate_cache_time(30)
     >>> set_fee_cache_time(60 * 5)
 
-.. _hextowif:
-
-Hex to WIF
-----------
-
-If you store your keys as hex instead of WIF you lose the ability to retain
-metadata. To convert your hex keys to WIF to use certain properties, do this:
-
-.. code-block:: python
-
-    >>> from bitcash import Key
-    >>> from bitcash.format import hex_to_wif
-    >>>
-    >>> # Compressed by default
-    >>> key1 = Key()
-    >>>
-    >>> wif = hex_to_wif(key1.to_hex(), compressed=False)
-    >>> key2 = Key(wif)
-    >>>
-    >>> # Same point on curve
-    >>> key1 == key2
-    True
-    >>> # Different public keys for derivation of address
-    >>> key1.address
-    'bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5'
-    >>> key2.address
-    'bitcoincash:qzryhmmxxmmjjccsj3zfhh06md4zkpdyngw2wrvnh4'
-
 .. _store messages or data: https://en.bitcoin.it/wiki/OP_RETURN
