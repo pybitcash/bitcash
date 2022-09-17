@@ -1,6 +1,6 @@
 import json
 
-from bitcash.crypto import ECPrivateKey
+from bitcash.crypto import ECPrivateKey, ecies_encrypt, ecies_decrypt
 from bitcash.curve import Point
 from bitcash.exceptions import InvalidNetwork
 from bitcash.format import (
@@ -142,6 +142,22 @@ class BaseKey:
 
     def __eq__(self, other):
         return self.to_int() == other.to_int()
+
+    def encrypt_message(self, message):
+        """Encrypt message with the instance's public key
+
+        :param message: the message to be encrypted
+        :type message: ``bytes``
+        """
+        return ecies_encrypt(message, self.public_key)
+
+    def decrypt_message(self, encrypted):
+        """Decrypt the encrypted message using the instance's private key
+
+        :param encrypted: the message to be decrypted
+        :type encrypted: ``bytes``
+        """
+        return ecies_decrypt(encrypted, self._pk.secret)
 
 
 class PrivateKey(BaseKey):

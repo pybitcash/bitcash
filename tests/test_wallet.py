@@ -148,6 +148,21 @@ class TestBaseKey:
             WALLET_FORMAT_COMPRESSED_MAIN
         )
 
+    def test_encrypt_decrypt(self):
+        # successful test
+        key = BaseKey()
+        message = b'test'
+        encrypted_message = key.encrypt_message(message)
+        decrypted_message = key.decrypt_message(encrypted_message)
+        assert message == decrypted_message
+
+        # failed test
+        key = BaseKey()
+        message = b'test'
+        encrypted_message = key.encrypt_message(message)
+        with pytest.raises(ValueError):
+            decrypted_message = BaseKey().decrypt_message(encrypted_message)
+
 
 class TestPrivateKey:
     def test_alias(self):
