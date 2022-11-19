@@ -1,18 +1,24 @@
+# macOS junk
+.DS_store
+
+# Pyenv
 .python-version
+
 *.log
 *.pyc
 *.orig
-.DS_Store
 __pycache__
 /.cache
 /.idea
-/.coverage
-/.pytest_cache
 /bitcash.egg-info
 /build
 /dist
 /docs/build
 /wheelhouse
 venv/
+
+# Unit tests
 /.tox
 htmlcov/
+/.coverage
+/.pytest_cache
