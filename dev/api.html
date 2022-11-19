@@ -14,6 +14,7 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="Authors" href="../community/authors.html" />
@@ -1777,11 +1778,216 @@ number of satoshi.</p>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">Developer Interface</a><ul>
-<li><a class="reference internal" href="#keys">Keys</a></li>
-<li><a class="reference internal" href="#network">Network</a></li>
-<li><a class="reference internal" href="#exchange-rates">Exchange Rates</a></li>
-<li><a class="reference internal" href="#utilities">Utilities</a></li>
-<li><a class="reference internal" href="#exceptions">Exceptions</a></li>
+<li><a class="reference internal" href="#keys">Keys</a><ul>
+<li><a class="reference internal" href="#bitcash.Key"><code class="docutils literal notranslate"><span class="pre">Key</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey"><code class="docutils literal notranslate"><span class="pre">PrivateKey</span></code></a><ul>
+<li><a class="reference internal" href="#bitcash.PrivateKey.address"><code class="docutils literal notranslate"><span class="pre">PrivateKey.address</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.balance_as"><code class="docutils literal notranslate"><span class="pre">PrivateKey.balance_as()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.create_transaction"><code class="docutils literal notranslate"><span class="pre">PrivateKey.create_transaction()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.from_bytes"><code class="docutils literal notranslate"><span class="pre">PrivateKey.from_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.from_der"><code class="docutils literal notranslate"><span class="pre">PrivateKey.from_der()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.from_hex"><code class="docutils literal notranslate"><span class="pre">PrivateKey.from_hex()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.from_int"><code class="docutils literal notranslate"><span class="pre">PrivateKey.from_int()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.from_pem"><code class="docutils literal notranslate"><span class="pre">PrivateKey.from_pem()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.get_balance"><code class="docutils literal notranslate"><span class="pre">PrivateKey.get_balance()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.get_transactions"><code class="docutils literal notranslate"><span class="pre">PrivateKey.get_transactions()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.get_unspents"><code class="docutils literal notranslate"><span class="pre">PrivateKey.get_unspents()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.is_compressed"><code class="docutils literal notranslate"><span class="pre">PrivateKey.is_compressed()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.prepare_transaction"><code class="docutils literal notranslate"><span class="pre">PrivateKey.prepare_transaction()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.public_key"><code class="docutils literal notranslate"><span class="pre">PrivateKey.public_key</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.public_point"><code class="docutils literal notranslate"><span class="pre">PrivateKey.public_point</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.scriptcode"><code class="docutils literal notranslate"><span class="pre">PrivateKey.scriptcode</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.send"><code class="docutils literal notranslate"><span class="pre">PrivateKey.send()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.sign"><code class="docutils literal notranslate"><span class="pre">PrivateKey.sign()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.sign_transaction"><code class="docutils literal notranslate"><span class="pre">PrivateKey.sign_transaction()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.to_bytes"><code class="docutils literal notranslate"><span class="pre">PrivateKey.to_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.to_der"><code class="docutils literal notranslate"><span class="pre">PrivateKey.to_der()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.to_hex"><code class="docutils literal notranslate"><span class="pre">PrivateKey.to_hex()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.to_int"><code class="docutils literal notranslate"><span class="pre">PrivateKey.to_int()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.to_pem"><code class="docutils literal notranslate"><span class="pre">PrivateKey.to_pem()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.to_wif"><code class="docutils literal notranslate"><span class="pre">PrivateKey.to_wif()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.verify"><code class="docutils literal notranslate"><span class="pre">PrivateKey.verify()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a><ul>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.address"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.address</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.balance_as"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.balance_as()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.create_transaction"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.create_transaction()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.from_bytes"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.from_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.from_der"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.from_der()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.from_hex"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.from_hex()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.from_int"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.from_int()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.from_pem"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.from_pem()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.get_balance"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.get_balance()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.get_transactions"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.get_transactions()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.get_unspents"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.get_unspents()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.is_compressed"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.is_compressed()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.prepare_transaction"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.prepare_transaction()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.public_key"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.public_key</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.public_point"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.public_point</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.scriptcode"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.scriptcode</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.send"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.send()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.sign"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.sign()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.sign_transaction"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.sign_transaction()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.to_bytes"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.to_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.to_der"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.to_der()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.to_hex"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.to_hex()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.to_int"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.to_int()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.to_pem"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.to_pem()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.to_wif"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.to_wif()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.verify"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.verify()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bitcash.wallet.BaseKey"><code class="docutils literal notranslate"><span class="pre">BaseKey</span></code></a><ul>
+<li><a class="reference internal" href="#bitcash.wallet.BaseKey.is_compressed"><code class="docutils literal notranslate"><span class="pre">BaseKey.is_compressed()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.wallet.BaseKey.public_key"><code class="docutils literal notranslate"><span class="pre">BaseKey.public_key</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.wallet.BaseKey.public_point"><code class="docutils literal notranslate"><span class="pre">BaseKey.public_point</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.wallet.BaseKey.sign"><code class="docutils literal notranslate"><span class="pre">BaseKey.sign()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.wallet.BaseKey.to_bytes"><code class="docutils literal notranslate"><span class="pre">BaseKey.to_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.wallet.BaseKey.to_der"><code class="docutils literal notranslate"><span class="pre">BaseKey.to_der()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.wallet.BaseKey.to_hex"><code class="docutils literal notranslate"><span class="pre">BaseKey.to_hex()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.wallet.BaseKey.to_int"><code class="docutils literal notranslate"><span class="pre">BaseKey.to_int()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.wallet.BaseKey.to_pem"><code class="docutils literal notranslate"><span class="pre">BaseKey.to_pem()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.wallet.BaseKey.verify"><code class="docutils literal notranslate"><span class="pre">BaseKey.verify()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#network">Network</a><ul>
+<li><a class="reference internal" href="#bitcash.network.NetworkAPI"><code class="docutils literal notranslate"><span class="pre">NetworkAPI</span></code></a><ul>
+<li><a class="reference internal" href="#bitcash.network.NetworkAPI.IGNORED_ERRORS"><code class="docutils literal notranslate"><span class="pre">NetworkAPI.IGNORED_ERRORS</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.NetworkAPI.broadcast_tx"><code class="docutils literal notranslate"><span class="pre">NetworkAPI.broadcast_tx()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.NetworkAPI.get_balance"><code class="docutils literal notranslate"><span class="pre">NetworkAPI.get_balance()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.NetworkAPI.get_raw_transaction"><code class="docutils literal notranslate"><span class="pre">NetworkAPI.get_raw_transaction()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.NetworkAPI.get_transaction"><code class="docutils literal notranslate"><span class="pre">NetworkAPI.get_transaction()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.NetworkAPI.get_transactions"><code class="docutils literal notranslate"><span class="pre">NetworkAPI.get_transactions()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.NetworkAPI.get_tx_amount"><code class="docutils literal notranslate"><span class="pre">NetworkAPI.get_tx_amount()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.NetworkAPI.get_unspent"><code class="docutils literal notranslate"><span class="pre">NetworkAPI.get_unspent()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bitcash.network.meta.Unspent"><code class="docutils literal notranslate"><span class="pre">Unspent</span></code></a><ul>
+<li><a class="reference internal" href="#bitcash.network.meta.Unspent.amount"><code class="docutils literal notranslate"><span class="pre">Unspent.amount</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.meta.Unspent.confirmations"><code class="docutils literal notranslate"><span class="pre">Unspent.confirmations</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.meta.Unspent.from_dict"><code class="docutils literal notranslate"><span class="pre">Unspent.from_dict()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.meta.Unspent.script"><code class="docutils literal notranslate"><span class="pre">Unspent.script</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.meta.Unspent.to_dict"><code class="docutils literal notranslate"><span class="pre">Unspent.to_dict()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.meta.Unspent.txid"><code class="docutils literal notranslate"><span class="pre">Unspent.txid</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.meta.Unspent.txindex"><code class="docutils literal notranslate"><span class="pre">Unspent.txindex</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exchange-rates">Exchange Rates</a><ul>
+<li><a class="reference internal" href="#bitcash.network.currency_to_satoshi"><code class="docutils literal notranslate"><span class="pre">currency_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.currency_to_satoshi_cached"><code class="docutils literal notranslate"><span class="pre">currency_to_satoshi_cached()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.satoshi_to_currency"><code class="docutils literal notranslate"><span class="pre">satoshi_to_currency()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.satoshi_to_currency_cached"><code class="docutils literal notranslate"><span class="pre">satoshi_to_currency_cached()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI"><code class="docutils literal notranslate"><span class="pre">RatesAPI</span></code></a><ul>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.ARS_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.ARS_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.AUD_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.AUD_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.BOB_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.BOB_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.BRL_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.BRL_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.CAD_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.CAD_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.CHF_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.CHF_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.CLP_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.CLP_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.CNY_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.CNY_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.COP_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.COP_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.CUP_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.CUP_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.DKK_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.DKK_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.DOP_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.DOP_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.EUR_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.EUR_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.GBP_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.GBP_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.HKD_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.HKD_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.IGNORED_ERRORS"><code class="docutils literal notranslate"><span class="pre">RatesAPI.IGNORED_ERRORS</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.ISK_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.ISK_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.JPY_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.JPY_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.KRW_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.KRW_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.MXN_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.MXN_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.NZD_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.NZD_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.PEN_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.PEN_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.PLN_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.PLN_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.RUB_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.RUB_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.SEK_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.SEK_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.SGD_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.SGD_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.THB_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.THB_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.TWD_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.TWD_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.USD_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.USD_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.UYU_RATES"><code class="docutils literal notranslate"><span class="pre">RatesAPI.UYU_RATES</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.ars_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.ars_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.aud_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.aud_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.bob_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.bob_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.brl_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.brl_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.cad_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.cad_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.chf_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.chf_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.clp_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.clp_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.cny_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.cny_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.cop_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.cop_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.cup_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.cup_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.dkk_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.dkk_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.dop_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.dop_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.eur_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.eur_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.gbp_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.gbp_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.hkd_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.hkd_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.isk_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.isk_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.jpy_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.jpy_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.krw_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.krw_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.mxn_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.mxn_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.nzd_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.nzd_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.pen_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.pen_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.pln_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.pln_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.rub_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.rub_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.sek_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.sek_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.sgd_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.sgd_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.thb_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.thb_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.twd_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.twd_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.usd_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.usd_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.RatesAPI.uyu_to_satoshi"><code class="docutils literal notranslate"><span class="pre">RatesAPI.uyu_to_satoshi()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates"><code class="docutils literal notranslate"><span class="pre">BitpayRates</span></code></a><ul>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.SINGLE_RATE"><code class="docutils literal notranslate"><span class="pre">BitpayRates.SINGLE_RATE</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.ars_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.ars_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.aud_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.aud_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.bob_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.bob_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.brl_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.brl_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.cad_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.cad_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.chf_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.chf_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.clp_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.clp_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.cny_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.cny_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.cop_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.cop_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.cup_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.cup_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.currency_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.currency_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.dkk_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.dkk_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.dop_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.dop_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.eur_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.eur_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.gbp_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.gbp_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.hkd_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.hkd_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.isk_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.isk_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.jpy_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.jpy_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.krw_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.krw_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.mxn_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.mxn_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.nzd_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.nzd_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.pen_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.pen_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.pln_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.pln_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.rub_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.rub_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.sek_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.sek_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.sgd_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.sgd_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.thb_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.thb_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.twd_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.twd_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.usd_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.usd_to_satoshi()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.rates.BitpayRates.uyu_to_satoshi"><code class="docutils literal notranslate"><span class="pre">BitpayRates.uyu_to_satoshi()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utilities">Utilities</a><ul>
+<li><a class="reference internal" href="#bitcash.verify_sig"><code class="docutils literal notranslate"><span class="pre">verify_sig()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exceptions">Exceptions</a><ul>
+<li><a class="reference internal" href="#bitcash.exceptions.InsufficientFunds"><code class="docutils literal notranslate"><span class="pre">InsufficientFunds</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
