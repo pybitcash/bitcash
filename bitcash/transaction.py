@@ -3,7 +3,7 @@ from collections import namedtuple
 
 from bitcash.crypto import double_sha256, sha256
 from bitcash.exceptions import InsufficientFunds
-from bitcash.format import address_to_public_key_hash
+from bitcash.format import Address
 from bitcash.network.rates import currency_to_satoshi_cached
 from bitcash.utils import (
     bytes_to_hex,
@@ -30,6 +30,7 @@ OP_0 = b"\x00"
 OP_CHECKLOCKTIMEVERIFY = b"\xb1"
 OP_CHECKSIG = b"\xac"
 OP_DUP = b"v"
+OP_EQUAL = b"\x87"
 OP_EQUALVERIFY = b"\x88"
 OP_HASH160 = b"\xa9"
 OP_PUSH_20 = b"\x14"
@@ -77,24 +78,37 @@ def calc_txid(tx_hex):
     return bytes_to_hex(double_sha256(hex_to_bytes(tx_hex))[::-1])
 
 
-def estimate_tx_fee(n_in, n_out, satoshis, compressed, op_return_size=0):
+def estimate_tx_fee(
+    n_in,
+    n_out_p2pkh,
+    n_out_p2sh,
+    satoshis,
+    compressed,
+    op_return_size=0
+):
 
     if not satoshis:
         return 0
+
+    n_out = n_out_p2sh + n_out_p2pkh
 
     estimated_size = (
         4
         + n_in * (148 if compressed else 180)  # version
         + len(int_to_unknown_bytes(n_in, byteorder="little"))
-        + n_out * 34  # excluding op_return outputs, dealt with separately
+        # excluding op_return outputs, dealt with separately
+        + n_out_p2pkh * 34
+        + n_out_p2sh * 32
         + len(int_to_unknown_bytes(n_out, byteorder="little"))
-        + op_return_size  # grand total size of op_return outputs(s) and related field(s)
+        # grand total size of op_return outputs(s) and related field(s)
+        + op_return_size
         + 4  # time lock
     )
 
     estimated_fee = estimated_size * satoshis
 
-    logging.debug(f"Estimated fee: {estimated_fee} satoshis for {estimated_size} bytes")
+    logging.debug(f"Estimated fee: {estimated_fee}"
+                  f" satoshis for {estimated_size} bytes")
 
     return estimated_fee
 
@@ -163,7 +177,18 @@ def sanitize_tx_data(
 
     for i, output in enumerate(outputs):
         dest, amount, currency = output
-        outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))
+        dest = Address.from_string(dest)
+
+        if "P2PKH" not in dest.version and "P2SH" not in dest.version:
+            # Bitcash currently only supports P2PKH, P2SH transaction outputs
+            # others will raise ValueError
+            raise ValueError("Bitcash currently only supports"
+                             " P2PKH/P2SH outputs")
+
+        outputs[i] = (
+            dest,
+            currency_to_satoshi_cached(amount, currency)
+        )
 
     if not unspents:
         raise ValueError("Transactions must have at least one unspent.")
@@ -182,25 +207,37 @@ def sanitize_tx_data(
 
         for message in message_chunks:
             messages.append((message, 0))
-            total_op_return_size += get_op_return_size(message, custom_pushdata=False)
+            total_op_return_size += get_op_return_size(message,
+                                                       custom_pushdata=False)
 
     elif message and (custom_pushdata is True):
         if len(message) >= 220:
             # FIXME add capability for >220 bytes for custom pushdata elements
-            raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
+            raise ValueError("Currently cannot exceed 220 "
+                             "bytes with custom_pushdata.")
         else:
             messages.append((message, 0))
-            total_op_return_size += get_op_return_size(message, custom_pushdata=True)
+            total_op_return_size += get_op_return_size(message,
+                                                       custom_pushdata=True)
 
     # Include return address in fee estimate.
     total_in = 0
-    num_outputs = len(outputs) + 1
+    num_p2pkh_outputs = sum(["P2PKH" in out[0].version for out in outputs])
+    # Bitcash only supports P2PKH utxos, return address is added as P2PKH
+    num_p2pkh_outputs += 1
+    # counting P2SH outs, will adjust fee estimate
+    num_p2sh_outputs = sum(["P2SH" in out[0].version for out in outputs])
     sum_outputs = sum(out[1] for out in outputs)
 
     if combine:
         # calculated_fee is in total satoshis.
         calculated_fee = estimate_tx_fee(
-            len(unspents), num_outputs, fee, compressed, total_op_return_size
+            len(unspents),
+            num_p2pkh_outputs,
+            num_p2sh_outputs,
+            fee,
+            compressed,
+            total_op_return_size
         )
         total_out = sum_outputs + calculated_fee
         unspents = unspents.copy()
@@ -215,7 +252,8 @@ def sanitize_tx_data(
             total_in += unspent.amount
             calculated_fee = estimate_tx_fee(
                 len(unspents[: index + 1]),
-                num_outputs,
+                num_p2pkh_outputs,
+                num_p2sh_outputs,
                 fee,
                 compressed,
                 total_op_return_size,
@@ -230,7 +268,7 @@ def sanitize_tx_data(
     remaining = total_in - total_out
 
     if remaining > 0:
-        outputs.append((leftover, remaining))
+        outputs.append((Address.from_string(leftover), remaining))
     elif remaining < 0:
         raise InsufficientFunds(
             f"Balance {total_in} is less than " f"{total_out} (including fee)."
@@ -250,14 +288,27 @@ def construct_output_block(outputs, custom_pushdata=False):
 
         # Real recipient
         if amount:
-            script = (
-                OP_DUP
-                + OP_HASH160
-                + OP_PUSH_20
-                + address_to_public_key_hash(dest)
-                + OP_EQUALVERIFY
-                + OP_CHECKSIG
-            )
+            if isinstance(dest, str):
+                dest = Address.from_string(dest)
+            if "P2PKH" in dest.version:
+                script = (
+                    OP_DUP
+                    + OP_HASH160
+                    + OP_PUSH_20
+                    + bytes(dest.payload)
+                    + OP_EQUALVERIFY
+                    + OP_CHECKSIG
+                )
+            elif "P2SH" in dest.version:
+                script = (
+                    OP_HASH160
+                    + OP_PUSH_20
+                    + bytes(dest.payload)
+                    + OP_EQUAL
+                )
+            else:
+                raise ValueError("Bitcash currently only supports"
+                                 " P2PKH/P2SH outputs")
 
             output_block += amount.to_bytes(8, byteorder="little")
 
@@ -298,7 +349,12 @@ def construct_input_block(inputs):
     return input_block
 
 
-def create_p2pkh_transaction(private_key, unspents, outputs, custom_pushdata=False):
+def create_p2pkh_transaction(
+    private_key,
+    unspents,
+    outputs,
+    custom_pushdata=False
+):
 
     public_key = private_key.public_key
     public_key_len = len(public_key).to_bytes(1, byteorder="little")
@@ -313,7 +369,8 @@ def create_p2pkh_transaction(private_key, unspents, outputs, custom_pushdata=Fal
     input_count = int_to_unknown_bytes(len(unspents), byteorder="little")
     output_count = int_to_unknown_bytes(len(outputs), byteorder="little")
 
-    output_block = construct_output_block(outputs, custom_pushdata=custom_pushdata)
+    output_block = construct_output_block(outputs,
+                                          custom_pushdata=custom_pushdata)
 
     # Optimize for speed, not memory, by pre-computing values.
     inputs = []
@@ -326,7 +383,8 @@ def create_p2pkh_transaction(private_key, unspents, outputs, custom_pushdata=Fal
 
         inputs.append(TxIn(script, script_len, txid, txindex, amount))
 
-    hashPrevouts = double_sha256(b"".join([i.txid + i.txindex for i in inputs]))
+    hashPrevouts = double_sha256(b"".join([i.txid + i.txindex
+                                           for i in inputs]))
     hashSequence = double_sha256(b"".join([SEQUENCE for i in inputs]))
     hashOutputs = double_sha256(output_block)
 
@@ -359,7 +417,8 @@ def create_p2pkh_transaction(private_key, unspents, outputs, custom_pushdata=Fal
         )
 
         inputs[i].script = script_sig
-        inputs[i].script_len = int_to_unknown_bytes(len(script_sig), byteorder="little")
+        inputs[i].script_len = int_to_unknown_bytes(len(script_sig),
+                                                    byteorder="little")
 
     return bytes_to_hex(
         version

@@ -100,6 +100,18 @@ class Address:
             f"version: {self.version}\npayload: {self.payload}\nprefix: {self.prefix}"
         )
 
+    def __repr__(self):
+        return f"Address('{self.cash_address()}')"
+
+    def __eq__(self, other):
+        if isinstance(other, str):
+            return self.cash_address() == other
+        elif isinstance(other, Address):
+            return self.cash_address() == other.cash_address()
+        else:
+            raise ValueError("Address can be compared to a string address"
+                             " or an instance of Address")
+
     def cash_address(self):
         version_bit = Address.VERSIONS[self.version]["version_bit"]
         payload = [version_bit] + self.payload

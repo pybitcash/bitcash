@@ -47,10 +47,11 @@ def verify_sig(signature, data, public_key):
 def address_to_public_key_hash(address):
     address = Address.from_string(address)
 
-    if "P2PKH" not in address.version:
-        # Bitcash currently only has support for P2PKH transaction types
-        # P2SH and others will raise ValueError
-        raise ValueError("Bitcash currently only supports P2PKH addresses")
+    if "P2PKH" not in address.version and "P2SH" not in address.version:
+        # Bitcash currently only supports P2PKH, P2SH transaction outputs
+        # others will raise ValueError
+        raise ValueError("Bitcash currently only supports"
+                         " P2PKH/P2SH addresses")
 
     return bytes(address.payload)
 
@@ -118,12 +119,14 @@ def wif_checksum_check(wif):
 
 
 def public_key_to_address(public_key, version="main"):
-    # Currently Bitcash only support P2PKH (not P2SH)
-    VERSIONS = {"main": "P2PKH", "test": "P2PKH-TESTNET", "regtest": "P2PKH-REGTEST"}
+    # Currently Bitcash only support P2PKH (not P2SH) utxos
+    VERSIONS = {
+        "main": "P2PKH", "test": "P2PKH-TESTNET", "regtest": "P2PKH-REGTEST"
+    }
 
     try:
         version = VERSIONS[version]
-    except:
+    except Exception:
         raise ValueError("Invalid version: {}".format(version))
     # 33 bytes compressed, 65 uncompressed.
     length = len(public_key)

@@ -18,13 +18,13 @@ BITCOIN_CASHADDRESS_TEST = "bchtest:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqjxnsx26x"
 BITCOIN_CASHADDRESS_TEST_COMPRESSED = (
     "bchtest:qzvsaasdvw6mt9j2rs3gyps673gj86flev3z0s40ln"
 )
-BITCOIN_CASHADDRESS_TEST_PAY2SH = "bchtest:prezv854vnyallagz5zuz5lmjkle8x2rpqfas9t47r"
+BITCOIN_CASHADDRESS_TEST_PAY2SH = "bchtest:pp23x8hm0g8d6nrkesamaqeml3v6daeudv90694pv4"
 
 BITCOIN_CASHADDRESS_REGTEST = "bchreg:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqg6939eeq"
 BITCOIN_CASHADDRESS_REGTEST_COMPRESSED = (
     "bchreg:qzvsaasdvw6mt9j2rs3gyps673gj86flevt7e3kuu4"
 )
-BITCOIN_CASHADDRESS_REGTEST_PAY2SH = "bchreg:prezv854vnyallagz5zuz5lmjkle8x2rpqnpxygxa9"
+BITCOIN_CASHADDRESS_REGTEST_PAY2SH = "bchreg:pp23x8hm0g8d6nrkesamaqeml3v6daeudvlnvykj0n"
 
 VALID_ENDPOINT_URLS = ["https://rest.bch.actorforth.org/v2/",
                        "https://rest.bitcoin.com/v2/"]
@@ -57,6 +57,7 @@ PRIVATE_KEY_PEM = (
 
 PUBKEY_HASH = b"\x92F\x1b\xdeb\x83\xb4a\xec\xe7\xdd\xf4\xdb\xf1\xe0\xa4\x8b\xd1\x13\xd8"
 PUBKEY_HASH_COMPRESSED = b'\x99\x0e\xf6\rc\xb5\xb5\x96J\x1c"\x82\x06\x1a\xf4Q#\xe9?\xcb'
+PUBKEY_HASH_P2SH = b'U\x13\x1e\xfbz\x0e\xddLv\xcc;\xbe\x83;\xfcY\xa6\xf7<k'
 PUBLIC_KEY_COMPRESSED = b"\x03=\\(u\xc9\xbd\x11hu\xa7\x1a]\xb6L\xff\xcb\x139k\x16=\x03\x9b\x1d\x93'\x82H\x91\x80C4"
 PUBLIC_KEY_UNCOMPRESSED = (
     b"\x04=\\(u\xc9\xbd\x11hu\xa7\x1a]\xb6L\xff\xcb\x139k\x16=\x03"

@@ -16,6 +16,9 @@ Unreleased (see `master <https://github.com/ofek/bitcash>`_)
 - NetworkAPI.get_tx_amount() is now working and properly handles
   backends returning string or decimal values.
 
+- Wallets can pay to script hash. However, P2SH utxo spending is still
+  not supported.
+
 0.5.2 (2018-05-16)
 ------------------
 

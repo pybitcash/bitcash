@@ -9,7 +9,6 @@ from bitcash.format import (
     point_to_public_key,
     public_key_to_coords,
     public_key_to_address,
-    public_key_to_address,
     verify_sig,
     wif_checksum_check,
     wif_to_bytes,
@@ -28,6 +27,7 @@ from .samples import (
     BITCOIN_CASHADDRESS_REGTEST_PAY2SH,
     PRIVATE_KEY_BYTES,
     PUBKEY_HASH,
+    PUBKEY_HASH_P2SH,
     BITCOIN_CASHADDRESS,
     BITCOIN_CASHADDRESS_TEST,
     BITCOIN_CASHADDRESS_TEST_COMPRESSED,
@@ -245,14 +245,22 @@ def test_address_to_public_key_hash():
         address_to_public_key_hash(BITCOIN_CASHADDRESS_TEST_COMPRESSED)
         == PUBKEY_HASH_COMPRESSED
     )
-    assert address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST) == PUBKEY_HASH
+    assert (
+        address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST) == PUBKEY_HASH
+    )
     assert (
         address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST_COMPRESSED)
         == PUBKEY_HASH_COMPRESSED
     )
-    with pytest.raises(ValueError):
+    assert(
         address_to_public_key_hash(BITCOIN_CASHADDRESS_PAY2SH)
-    with pytest.raises(ValueError):
+        == PUBKEY_HASH_P2SH
+    )
+    assert(
         address_to_public_key_hash(BITCOIN_CASHADDRESS_TEST_PAY2SH)
-    with pytest.raises(ValueError):
+        == PUBKEY_HASH_P2SH
+    )
+    assert(
         address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST_PAY2SH)
+        == PUBKEY_HASH_P2SH
+    )

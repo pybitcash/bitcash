@@ -17,6 +17,7 @@ from .samples import (
     WALLET_FORMAT_MAIN,
     BITCOIN_CASHADDRESS,
     BITCOIN_CASHADDRESS_COMPRESSED,
+    BITCOIN_CASHADDRESS_PAY2SH,
 )
 
 
@@ -317,6 +318,44 @@ class TestSanitizeTxData:
                 message=None,
             )
 
+    def test_with_P2SH_outputs(self):
+        # tx:af386b52b9804c4d37d0bcf9ca124b34264d2f0a306ea11ee74c90d939402cb7
+        unspents_original = [
+            Unspent(5691944, 0, "", "", 0),
+            Unspent(17344, 0, "", "", 0)
+        ]
+        outputs_original = [
+            (BITCOIN_CASHADDRESS_PAY2SH, 11065, "satoshi"),
+        ]
+
+        unspents, outputs = sanitize_tx_data(
+            unspents_original,
+            outputs_original,
+            fee=1,
+            leftover=RETURN_ADDRESS,
+            combine=True,
+            message=None,
+        )
+
+        assert outputs[1][1] == 5697851
+
+        # multi PAY2SH test
+        outputs_original = [
+            (BITCOIN_CASHADDRESS_PAY2SH, 11065, "satoshi"),
+            (BITCOIN_CASHADDRESS_PAY2SH, 11065, "satoshi"),
+        ]
+
+        unspents, outputs = sanitize_tx_data(
+            unspents_original,
+            outputs_original,
+            fee=1,
+            leftover=RETURN_ADDRESS,
+            combine=True,
+            message=None,
+        )
+
+        assert outputs[2][1] == 5686754
+
 
 class TestCreateSignedTransaction:
     def test_matching(self):
@@ -328,13 +367,15 @@ class TestCreateSignedTransaction:
 
 class TestEstimateTxFee:
     def test_accurate_compressed(self):
-        assert estimate_tx_fee(1, 2, 70, True) == 15820
+        assert estimate_tx_fee(1, 2, 0, 70, True) == 15820
+        assert estimate_tx_fee(1, 2, 2, 70, True) == 20300
+        assert estimate_tx_fee(1, 0, 2, 70, True) == 15540
 
     def test_accurate_uncompressed(self):
-        assert estimate_tx_fee(1, 2, 70, False) == 18060
+        assert estimate_tx_fee(1, 2, 0, 70, False) == 18060
 
     def test_none(self):
-        assert estimate_tx_fee(5, 5, 0, True) == 0
+        assert estimate_tx_fee(5, 5, 0, 0, True) == 0
 
 
 class TestConstructOutputBlock:
