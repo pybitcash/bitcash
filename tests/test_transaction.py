@@ -322,7 +322,7 @@ class TestSanitizeTxData:
         # tx:af386b52b9804c4d37d0bcf9ca124b34264d2f0a306ea11ee74c90d939402cb7
         unspents_original = [
             Unspent(5691944, 0, "", "", 0),
-            Unspent(17344, 0, "", "", 0)
+            Unspent(17344, 0, "", "", 0),
         ]
         outputs_original = [
             (BITCOIN_CASHADDRESS_PAY2SH, 11065, "satoshi"),

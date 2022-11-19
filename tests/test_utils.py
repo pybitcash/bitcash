@@ -10,7 +10,7 @@ from bitcash.utils import (
     int_to_varint,
 )
 
-BIG_INT = 123456789 ** 5
+BIG_INT = 123456789**5
 BYTES_BIG = b"TH8\xe2\xaaN\xd7^aX7\x93\xe7\xc6\xa3\x02\x85"
 BYTES_LITTLE = b"\x85\x02\xa3\xc6\xe7\x937Xa^\xd7N\xaa\xe28HT"
 HEX = "544838e2aa4ed75e61583793e7c6a30285"

@@ -109,8 +109,10 @@ class Address:
         elif isinstance(other, Address):
             return self.cash_address() == other.cash_address()
         else:
-            raise ValueError("Address can be compared to a string address"
-                             " or an instance of Address")
+            raise ValueError(
+                "Address can be compared to a string address"
+                " or an instance of Address"
+            )
 
     def cash_address(self):
         version_bit = Address.VERSIONS[self.version]["version_bit"]

@@ -26,12 +26,12 @@ BITCOIN_CASHADDRESS_REGTEST_COMPRESSED = (
 )
 BITCOIN_CASHADDRESS_REGTEST_PAY2SH = "bchreg:pp23x8hm0g8d6nrkesamaqeml3v6daeudvlnvykj0n"
 
-VALID_ENDPOINT_URLS = ["https://rest.bch.actorforth.org/v2/",
-                       "https://rest.bitcoin.com/v2/"]
+VALID_ENDPOINT_URLS = [
+    "https://rest.bch.actorforth.org/v2/",
+    "https://rest.bitcoin.com/v2/",
+]
 
-INVALID_ENDPOINT_URLS = ["htp://fakesite.com/v2",
-                         "https://bitcom.org/",
-                         42]
+INVALID_ENDPOINT_URLS = ["htp://fakesite.com/v2", "https://bitcom.org/", 42]
 
 PRIVATE_KEY_BYTES = b"\xc2\x8a\x9f\x80s\x8fw\rRx\x03\xa5f\xcfo\xc3\xed\xf6\xce\xa5\x86\xc4\xfcJR#\xa5\xady~\x1a\xc3"
 PRIVATE_KEY_DER = (
@@ -57,7 +57,7 @@ PRIVATE_KEY_PEM = (
 
 PUBKEY_HASH = b"\x92F\x1b\xdeb\x83\xb4a\xec\xe7\xdd\xf4\xdb\xf1\xe0\xa4\x8b\xd1\x13\xd8"
 PUBKEY_HASH_COMPRESSED = b'\x99\x0e\xf6\rc\xb5\xb5\x96J\x1c"\x82\x06\x1a\xf4Q#\xe9?\xcb'
-PUBKEY_HASH_P2SH = b'U\x13\x1e\xfbz\x0e\xddLv\xcc;\xbe\x83;\xfcY\xa6\xf7<k'
+PUBKEY_HASH_P2SH = b"U\x13\x1e\xfbz\x0e\xddLv\xcc;\xbe\x83;\xfcY\xa6\xf7<k"
 PUBLIC_KEY_COMPRESSED = b"\x03=\\(u\xc9\xbd\x11hu\xa7\x1a]\xb6L\xff\xcb\x139k\x16=\x03\x9b\x1d\x93'\x82H\x91\x80C4"
 PUBLIC_KEY_UNCOMPRESSED = (
     b"\x04=\\(u\xc9\xbd\x11hu\xa7\x1a]\xb6L\xff\xcb\x139k\x16=\x03"

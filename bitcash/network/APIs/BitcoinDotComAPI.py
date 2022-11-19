@@ -13,7 +13,7 @@ BCH_TO_SAT_MULTIPLIER = 100000000
 
 
 class BitcoinDotComAPI:
-    """ rest.bitcoin.com API """
+    """rest.bitcoin.com API"""
 
     def __init__(self, network_endpoint: str):
         try:
@@ -21,14 +21,18 @@ class BitcoinDotComAPI:
             assert network_endpoint[:4] == "http"
             assert network_endpoint[-4:] == "/v2/"
         except AssertionError:
-            raise InvalidEndpointURLProvided(f"Provided endpoint '{network_endpoint}' is not a valid URL for a Bitcoin.com-based REST endpoint")
+            raise InvalidEndpointURLProvided(
+                f"Provided endpoint '{network_endpoint}' is not a valid URL for a Bitcoin.com-based REST endpoint"
+            )
 
         self.network_endpoint = network_endpoint
 
     # Default endpoints to use for this interface
     DEFAULT_ENDPOINTS = {
-        "mainnet": ["https://rest.bch.actorforth.org/v2/",
-                    "https://rest.bitcoin.com/v2/"],
+        "mainnet": [
+            "https://rest.bch.actorforth.org/v2/",
+            "https://rest.bitcoin.com/v2/",
+        ],
         "testnet": ["https://trest.bitcoin.com/v2/"],
         "regtest": ["http://localhost:12500/v2/"],
     }

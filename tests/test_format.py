@@ -245,22 +245,16 @@ def test_address_to_public_key_hash():
         address_to_public_key_hash(BITCOIN_CASHADDRESS_TEST_COMPRESSED)
         == PUBKEY_HASH_COMPRESSED
     )
-    assert (
-        address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST) == PUBKEY_HASH
-    )
+    assert address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST) == PUBKEY_HASH
     assert (
         address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST_COMPRESSED)
         == PUBKEY_HASH_COMPRESSED
     )
-    assert(
-        address_to_public_key_hash(BITCOIN_CASHADDRESS_PAY2SH)
-        == PUBKEY_HASH_P2SH
+    assert address_to_public_key_hash(BITCOIN_CASHADDRESS_PAY2SH) == PUBKEY_HASH_P2SH
+    assert (
+        address_to_public_key_hash(BITCOIN_CASHADDRESS_TEST_PAY2SH) == PUBKEY_HASH_P2SH
     )
-    assert(
-        address_to_public_key_hash(BITCOIN_CASHADDRESS_TEST_PAY2SH)
-        == PUBKEY_HASH_P2SH
-    )
-    assert(
+    assert (
         address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST_PAY2SH)
         == PUBKEY_HASH_P2SH
     )

@@ -50,8 +50,7 @@ def address_to_public_key_hash(address):
     if "P2PKH" not in address.version and "P2SH" not in address.version:
         # Bitcash currently only supports P2PKH, P2SH transaction outputs
         # others will raise ValueError
-        raise ValueError("Bitcash currently only supports"
-                         " P2PKH/P2SH addresses")
+        raise ValueError("Bitcash currently only supports" " P2PKH/P2SH addresses")
 
     return bytes(address.payload)
 
@@ -120,9 +119,7 @@ def wif_checksum_check(wif):
 
 def public_key_to_address(public_key, version="main"):
     # Currently Bitcash only support P2PKH (not P2SH) utxos
-    VERSIONS = {
-        "main": "P2PKH", "test": "P2PKH-TESTNET", "regtest": "P2PKH-REGTEST"
-    }
+    VERSIONS = {"main": "P2PKH", "test": "P2PKH-TESTNET", "regtest": "P2PKH-REGTEST"}
 
     try:
         version = VERSIONS[version]

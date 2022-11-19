@@ -15,9 +15,9 @@ ONE = Decimal(1)
 
 # https://en.bitcoin.it/wiki/Units
 SATOSHI = 1
-uBCH = 10 ** 2
-mBCH = 10 ** 5
-BCH = 10 ** 8
+uBCH = 10**2
+mBCH = 10**5
+BCH = 10**8
 
 SUPPORTED_CURRENCIES = OrderedDict(
     [

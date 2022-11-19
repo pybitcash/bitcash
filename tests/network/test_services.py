@@ -83,8 +83,7 @@ class TestNetworkAPI:
 
     def test_get_transactions_mainnet(self):
         time.sleep(1)
-        results = NetworkAPI.get_transactions(MAIN_ADDRESS_USED1,
-                                              network="mainnet")
+        results = NetworkAPI.get_transactions(MAIN_ADDRESS_USED1, network="mainnet")
         assert isinstance(results, list)
         assert len(results) > 0
 
@@ -94,7 +93,9 @@ class TestNetworkAPI:
 
     def test_get_transaction_mainnet(self):
         time.sleep(1)
-        assert isinstance(NetworkAPI.get_transaction(MAIN_TX, network="mainnet"), Transaction)
+        assert isinstance(
+            NetworkAPI.get_transaction(MAIN_TX, network="mainnet"), Transaction
+        )
 
     # FIXME: enable this when testnet APIs are fixed/replaced
     # def test_get_transaction_testnet(self):
@@ -228,14 +229,14 @@ class TestBitcoinDotComAPI:
         endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
         for endpoint in endpoints:
             this_endpoint = BitcoinDotComAPI(endpoint)
-            assert (len(this_endpoint.get_transactions(MAIN_ADDRESS_USED1)) >= 218)
+            assert len(this_endpoint.get_transactions(MAIN_ADDRESS_USED1)) >= 218
 
     def test_get_transactions_mainnet_unused(self):
         time.sleep(1)
         endpoints = BitcoinDotComAPI.get_default_endpoints("mainnet")
         for endpoint in endpoints:
             this_endpoint = BitcoinDotComAPI(endpoint)
-            assert (len(this_endpoint.get_transactions(MAIN_ADDRESS_UNUSED)) == 0)
+            assert len(this_endpoint.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_transactions_mainnet_failure(self):
         with pytest.raises(ConnectionError):

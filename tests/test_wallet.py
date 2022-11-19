@@ -221,14 +221,17 @@ class TestPrivateKey:
         # tx:af386b52b9804c4d37d0bcf9ca124b34264d2f0a306ea11ee74c90d939402cb7
         unspents_original = [
             Unspent(5691944, 1, "aa", "aa", 0),
-            Unspent(17344, 0, "ab", "ab", 0)]
+            Unspent(17344, 0, "ab", "ab", 0),
+        ]
         outputs_original = [
-            ('bitcoincash:prseh0a4aejjcewhc665wjqhppgwrz2lw5txgn666a',
-             11065,
-             "satoshi"),
+            (
+                "bitcoincash:prseh0a4aejjcewhc665wjqhppgwrz2lw5txgn666a",
+                11065,
+                "satoshi",
+            ),
         ]
 
-        key = wif_to_key('cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ')
+        key = wif_to_key("cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ")
         tx = key.create_transaction(
             outputs_original,
             unspents=unspents_original,
@@ -236,18 +239,17 @@ class TestPrivateKey:
             leftover="bitcoincash:qpqpu8xr56gmccalfssssjm2pcpv6d2fhur48wjdzf",
         )
         out = tx[476:]
-        
+
         # test outputs
         assert out[:2] == "02"
         # P2SH output value
-        assert int.from_bytes(bytes.fromhex(out[2:18]), 'little') == 11065
+        assert int.from_bytes(bytes.fromhex(out[2:18]), "little") == 11065
         # P2SH locking script
-        assert out[18:66] == '17a914e19bbfb5ee652c65d7c6b54748170850e1895f7587'
+        assert out[18:66] == "17a914e19bbfb5ee652c65d7c6b54748170850e1895f7587"
         # leftover value
-        assert int.from_bytes(bytes.fromhex(out[66:82]),
-                              'little') == 5697851
+        assert int.from_bytes(bytes.fromhex(out[66:82]), "little") == 5697851
         # leftover P2PKH locking script
-        _ = '1976a914401e1cc3a691bc63bf4c21084b6a0e02cd3549bf88ac'
+        _ = "1976a914401e1cc3a691bc63bf4c21084b6a0e02cd3549bf88ac"
         assert out[82:-8] == _
 
 
