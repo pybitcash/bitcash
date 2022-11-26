@@ -367,15 +367,16 @@ class TestCreateSignedTransaction:
 
 class TestEstimateTxFee:
     def test_accurate_compressed(self):
-        assert estimate_tx_fee(1, 2, 0, 70, True) == 15820
-        assert estimate_tx_fee(1, 2, 2, 70, True) == 20300
-        assert estimate_tx_fee(1, 0, 2, 70, True) == 15540
+        assert estimate_tx_fee(1, 2, 0, 0, 70, True) == 15820
+        assert estimate_tx_fee(1, 2, 2, 0, 70, True) == 20300
+        assert estimate_tx_fee(1, 0, 2, 0, 70, True) == 15540
+        assert estimate_tx_fee(1, 0, 0, 2, 70, True) == 17220
 
     def test_accurate_uncompressed(self):
-        assert estimate_tx_fee(1, 2, 0, 70, False) == 18060
+        assert estimate_tx_fee(1, 2, 0, 0, 70, False) == 18060
 
     def test_none(self):
-        assert estimate_tx_fee(5, 5, 0, 0, True) == 0
+        assert estimate_tx_fee(5, 5, 0, 0, 0, True) == 0
 
 
 class TestConstructOutputBlock:
