@@ -1,4 +1,5 @@
 from hashlib import new, sha256 as _sha256
+from bitcash._ripemd160 import ripemd160
 
 from coincurve import PrivateKey as ECPrivateKey, PublicKey as ECPublicKey
 
@@ -16,7 +17,7 @@ def double_sha256_checksum(bytestr):
 
 
 def ripemd160_sha256(bytestr):
-    return new("ripemd160", sha256(bytestr)).digest()
+    return ripemd160(sha256(bytestr))
 
 
 hash160 = ripemd160_sha256
