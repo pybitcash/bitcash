@@ -33,7 +33,9 @@ OP_DUP = b"v"
 OP_EQUAL = b"\x87"
 OP_EQUALVERIFY = b"\x88"
 OP_HASH160 = b"\xa9"
+OP_HASH256 = b"\xaa"
 OP_PUSH_20 = b"\x14"
+OP_PUSH_32 = b"\x20"
 OP_RETURN = b"\x6a"
 OP_PUSHDATA1 = b"\x4c"
 OP_PUSHDATA2 = b"\x4d"
@@ -79,12 +81,13 @@ def calc_txid(tx_hex):
 
 
 def estimate_tx_fee(
-    n_in, n_out_p2pkh, n_out_p2sh, satoshis, compressed, op_return_size=0
+    n_in, n_out_p2pkh, n_out_p2sh, n_out_p2sh32,
+    satoshis, compressed, op_return_size=0
 ):
     if not satoshis:
         return 0
 
-    n_out = n_out_p2sh + n_out_p2pkh
+    n_out = n_out_p2sh + n_out_p2pkh + n_out_p2sh32
 
     estimated_size = (
         4
@@ -93,6 +96,7 @@ def estimate_tx_fee(
         # excluding op_return outputs, dealt with separately
         + n_out_p2pkh * 34
         + n_out_p2sh * 32
+        + n_out_p2sh32 * 44
         + len(int_to_unknown_bytes(n_out, byteorder="little"))
         # grand total size of op_return outputs(s) and related field(s)
         + op_return_size
@@ -217,6 +221,8 @@ def sanitize_tx_data(
     num_p2pkh_outputs += 1
     # counting P2SH outs, will adjust fee estimate
     num_p2sh_outputs = sum(["P2SH" in out[0].version for out in outputs])
+    num_p2sh32_outputs = sum(["P2SH32" in out[0].version for out in outputs])
+    num_p2sh_outputs -= num_p2sh32_outputs
     sum_outputs = sum(out[1] for out in outputs)
 
     if combine:
@@ -225,6 +231,7 @@ def sanitize_tx_data(
             len(unspents),
             num_p2pkh_outputs,
             num_p2sh_outputs,
+            num_p2sh32_outputs,
             fee,
             compressed,
             total_op_return_size,
@@ -244,6 +251,7 @@ def sanitize_tx_data(
                 len(unspents[: index + 1]),
                 num_p2pkh_outputs,
                 num_p2sh_outputs,
+                num_p2sh32_outputs,
                 fee,
                 compressed,
                 total_op_return_size,
@@ -289,7 +297,20 @@ def construct_output_block(outputs, custom_pushdata=False):
                     + OP_CHECKSIG
                 )
             elif "P2SH" in dest.version:
-                script = OP_HASH160 + OP_PUSH_20 + bytes(dest.payload) + OP_EQUAL
+                if "P2SH32" in dest.version:
+                    script = (
+                        OP_HASH256
+                        + OP_PUSH_32
+                        + bytes(dest.payload)
+                        + OP_EQUAL
+                    )
+                else:
+                    script = (
+                        OP_HASH160
+                        + OP_PUSH_20
+                        + bytes(dest.payload)
+                        + OP_EQUAL
+                    )
             else:
                 raise ValueError(
                     "Bitcash currently only supports" " P2PKH/P2SH outputs"
