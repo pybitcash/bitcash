@@ -17,7 +17,10 @@ def double_sha256_checksum(bytestr):
 
 
 def ripemd160_sha256(bytestr):
-    return ripemd160(sha256(bytestr))
+    try:
+        return new("ripemd160", sha256(bytestr)).digest()
+    except Exception:
+        return ripemd160(sha256(bytestr))
 
 
 hash160 = ripemd160_sha256
