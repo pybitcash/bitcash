@@ -81,14 +81,14 @@ def calc_txid(tx_hex):
 
 
 def estimate_tx_fee(
-    n_in, n_out_p2pkh, n_out_p2sh, n_out_p2sh32,
+    n_in, n_out_p2pkh, n_out_p2sh20, n_out_p2sh32,
     satoshis, compressed, op_return_size=0
 ):
 
     if not satoshis:
         return 0
 
-    n_out = n_out_p2sh + n_out_p2pkh + n_out_p2sh32
+    n_out = n_out_p2sh20 + n_out_p2pkh + n_out_p2sh32
 
     estimated_size = (
         4
@@ -96,7 +96,7 @@ def estimate_tx_fee(
         + len(int_to_unknown_bytes(n_in, byteorder="little"))
         # excluding op_return outputs, dealt with separately
         + n_out_p2pkh * 34
-        + n_out_p2sh * 32
+        + n_out_p2sh20 * 32
         + n_out_p2sh32 * 44
         + len(int_to_unknown_bytes(n_out, byteorder="little"))
         # grand total size of op_return outputs(s) and related field(s)
@@ -221,9 +221,8 @@ def sanitize_tx_data(
     # Bitcash only supports P2PKH utxos, return address is added as P2PKH
     num_p2pkh_outputs += 1
     # counting P2SH outs, will adjust fee estimate
-    num_p2sh_outputs = sum(["P2SH" in out[0].version for out in outputs])
+    num_p2sh20_outputs = sum(["P2SH20" in out[0].version for out in outputs])
     num_p2sh32_outputs = sum(["P2SH32" in out[0].version for out in outputs])
-    num_p2sh_outputs -= num_p2sh32_outputs
     sum_outputs = sum(out[1] for out in outputs)
 
     if combine:
@@ -231,7 +230,7 @@ def sanitize_tx_data(
         calculated_fee = estimate_tx_fee(
             len(unspents),
             num_p2pkh_outputs,
-            num_p2sh_outputs,
+            num_p2sh20_outputs,
             num_p2sh32_outputs,
             fee,
             compressed,
@@ -251,7 +250,7 @@ def sanitize_tx_data(
             calculated_fee = estimate_tx_fee(
                 len(unspents[: index + 1]),
                 num_p2pkh_outputs,
-                num_p2sh_outputs,
+                num_p2sh20_outputs,
                 num_p2sh32_outputs,
                 fee,
                 compressed,
@@ -298,21 +297,20 @@ def construct_output_block(outputs, custom_pushdata=False):
                     + OP_EQUALVERIFY
                     + OP_CHECKSIG
                 )
-            elif "P2SH" in dest.version:
-                if "P2SH32" in dest.version:
-                    script = (
-                        OP_HASH256
-                        + OP_PUSH_32
-                        + bytes(dest.payload)
-                        + OP_EQUAL
-                    )
-                else:
-                    script = (
-                        OP_HASH160
-                        + OP_PUSH_20
-                        + bytes(dest.payload)
-                        + OP_EQUAL
-                    )
+            elif "P2SH20" in dest.version:
+                script = (
+                    OP_HASH160
+                    + OP_PUSH_20
+                    + bytes(dest.payload)
+                    + OP_EQUAL
+                )
+            elif "P2SH32" in dest.version:
+                script = (
+                    OP_HASH256
+                    + OP_PUSH_32
+                    + bytes(dest.payload)
+                    + OP_EQUAL
+                )
             else:
                 raise ValueError(
                     "Bitcash currently only supports" " P2PKH/P2SH outputs"
