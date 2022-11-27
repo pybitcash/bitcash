@@ -1,5 +1,5 @@
 import pytest
-import hashlib
+from bitcash import crypto
 from _pytest.monkeypatch import MonkeyPatch
 from bitcash.exceptions import InvalidAddress
 
@@ -217,7 +217,7 @@ class TestPublicKeyToAddress:
         )
 
 
-def mock_hashlib(data):
+def mock_hashlib(name, data):
     """Force ValueError from hashlib.new to fallback to pythonic ripemd160"""
     raise ValueError()
 
@@ -227,49 +227,49 @@ class TestPublicKeyToAddress_pythonic_ripemd:
         self.monkeypatch = MonkeyPatch()
 
     def test_public_key_to_address_compressed(self):
-        self.monkeypatch.setattr(hashlib, 'new', mock_hashlib)
+        self.monkeypatch.setattr(crypto, 'new', mock_hashlib)
         assert (
             public_key_to_address(PUBLIC_KEY_COMPRESSED)
             == BITCOIN_CASHADDRESS_COMPRESSED
         )
 
     def test_public_key_to_address_uncompressed(self):
-        self.monkeypatch.setattr(hashlib, 'new', mock_hashlib)
+        self.monkeypatch.setattr(crypto, 'new', mock_hashlib)
         assert public_key_to_address(PUBLIC_KEY_UNCOMPRESSED) == BITCOIN_CASHADDRESS
 
     def test_public_key_to_address_incorrect_length(self):
-        self.monkeypatch.setattr(hashlib, 'new', mock_hashlib)
+        self.monkeypatch.setattr(crypto, 'new', mock_hashlib)
         with pytest.raises(ValueError):
             public_key_to_address(PUBLIC_KEY_COMPRESSED[:-1])
 
     def test_public_key_to_address_incorrect_version(self):
-        self.monkeypatch.setattr(hashlib, 'new', mock_hashlib)
+        self.monkeypatch.setattr(crypto, 'new', mock_hashlib)
         with pytest.raises(ValueError):
             public_key_to_address(PUBLIC_KEY_COMPRESSED, "incorrect-version")
 
     def test_public_key_to_address_test_compressed(self):
-        self.monkeypatch.setattr(hashlib, 'new', mock_hashlib)
+        self.monkeypatch.setattr(crypto, 'new', mock_hashlib)
         assert (
             public_key_to_address(PUBLIC_KEY_COMPRESSED, version="test")
             == BITCOIN_CASHADDRESS_TEST_COMPRESSED
         )
 
     def test_public_key_to_address_test_uncompressed(self):
-        self.monkeypatch.setattr(hashlib, 'new', mock_hashlib)
+        self.monkeypatch.setattr(crypto, 'new', mock_hashlib)
         assert (
             public_key_to_address(PUBLIC_KEY_UNCOMPRESSED, version="test")
             == BITCOIN_CASHADDRESS_TEST
         )
 
     def test_public_key_to_address_regtest_compressed(self):
-        self.monkeypatch.setattr(hashlib, 'new', mock_hashlib)
+        self.monkeypatch.setattr(crypto, 'new', mock_hashlib)
         assert (
             public_key_to_address(PUBLIC_KEY_COMPRESSED, version="regtest")
             == BITCOIN_CASHADDRESS_REGTEST_COMPRESSED
         )
 
     def test_public_key_to_address_regtest_uncompressed(self):
-        self.monkeypatch.setattr(hashlib, 'new', mock_hashlib)
+        self.monkeypatch.setattr(crypto, 'new', mock_hashlib)
         assert (
             public_key_to_address(PUBLIC_KEY_UNCOMPRESSED, version="regtest")
             == BITCOIN_CASHADDRESS_REGTEST
