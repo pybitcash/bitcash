@@ -75,20 +75,20 @@ def prefix_expand(prefix):
 
 class Address:
     VERSIONS = {
-        "P2SH": {"prefix": "bitcoincash", "version_bit": 8, "network": "mainnet"},
+        "P2SH20": {"prefix": "bitcoincash", "version_bit": 8, "network": "mainnet"},
         "P2SH32": {"prefix": "bitcoincash", "version_bit": 11, "network": "mainnet"},
         "P2PKH": {"prefix": "bitcoincash", "version_bit": 0, "network": "mainnet"},
-        "P2SH-TESTNET": {"prefix": "bchtest", "version_bit": 8, "network": "testnet"},
+        "P2SH20-TESTNET": {"prefix": "bchtest", "version_bit": 8, "network": "testnet"},
         "P2SH32-TESTNET": {"prefix": "bchtest", "version_bit": 11, "network": "testnet"},
         "P2PKH-TESTNET": {"prefix": "bchtest", "version_bit": 0, "network": "testnet"},
-        "P2SH-REGTEST": {"prefix": "bchreg", "version_bit": 8, "network": "regtest"},
+        "P2SH20-REGTEST": {"prefix": "bchreg", "version_bit": 8, "network": "regtest"},
         "P2SH32-REGTEST": {"prefix": "bchreg", "version_bit": 11, "network": "regtest"},
         "P2PKH-REGTEST": {"prefix": "bchreg", "version_bit": 0, "network": "regtest"},
     }
 
     VERSION_SUFFIXES = {"bitcoincash": "", "bchtest": "-TESTNET", "bchreg": "-REGTEST"}
 
-    ADDRESS_TYPES = {0: "P2PKH", 8: "P2SH", 11: "P2SH32"}
+    ADDRESS_TYPES = {0: "P2PKH", 8: "P2SH20", 11: "P2SH32"}
 
     def __init__(self, version, payload):
         if not version in Address.VERSIONS:
