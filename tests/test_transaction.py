@@ -129,7 +129,7 @@ class TestTxIn:
 class TestSanitizeTxData:
     def test_no_input(self):
         with pytest.raises(ValueError):
-            sanitize_tx_data([], [], 70, "")
+            sanitize_tx_data([], [], 70, BITCOIN_CASHADDRESS)
 
     def test_message(self):
         unspents_original = [Unspent(10000, 0, "", "", 0), Unspent(10000, 0, "", "", 0)]

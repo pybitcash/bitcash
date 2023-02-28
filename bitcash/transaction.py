@@ -160,6 +160,7 @@ def sanitize_tx_data(
     """
 
     outputs = outputs.copy()
+    leftover = Address.from_string(leftover)
 
     for i, output in enumerate(outputs):
         dest, amount, currency = output
@@ -201,14 +202,21 @@ def sanitize_tx_data(
             messages.append((message, 0))
             total_op_return_size += get_op_return_size(message, custom_pushdata=True)
 
-    # Include return address in fee estimate.
     total_in = 0
+    # counting outs, will adjust fee estimate
     num_p2pkh_outputs = sum(["P2PKH" in out[0].version for out in outputs])
-    # Bitcash only supports P2PKH utxos, return address is added as P2PKH
-    num_p2pkh_outputs += 1
-    # counting P2SH outs, will adjust fee estimate
     num_p2sh20_outputs = sum(["P2SH20" in out[0].version for out in outputs])
     num_p2sh32_outputs = sum(["P2SH32" in out[0].version for out in outputs])
+    # Include return or leftover address in fee estimate.
+    if "P2PKH" in leftover.version:
+        num_p2pkh_outputs += 1
+    elif "P2SH20" in leftover.version:
+        num_p2sh20_outputs += 1
+    elif "P2SH32" in leftover.version:
+        num_p2sh32_outputs += 1
+    else:
+        raise ValueError("Bitcash currently only supports P2PKH and P2SH"
+                         "outputs")
     sum_outputs = sum(out[1] for out in outputs)
 
     if combine:
@@ -252,7 +260,7 @@ def sanitize_tx_data(
     remaining = total_in - total_out
 
     if remaining > 0:
-        outputs.append((Address.from_string(leftover), remaining))
+        outputs.append((leftover, remaining))
     elif remaining < 0:
         raise InsufficientFunds(
             f"Balance {total_in} is less than " f"{total_out} (including fee)."
