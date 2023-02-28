@@ -5,6 +5,7 @@ from bitcash.crypto import double_sha256, sha256
 from bitcash.exceptions import InsufficientFunds
 from bitcash.format import Address
 from bitcash.network.rates import currency_to_satoshi_cached
+from bitcash.op import OpCodes
 from bitcash.utils import (
     bytes_to_hex,
     chunk_data,
@@ -25,21 +26,6 @@ SIGHASH_FORKID = 0x40.to_bytes(4, byteorder="little")
 # So we just do this for now. FIXME
 HASH_TYPE = 0x41.to_bytes(4, byteorder="little")
 ##
-
-OP_0 = b"\x00"
-OP_CHECKLOCKTIMEVERIFY = b"\xb1"
-OP_CHECKSIG = b"\xac"
-OP_DUP = b"v"
-OP_EQUAL = b"\x87"
-OP_EQUALVERIFY = b"\x88"
-OP_HASH160 = b"\xa9"
-OP_HASH256 = b"\xaa"
-OP_PUSH_20 = b"\x14"
-OP_PUSH_32 = b"\x20"
-OP_RETURN = b"\x6a"
-OP_PUSHDATA1 = b"\x4c"
-OP_PUSHDATA2 = b"\x4d"
-OP_PUSHDATA4 = b"\x4e"
 
 MESSAGE_LIMIT = 220
 
@@ -118,7 +104,7 @@ def get_op_return_size(message, custom_pushdata=False):
     if custom_pushdata is False:
         op_return_size = (
             8  # int64_t amount 0x00000000
-            + len(OP_RETURN)  # 1 byte
+            + len(OpCodes.OP_RETURN.b)  # 1 byte
             + len(
                 get_op_pushdata_code(message)
             )  # 1 byte if <75 bytes, 2 bytes if OP_PUSHDATA1...
@@ -128,7 +114,7 @@ def get_op_return_size(message, custom_pushdata=False):
     if custom_pushdata is True:
         op_return_size = (
             8  # int64_t amount 0x00000000
-            + len(OP_RETURN)  # 1 byte
+            + len(OpCodes.OP_RETURN.b)  # 1 byte
             + len(
                 message
             )  # Unsure if Max size will be >220 bytes due to extra OP_PUSHDATA codes...
@@ -144,15 +130,15 @@ def get_op_pushdata_code(dest):
     if length_data <= 0x4C:  # (https://en.bitcoin.it/wiki/Script)
         return length_data.to_bytes(1, byteorder="little")
     elif length_data <= 0xFF:
-        return OP_PUSHDATA1 + length_data.to_bytes(
+        return OpCodes.OP_PUSHDATA1.b + length_data.to_bytes(
             1, byteorder="little"
         )  # OP_PUSHDATA1 format
     elif length_data <= 0xFFFF:
-        return OP_PUSHDATA2 + length_data.to_bytes(
+        return OpCodes.OP_PUSHDATA2.b + length_data.to_bytes(
             2, byteorder="little"
         )  # OP_PUSHDATA2 format
     else:
-        return OP_PUSHDATA4 + length_data.to_bytes(
+        return OpCodes.OP_PUSHDATA4.b + length_data.to_bytes(
             4, byteorder="little"
         )  # OP_PUSHDATA4 format
 
@@ -286,42 +272,20 @@ def construct_output_block(outputs, custom_pushdata=False):
 
         # Real recipient
         if amount:
-            if isinstance(dest, str):
+            if not isinstance(dest, Address):
                 dest = Address.from_string(dest)
-            if "P2PKH" in dest.version:
-                script = (
-                    OP_DUP
-                    + OP_HASH160
-                    + OP_PUSH_20
-                    + bytes(dest.payload)
-                    + OP_EQUALVERIFY
-                    + OP_CHECKSIG
-                )
-            elif "P2SH20" in dest.version:
-                script = (
-                    OP_HASH160
-                    + OP_PUSH_20
-                    + bytes(dest.payload)
-                    + OP_EQUAL
-                )
-            elif "P2SH32" in dest.version:
-                script = (
-                    OP_HASH256
-                    + OP_PUSH_32
-                    + bytes(dest.payload)
-                    + OP_EQUAL
-                )
-            else:
-                raise ValueError(
-                    "Bitcash currently only supports" " P2PKH/P2SH outputs"
-                )
+            script = dest.scriptcode
 
             output_block += amount.to_bytes(8, byteorder="little")
 
         # Blockchain storage
         else:
             if custom_pushdata is False:
-                script = OP_RETURN + get_op_pushdata_code(dest) + dest
+                script = (
+                    OpCodes.OP_RETURN.b
+                    + get_op_pushdata_code(dest)
+                    + dest
+                )
 
                 output_block += b"\x00\x00\x00\x00\x00\x00\x00\x00"
 
@@ -330,7 +294,7 @@ def construct_output_block(outputs, custom_pushdata=False):
                 if type(dest) != bytes:
                     raise TypeError("custom pushdata must be of type: bytes")
                 else:
-                    script = OP_RETURN + dest
+                    script = OpCodes.OP_RETURN.b + dest
 
                 output_block += b"\x00\x00\x00\x00\x00\x00\x00\x00"
 
