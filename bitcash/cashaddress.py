@@ -1,4 +1,5 @@
 from bitcash.exceptions import InvalidAddress
+from bitcash.op import OpCodes
 
 CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
 
@@ -123,6 +124,32 @@ class Address:
         payload = convertbits(payload, 8, 5)
         checksum = calculate_checksum(self.prefix, payload)
         return self.prefix + ":" + b32encode(payload + checksum)
+
+    @property
+    def scriptcode(self):
+        if "P2PKH" in self.version:
+            return (
+                OpCodes.OP_DUP.b
+                + OpCodes.OP_HASH160.b
+                + b"\x14"  # push 20
+                + bytes(self.payload)
+                + OpCodes.OP_EQUALVERIFY.b
+                + OpCodes.OP_CHECKSIG.b
+            )
+        if "P2SH20" in self.version:
+            return (
+                OpCodes.OP_HASH160.b
+                + b"\x14"  # push 20
+                + bytes(self.payload)
+                + OpCodes.OP_EQUAL.b
+            )
+        if "P2SH32" in self.version:
+            return (
+                OpCodes.OP_HASH256.b
+                + b"\x20"  # push 32
+                + bytes(self.payload)
+                + OpCodes.OP_EQUAL.b
+            )
 
     @staticmethod
     def from_string(address):

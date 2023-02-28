@@ -12,15 +12,11 @@ from bitcash.format import (
 )
 from bitcash.network import NetworkAPI, satoshi_to_currency_cached
 from bitcash.network.meta import Unspent
+from bitcash.op import OpCodes
 from bitcash.transaction import (
     calc_txid,
     create_p2pkh_transaction,
-    sanitize_tx_data,
-    OP_CHECKSIG,
-    OP_DUP,
-    OP_EQUALVERIFY,
-    OP_HASH160,
-    OP_PUSH_20,
+    sanitize_tx_data
 )
 
 
@@ -181,12 +177,12 @@ class PrivateKey(BaseKey):
     @property
     def scriptcode(self):
         self._scriptcode = (
-            OP_DUP
-            + OP_HASH160
-            + OP_PUSH_20
+            OpCodes.OP_DUP.b
+            + OpCodes.OP_HASH160.b
+            + b"\x14"  # push 20
             + address_to_public_key_hash(self.address)
-            + OP_EQUALVERIFY
-            + OP_CHECKSIG
+            + OpCodes.OP_EQUALVERIFY.b
+            + OpCodes.OP_CHECKSIG.b
         )
         return self._scriptcode
 
