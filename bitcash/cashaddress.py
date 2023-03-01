@@ -131,7 +131,7 @@ class Address:
             return (
                 OpCodes.OP_DUP.b
                 + OpCodes.OP_HASH160.b
-                + b"\x14"  # push 20
+                + OpCodes.OP_DATA_20.b
                 + bytes(self.payload)
                 + OpCodes.OP_EQUALVERIFY.b
                 + OpCodes.OP_CHECKSIG.b
@@ -139,14 +139,14 @@ class Address:
         if "P2SH20" in self.version:
             return (
                 OpCodes.OP_HASH160.b
-                + b"\x14"  # push 20
+                + OpCodes.OP_DATA_20.b
                 + bytes(self.payload)
                 + OpCodes.OP_EQUAL.b
             )
         if "P2SH32" in self.version:
             return (
                 OpCodes.OP_HASH256.b
-                + b"\x20"  # push 32
+                + OpCodes.OP_DATA_32.b
                 + bytes(self.payload)
                 + OpCodes.OP_EQUAL.b
             )
