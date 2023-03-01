@@ -18,6 +18,7 @@ from .samples import (
     BITCOIN_CASHADDRESS,
     BITCOIN_CASHADDRESS_COMPRESSED,
     BITCOIN_CASHADDRESS_PAY2SH20,
+    BITCOIN_CASHADDRESS_PAY2SH32,
 )
 
 
@@ -355,6 +356,46 @@ class TestSanitizeTxData:
         )
 
         assert outputs[2][1] == 5686754
+
+    def test_with_P2SH32_outputs(self):
+        # based on
+        # tx:af386b52b9804c4d37d0bcf9ca124b34264d2f0a306ea11ee74c90d939402cb7
+        unspents_original = [
+            Unspent(5691944, 0, "", "", 0),
+            Unspent(17344, 0, "", "", 0),
+        ]
+        outputs_original = [
+            (BITCOIN_CASHADDRESS_PAY2SH32, 11065, "satoshi"),
+        ]
+
+        unspents, outputs = sanitize_tx_data(
+            unspents_original,
+            outputs_original,
+            fee=1,
+            leftover=RETURN_ADDRESS,
+            combine=True,
+            message=None,
+        )
+
+        assert outputs[1][1] == 5697839
+
+        # multi PAY2SH32 test
+        outputs_original = [
+            (BITCOIN_CASHADDRESS_PAY2SH32, 11065, "satoshi"),
+            (BITCOIN_CASHADDRESS_PAY2SH32, 11065, "satoshi"),
+        ]
+
+        unspents, outputs = sanitize_tx_data(
+            unspents_original,
+            outputs_original,
+            fee=1,
+            leftover=RETURN_ADDRESS,
+            combine=True,
+            message=None,
+        )
+
+        assert outputs[2][1] == 5686730
+
 
 
 class TestCreateSignedTransaction:
