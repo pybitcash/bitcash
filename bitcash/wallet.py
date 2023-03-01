@@ -179,7 +179,7 @@ class PrivateKey(BaseKey):
         self._scriptcode = (
             OpCodes.OP_DUP.b
             + OpCodes.OP_HASH160.b
-            + b"\x14"  # push 20
+            + OpCodes.OP_DATA_20.b
             + address_to_public_key_hash(self.address)
             + OpCodes.OP_EQUALVERIFY.b
             + OpCodes.OP_CHECKSIG.b
