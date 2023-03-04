@@ -2,6 +2,7 @@ import pytest
 
 from bitcash.exceptions import InsufficientFunds
 from bitcash.network.meta import Unspent
+from bitcash.cashtoken import CashTokenOutput
 from bitcash.transaction import (
     TxIn,
     calc_txid,
@@ -76,10 +77,10 @@ UNSPENTS = [
         1,
     )
 ]
-OUTPUTS = [(Address.from_string(BITCOIN_CASHADDRESS).scriptcode, 50000),
-           (Address.from_string(BITCOIN_CASHADDRESS_COMPRESSED).scriptcode, 83658760)]
-MESSAGES = [(OpCodes.OP_RETURN.b + b"\x05" + b"hello", 0),
-            (OpCodes.OP_RETURN.b + b"\x05" + b"there", 0)]
+OUTPUTS = [(Address.from_string(BITCOIN_CASHADDRESS).scriptcode, 50000, CashTokenOutput()),
+           (Address.from_string(BITCOIN_CASHADDRESS_COMPRESSED).scriptcode, 83658760, CashTokenOutput())]
+MESSAGES = [(OpCodes.OP_RETURN.b + b"\x05" + b"hello", 0, None),
+            (OpCodes.OP_RETURN.b + b"\x05" + b"there", 0, None)]
 OUTPUT_BLOCK = (
     "50c30000000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac"
     "0888fc04000000001976a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac"
@@ -202,7 +203,7 @@ class TestSanitizeTxData:
 
         assert unspents == unspents_original
         _ = Address.from_string(BITCOIN_CASHADDRESS_COMPRESSED).scriptcode
-        assert outputs == [(_, 2000)]
+        assert outputs == [(_, 2000, CashTokenOutput())]
 
     def test_combine_remaining(self):
         unspents_original = [Unspent(1000, 0, "", "", 0), Unspent(1000, 0, "", "", 0)]
@@ -456,6 +457,7 @@ class TestConstructOutputBlock:
             RETURN_ADDRESS,
             message="hello" * 50,
         )
+        print(outputs)
         assert construct_output_block(outputs).count(amount) == 2
 
     def test_pushdata_message(self):
@@ -463,7 +465,7 @@ class TestConstructOutputBlock:
                  + len(b"hello").to_bytes(1, byteorder="little")
                  + b"hello")
         assert construct_output_block(
-            OUTPUTS + [(BYTES, 0)]
+            OUTPUTS + [(BYTES, 0, None)]
         ) == hex_to_bytes(OUTPUT_BLOCK_MESSAGE_PUSHDATA)
 
     def test_long_pushdata(self):

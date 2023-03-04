@@ -4,7 +4,7 @@ from collections import namedtuple
 from bitcash.crypto import double_sha256, sha256
 from bitcash.exceptions import InsufficientFunds
 from bitcash.format import Address
-from bitcash.network.rates import currency_to_satoshi_cached
+from bitcash.cashtoken import prepare_cashtoken_aware_output
 from bitcash.op import OpCodes
 from bitcash.utils import (
     bytes_to_hex,
@@ -131,17 +131,8 @@ def sanitize_tx_data(
     leftover = Address.from_string(leftover)
 
     for i, output in enumerate(outputs):
-        dest, amount, currency = output
-        dest = Address.from_string(dest)
-
-        if "P2PKH" not in dest.version and "P2SH" not in dest.version:
-            # Bitcash currently only supports P2PKH, P2SH transaction outputs
-            # others will raise ValueError
-            raise ValueError("Bitcash currently only supports"
-                             " P2PKH/P2SH outputs")
-
-        outputs[i] = (dest.scriptcode,
-                      currency_to_satoshi_cached(amount, currency))
+        # (script, satoshi value, CashTokenOutput)
+        outputs[i] = prepare_cashtoken_aware_output(output)
 
     if not unspents:
         raise ValueError("Transactions must have at least one unspent.")
@@ -163,7 +154,7 @@ def sanitize_tx_data(
                 + get_op_pushdata_code(message)
                 + message
             )
-            messages.append((script, 0))
+            messages.append((script, 0, None))
 
     elif message and (custom_pushdata is True):
         if len(message) >= 220:
@@ -177,7 +168,7 @@ def sanitize_tx_data(
                 raise TypeError("custom pushdata must be of type: bytes")
             else:
                 script = OpCodes.OP_RETURN.b + message
-            messages.append((script, 0))
+            messages.append((script, 0, None))
 
     total_in = 0
     # counting outs, will adjust fee estimate
@@ -222,7 +213,7 @@ def sanitize_tx_data(
     remaining = total_in - total_out
 
     if remaining > 0:
-        outputs.append((leftover.scriptcode, remaining))
+        outputs.append((leftover.scriptcode, remaining, None))
     elif remaining < 0:
         raise InsufficientFunds(
             f"Balance {total_in} is less than " f"{total_out} (including fee)."
@@ -238,7 +229,7 @@ def construct_output_block(outputs):
     output_block = b""
 
     for data in outputs:
-        script, amount = data
+        script, amount, _ = data
 
         output_block += amount.to_bytes(8, byteorder="little")
 
