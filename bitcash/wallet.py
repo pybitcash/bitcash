@@ -1,6 +1,7 @@
 import json
 
 from bitcash.crypto import ECPrivateKey
+from bitcash.cashtoken import cashtoken_balance_from_unspents
 from bitcash.curve import Point
 from bitcash.exceptions import InvalidNetwork
 from bitcash.format import (
@@ -161,6 +162,7 @@ class PrivateKey(BaseKey):
         else:
             raise InvalidNetwork
         self.balance = 0
+        self.cashtoken_balance = {}
         self.unspents = []
         self.transactions = []
 
@@ -213,7 +215,18 @@ class PrivateKey(BaseKey):
             self.address, network=NETWORKS[self._network]
         )
         self.balance = sum(unspent.amount for unspent in self.unspents)
+        self.cashtoken_balance = cashtoken_balance_from_unspents(self.unspents)
         return self.balance_as(currency)
+
+    def get_cashtokenbalance(self):
+        """Fetches the current cashtoken balance by calling
+        :func:`~bitcash.PrivateKey.get_balance` and returns it as
+        a token dictionary.
+
+        :rtype: ``dict``
+        """
+        _ = self.get_balance()
+        return self.cashtoken_balance
 
     def get_unspents(self):
         """Fetches all available unspent transaction outputs.
@@ -224,6 +237,7 @@ class PrivateKey(BaseKey):
             self.address, network=NETWORKS[self._network]
         )
         self.balance = sum(unspent.amount for unspent in self.unspents)
+        self.cashtoken_balance = cashtoken_balance_from_unspents(self.unspents)
         return self.unspents
 
     def get_transactions(self):

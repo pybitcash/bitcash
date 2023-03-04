@@ -2,10 +2,12 @@ import pytest
 
 
 from bitcash import cashtoken as _cashtoken
+from bitcash.network.meta import Unspent
 from bitcash.cashtoken import (
     CashTokenOutput,
     InvalidCashToken,
-    prepare_cashtoken_aware_output
+    prepare_cashtoken_aware_output,
+    cashtoken_balance_from_unspents
 )
 from bitcash.cashaddress import Address
 from _pytest.monkeypatch import MonkeyPatch
@@ -163,3 +165,65 @@ class TestPrepareCashtokenAwareOutput:
         assert output[0] == script
         assert output[1] == 2000000000
         assert output[2] == cashtoken
+
+
+class TestCashTokenBalanceUnspents:
+    def test_empty(self):
+        unspents = [Unspent(1000, 42, "script", "txid", 0)]
+        assert {} == cashtoken_balance_from_unspents(unspents)
+
+    def test_multi_amounts(self):
+        tokendata = {"catagory1": {"token_amount": 50},
+                     "catagory2": {"token_amount": 30}}
+        unspents = [
+            Unspent(1000, 42, "script", "txid", 0, "catagory1",
+                    token_amount=25),
+            Unspent(1000, 42, "script", "txid", 0, "catagory1",
+                    token_amount=25),
+            Unspent(1000, 42, "script", "txid", 0, "catagory2",
+                    token_amount=30),
+        ]
+        assert tokendata == cashtoken_balance_from_unspents(unspents)
+
+    def test_multi_nfts(self):
+        tokendata = {
+            "catagory1": {"nft": [
+                {"capability": "mutable"},
+                {"capability": "immutable", "commitment": b"commitment"}
+            ]},
+            "catagory2": {"nft": [{"capability": "minting"}]}
+        }
+        unspents = [
+            Unspent(1000, 42, "script", "txid", 0, "catagory1",
+                    nft_capability="mutable"),
+            Unspent(1000, 42, "script", "txid", 0, "catagory1",
+                    nft_capability="immutable", nft_commitment=b"commitment"),
+            Unspent(1000, 42, "script", "txid", 0, "catagory2",
+                    nft_capability="minting"),
+        ]
+        assert tokendata == cashtoken_balance_from_unspents(unspents)
+
+    def test_all(self):
+        tokendata = {
+            "catagory1": {"nft": [
+                {"capability": "mutable"},
+                {"capability": "immutable", "commitment": b"commitment"}
+            ]},
+            "catagory2": {
+                "token_amount": 50,
+                "nft": [{"capability": "minting"}, {"capability": "minting"}]
+            }
+        }
+        unspents = [
+            Unspent(1000, 42, "script", "txid", 0, "catagory1",
+                    nft_capability="mutable"),
+            Unspent(1000, 42, "script", "txid", 0, "catagory1",
+                    nft_capability="immutable", nft_commitment=b"commitment"),
+            Unspent(1000, 42, "script", "txid", 0, "catagory2",
+                    nft_capability="minting"),
+            Unspent(1000, 42, "script", "txid", 0, "catagory2",
+                    token_amount=25),
+            Unspent(1000, 42, "script", "txid", 0, "catagory2",
+                    nft_capability="minting", token_amount=25),
+        ]
+        assert tokendata == cashtoken_balance_from_unspents(unspents)

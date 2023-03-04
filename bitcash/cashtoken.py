@@ -157,3 +157,39 @@ def prepare_cashtoken_aware_output(output):
         currency_to_satoshi_cached(amount, currency),
         cashtoken
     )
+
+
+def cashtoken_balance_from_unspents(unspents):
+    """
+    Calculate CashToken balance from unspents
+
+    returns {
+        "category_id" : {           (string) token id hex
+            "token_amount" : "xxx", (int) fungible amount
+            "nft" : [{
+              "capability" : "xxx", (string) one of "immutable", "mutable",
+                                    "minting"
+              "commitment" : b""    (bytes) NFT commitment
+            }]
+        }
+    }
+    """
+    tokendata = {}
+    for unspent in unspents:
+        if unspent.has_cashtoken:
+            catagorydata = tokendata.get(unspent.catagory_id, {})
+            if unspent.has_amount:
+                catagorydata["token_amount"] = (
+                    catagorydata.get("token_amount", 0)
+                    + unspent.token_amount
+                )
+            if unspent.has_nft:
+                nftdata = {"capability": unspent.nft_capability}
+                if unspent.nft_commitment is not None:
+                    nftdata["commitment"] = unspent.nft_commitment
+                catagorydata["nft"] = (
+                    catagorydata.get("nft", [])
+                    + [nftdata]
+                )
+            tokendata.update({unspent.catagory_id: catagorydata})
+    return tokendata
