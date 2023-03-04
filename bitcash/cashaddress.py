@@ -92,7 +92,7 @@ class Address:
     ADDRESS_TYPES = {0: "P2PKH", 8: "P2SH20", 11: "P2SH32"}
 
     def __init__(self, version, payload):
-        if not version in Address.VERSIONS:
+        if version not in Address.VERSIONS:
             raise ValueError("Invalid address version provided")
 
         self.version = version
@@ -150,6 +150,44 @@ class Address:
                 + bytes(self.payload)
                 + OpCodes.OP_EQUAL.b
             )
+
+    @classmethod
+    def from_script(cls, scriptcode):
+        # P2PKH
+        if len(scriptcode) == 25:
+            if (
+                scriptcode.startswith(
+                    OpCodes.OP_DUP.b
+                    + OpCodes.OP_HASH160.b
+                    + OpCodes.OP_DATA_20.b
+                )
+                and scriptcode.endswith(
+                    OpCodes.OP_EQUALVERIFY.b
+                    + OpCodes.OP_CHECKSIG.b
+                )
+            ):
+                return cls("P2PKH", list(scriptcode[3:23]))
+        # P2SH20
+        if len(scriptcode) == 23:
+            if (
+                scriptcode.startswith(
+                    OpCodes.OP_HASH160.b
+                    + OpCodes.OP_DATA_20.b
+                )
+                and scriptcode.endswith(OpCodes.OP_EQUAL.b)
+            ):
+                return cls("P2SH20", list(scriptcode[2:22]))
+        # P2SH32
+        if len(scriptcode) == 35:
+            if (
+                scriptcode.startswith(
+                    OpCodes.OP_HASH256.b
+                    + OpCodes.OP_DATA_32.b
+                )
+                and scriptcode.endswith(OpCodes.OP_EQUAL.b)
+            ):
+                return cls("P2SH32", list(scriptcode[2:34]))
+        raise ValueError("Unknown script")
 
     @staticmethod
     def from_string(address):
