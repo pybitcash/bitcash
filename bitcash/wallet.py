@@ -290,7 +290,7 @@ class PrivateKey(BaseKey):
         )
 
         return create_p2pkh_transaction(
-            self, unspents, outputs, custom_pushdata=custom_pushdata
+            self, unspents, outputs
         )
 
     def send(
