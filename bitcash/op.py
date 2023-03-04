@@ -236,6 +236,15 @@ class OpCodes(IntEnum):
     OP_OUTPUTVALUE = 0xcc
     OP_OUTPUTBYTECODE = 0xcd
 
+    # CashTokens opcodes
+    OP_UTXOTOKENCATEGORY = 0xce
+    OP_UTXOTOKENCOMMITMENT = 0xcf
+    OP_UTXOTOKENAMOUNT = 0xd0
+    OP_OUTPUTTOKENCATEGORY = 0xd1
+    OP_OUTPUTTOKENCOMMITMENT = 0xd2
+    OP_OUTPUTTOKENAMOUNT = 0xd3
+    OP_TOKENPREFIX = 0xef
+
     @property
     def b(self):
         """
@@ -245,3 +254,13 @@ class OpCodes(IntEnum):
         b"\x00"
         """
         return self.value.to_bytes(1, "little")
+
+    @property
+    def h(self):
+        """
+        Adds easy way to convert to hex
+        >>> OpCodes.OP_0.h
+        "00"
+        """
+        # converty from binary to preserve 8 bit hex
+        return self.b.hex()

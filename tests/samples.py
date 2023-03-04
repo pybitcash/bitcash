@@ -163,3 +163,15 @@ CONVERT_BITS_NO_PAD_RETURN = [
     19,
     27,
 ]
+
+
+# CashToken prefixes
+CASHTOKEN_CATAGORY_ID = "b770119192864ac47ac7753df4f31c702bdd0d39cc3858594eae2a562e0bb100"
+CASHTOKEN_CAPABILITY = "immutable"
+CASHTOKEN_COMMITMENT = b"commitment"
+CASHTOKEN_AMOUNT = 50
+PREFIX_CAPABILITY = b'\xef\xb7p\x11\x91\x92\x86J\xc4z\xc7u=\xf4\xf3\x1cp+\xdd\r9\xcc8XYN\xae*V.\x0b\xb1\x00 '
+PREFIX_CAPABILITY_AMOUNT = b'\xef\xb7p\x11\x91\x92\x86J\xc4z\xc7u=\xf4\xf3\x1cp+\xdd\r9\xcc8XYN\xae*V.\x0b\xb1\x0002'
+PREFIX_CAPABILITY_COMMITMENT = b'\xef\xb7p\x11\x91\x92\x86J\xc4z\xc7u=\xf4\xf3\x1cp+\xdd\r9\xcc8XYN\xae*V.\x0b\xb1\x00`\ncommitment'
+PREFIX_CAPABILITY_COMMITMENT_AMOUNT = b'\xef\xb7p\x11\x91\x92\x86J\xc4z\xc7u=\xf4\xf3\x1cp+\xdd\r9\xcc8XYN\xae*V.\x0b\xb1\x00p\ncommitment2'
+PREFIX_AMOUNT = b'\xef\xb7p\x11\x91\x92\x86J\xc4z\xc7u=\xf4\xf3\x1cp+\xdd\r9\xcc8XYN\xae*V.\x0b\xb1\x00\x102'
