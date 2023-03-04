@@ -27,6 +27,7 @@ class CashTokenOutput:
         nft_commitment=None,
         token_amount=None
     ):
+        # catagory_id is None when generating new token
         if catagory_id is not None:
             # checking for Pre-activation token-forgery outputs (PATFOs)
             tx = NetworkAPI.get_transaction(catagory_id)
@@ -132,18 +133,17 @@ class CashTokenOutput:
 def prepare_cashtoken_aware_output(output):
     if len(output) == 3:
         dest, amount, currency = output
-        dest = Address.from_string(dest)
+        if not isinstance(dest, Address):
+            dest = Address.from_string(dest)
         return (
             dest.scriptcode,
             currency_to_satoshi_cached(amount, currency),
-            None,
-            None,
-            None,
-            None
+            CashTokenOutput(),
         )
     (dest, amount, currency, catagory_id, nft_capability, nft_commitment,
      token_amount) = output
-    dest = Address.from_string(dest)
+    if not isinstance(dest, Address):
+        dest = Address.from_string(dest)
 
     cashtoken = CashTokenOutput(
         catagory_id=catagory_id,
@@ -155,8 +155,5 @@ def prepare_cashtoken_aware_output(output):
     return (
         cashtoken.token_prefix + dest.scriptcode,
         currency_to_satoshi_cached(amount, currency),
-        cashtoken.catagory_id,
-        cashtoken.nft_capability,
-        cashtoken.nft_commitment,
-        cashtoken.token_amount
+        cashtoken
     )

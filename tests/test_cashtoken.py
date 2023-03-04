@@ -109,6 +109,10 @@ class TestCashToken:
         cashtoken = CashTokenOutput.from_script(script)
         assert script == cashtoken.token_prefix
 
+        script = b""
+        cashtoken = CashTokenOutput.from_script(script)
+        assert script == cashtoken.token_prefix
+
     def test_dict_conversion(self):
         cashtoken = CashTokenOutput(CASHTOKEN_CATAGORY_ID, "immutable",
                                     CASHTOKEN_COMMITMENT, CASHTOKEN_AMOUNT)
@@ -146,10 +150,7 @@ class TestPrepareCashtokenAwareOutput:
         output = prepare_cashtoken_aware_output(output)
         assert output[0] == Address.from_string(BITCOIN_CASHADDRESS).scriptcode
         assert output[1] == 2000000000
-        assert output[2] is None
-        assert output[3] is None
-        assert output[4] is None
-        assert output[5] is None
+        assert output[2] == CashTokenOutput()
 
         output = (BITCOIN_CASHADDRESS, 20, "bch", CASHTOKEN_CATAGORY_ID,
                   CASHTOKEN_CAPABILITY, CASHTOKEN_COMMITMENT, CASHTOKEN_AMOUNT)
@@ -161,7 +162,4 @@ class TestPrepareCashtokenAwareOutput:
                   + Address.from_string(BITCOIN_CASHADDRESS).scriptcode)
         assert output[0] == script
         assert output[1] == 2000000000
-        assert output[2] == CASHTOKEN_CATAGORY_ID
-        assert output[3] == CASHTOKEN_CAPABILITY
-        assert output[4] == CASHTOKEN_COMMITMENT
-        assert output[5] == CASHTOKEN_AMOUNT
+        assert output[2] == cashtoken
