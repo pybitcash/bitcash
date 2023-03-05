@@ -203,7 +203,7 @@ class TestSanitizeTxData:
 
         assert unspents == unspents_original
         _ = Address.from_string(BITCOIN_CASHADDRESS_COMPRESSED).scriptcode
-        assert outputs == [(_, 2000, CashTokenOutput())]
+        assert outputs == [(_, 2000, CashTokenOutput(amount=2000))]
 
     def test_combine_remaining(self):
         unspents_original = [Unspent(1000, 0, "", "", 0), Unspent(1000, 0, "", "", 0)]

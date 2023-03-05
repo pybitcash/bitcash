@@ -1,10 +1,10 @@
 import logging
 from collections import namedtuple
+from copy import deepcopy
 
 from bitcash.crypto import double_sha256, sha256
 from bitcash.exceptions import InsufficientFunds
-from bitcash.format import Address
-from bitcash.cashtoken import prepare_cashtoken_aware_output
+from bitcash.cashtoken import prepare_cashtoken_aware_output, CashToken
 from bitcash.op import OpCodes
 from bitcash.utils import (
     bytes_to_hex,
@@ -128,7 +128,6 @@ def sanitize_tx_data(
     """
 
     outputs = outputs.copy()
-    leftover = Address.from_string(leftover)
 
     for i, output in enumerate(outputs):
         # (script, satoshi value, CashTokenOutput)
@@ -170,15 +169,16 @@ def sanitize_tx_data(
                 script = OpCodes.OP_RETURN.b + message
             messages.append((script, 0, None))
 
-    total_in = 0
     # counting outs, will adjust fee estimate
     output_script_list = [_[0] for _ in outputs]
     output_script_list += [_[0] for _ in messages]
-    # Include return or leftover address in fee estimate.
-    output_script_list.append(leftover.scriptcode)
-    sum_outputs = sum(out[1] for out in outputs)
 
     if combine:
+        cashtoken = CashToken.from_unspents(unspents)
+        for output in outputs:
+            cashtoken.subtract_output(output[2])
+        leftover_outputs, leftover_amount = cashtoken.get_outputs(leftover)
+        output_script_list += [_[0] for _ in leftover_outputs]
         # calculated_fee is in total satoshis.
         calculated_fee = estimate_tx_fee(
             len(unspents),
@@ -186,38 +186,52 @@ def sanitize_tx_data(
             fee,
             compressed,
         )
-        total_out = sum_outputs + calculated_fee
-        unspents = unspents.copy()
-        total_in += sum(unspent.amount for unspent in unspents)
+        if calculated_fee > leftover_amount:
+            raise InsufficientFunds("leftover balance cannot cover fee")
+        if calculated_fee:
+            last_out = list(leftover_outputs[-1])
+            last_out[1] -= calculated_fee
+            leftover_outputs[-1] = tuple(last_out)
+
+        outputs += leftover_outputs
 
     else:
         unspents = sorted(unspents, key=lambda x: x.amount)
 
         index = 0
 
+        cashtoken = CashToken()
         for index, unspent in enumerate(unspents):
-            total_in += unspent.amount
+            cashtoken.add_unspent(unspent)
+            test_token = deepcopy(cashtoken)
+            try:
+                for output in outputs:
+                    test_token.subtract_output(output[2])
+            except InsufficientFunds:
+                continue
+
+            (leftover_outputs,
+             leftover_amount) = test_token.get_outputs(leftover)
+            output_script_list += [_[0] for _ in leftover_outputs]
+
             calculated_fee = estimate_tx_fee(
                 len(unspents[: index + 1]),
                 output_script_list,
                 fee,
                 compressed,
             )
-            total_out = sum_outputs + calculated_fee
-
-            if total_in >= total_out:
+            if calculated_fee < leftover_amount:
                 break
+        else:
+            raise InsufficientFunds(f"{cashtoken.amount} is insufficient")
+
+        if calculated_fee:
+            last_out = list(leftover_outputs[-1])
+            last_out[1] -= calculated_fee
+            leftover_outputs[-1] = tuple(last_out)
 
         unspents[:] = unspents[: index + 1]
-
-    remaining = total_in - total_out
-
-    if remaining > 0:
-        outputs.append((leftover.scriptcode, remaining, None))
-    elif remaining < 0:
-        raise InsufficientFunds(
-            f"Balance {total_in} is less than " f"{total_out} (including fee)."
-        )
+        outputs += leftover_outputs
 
     outputs.extend(messages)
 
