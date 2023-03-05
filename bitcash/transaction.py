@@ -4,7 +4,10 @@ from copy import deepcopy
 
 from bitcash.crypto import double_sha256, sha256
 from bitcash.exceptions import InsufficientFunds
-from bitcash.cashtoken import prepare_cashtoken_aware_output, CashToken
+from bitcash.cashtoken import (
+    prepare_cashtoken_aware_output,
+    CashTokenUnspents
+)
 from bitcash.op import OpCodes
 from bitcash.utils import (
     bytes_to_hex,
@@ -174,7 +177,7 @@ def sanitize_tx_data(
     output_script_list += [_[0] for _ in messages]
 
     if combine:
-        cashtoken = CashToken.from_unspents(unspents)
+        cashtoken = CashTokenUnspents(unspents)
         for output in outputs:
             cashtoken.subtract_output(output[2])
         leftover_outputs, leftover_amount = cashtoken.get_outputs(leftover)
@@ -196,11 +199,42 @@ def sanitize_tx_data(
         outputs += leftover_outputs
 
     else:
-        unspents = sorted(unspents, key=lambda x: x.amount)
+        # split unspent with cashtoken from rest
+        unspents_cashtoken = []
+        pop_ids = []
+        for i, unspent in enumerate(unspents):
+            if unspent.has_cashtoken:
+                unspents_cashtoken.append(unspent)
+                pop_ids.append(i)
+        for id_ in sorted(pop_ids)[::-1]:
+            unspents.pop(id_)
+        # a smarter selection scheme can be coded using sorted(unspents)
+        # instead implements simple unspent selection
+        # if catagory_id in output then all unspents with catagory_id used
+        output_catagory_ids = set([
+            _[2].catagory_id for _ in outputs if _[2].catagory_id is not None
+        ])
+        unspent_selected = []
+        # other unspent with cashtoken, to be used last
+        unspent_cashtoken = []
+        pop_ids = []
+        for i, unspent in enumerate(unspents):
+            if unspent.catagory_id in output_catagory_ids:
+                unspent_selected.append(unspent)
+                pop_ids.append(i)
+            elif unspent.has_cashtoken:
+                unspent_cashtoken.append(unspent)
+                pop_ids.append(i)
+        for id_ in sorted(pop_ids)[::-1]:
+            unspents.pop(id_)
+
+        # sort the rest unspents
+        # __gt__ and __eq__ will sort them with no cashtoken unspents first
+        unspents = sorted(unspents + unspents_cashtoken)
 
         index = 0
 
-        cashtoken = CashToken()
+        cashtoken = CashTokenUnspents(unspent_selected)
         for index, unspent in enumerate(unspents):
             cashtoken.add_unspent(unspent)
             test_token = deepcopy(cashtoken)

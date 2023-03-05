@@ -1,7 +1,7 @@
 import json
 
 from bitcash.crypto import ECPrivateKey
-from bitcash.cashtoken import CashToken
+from bitcash.cashtoken import CashTokenUnspents
 from bitcash.curve import Point
 from bitcash.exceptions import InvalidNetwork
 from bitcash.format import (
@@ -214,7 +214,7 @@ class PrivateKey(BaseKey):
         self.unspents[:] = NetworkAPI.get_unspent(
             self.address, network=NETWORKS[self._network]
         )
-        _ = CashToken.from_unspents(self.unspents)
+        _ = CashTokenUnspents(self.unspents)
         self.balance = _.amount
         self.cashtoken_balance = _.tokendata
         return self.balance_as(currency)
@@ -237,7 +237,7 @@ class PrivateKey(BaseKey):
         self.unspents[:] = NetworkAPI.get_unspent(
             self.address, network=NETWORKS[self._network]
         )
-        _ = CashToken.from_unspents(self.unspents)
+        _ = CashTokenUnspents(self.unspents)
         self.balance = _.amount
         self.cashtoken_balance = _.tokendata
         return self.unspents

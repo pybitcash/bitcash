@@ -7,7 +7,7 @@ from bitcash.cashtoken import (
     CashTokenOutput,
     InvalidCashToken,
     prepare_cashtoken_aware_output,
-    CashToken,
+    CashTokenUnspents,
     generate_new_cashtoken_output,
     DUST_VALUE
 )
@@ -171,14 +171,14 @@ class TestPrepareCashtokenAwareOutput:
         assert output[2] == cashtoken
 
 
-class TestCashToken:
+class TestCashTokenUnspents:
     def setup_method(self):
         self.monkeypatch = MonkeyPatch()
         self.monkeypatch.setattr(_cashtoken, "NetworkAPI", NetworkAPI)
 
     def test_empty(self):
         unspents = [Unspent(1000, 42, "script", "txid", 0)]
-        cashtoken = CashToken.from_unspents(unspents)
+        cashtoken = CashTokenUnspents(unspents)
         assert cashtoken.tokendata == {}
         assert cashtoken.amount == 1000
 
@@ -193,7 +193,7 @@ class TestCashToken:
             Unspent(1000, 42, "script", "txid", 0, "catagory2",
                     token_amount=30),
         ]
-        cashtoken = CashToken.from_unspents(unspents)
+        cashtoken = CashTokenUnspents(unspents)
         assert tokendata == cashtoken.tokendata
         assert cashtoken.amount == 3000
 
@@ -213,7 +213,7 @@ class TestCashToken:
             Unspent(1000, 42, "script", "txid", 0, "catagory2",
                     nft_capability="minting"),
         ]
-        cashtoken = CashToken.from_unspents(unspents)
+        cashtoken = CashTokenUnspents(unspents)
         assert tokendata == cashtoken.tokendata
         assert cashtoken.amount == 3000
 
@@ -240,7 +240,7 @@ class TestCashToken:
             Unspent(1000, 42, "script", "txid", 0, "catagory2",
                     nft_capability="minting", token_amount=25),
         ]
-        cashtoken = CashToken.from_unspents(unspents)
+        cashtoken = CashTokenUnspents(unspents)
         assert tokendata == cashtoken.tokendata
         assert cashtoken.amount == 5000
 
@@ -259,7 +259,9 @@ class TestCashToken:
         }
 
         # No token
-        cashtoken = CashToken(1000, tokendata)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 1000
+        cashtoken.tokendata = tokendata
         cashtoken.subtract_output(
             Unspent(500, 42, "script", "txid", 0)
         )
@@ -267,7 +269,9 @@ class TestCashToken:
         assert cashtoken.tokendata == tokendata
 
         # New token
-        cashtoken = CashToken(1000, tokendata)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 1000
+        cashtoken.tokendata = tokendata
         cashtoken.subtract_output(
             CashTokenOutput("catagory_new", "immutable", token_amount=30,
                             amount=500, _genesis=True)
@@ -276,7 +280,9 @@ class TestCashToken:
         assert cashtoken.tokendata == tokendata
 
         # raise errors
-        cashtoken = CashToken(1000, tokendata)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 1000
+        cashtoken.tokendata = tokendata
         # catagory does not exist
         with pytest.raises(InsufficientFunds):
             cashtoken.subtract_output(
@@ -315,10 +321,12 @@ class TestCashToken:
             )
 
         # simple subtraction
-        cashtoken = CashToken(500)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 500
         cashtoken.subtract_output(
             Unspent(500, 42, "script", "txid", 0)
         )
+        assert cashtoken.amount == 0
 
         # fine tune subtraction
         tokendata = {
@@ -327,7 +335,9 @@ class TestCashToken:
                 "nft": [{"capability": "immutable"}]
             }
         }
-        cashtoken = CashToken(1000, tokendata)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 1000
+        cashtoken.tokendata = tokendata
         cashtoken.subtract_output(
             Unspent(500, 42, "script", "txid", 0, "catagory",
                     token_amount=50)
@@ -342,7 +352,9 @@ class TestCashToken:
         assert cashtoken.tokendata == {}
 
         tokendata = {"catagory": {"token_amount": 50}}
-        cashtoken = CashToken(1000, tokendata)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 1000
+        cashtoken.tokendata = tokendata
         cashtoken.subtract_output(
             Unspent(500, 42, "script", "txid", 0, "catagory",
                     token_amount=50)
@@ -353,7 +365,9 @@ class TestCashToken:
             {"capability": "immutable"},
             {"capability": "immutable", "commitment": b"commitment"}
         ]}}
-        cashtoken = CashToken(1000, tokendata)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 1000
+        cashtoken.tokendata = tokendata
         cashtoken.subtract_output(
             Unspent(500, 42, "script", "txid", 0, "catagory",
                     "immutable", b"commitment")
@@ -367,7 +381,9 @@ class TestCashToken:
                 "nft": [{"capability": "mutable"}]
             }
         }
-        cashtoken = CashToken(1000, tokendata)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 1000
+        cashtoken.tokendata = tokendata
         cashtoken.subtract_output(
             Unspent(500, 42, "script", "txid", 0, "catagory",
                     "immutable", b"commitment")
@@ -379,7 +395,9 @@ class TestCashToken:
                 "nft": [{"capability": "minting"}]
             }
         }
-        cashtoken = CashToken(1000, tokendata)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 1000
+        cashtoken.tokendata = tokendata
         cashtoken.subtract_output(
             Unspent(500, 42, "script", "txid", 0, "catagory",
                     "immutable", b"commitment")
@@ -391,7 +409,9 @@ class TestCashToken:
                 "nft": [{"capability": "mutable"}]
             }
         }
-        cashtoken = CashToken(1000, tokendata)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 1000
+        cashtoken.tokendata = tokendata
         cashtoken.subtract_output(
             Unspent(500, 42, "script", "txid", 0, "catagory",
                     "mutable", b"commitment")
@@ -403,7 +423,9 @@ class TestCashToken:
                 "nft": [{"capability": "minting"}]
             }
         }
-        cashtoken = CashToken(1000, tokendata)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 1000
+        cashtoken.tokendata = tokendata
         cashtoken.subtract_output(
             Unspent(500, 42, "script", "txid", 0, "catagory",
                     "mutable", b"commitment")
@@ -415,7 +437,9 @@ class TestCashToken:
                 "nft": [{"capability": "minting"}]
             }
         }
-        cashtoken = CashToken(1000, tokendata)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 1000
+        cashtoken.tokendata = tokendata
         cashtoken.subtract_output(
             Unspent(500, 42, "script", "txid", 0, "catagory",
                     "minting", b"commitment")
@@ -445,7 +469,9 @@ class TestCashToken:
         cashtokenoutput_40 = CashTokenOutput("c4", "immutable", None, None,
                                              512)
 
-        cashtoken = CashToken(3072, tokendata)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 3072
+        cashtoken.tokendata = tokendata
         outputs, leftover_amount = cashtoken.get_outputs(BITCOIN_CASHADDRESS)
 
         assert len(outputs) == 6
@@ -463,7 +489,8 @@ class TestCashToken:
         assert outputs[5][2] == cashtokenoutput_40
         assert leftover_amount == 0
 
-        cashtoken = CashToken(50)
+        cashtoken = CashTokenUnspents([])
+        cashtoken.amount = 50
         outputs, leftover_amount = cashtoken.get_outputs(BITCOIN_CASHADDRESS)
 
         assert len(outputs) == 1

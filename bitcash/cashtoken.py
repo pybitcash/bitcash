@@ -181,9 +181,9 @@ def prepare_cashtoken_aware_output(output):
     )
 
 
-class CashToken:
+class CashTokenUnspents:
     """
-    Class to handle CashToken
+    Class to count CashToken Unspent
     Incoming data is assumed to be valid, tests are performed when making
     outputs
 
@@ -200,12 +200,24 @@ class CashToken:
     >>> cashtoken = CashToken(50, tokendata)
     """
 
-    def __init__(self, amount=0, tokendata=None):
-        self.amount = amount
-        if tokendata is None:
-            self.tokendata = {}
-        else:
-            self.tokendata = tokendata
+    def __init__(self, unspents):
+        self.amount = 0
+        self.tokendata = {}
+        for unspent in unspents:
+            self.add_unspent(unspent)
+
+    def to_dict(self):
+        return {
+            "amount": self.amount,
+            "tokendata": self.tokendata
+        }
+
+    @classmethod
+    def from_dict(cls, dict_):
+        instance = cls([])
+        instance.amount = dict_["amount"]
+        instance.tokendata = dict_["tokendata"]
+        return instance
 
     def add_unspent(self, unspent):
         self.amount += unspent.amount
@@ -225,13 +237,6 @@ class CashToken:
                     + [nftdata]
                 )
             self.tokendata.update({unspent.catagory_id: catagorydata})
-
-    @classmethod
-    def from_unspents(cls, unspents):
-        instance = cls()
-        for unspent in unspents:
-            instance.add_unspent(unspent)
-        return instance
 
     def get_outputs(self, leftover):
         """
