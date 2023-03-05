@@ -140,10 +140,11 @@ def prepare_cashtoken_aware_output(output):
         dest, amount, currency = output
         if not isinstance(dest, Address):
             dest = Address.from_string(dest)
+        amount = currency_to_satoshi_cached(amount, currency)
         return (
             dest.scriptcode,
-            currency_to_satoshi_cached(amount, currency),
-            CashTokenOutput(),
+            amount,
+            CashTokenOutput(amount=amount),
         )
 
     (dest, amount, currency, catagory_id, nft_capability, nft_commitment,
@@ -227,6 +228,7 @@ class CashToken:
 
         :param leftover: leftover address to add the outputs
         :type leftover: ``str``
+        :rtype: tuple(``list``, ``int``)  # (outputs, leftover_amount)
         """
         outputs = []
 
@@ -257,17 +259,20 @@ class CashToken:
 
         if len(outputs) == 0:
             # no tokendata
-            outputs.append(prepare_cashtoken_aware_output(
-                (leftover, amount, "satoshi")
-            ))
+            if amount > 0:
+                # add leftover amount
+                outputs.append(prepare_cashtoken_aware_output(
+                    (leftover, amount, "satoshi")
+                ))
         else:
             if amount < 0:
-                raise ValueError("Not enough sats")
+                raise InsufficientFunds("Not enough sats")
+            # add leftover amount to last out
             last_out = list(outputs[-1])
             last_out[1] += amount
             outputs[-1] = tuple(last_out)
 
-        return outputs
+        return outputs, amount
 
     def subtract_output(self, ctoutput):
         if self.amount < ctoutput.amount:

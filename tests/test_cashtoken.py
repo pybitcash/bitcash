@@ -153,7 +153,7 @@ class TestPrepareCashtokenAwareOutput:
         output = prepare_cashtoken_aware_output(output)
         assert output[0] == Address.from_string(BITCOIN_CASHADDRESS).scriptcode
         assert output[1] == 2000000000
-        assert output[2] == CashTokenOutput()
+        assert output[2] == CashTokenOutput(amount=2000000000)
 
         output = (BITCOIN_CASHADDRESS, 20, "bch", CASHTOKEN_CATAGORY_ID,
                   CASHTOKEN_CAPABILITY, CASHTOKEN_COMMITMENT, CASHTOKEN_AMOUNT)
@@ -310,6 +310,12 @@ class TestCashToken:
                         "minting", b"commitment")
             )
 
+        # simple subtraction
+        cashtoken = CashToken(500)
+        cashtoken.subtract_output(
+            Unspent(500, 42, "script", "txid", 0)
+        )
+
         # fine tune subtraction
         tokendata = {
             "catagory": {
@@ -436,7 +442,7 @@ class TestCashToken:
                                              512)
 
         cashtoken = CashToken(3072, tokendata)
-        outputs = cashtoken.get_outputs(BITCOIN_CASHADDRESS)
+        outputs, leftover_amount = cashtoken.get_outputs(BITCOIN_CASHADDRESS)
 
         assert len(outputs) == 6
         assert outputs[0][1] == 512
@@ -451,10 +457,12 @@ class TestCashToken:
         assert outputs[4][2] == cashtokenoutput_30
         assert outputs[5][1] == 512
         assert outputs[5][2] == cashtokenoutput_40
+        assert leftover_amount == 0
 
         cashtoken = CashToken(50)
-        outputs = cashtoken.get_outputs(BITCOIN_CASHADDRESS)
+        outputs, leftover_amount = cashtoken.get_outputs(BITCOIN_CASHADDRESS)
 
         assert len(outputs) == 1
         assert outputs[0][1] == 50
-        assert outputs[0][2] == CashTokenOutput()
+        assert outputs[0][2] == CashTokenOutput(amount=50)
+        assert leftover_amount == 50
