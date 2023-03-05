@@ -7,7 +7,9 @@ from bitcash.cashtoken import (
     CashTokenOutput,
     InvalidCashToken,
     prepare_cashtoken_aware_output,
-    CashToken
+    CashToken,
+    generate_new_cashtoken_output,
+    DUST_VALUE
 )
 from bitcash.exceptions import InsufficientFunds
 from bitcash.cashaddress import Address
@@ -468,3 +470,49 @@ class TestCashToken:
         assert outputs[0][1] == 50
         assert outputs[0][2] == CashTokenOutput(amount=50)
         assert leftover_amount == 50
+
+
+class TestGenerateCashTokenOutput:
+    def test_outputs(self):
+        unspent = Unspent(500, 2345, "script", "ffdd", 0)
+        cashtokenoutput = CashTokenOutput(
+            catagory_id=unspent.txid,
+            nft_capability="mutable",
+            token_amount=50,
+            amount=DUST_VALUE,
+            _genesis=True
+        )
+        cashtokenoutput1 = CashTokenOutput(
+            catagory_id=unspent.txid,
+            token_amount=50,
+            amount=DUST_VALUE,
+            _genesis=True
+        )
+        cashtokenoutput2 = CashTokenOutput(
+            catagory_id=unspent.txid,
+            nft_capability="immutable",
+            nft_commitment=b"commitment",
+            amount=DUST_VALUE,
+            _genesis=True
+        )
+
+        outputs = generate_new_cashtoken_output(
+            unspent,
+            ((BITCOIN_CASHADDRESS, "mutable", None, 50),
+             (BITCOIN_CASHADDRESS, None, None, 50),
+             (BITCOIN_CASHADDRESS, "immutable", b"commitment", None))
+        )
+
+        dest = Address.from_string(BITCOIN_CASHADDRESS)
+        assert len(outputs) == 3
+        assert outputs[0][0] == cashtokenoutput.token_prefix + dest.scriptcode
+        assert outputs[0][1] == DUST_VALUE
+        assert outputs[0][2] == cashtokenoutput
+        assert outputs[1][2] == cashtokenoutput1
+        assert outputs[2][2] == cashtokenoutput2
+        # bad utxo
+        unspent = Unspent(500, 2345, "script", "txid", 2)
+        with pytest.raises(InvalidCashToken):
+            generate_new_cashtoken_output(unspent,
+                                          (BITCOIN_CASHADDRESS, None, None, 50)
+                                          )

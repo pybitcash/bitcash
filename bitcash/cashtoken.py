@@ -144,6 +144,10 @@ class CashTokenOutput:
 
 def prepare_cashtoken_aware_output(output):
     if len(output) == 3:
+        if isinstance(output[2], CashTokenOutput):
+            # already cashtoken aware
+            # usefull when genesis token output are made with _genesis=True
+            return output
         dest, amount, currency = output
         if not isinstance(dest, Address):
             dest = Address.from_string(dest)
@@ -415,3 +419,42 @@ def _subtract_minting_nft(catagorydata):
             return catagorydata
 
     raise InsufficientFunds("No minting nft")
+
+
+def generate_new_cashtoken_output(
+    unspent,
+    destinations
+):
+    """
+    generate new cashtoken aware outputs to destinations
+
+    :param unspent: Unspent to generate the new cashtoken
+    :type unspent: Unspent
+    :param destinations: list of (destination_address, nft_capability,
+                         nft_commitment, token_amount) for the nft
+    :type destinations: ``list``
+    :rtype: ``list``
+    """
+    if unspent.txindex != 0:
+        raise InvalidCashToken("Unspent should have txindex 0")
+    outputs = []
+    for destination in destinations:
+        dest, nft_capability, nft_commitment, token_amount = destination
+        if not isinstance(dest, Address):
+            dest = Address.from_string(dest)
+
+        cashtokenoutput = CashTokenOutput(
+            catagory_id=unspent.txid,
+            nft_capability=nft_capability,
+            nft_commitment=nft_commitment,
+            token_amount=token_amount,
+            amount=DUST_VALUE,
+            _genesis=True
+        )
+        outputs.append((
+            cashtokenoutput.token_prefix + dest.scriptcode,
+            DUST_VALUE,
+            cashtokenoutput
+        ))
+
+    return outputs
