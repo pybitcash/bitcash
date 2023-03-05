@@ -38,7 +38,7 @@ class CashTokenOutput:
                 or token_amount is not None
             ):
                 raise InvalidCashToken("catagory_id missing")
-        if catagory_id is not None:
+        else:
             # checking for Pre-activation token-forgery outputs (PATFOs)
             tx = NetworkAPI.get_transaction(catagory_id)
             if tx.block < CASHTOKEN_ACTIVATION_BLOCKHEIGHT:
@@ -144,9 +144,10 @@ class CashTokenOutput:
 
 def prepare_cashtoken_aware_output(output):
     if len(output) == 3:
-        if isinstance(output[2], CashTokenOutput):
+        if isinstance(output[2], CashTokenOutput) or output[2] is None:
             # already cashtoken aware
             # usefull when genesis token output are made with _genesis=True
+            # or is OP_RETURN message
             return output
         dest, amount, currency = output
         if not isinstance(dest, Address):
@@ -309,8 +310,7 @@ class CashTokenUnspents:
             if ctoutput.has_nft:
                 nft = [
                     ctoutput.nft_capability,
-                    ("None" if ctoutput.nft_commitment is None
-                     else ctoutput.nft_commitment)
+                    ctoutput.nft_commitment or "None"
                 ]
                 catagorydata = _subtract_nft(catagorydata, nft)
 
@@ -463,3 +463,107 @@ def generate_new_cashtoken_output(
         ))
 
     return outputs
+
+
+class CashTokenOutputs:
+    """
+    class to count sanitized outputs and select unspents that cover them
+
+    """
+    def __init__(self, outputs):
+        self.amount = 0
+        self.tokendata = {}
+        for output in outputs:
+            self.add_output(output)
+
+    def add_output(self, output):
+        # sanitize
+        prepare_cashtoken_aware_output(output)
+        _, amount, cashtokenoutput = output
+        if cashtokenoutput is None:
+            # OP_RETURN or message output
+            return
+        if hasattr(cashtokenoutput, "_genesis") and cashtokenoutput._genesis:
+            # genesis cashtoken, won't have equivalent unspent cashtoken
+            self.amount += amount
+            return
+
+        if cashtokenoutput.has_cashtoken:
+            catagorydata = self.tokendata.get(cashtokenoutput.catagory_id, {})
+            if cashtokenoutput.has_amount:
+                catagorydata["token_amount"] = (
+                    catagorydata.get("token_amount", 0)
+                    + cashtokenoutput.token_amount
+                )
+            if cashtokenoutput.has_nft:
+                nftdata = {"capability": cashtokenoutput.nft_capability}
+                if cashtokenoutput.nft_commitment is not None:
+                    nftdata["commitment"] = cashtokenoutput.nft_commitment
+                catagorydata["nft"] = (
+                    catagorydata.get("nft", [])
+                    + [nftdata]
+                )
+            self.tokendata.update({cashtokenoutput.catagory_id: catagorydata})
+
+    def subtract_unspent(self, unspent):
+        """
+        subtract unspent that'll pay cashtoken part of the output
+        """
+        unspent_used = False
+
+        catagorydata = self.tokendata.get(unspent.catagory_id, {})
+        # check token_amount
+        if unspent.has_amount and "token_amount" in catagorydata:
+            unspent_used = True
+            catagorydata["token_amount"] -= unspent.token_amount
+            if catagorydata["token_amount"] < 0:
+                catagorydata.pop("token_amount")
+
+        # check nft
+        if unspent.has_nft and "nft" in catagorydata:
+            catagorydata, nft_used = _subtract_nft_output(unspent,
+                                                          catagorydata)
+            if nft_used:
+                unspent_used = True
+
+        if not unspent_used:
+            raise ValueError("Unspent not used")
+
+        # update self
+        if catagorydata == {}:
+            self.tokendata.pop(unspent.catagory_id)
+        else:
+            self.tokendata.update({unspent.catagory_id: catagorydata})
+        # not used, but just for completeness
+        # amount is added with individually adding unpents later
+        self.amount -= unspent.amount
+        if self.amount < 0:
+            self.amount = 0
+
+
+def _subtract_nft_output(unspent, catagorydata):
+    if unspent.nft_capability == "minting":
+        # minting pays all
+        catagorydata.pop("nft")
+        return _sanitize(catagorydata), True
+    elif unspent.nft_capability == "mutable":
+        # pays first mutable, or first immutable
+        for i, nft in enumerate(catagorydata["nft"]):
+            if nft["capability"] == "mutable":
+                catagorydata["nft"].pop(i)
+                return _sanitize(catagorydata), True
+        else:
+            for i, nft in enumerate(catagorydata["nft"]):
+                if nft["capability"] == "immutable":
+                    catagorydata["nft"].pop(i)
+                    return _sanitize(catagorydata), True
+    else:  # immutable
+        nft_commitment = unspent.nft_commitment or "None"
+        for i, nft in enumerate(catagorydata["nft"]):
+            if (
+                nft["capability"] == "immutable"
+                and nft_commitment == nft.get("commitment", "None")
+            ):
+                catagorydata["nft"].pop(i)
+                return _sanitize(catagorydata), True
+    return catagorydata, False

@@ -5,6 +5,7 @@ from bitcash import cashtoken as _cashtoken
 from bitcash.network.meta import Unspent
 from bitcash.cashtoken import (
     CashTokenOutput,
+    CashTokenOutputs,
     InvalidCashToken,
     prepare_cashtoken_aware_output,
     CashTokenUnspents,
@@ -543,3 +544,179 @@ class TestGenerateCashTokenOutput:
             generate_new_cashtoken_output(unspent,
                                           (BITCOIN_CASHADDRESS, None, None, 50)
                                           )
+
+
+class TestCashTokenOutputs:
+    def setup_method(self):
+        self.monkeypatch = MonkeyPatch()
+        self.monkeypatch.setattr(_cashtoken, "NetworkAPI", NetworkAPI)
+
+    def test_add_output(self):
+        # OP_RETURN
+        cashtokenoutputs = CashTokenOutputs([[BITCOIN_CASHADDRESS, 50, None]])
+        assert cashtokenoutputs.tokendata == {}
+
+        # genesis cashtoken
+        cashtokenoutputs = CashTokenOutputs([
+            [
+                BITCOIN_CASHADDRESS,
+                50,
+                CashTokenOutput(
+                    "catagory_id",
+                    token_amount=50,
+                    amount=50,
+                    _genesis=True
+                )
+            ]
+        ])
+        assert cashtokenoutputs.tokendata == {}
+
+        # test token amount
+        cashtokenoutputs = CashTokenOutputs([
+            [
+                BITCOIN_CASHADDRESS,
+                50,
+                CashTokenOutput(
+                    "catagory_id",
+                    token_amount=50,
+                    amount=50
+                )
+            ]
+        ])
+        assert cashtokenoutputs.tokendata == {"catagory_id": {
+            "token_amount": 50
+        }}
+
+        # test nft
+        cashtokenoutputs = CashTokenOutputs([
+            [
+                BITCOIN_CASHADDRESS,
+                50,
+                CashTokenOutput(
+                    "catagory_id",
+                    nft_capability="immutable",
+                    amount=50
+                )
+            ]
+        ])
+        assert cashtokenoutputs.tokendata == {"catagory_id": {
+            "nft": [{"capability": "immutable"}]
+        }}
+
+        # test both
+        cashtokenoutputs = CashTokenOutputs([
+            [
+                BITCOIN_CASHADDRESS,
+                50,
+                CashTokenOutput(
+                    "catagory_id",
+                    nft_capability="immutable",
+                    token_amount=500,
+                    amount=50
+                )
+            ]
+        ])
+        assert cashtokenoutputs.tokendata == {"catagory_id": {
+            "token_amount": 500,
+            "nft": [{"capability": "immutable"}]
+        }}
+
+    def test_subtract_unspent(self):
+        cashtokenoutput1 = CashTokenOutput("c1", "mutable", None, None, 512)
+        cashtokenoutput2 = CashTokenOutput("c1", "immutable",
+                                           b"commitment", None, 512)
+        cashtokenoutput3 = CashTokenOutput("c2", "minting", None, 50, 512)
+        cashtokenoutput4 = CashTokenOutput("c2", None, None, 50, 512)
+        outputs = [
+            (BITCOIN_CASHADDRESS, 512, cashtokenoutput1),
+            (BITCOIN_CASHADDRESS, 512, cashtokenoutput2),
+            (BITCOIN_CASHADDRESS, 512, cashtokenoutput3),
+            (BITCOIN_CASHADDRESS, 512, cashtokenoutput4),
+        ]
+
+        cashtokenoutputs = CashTokenOutputs(outputs)
+        # errors
+        with pytest.raises(ValueError):
+            cashtokenoutputs.subtract_unspent(
+                Unspent(50, 1234, "script", "txid", 0, "c1", "immutable")
+            )
+        with pytest.raises(ValueError):
+            cashtokenoutputs.subtract_unspent(
+                Unspent(50, 1234, "script", "txid", 0, "c1", token_amount=1)
+            )
+        with pytest.raises(ValueError):
+            cashtokenoutputs.subtract_unspent(
+                Unspent(50, 1234, "script", "txid", 0, "c2", "mutable")
+            )
+        # test minting
+        cashtokenoutputs.subtract_unspent(
+            Unspent(50, 1234, "script", "txid", 0, "c1", "minting")
+        )
+        assert cashtokenoutputs.tokendata == {"c2": {
+            "token_amount": 100,
+            "nft": [{"capability": "minting"}]
+        }}
+
+        # test mutable
+        cashtokenoutputs = CashTokenOutputs(outputs)
+        cashtokenoutputs.subtract_unspent(
+            Unspent(50, 1234, "script", "txid", 0, "c1", "mutable")
+        )
+        assert cashtokenoutputs.tokendata == {
+            "c1": {
+                "nft": [{"capability": "immutable",
+                         "commitment": b"commitment"}]
+            },
+            "c2": {
+                "token_amount": 100,
+                "nft": [{"capability": "minting"}]
+            }
+        }
+        # another mutable will cover immutable
+        cashtokenoutputs.subtract_unspent(
+            Unspent(50, 1234, "script", "txid", 0, "c1", "mutable")
+        )
+        assert cashtokenoutputs.tokendata == {
+            "c2": {
+                "token_amount": 100,
+                "nft": [{"capability": "minting"}]
+            }
+        }
+        # another mutable will raise error
+        with pytest.raises(ValueError):
+            cashtokenoutputs.subtract_unspent(
+                Unspent(50, 1234, "script", "txid", 0, "c1", "mutable")
+            )
+
+        # test immutable
+        cashtokenoutputs = CashTokenOutputs(outputs)
+        cashtokenoutputs.subtract_unspent(
+            Unspent(50, 1234, "script", "txid", 0, "c1", "immutable",
+                    b"commitment")
+        )
+        assert cashtokenoutputs.tokendata == {
+            "c1": {
+                "nft": [{"capability": "mutable"}]
+            },
+            "c2": {
+                "token_amount": 100,
+                "nft": [{"capability": "minting"}]
+            }
+        }
+
+        # test amount
+        cashtokenoutputs = CashTokenOutputs(outputs)
+        cashtokenoutputs.subtract_unspent(
+            Unspent(50, 1234, "script", "txid", 0, "c2", token_amount=20)
+        )
+        assert cashtokenoutputs.tokendata == {
+            "c1": {
+                "nft": [{"capability": "mutable"},
+                        {"capability": "immutable",
+                         "commitment": b"commitment"}]
+            },
+            "c2": {
+                "token_amount": 80,
+                "nft": [{"capability": "minting"}]
+            }
+        }

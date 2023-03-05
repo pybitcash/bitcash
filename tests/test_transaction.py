@@ -1,8 +1,10 @@
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 
 from bitcash.exceptions import InsufficientFunds
 from bitcash.network.meta import Unspent
 from bitcash.cashtoken import CashTokenOutput
+from bitcash import cashtoken as _cashtoken
 from bitcash.transaction import (
     TxIn,
     calc_txid,
@@ -402,6 +404,90 @@ class TestSanitizeTxData:
         )
 
         assert outputs[2][1] == 5686730
+
+
+# Monkeypatch NETWORKAPI
+class DummyTX:
+    def __init__(self, block):
+        self.block = block
+
+
+class NetworkAPI:
+    def get_transaction(catagory_id):
+        # tx block height 1e6 much later than cashtoken activation
+        return DummyTX(1e6)
+
+
+class TestSanitizeTxDataCashToken:
+    def setup_method(self):
+        self.monkeypatch = MonkeyPatch()
+        self.monkeypatch.setattr(_cashtoken, "NetworkAPI", NetworkAPI)
+
+    def test_combine(self):
+        unspents_original = [
+            Unspent(1000, 0, "script", "txid", 0),
+            Unspent(1000, 0, "script", "txid", 1, "caff", "immutable")
+        ]
+        outputs_original = [[
+            BITCOIN_CASHADDRESS,
+            1000,
+            "satoshi",
+            "caff",
+            "immutable",
+            None,
+            None
+        ]]
+        script = Address.from_string(BITCOIN_CASHADDRESS).scriptcode
+
+        unspents, outputs = sanitize_tx_data(
+            unspents_original,
+            outputs_original,
+            0,
+            BITCOIN_CASHADDRESS,
+            combine=True
+        )
+        print(outputs)
+        assert unspents == unspents_original
+
+        assert len(outputs) == 2
+        assert outputs[0][2] == CashTokenOutput("caff", "immutable",
+                                                amount=1000)
+        assert outputs[1][1] == 1000
+        assert outputs[1][0] == script
+        assert outputs[1][2] == CashTokenOutput(amount=1000)
+
+    def test_no_combine(self):
+        unspents_original = [
+            Unspent(1000, 0, "script", "txid", 0),
+            Unspent(1000, 0, "script", "txid", 1, "caff", "immutable"),
+            Unspent(1000, 0, "script", "txid", 1, "caff", "minting")
+        ]
+        outputs_original = [[
+            BITCOIN_CASHADDRESS,
+            1500,
+            "satoshi",
+            "caff",
+            "immutable",
+            None,
+            None
+        ]]
+        script = Address.from_string(BITCOIN_CASHADDRESS).scriptcode
+
+        unspents, outputs = sanitize_tx_data(
+            unspents_original,
+            outputs_original,
+            0,
+            BITCOIN_CASHADDRESS,
+            combine=False
+        )
+
+        assert len(unspents) == 2
+        assert len(outputs) == 2
+        assert outputs[0][2] == CashTokenOutput("caff", "immutable",
+                                                amount=1500)
+        assert outputs[1][1] == 500
+        assert outputs[1][0] == script
+        assert outputs[1][2] == CashTokenOutput(amount=500)
 
 
 class TestCreateSignedTransaction:

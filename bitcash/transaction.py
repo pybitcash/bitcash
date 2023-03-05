@@ -6,7 +6,8 @@ from bitcash.crypto import double_sha256, sha256
 from bitcash.exceptions import InsufficientFunds
 from bitcash.cashtoken import (
     prepare_cashtoken_aware_output,
-    CashTokenUnspents
+    CashTokenUnspents,
+    CashTokenOutputs
 )
 from bitcash.op import OpCodes
 from bitcash.utils import (
@@ -194,6 +195,7 @@ def sanitize_tx_data(
         if calculated_fee:
             last_out = list(leftover_outputs[-1])
             last_out[1] -= calculated_fee
+            last_out[2].amount -= calculated_fee
             leftover_outputs[-1] = tuple(last_out)
 
         outputs += leftover_outputs
@@ -208,33 +210,29 @@ def sanitize_tx_data(
                 pop_ids.append(i)
         for id_ in sorted(pop_ids)[::-1]:
             unspents.pop(id_)
-        # a smarter selection scheme can be coded using sorted(unspents)
-        # instead implements simple unspent selection
-        # if catagory_id in output then all unspents with catagory_id used
-        output_catagory_ids = set([
-            _[2].catagory_id for _ in outputs if _[2].catagory_id is not None
-        ])
-        unspent_selected = []
-        # other unspent with cashtoken, to be used last
-        unspent_cashtoken = []
-        pop_ids = []
-        for i, unspent in enumerate(unspents):
-            if unspent.catagory_id in output_catagory_ids:
-                unspent_selected.append(unspent)
-                pop_ids.append(i)
-            elif unspent.has_cashtoken:
-                unspent_cashtoken.append(unspent)
-                pop_ids.append(i)
-        for id_ in sorted(pop_ids)[::-1]:
-            unspents.pop(id_)
 
-        # sort the rest unspents
+        # sort and use required cashtoken unspents
+        unspents_cashtoken = sorted(unspents_cashtoken)
+        unspents_used = []
+        pop_ids = []
+        cashtokenoutputs = CashTokenOutputs(outputs)
+        for i, unspent in enumerate(unspents_cashtoken):
+            try:
+                cashtokenoutputs.subtract_unspent(unspent)
+            except ValueError:
+                continue
+            unspents_used.append(unspent)
+            pop_ids.append(i)
+        for id_ in sorted(pop_ids)[::-1]:
+            unspents_cashtoken.pop(id_)
+
+        # sort the rest unspents and fund the bch amount
         # __gt__ and __eq__ will sort them with no cashtoken unspents first
         unspents = sorted(unspents + unspents_cashtoken)
 
         index = 0
 
-        cashtoken = CashTokenUnspents(unspent_selected)
+        cashtoken = CashTokenUnspents(unspents_used)
         for index, unspent in enumerate(unspents):
             cashtoken.add_unspent(unspent)
             test_token = deepcopy(cashtoken)
@@ -262,9 +260,10 @@ def sanitize_tx_data(
         if calculated_fee:
             last_out = list(leftover_outputs[-1])
             last_out[1] -= calculated_fee
+            last_out[2].amount -= calculated_fee
             leftover_outputs[-1] = tuple(last_out)
 
-        unspents[:] = unspents[: index + 1]
+        unspents[:] = unspents_used + unspents[: index + 1]
         outputs += leftover_outputs
 
     outputs.extend(messages)
