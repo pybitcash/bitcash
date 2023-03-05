@@ -139,7 +139,8 @@ class TestCashTokenOutput:
         assert repr(cashtoken) == (
             "CashToken(catagory_id='b770119192864ac47ac7753df4f31c702bdd0d39"
             "cc3858594eae2a562e0bb100', nft_commitment=b'commitment',"
-            " nft_capability='immutable', token_amount=50, amount=0)"
+            " nft_capability='immutable', token_amount=50, amount=0, "
+            "_genesis=False)"
         )
 
 
@@ -266,7 +267,8 @@ class TestCashToken:
         # New token
         cashtoken = CashToken(1000, tokendata)
         cashtoken.subtract_output(
-            Unspent(500, 42, "script", "txid", 0, None, "mutable")
+            CashTokenOutput("catagory_new", "immutable", token_amount=30,
+                            amount=500, _genesis=True)
         )
         assert cashtoken.amount == 500
         assert cashtoken.tokendata == tokendata

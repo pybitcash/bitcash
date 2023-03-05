@@ -21,7 +21,7 @@ class InvalidCashToken(ValueError):
 class CashTokenOutput:
 
     __slots__ = ("catagory_id", "nft_commitment", "nft_capability",
-                 "token_amount", "amount")
+                 "token_amount", "amount", "_genesis")
 
     def __init__(
         self,
@@ -30,8 +30,14 @@ class CashTokenOutput:
         nft_commitment=None,
         token_amount=None,
         amount=0,
+        _genesis=False,
     ):
-        # catagory_id is None when generating new token
+        if catagory_id is None:
+            if (
+                nft_capability is not None
+                or token_amount is not None
+            ):
+                raise InvalidCashToken("catagory_id missing")
         if catagory_id is not None:
             # checking for Pre-activation token-forgery outputs (PATFOs)
             tx = NetworkAPI.get_transaction(catagory_id)
@@ -67,6 +73,7 @@ class CashTokenOutput:
         self.nft_commitment = nft_commitment
         self.nft_capability = nft_capability
         self.token_amount = token_amount
+        self._genesis = _genesis
 
     def to_dict(self):
         return {attr: getattr(self, attr)
@@ -280,10 +287,10 @@ class CashToken:
         self.amount -= ctoutput.amount
 
         if ctoutput.has_cashtoken:
-            catagory_id = ctoutput.catagory_id
-            if catagory_id is None:
+            if hasattr(ctoutput, "_genesis") and ctoutput._genesis:
                 # new token generated
                 return
+            catagory_id = ctoutput.catagory_id
             if catagory_id not in self.tokendata.keys():
                 raise InsufficientFunds("unspent catagory_id does not exist")
             catagorydata = self.tokendata[catagory_id]
