@@ -13,11 +13,10 @@ class Unspent:
 
     __slots__ = ("amount", "confirmations", "script", "txid",
                  "txindex", "catagory_id", "nft_capability", "nft_commitment",
-                 "token_amount"
-                )
+                 "token_amount")
 
     NFT_CAPABILITY = ["immutable", "mutable", "minting"]
-    
+
     def __init__(
         self,
         amount,
@@ -39,7 +38,7 @@ class Unspent:
         self.nft_capability = nft_capability
         self.nft_commitment = nft_commitment
         self.token_amount = token_amount
-        
+
         # if API doesn't support CashToken implicitly
         if self.catagory_id is None:
             self.parse_script(script)
@@ -58,7 +57,7 @@ class Unspent:
     @property
     def has_amount(self):
         return self.token_amount is not None
-    
+
     @property
     def has_cashtoken(self):
         return self.has_amount or self.has_nft
@@ -72,9 +71,9 @@ class Unspent:
         if not scriptcode.startswith(OpCodes.OP_TOKENPREFIX.h):
             # no token info available
             return
-        
+
         self.catagory_id = scriptcode[2:66]
-        
+
         token_bitfield = scriptcode[66:68]
         # 4 bit prefix
         _ = bin(int(token_bitfield[0], 16))[2:]
@@ -107,9 +106,8 @@ class Unspent:
                                                  script_counter + 2)
             commitment_length = int.from_bytes(bytes.fromhex(
                 scriptcode[start_counter:script_counter]
-            )
-                                               , "little") * 2  # hex
-            
+            ), "little") * 2  # hex
+
             _ = script_counter + commitment_length
             self.nft_commitment = bytes.fromhex(scriptcode[script_counter:_])
             script_counter += commitment_length
@@ -130,16 +128,44 @@ class Unspent:
                                                  script_counter + 2)
             self.token_amount = int.from_bytes(bytes.fromhex(
                 scriptcode[start_counter:script_counter]
-            )
-                                          , "little")
+            ), "little")
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
 
+    def __gt__(self, other):
+        """
+        Method to help sorting of Unspents during spending
+        """
+        if self.has_nft:
+            if not other.has_nft:
+                return True
+            if (
+                Unspent.NFT_CAPABILITY.index(self.nft_capability)
+                > Unspent.NFT_CAPABILITY.index(other.nft_capability)
+            ):
+                return True
+            if (
+                Unspent.NFT_CAPABILITY.index(self.nft_capability)
+                < Unspent.NFT_CAPABILITY.index(other.nft_capability)
+            ):
+                return False
+        elif other.has_nft:
+            return False
+        if self.has_amount:
+            if not other.has_amount:
+                return True
+            if (self.token_amount > other.token_amount):
+                return True
+            if (self.token_amount < other.token_amount):
+                return False
+        elif other.has_amount:
+            return False
+        return self.amount > other.amount
+
     def __repr__(self):
 
-        var_list = [f"{key}={repr(value)}" for key, value in self.to_dict().items()
-                    if value is not None
-                   ]
+        var_list = [f"{key}={repr(value)}"
+                    for key, value in self.to_dict().items()
+                    if value is not None]
         return "Unspent({})".format(", ".join(var_list))
-

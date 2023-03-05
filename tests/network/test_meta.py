@@ -79,3 +79,31 @@ class TestUnspent:
             "Unspent(amount=10000, confirmations=7, "
             "script='script', txid='txid', txindex=0)"
         )
+
+    def test_gt(self):
+        unspent = Unspent(10000, 7, "script", "txid", 0)
+        unspent1 = Unspent(20000, 7, "script", "txid", 0)
+        unspent2 = Unspent(10000, 7, "script", "txid", 0, "catagory_id",
+                           "immutable")
+        unspent3 = Unspent(30000, 7, "script", "txid", 0, "catagory_id",
+                           "immutable")
+        unspent4 = Unspent(10000, 7, "script", "txid", 0, "catagory_id",
+                           "mutable")
+        unspent5 = Unspent(20000, 7, "script", "txid", 0, "catagory_id",
+                           token_amount=50)
+        unspent6 = Unspent(20000, 7, "script", "txid", 0, "catagory_id",
+                           token_amount=20)
+        unspent7 = Unspent(30000, 7, "script", "txid", 0, "catagory_id",
+                           token_amount=20)
+
+        assert unspent1 > unspent
+        assert unspent2 > unspent
+        assert unspent4 > unspent2
+        assert not unspent2 > unspent4
+        assert not unspent > unspent2
+        assert unspent3 > unspent2
+        assert unspent5 > unspent
+        assert not unspent > unspent5
+        assert unspent5 > unspent7
+        assert not unspent6 > unspent5
+        assert unspent7 > unspent6
