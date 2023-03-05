@@ -7,8 +7,10 @@ from bitcash.op import OpCodes
 
 
 # block after 1684152000 MTP (2023-05-15T12:00:00.000Z)
+# !FIXME
 CASHTOKEN_ACTIVATION_BLOCKHEIGHT = 782467
 COMMITMENT_LENGTH = 40
+DUST_VALUE = 512
 
 
 class InvalidCashToken(ValueError):
@@ -162,17 +164,20 @@ def prepare_cashtoken_aware_output(output):
 class CashToken:
     """
     Class to handle CashToken
+    Incoming data is assumed to be valid, tests are performed when making
+    outputs
 
-    tokendata = {
-        "category_id" : {           (string) token id hex
-            "token_amount" : "xxx", (int) fungible amount
-            "nft" : [{
-              "capability" : "xxx", (string) one of "immutable", "mutable",
-                                    "minting"
-              "commitment" : b""    (bytes) NFT commitment
-            }]
+    >>> tokendata = {
+            "category_id" : {           (string) token id hex
+                "token_amount" : "xxx", (int) fungible amount
+                "nft" : [{
+                  "capability" : "xxx", (string) one of "immutable", "mutable",
+                                        "minting"
+                  "commitment" : b"xxx" (bytes) NFT commitment
+                }]
+            }
         }
-    }
+    >>> cashtoken = CashToken(50, tokendata)
     """
 
     def __init__(self, amount=0, tokendata=None):
@@ -208,7 +213,7 @@ class CashToken:
             instance.add_unspent(unspent)
         return instance
 
-    def subtract_unspent(self, unspent):
+    def subtract_output(self, unspent):
         def _sanitize_and_add(catagorydata, catagory_id):
             if (
                 "token_amount" in catagorydata
@@ -327,3 +332,51 @@ class CashToken:
                     raise ValueError("No capable nft found")
             # no nft, only token_amount
             _sanitize_and_add(catagorydata, catagory_id)
+
+    def get_outputs(self, leftover):
+        """
+        Return sanitized outputs for the remaining cashtokens
+
+        :param leftover: leftover address to add the outputs
+        :type leftover: ``str``
+        """
+        outputs = []
+
+        amount = self.amount
+
+        for catagory_id, value in self.tokendata.items():
+            token_amount = None
+            if "token_amount" in value:
+                token_amount = value["token_amount"]
+            if "nft" in value:
+                for i, nft in enumerate(value["nft"]):
+                    nft_capability = nft["capability"]
+                    nft_commitment = nft.get("commitment", None)
+                    outputs.append(prepare_cashtoken_aware_output(
+                        (leftover, DUST_VALUE, "satoshi", catagory_id,
+                         nft_capability, nft_commitment, token_amount)
+                    ))
+                    # add token to first nft
+                    token_amount = None
+                    amount -= DUST_VALUE
+            elif token_amount is not None:
+                # token_amount but no nft
+                outputs.append(prepare_cashtoken_aware_output(
+                    (leftover, DUST_VALUE, "satoshi", catagory_id,
+                     None, None, token_amount)
+                ))
+                amount -= DUST_VALUE
+
+        if len(outputs) == 0:
+            # no tokendata
+            outputs.append(prepare_cashtoken_aware_output(
+                (leftover, amount, "satoshi")
+            ))
+        else:
+            if amount < 0:
+                raise ValueError("Not enough sats")
+            last_out = list(outputs[-1])
+            last_out[1] += amount
+            outputs[-1] = tuple(last_out)
+
+        return outputs
