@@ -4,6 +4,7 @@ from bitcash.network.meta import Unspent
 from bitcash.cashaddress import Address
 from bitcash.utils import int_to_varint
 from bitcash.op import OpCodes
+from bitcash.exceptions import InsufficientFunds
 
 
 # block after 1684152000 MTP (2023-05-15T12:00:00.000Z)
@@ -20,14 +21,15 @@ class InvalidCashToken(ValueError):
 class CashTokenOutput:
 
     __slots__ = ("catagory_id", "nft_commitment", "nft_capability",
-                 "token_amount")
+                 "token_amount", "amount")
 
     def __init__(
         self,
         catagory_id=None,
         nft_capability=None,
         nft_commitment=None,
-        token_amount=None
+        token_amount=None,
+        amount=0,
     ):
         # catagory_id is None when generating new token
         if catagory_id is not None:
@@ -60,6 +62,7 @@ class CashTokenOutput:
             raise InvalidCashToken("1 <= valid token amount <= "
                                    "9223372036854775807")
 
+        self.amount = amount
         self.catagory_id = catagory_id
         self.nft_commitment = nft_commitment
         self.nft_capability = nft_capability
@@ -142,12 +145,17 @@ def prepare_cashtoken_aware_output(output):
             currency_to_satoshi_cached(amount, currency),
             CashTokenOutput(),
         )
+
     (dest, amount, currency, catagory_id, nft_capability, nft_commitment,
      token_amount) = output
+
     if not isinstance(dest, Address):
         dest = Address.from_string(dest)
 
+    amount = currency_to_satoshi_cached(amount, currency)
+
     cashtoken = CashTokenOutput(
+        amount=amount,
         catagory_id=catagory_id,
         nft_commitment=nft_commitment,
         nft_capability=nft_capability,
@@ -156,7 +164,7 @@ def prepare_cashtoken_aware_output(output):
 
     return (
         cashtoken.token_prefix + dest.scriptcode,
-        currency_to_satoshi_cached(amount, currency),
+        amount,
         cashtoken
     )
 
@@ -213,126 +221,6 @@ class CashToken:
             instance.add_unspent(unspent)
         return instance
 
-    def subtract_output(self, unspent):
-        def _sanitize_and_add(catagorydata, catagory_id):
-            if (
-                "token_amount" in catagorydata
-                and catagorydata["token_amount"] == 0
-            ):
-                catagorydata.pop("token_amount")
-            if (
-                "nft" in catagorydata
-                and len(catagorydata["nft"]) == 0
-            ):
-                catagorydata.pop("nft")
-            if catagorydata == {}:
-                self.tokendata.pop(catagory_id)
-            else:
-                self.tokendata.update({catagory_id: catagorydata})
-        if self.amount < unspent.amount:
-            raise ValueError("Not enough amount")
-        self.amount -= unspent.amount
-
-        if unspent.has_cashtoken:
-            catagory_id = unspent.catagory_id
-            if catagory_id is None:
-                # new token generated
-                return
-            if catagory_id not in self.tokendata.keys():
-                raise ValueError("unspent catagory_id does not exist")
-            catagorydata = self.tokendata[catagory_id]
-            if unspent.has_amount:
-                if "token_amount" not in catagorydata:
-                    raise ValueError("No token amount")
-                if catagorydata["token_amount"] < unspent.token_amount:
-                    raise ValueError("Not enough token amount")
-                catagorydata["token_amount"] -= unspent.token_amount
-            if unspent.has_nft:
-                if "nft" not in catagorydata:
-                    raise ValueError("No nft found")
-                # if immutable nft is asked, then immutable nft is spent
-                # then a mutable nft is made to immutable, then minting
-                # mints new nft.
-                # if mutable nft is asked, then mutable nft is spent, then
-                # minting mints new nft.
-                # if minting nft is asked, then minting nft mints new.
-                nft_capabilities = [_["capability"]
-                                    for _ in catagorydata["nft"]]
-                nft_commitments = [_.get("commitment", "None")
-                                   for _ in catagorydata["nft"]]
-
-                if unspent.nft_capability == "immutable":
-                    unspent_commitment = ("None"
-                                          if unspent.nft_commitment is None
-                                          else unspent.nft_commitment)
-                    # find an immutable to send
-                    for i in range(len(catagorydata["nft"])):
-                        if (
-                            nft_capabilities[i] == "immutable"
-                            and nft_commitments[i] == unspent_commitment
-                        ):
-                            # found immutable with same commitment
-                            catagorydata["nft"].pop(i)
-                            _sanitize_and_add(catagorydata, catagory_id)
-                            return
-
-                    # find a mutable to mutate
-                    for i in range(len(catagorydata["nft"])):
-                        if (
-                            nft_capabilities[i] == "mutable"
-                        ):
-                            # found mutable
-                            catagorydata["nft"].pop(i)
-                            _sanitize_and_add(catagorydata, catagory_id)
-                            return
-
-                    # find a minting to mint
-                    for i in range(len(catagorydata["nft"])):
-                        if (
-                            nft_capabilities[i] == "minting"
-                        ):
-                            # found minting
-                            return
-
-                    # none found
-                    raise ValueError("No capable nft found")
-
-                if unspent.nft_capability == "mutable":
-                    # find a mutable to mutate
-                    for i in range(len(catagorydata["nft"])):
-                        if (
-                            nft_capabilities[i] == "mutable"
-                        ):
-                            # found mutable
-                            catagorydata["nft"].pop(i)
-                            _sanitize_and_add(catagorydata, catagory_id)
-                            return
-
-                    # find a minting to mint
-                    for i in range(len(catagorydata["nft"])):
-                        if (
-                            nft_capabilities[i] == "minting"
-                        ):
-                            # found minting
-                            return
-
-                    # none found
-                    raise ValueError("No capable nft found")
-
-                if unspent.nft_capability == "minting":
-                    # find a minting to mint
-                    for i in range(len(catagorydata["nft"])):
-                        if (
-                            nft_capabilities[i] == "minting"
-                        ):
-                            # found minting
-                            return
-
-                    # none found
-                    raise ValueError("No capable nft found")
-            # no nft, only token_amount
-            _sanitize_and_add(catagorydata, catagory_id)
-
     def get_outputs(self, leftover):
         """
         Return sanitized outputs for the remaining cashtokens
@@ -380,3 +268,138 @@ class CashToken:
             outputs[-1] = tuple(last_out)
 
         return outputs
+
+    def subtract_output(self, ctoutput):
+        if self.amount < ctoutput.amount:
+            raise InsufficientFunds("Not enough amount")
+        self.amount -= ctoutput.amount
+
+        if ctoutput.has_cashtoken:
+            catagory_id = ctoutput.catagory_id
+            if catagory_id is None:
+                # new token generated
+                return
+            if catagory_id not in self.tokendata.keys():
+                raise InsufficientFunds("unspent catagory_id does not exist")
+            catagorydata = self.tokendata[catagory_id]
+            if ctoutput.has_amount:
+                catagorydata = _subtract_token_amount(catagorydata,
+                                                      ctoutput.token_amount)
+            if ctoutput.has_nft:
+                nft = [
+                    ctoutput.nft_capability,
+                    ("None" if ctoutput.nft_commitment is None
+                     else ctoutput.nft_commitment)
+                ]
+                catagorydata = _subtract_nft(catagorydata, nft)
+
+            # update tokendata
+            if catagorydata == {}:
+                self.tokendata.pop(catagory_id)
+            else:
+                self.tokendata.update({catagory_id: catagorydata})
+
+
+def _subtract_token_amount(catagorydata, token_amount):
+    if "token_amount" not in catagorydata:
+        raise InsufficientFunds("No token amount")
+    if catagorydata["token_amount"] < token_amount:
+        raise InsufficientFunds("Not enough token amount")
+    catagorydata["token_amount"] -= token_amount
+
+    if (
+        "token_amount" in catagorydata
+        and catagorydata["token_amount"] == 0
+    ):
+        catagorydata.pop("token_amount")
+    return catagorydata
+
+
+def _subtract_nft(catagorydata, nft):
+    """
+    nft: [capability, commitment]
+    """
+    if "nft" not in catagorydata:
+        raise InsufficientFunds("No nft found")
+    # if immutable nft is asked, then immutable nft is spent
+    # then a mutable nft is made to immutable, then minting
+    # mints new nft.
+    # if mutable nft is asked, then mutable nft is spent, then
+    # minting mints new nft.
+    # if minting nft is asked, then minting nft mints new.
+
+    if nft[0] in ["immutable"]:
+        try:
+            return _subtract_immutable_nft(catagorydata, nft[1])
+        except InsufficientFunds:
+            pass
+
+    if nft[0] in ["immutable", "mutable"]:
+        try:
+            return _subtract_mutable_nft(catagorydata)
+        except InsufficientFunds:
+            pass
+
+    if nft[0] in ["immutable", "mutable", "minting"]:
+        try:
+            return _subtract_minting_nft(catagorydata)
+        except InsufficientFunds:
+            # none found
+            raise InsufficientFunds("No capable nft found")
+
+
+def _sanitize(catagorydata):
+    if (
+        "nft" in catagorydata
+        and len(catagorydata["nft"]) == 0
+    ):
+        catagorydata.pop("nft")
+    return catagorydata
+
+
+def _subtract_immutable_nft(catagorydata, commitment):
+    nft_capabilities = [_["capability"]
+                        for _ in catagorydata["nft"]]
+    nft_commitments = [_.get("commitment", "None")
+                       for _ in catagorydata["nft"]]
+
+    # find an immutable to send
+    for i in range(len(catagorydata["nft"])):
+        if (
+            nft_capabilities[i] == "immutable"
+            and nft_commitments[i] == commitment
+        ):
+            # found immutable with same commitment
+            catagorydata["nft"].pop(i)
+            return _sanitize(catagorydata)
+
+    raise InsufficientFunds("No immutable nft")
+
+
+def _subtract_mutable_nft(catagorydata):
+    nft_capabilities = [_["capability"]
+                        for _ in catagorydata["nft"]]
+    # find a mutable to send
+    for i in range(len(catagorydata["nft"])):
+        if (
+            nft_capabilities[i] == "mutable"
+        ):
+            # found mutable
+            catagorydata["nft"].pop(i)
+            return _sanitize(catagorydata)
+
+    raise InsufficientFunds("No mutable nft")
+
+
+def _subtract_minting_nft(catagorydata):
+    nft_capabilities = [_["capability"]
+                        for _ in catagorydata["nft"]]
+    # find a minting to mint
+    for i in range(len(catagorydata["nft"])):
+        if (
+            nft_capabilities[i] == "minting"
+        ):
+            # found minting
+            return catagorydata
+
+    raise InsufficientFunds("No minting nft")

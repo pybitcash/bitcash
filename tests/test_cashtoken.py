@@ -9,6 +9,7 @@ from bitcash.cashtoken import (
     prepare_cashtoken_aware_output,
     CashToken
 )
+from bitcash.exceptions import InsufficientFunds
 from bitcash.cashaddress import Address
 from _pytest.monkeypatch import MonkeyPatch
 from .samples import (
@@ -138,7 +139,7 @@ class TestCashTokenOutput:
         assert repr(cashtoken) == (
             "CashToken(catagory_id='b770119192864ac47ac7753df4f31c702bdd0d39"
             "cc3858594eae2a562e0bb100', nft_commitment=b'commitment',"
-            " nft_capability='immutable', token_amount=50)"
+            " nft_capability='immutable', token_amount=50, amount=0)"
         )
 
 
@@ -159,7 +160,7 @@ class TestPrepareCashtokenAwareOutput:
         output = prepare_cashtoken_aware_output(output)
         cashtoken = CashTokenOutput(CASHTOKEN_CATAGORY_ID,
                                     CASHTOKEN_CAPABILITY, CASHTOKEN_COMMITMENT,
-                                    CASHTOKEN_AMOUNT)
+                                    CASHTOKEN_AMOUNT, 2000000000)
         script = (cashtoken.token_prefix
                   + Address.from_string(BITCOIN_CASHADDRESS).scriptcode)
         assert output[0] == script
@@ -273,37 +274,37 @@ class TestCashToken:
         # raise errors
         cashtoken = CashToken(1000, tokendata)
         # catagory does not exist
-        with pytest.raises(ValueError):
+        with pytest.raises(InsufficientFunds):
             cashtoken.subtract_output(
                 Unspent(500, 42, "script", "txid", 0, "catagory0", "mutable")
             )
         # bad token amount
-        with pytest.raises(ValueError):
+        with pytest.raises(InsufficientFunds):
             cashtoken.subtract_output(
                 Unspent(500, 42, "script", "txid", 0, "catagory1",
                         token_amount=50)
             )
-        with pytest.raises(ValueError):
+        with pytest.raises(InsufficientFunds):
             cashtoken.subtract_output(
                 Unspent(500, 42, "script", "txid", 0, "catagory2",
                         token_amount=500)
             )
         # bad nft
-        with pytest.raises(ValueError):
+        with pytest.raises(InsufficientFunds):
             cashtoken.subtract_output(
                 Unspent(500, 42, "script", "txid", 0, "catagory3", "mutable")
             )
-        with pytest.raises(ValueError):
+        with pytest.raises(InsufficientFunds):
             cashtoken.subtract_output(
                 Unspent(500, 42, "script", "txid", 0, "catagory4",
                         "immutable", b"commitment")
             )
-        with pytest.raises(ValueError):
+        with pytest.raises(InsufficientFunds):
             cashtoken.subtract_output(
                 Unspent(500, 42, "script", "txid", 0, "catagory4",
                         "mutable", b"commitment")
             )
-        with pytest.raises(ValueError):
+        with pytest.raises(InsufficientFunds):
             cashtoken.subtract_output(
                 Unspent(500, 42, "script", "txid", 0, "catagory4",
                         "minting", b"commitment")
@@ -425,13 +426,14 @@ class TestCashToken:
             "c4": {"nft": [{"capability": "immutable"}]}
         }
 
-        cashtokenoutput_10 = CashTokenOutput("c1", "mutable")
+        cashtokenoutput_10 = CashTokenOutput("c1", "mutable", None, None, 512)
         cashtokenoutput_11 = CashTokenOutput("c1", "immutable",
-                                             b"commitment")
-        cashtokenoutput_20 = CashTokenOutput("c2", "minting", None, 50)
-        cashtokenoutput_21 = CashTokenOutput("c2", "minting")
-        cashtokenoutput_30 = CashTokenOutput("c3", None, None, 50)
-        cashtokenoutput_40 = CashTokenOutput("c4", "immutable")
+                                             b"commitment", None, 512)
+        cashtokenoutput_20 = CashTokenOutput("c2", "minting", None, 50, 512)
+        cashtokenoutput_21 = CashTokenOutput("c2", "minting", None, None, 512)
+        cashtokenoutput_30 = CashTokenOutput("c3", None, None, 50, 512)
+        cashtokenoutput_40 = CashTokenOutput("c4", "immutable", None, None,
+                                             512)
 
         cashtoken = CashToken(3072, tokendata)
         outputs = cashtoken.get_outputs(BITCOIN_CASHADDRESS)
