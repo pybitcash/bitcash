@@ -8,9 +8,12 @@ from bitcash.cashtoken import (
     CashTokenOutputs,
     prepare_cashtoken_aware_output,
     CashTokenUnspents,
-    DUST_VALUE
 )
-from bitcash.exceptions import InsufficientFunds, InvalidCashToken
+from bitcash.exceptions import (
+    InsufficientFunds,
+    InvalidCashToken,
+    InvalidAddress
+)
 from bitcash.cashaddress import Address
 from _pytest.monkeypatch import MonkeyPatch
 from .samples import (
@@ -23,7 +26,8 @@ from .samples import (
     PREFIX_CAPABILITY_COMMITMENT,
     PREFIX_CAPABILITY_COMMITMENT_AMOUNT,
     PREFIX_AMOUNT,
-    BITCOIN_CASHADDRESS
+    BITCOIN_CASHADDRESS,
+    BITCOIN_CASHADDRESS_CATKN
 )
 
 
@@ -153,21 +157,28 @@ class TestPrepareCashtokenAwareOutput:
     def test_output(self):
         output = (BITCOIN_CASHADDRESS, 20, "bch")
         output = prepare_cashtoken_aware_output(output)
-        assert output[0] == Address.from_string(BITCOIN_CASHADDRESS).scriptcode
+        _ = Address.from_string(BITCOIN_CASHADDRESS_CATKN).scriptcode
+        assert output[0] == _
         assert output[1] == 2000000000
         assert output[2] == CashTokenOutput(amount=2000000000)
 
-        output = (BITCOIN_CASHADDRESS, 20, "bch", CASHTOKEN_CATAGORY_ID,
+        output = (BITCOIN_CASHADDRESS_CATKN, 20, "bch", CASHTOKEN_CATAGORY_ID,
                   CASHTOKEN_CAPABILITY, CASHTOKEN_COMMITMENT, CASHTOKEN_AMOUNT)
         output = prepare_cashtoken_aware_output(output)
         cashtoken = CashTokenOutput(CASHTOKEN_CATAGORY_ID,
                                     CASHTOKEN_CAPABILITY, CASHTOKEN_COMMITMENT,
                                     CASHTOKEN_AMOUNT, 2000000000)
         script = (cashtoken.token_prefix
-                  + Address.from_string(BITCOIN_CASHADDRESS).scriptcode)
+                  + Address.from_string(BITCOIN_CASHADDRESS_CATKN).scriptcode)
         assert output[0] == script
         assert output[1] == 2000000000
         assert output[2] == cashtoken
+
+    def test_token_signal(self):
+        output = (BITCOIN_CASHADDRESS, 20, "bch", "catagory_id", "immutable",
+                  None, None)
+        with pytest.raises(InvalidAddress):
+            prepare_cashtoken_aware_output(output)
 
 
 class TestCashTokenUnspents:
@@ -471,7 +482,8 @@ class TestCashTokenUnspents:
         cashtoken = CashTokenUnspents([])
         cashtoken.amount = 3072
         cashtoken.tokendata = tokendata
-        outputs, leftover_amount = cashtoken.get_outputs(BITCOIN_CASHADDRESS)
+        (outputs,
+         leftover_amount) = cashtoken.get_outputs(BITCOIN_CASHADDRESS_CATKN)
 
         assert len(outputs) == 6
         assert outputs[0][1] == 512
@@ -490,7 +502,8 @@ class TestCashTokenUnspents:
 
         cashtoken = CashTokenUnspents([])
         cashtoken.amount = 50
-        outputs, leftover_amount = cashtoken.get_outputs(BITCOIN_CASHADDRESS)
+        (outputs,
+         leftover_amount) = cashtoken.get_outputs(BITCOIN_CASHADDRESS_CATKN)
 
         assert len(outputs) == 1
         assert outputs[0][1] == 50
@@ -505,13 +518,14 @@ class TestCashTokenOutputs:
 
     def test_add_output(self):
         # OP_RETURN
-        cashtokenoutputs = CashTokenOutputs([[BITCOIN_CASHADDRESS, 50, None]])
+        cashtokenoutputs = CashTokenOutputs([[BITCOIN_CASHADDRESS_CATKN,
+                                              50, None]])
         assert cashtokenoutputs.tokendata == {}
 
         # genesis cashtoken
         cashtokenoutputs = CashTokenOutputs([
             [
-                BITCOIN_CASHADDRESS,
+                BITCOIN_CASHADDRESS_CATKN,
                 50,
                 CashTokenOutput(
                     "catagory_id",
@@ -526,7 +540,7 @@ class TestCashTokenOutputs:
         # test token amount
         cashtokenoutputs = CashTokenOutputs([
             [
-                BITCOIN_CASHADDRESS,
+                BITCOIN_CASHADDRESS_CATKN,
                 50,
                 CashTokenOutput(
                     "catagory_id",
@@ -542,7 +556,7 @@ class TestCashTokenOutputs:
         # test nft
         cashtokenoutputs = CashTokenOutputs([
             [
-                BITCOIN_CASHADDRESS,
+                BITCOIN_CASHADDRESS_CATKN,
                 50,
                 CashTokenOutput(
                     "catagory_id",
@@ -558,7 +572,7 @@ class TestCashTokenOutputs:
         # test both
         cashtokenoutputs = CashTokenOutputs([
             [
-                BITCOIN_CASHADDRESS,
+                BITCOIN_CASHADDRESS_CATKN,
                 50,
                 CashTokenOutput(
                     "catagory_id",
@@ -580,10 +594,10 @@ class TestCashTokenOutputs:
         cashtokenoutput3 = CashTokenOutput("c2", "minting", None, 50, 512)
         cashtokenoutput4 = CashTokenOutput("c2", None, None, 50, 512)
         outputs = [
-            (BITCOIN_CASHADDRESS, 512, cashtokenoutput1),
-            (BITCOIN_CASHADDRESS, 512, cashtokenoutput2),
-            (BITCOIN_CASHADDRESS, 512, cashtokenoutput3),
-            (BITCOIN_CASHADDRESS, 512, cashtokenoutput4),
+            (BITCOIN_CASHADDRESS_CATKN, 512, cashtokenoutput1),
+            (BITCOIN_CASHADDRESS_CATKN, 512, cashtokenoutput2),
+            (BITCOIN_CASHADDRESS_CATKN, 512, cashtokenoutput3),
+            (BITCOIN_CASHADDRESS_CATKN, 512, cashtokenoutput4),
         ]
 
         cashtokenoutputs = CashTokenOutputs(outputs)

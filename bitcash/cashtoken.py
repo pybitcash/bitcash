@@ -4,7 +4,11 @@ from bitcash.network.meta import Unspent
 from bitcash.cashaddress import Address
 from bitcash.utils import int_to_varint
 from bitcash.op import OpCodes
-from bitcash.exceptions import InsufficientFunds, InvalidCashToken
+from bitcash.exceptions import (
+    InsufficientFunds,
+    InvalidCashToken,
+    InvalidAddress
+)
 
 
 # block after 1684152000 MTP (2023-05-15T12:00:00.000Z)
@@ -170,6 +174,11 @@ def prepare_cashtoken_aware_output(output):
         nft_capability=nft_capability,
         token_amount=token_amount
     )
+
+    # check for CashToken signal
+    if "CATKN" not in dest.version and cashtoken.has_cashtoken:
+        raise InvalidAddress(f"{dest.cash_address()} does not signal "
+                             f"CashToken support.")
 
     return (
         cashtoken.token_prefix + dest.scriptcode,

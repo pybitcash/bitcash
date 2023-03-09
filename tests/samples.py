@@ -12,6 +12,7 @@ BITCOIN_CASHADDRESS = "bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6"
 BITCOIN_CASHADDRESS_COMPRESSED = (
     "bitcoincash:qzvsaasdvw6mt9j2rs3gyps673gj86flev4sthhcc0"
 )
+BITCOIN_CASHADDRESS_CATKN = "bitcoincash:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq37yf2mzf"
 BITCOIN_CASHADDRESS_PAY2SH20 = "bitcoincash:pp23x8hm0g8d6nrkesamaqeml3v6daeudvpa7zhktf"
 BITCOIN_CASHADDRESS_PAY2SH32 = "bitcoincash:pvch8mmxy0rtfrlarg7ucrxxfzds5pamg73h7370aa87d80gyhqxqaw3dsfwg"
 

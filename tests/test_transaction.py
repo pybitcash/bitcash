@@ -1,7 +1,7 @@
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
-from bitcash.exceptions import InsufficientFunds, InvalidCashToken
+from bitcash.exceptions import InsufficientFunds
 from bitcash.network.meta import Unspent
 from bitcash.cashtoken import CashTokenOutput
 from bitcash import cashtoken as _cashtoken
@@ -21,6 +21,7 @@ from bitcash.wallet import PrivateKey
 from .samples import (
     WALLET_FORMAT_MAIN,
     BITCOIN_CASHADDRESS,
+    BITCOIN_CASHADDRESS_CATKN,
     BITCOIN_CASHADDRESS_COMPRESSED,
     BITCOIN_CASHADDRESS_PAY2SH20,
     BITCOIN_CASHADDRESS_PAY2SH32,
@@ -428,7 +429,7 @@ class TestSanitizeTxDataCashToken:
             Unspent(1000, 0, "script", "txid", 1, "caff", "immutable")
         ]
         outputs_original = [[
-            BITCOIN_CASHADDRESS,
+            BITCOIN_CASHADDRESS_CATKN,
             1000,
             "satoshi",
             "caff",
@@ -436,13 +437,13 @@ class TestSanitizeTxDataCashToken:
             None,
             None
         ]]
-        script = Address.from_string(BITCOIN_CASHADDRESS).scriptcode
+        script = Address.from_string(BITCOIN_CASHADDRESS_CATKN).scriptcode
 
         unspents, outputs = sanitize_tx_data(
             unspents_original,
             outputs_original,
             0,
-            BITCOIN_CASHADDRESS,
+            BITCOIN_CASHADDRESS_CATKN,
             combine=True
         )
         print(outputs)
@@ -462,7 +463,7 @@ class TestSanitizeTxDataCashToken:
             Unspent(1000, 0, "script", "txid", 1, "caff", "minting")
         ]
         outputs_original = [[
-            BITCOIN_CASHADDRESS,
+            BITCOIN_CASHADDRESS_CATKN,
             1500,
             "satoshi",
             "caff",
@@ -470,13 +471,13 @@ class TestSanitizeTxDataCashToken:
             None,
             None
         ]]
-        script = Address.from_string(BITCOIN_CASHADDRESS).scriptcode
+        script = Address.from_string(BITCOIN_CASHADDRESS_CATKN).scriptcode
 
         unspents, outputs = sanitize_tx_data(
             unspents_original,
             outputs_original,
             0,
-            BITCOIN_CASHADDRESS,
+            BITCOIN_CASHADDRESS_CATKN,
             combine=False
         )
 
@@ -495,7 +496,7 @@ class TestSanitizeTxDataCashToken:
             Unspent(1000, 0, "script", "txid", 1, "caff", "minting")
         ]
         outputs_original = [[
-            BITCOIN_CASHADDRESS,
+            BITCOIN_CASHADDRESS_CATKN,
             500,
             "satoshi",
             "cafe",
@@ -508,7 +509,7 @@ class TestSanitizeTxDataCashToken:
             unspents_original,
             outputs_original,
             0,
-            BITCOIN_CASHADDRESS,
+            BITCOIN_CASHADDRESS_CATKN,
             combine=False
         )
 
@@ -521,7 +522,7 @@ class TestSanitizeTxDataCashToken:
 
         # fail genesis
         outputs_original = [[
-            BITCOIN_CASHADDRESS,
+            BITCOIN_CASHADDRESS_CATKN,
             500,
             "satoshi",
             "caca",
@@ -537,7 +538,7 @@ class TestSanitizeTxDataCashToken:
                 unspents_original,
                 outputs_original,
                 0,
-                BITCOIN_CASHADDRESS,
+                BITCOIN_CASHADDRESS_CATKN,
                 combine=False
             )
 

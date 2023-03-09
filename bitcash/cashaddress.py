@@ -85,11 +85,21 @@ class Address:
         "P2SH20-REGTEST": {"prefix": "bchreg", "version_bit": 8, "network": "regtest"},
         "P2SH32-REGTEST": {"prefix": "bchreg", "version_bit": 11, "network": "regtest"},
         "P2PKH-REGTEST": {"prefix": "bchreg", "version_bit": 0, "network": "regtest"},
+        "P2SH20-CATKN": {"prefix": "bitcoincash", "version_bit": 24, "network": "mainnet"},
+        "P2SH32-CATKN": {"prefix": "bitcoincash", "version_bit": 27, "network": "mainnet"},
+        "P2PKH-CATKN": {"prefix": "bitcoincash", "version_bit": 16, "network": "mainnet"},
+        "P2SH20-CATKN-TESTNET": {"prefix": "bchtest", "version_bit": 24, "network": "testnet"},
+        "P2SH32-CATKN-TESTNET": {"prefix": "bchtest", "version_bit": 27, "network": "testnet"},
+        "P2PKH-CATKN-TESTNET": {"prefix": "bchtest", "version_bit": 16, "network": "testnet"},
+        "P2SH20-CATKN-REGTEST": {"prefix": "bchreg", "version_bit": 24, "network": "regtest"},
+        "P2SH32-CATKN-REGTEST": {"prefix": "bchreg", "version_bit": 27, "network": "regtest"},
+        "P2PKH-CATKN-REGTEST": {"prefix": "bchreg", "version_bit": 16, "network": "regtest"},
     }
 
     VERSION_SUFFIXES = {"bitcoincash": "", "bchtest": "-TESTNET", "bchreg": "-REGTEST"}
 
-    ADDRESS_TYPES = {0: "P2PKH", 8: "P2SH20", 11: "P2SH32"}
+    ADDRESS_TYPES = {0: "P2PKH", 8: "P2SH20", 11: "P2SH32",
+                     16: "P2PKH-CATKN", 24: "P2SH20-CATKN", 27: "P2SH32-CATKN"}
 
     def __init__(self, version, payload):
         if version not in Address.VERSIONS:
