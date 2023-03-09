@@ -4,6 +4,7 @@ from bitcash.exceptions import InvalidEndpointURLProvided
 from bitcash.network import currency_to_satoshi
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
+from bitcash.format import cashtokenaddress_to_address
 
 # This class is the interface for Bitcash to interact with
 # Bitcoin.com based RESTful interfaces.
@@ -53,6 +54,8 @@ class BitcoinDotComAPI:
         return self.network_endpoint + self.PATHS[path]
 
     def get_balance(self, address, *args, **kwargs):
+        # converting to regular cashaddress
+        address = cashtokenaddress_to_address(address)
         api_url = self.make_endpoint_url("address").format(address)
         r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()
@@ -60,6 +63,8 @@ class BitcoinDotComAPI:
         return data["balanceSat"] + data["unconfirmedBalanceSat"]
 
     def get_transactions(self, address, *args, **kwargs):
+        # converting to regular cashaddress
+        address = cashtokenaddress_to_address(address)
         api_url = self.make_endpoint_url("address").format(address)
         r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()
@@ -110,6 +115,8 @@ class BitcoinDotComAPI:
         ).normalize()
 
     def get_unspent(self, address, *args, **kwargs):
+        # converting to regular cashaddress
+        address = cashtokenaddress_to_address(address)
         api_url = self.make_endpoint_url("unspent").format(address)
         r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()

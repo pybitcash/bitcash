@@ -4,7 +4,6 @@ from bitcash.base58 import b58decode_check, b58encode_check
 from bitcash.cashaddress import Address
 from bitcash.crypto import ripemd160_sha256
 from bitcash.curve import x_to_y
-from bitcash.exceptions import InvalidAddress
 
 MAIN_PUBKEY_HASH = b"\x00"
 MAIN_SCRIPT_HASH = b"\x05"
@@ -116,7 +115,8 @@ def wif_checksum_check(wif):
 
 def public_key_to_address(public_key, version="main"):
     # Currently Bitcash only support P2PKH (not P2SH) utxos
-    VERSIONS = {"main": "P2PKH", "test": "P2PKH-TESTNET", "regtest": "P2PKH-REGTEST"}
+    VERSIONS = {"main": "P2PKH", "test": "P2PKH-TESTNET",
+                "regtest": "P2PKH-REGTEST"}
 
     try:
         version = VERSIONS[version]
@@ -160,3 +160,29 @@ def coords_to_public_key(x, y, compressed=True):
 
 def point_to_public_key(point, compressed=True):
     return coords_to_public_key(point.x, point.y, compressed)
+
+
+def address_to_cashtokenaddress(address):
+    """
+    converts regular cashaddress to cashtoken signalling address
+    """
+    address = Address.from_string(address)
+    if "CATKN" in address.version:
+        return address.cash_address()
+    version = address.version.split("-")
+    version.insert(1, "CATKN")
+    address.version = "-".join(version)
+    return address.cash_address()
+
+
+def cashtokenaddress_to_address(address):
+    """
+    converts cashtoken signalling cashaddress to regular cashaddress
+    """
+    address = Address.from_string(address)
+    if "CATKN" not in address.version:
+        return address.cash_address()
+    version = address.version.split("-")
+    version.pop(1)
+    address.version = "-".join(version)
+    return address.cash_address()

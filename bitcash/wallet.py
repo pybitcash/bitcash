@@ -10,6 +10,7 @@ from bitcash.format import (
     public_key_to_coords,
     wif_to_bytes,
     address_to_public_key_hash,
+    address_to_cashtokenaddress
 )
 from bitcash.network import NetworkAPI, satoshi_to_currency_cached
 from bitcash.network.meta import Unspent
@@ -173,6 +174,7 @@ class PrivateKey(BaseKey):
             self._address = public_key_to_address(
                 self._public_key, version=self._network
             )
+            self._address = address_to_cashtokenaddress(self._address)
 
         return self._address
 

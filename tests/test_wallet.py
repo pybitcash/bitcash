@@ -35,9 +35,12 @@ from .samples import (
     WALLET_FORMAT_REGTEST,
     BITCOIN_CASHADDRESS,
     BITCOIN_CASHADDRESS_TEST,
+    BITCOIN_CASHADDRESS_TEST_CATKN,
     BITCOIN_CASHADDRESS_REGTEST,
+    BITCOIN_CASHADDRESS_REGTEST_CATKN,
     BITCOIN_ADDRESS_TEST_PAY2SH20,
     BITCOIN_ADDRESS_REGTEST_PAY2SH20,
+    BITCOIN_CASHADDRESS_CATKN,
 )
 
 
@@ -164,7 +167,7 @@ class TestPrivateKey:
 
     def test_address(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
-        assert private_key.address == BITCOIN_CASHADDRESS
+        assert private_key.address == BITCOIN_CASHADDRESS_CATKN
 
     def test_to_wif(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
@@ -214,7 +217,7 @@ class TestPrivateKey:
     def test_repr(self):
         assert (
             repr(PrivateKey(WALLET_FORMAT_MAIN))
-            == "<PrivateKey: bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6>"
+            == f"<PrivateKey: {BITCOIN_CASHADDRESS_CATKN}>"
         )
 
     def test_pay2sh(self):
@@ -264,7 +267,7 @@ class TestPrivateKeyTestnet:
 
     def test_address(self):
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
-        assert private_key.address == BITCOIN_CASHADDRESS_TEST
+        assert private_key.address == BITCOIN_CASHADDRESS_TEST_CATKN
 
     def test_to_wif(self):
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
@@ -351,7 +354,7 @@ class TestPrivateKeyTestnet:
     def test_repr(self):
         assert (
             repr(PrivateKeyTestnet(WALLET_FORMAT_MAIN))
-            == "<PrivateKeyTestnet: bchtest:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqjxnsx26x>"
+            == f"<PrivateKeyTestnet: {BITCOIN_CASHADDRESS_TEST_CATKN}>"
         )
 
 
@@ -366,7 +369,7 @@ class TestPrivateKeyRegtest:
 
     def test_address(self):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_REGTEST)
-        assert private_key.address == BITCOIN_CASHADDRESS_REGTEST
+        assert private_key.address == BITCOIN_CASHADDRESS_REGTEST_CATKN
 
     def test_to_wif(self):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_REGTEST)
@@ -456,5 +459,5 @@ class TestPrivateKeyRegtest:
     def test_repr(self):
         assert (
             repr(PrivateKeyRegtest(WALLET_FORMAT_REGTEST))
-            == "<PrivateKeyRegtest: bchreg:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqg6939eeq>"
+            == f"<PrivateKeyRegtest: {BITCOIN_CASHADDRESS_REGTEST_CATKN}>"
         )

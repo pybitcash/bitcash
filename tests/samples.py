@@ -20,6 +20,7 @@ BITCOIN_CASHADDRESS_TEST = "bchtest:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqjxnsx26x"
 BITCOIN_CASHADDRESS_TEST_COMPRESSED = (
     "bchtest:qzvsaasdvw6mt9j2rs3gyps673gj86flev3z0s40ln"
 )
+BITCOIN_CASHADDRESS_TEST_CATKN = "bchtest:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq4vqwgv94"
 BITCOIN_CASHADDRESS_TEST_PAY2SH20 = "bchtest:pp23x8hm0g8d6nrkesamaqeml3v6daeudv90694pv4"
 BITCOIN_CASHADDRESS_TEST_PAY2SH32 = "bchtest:pvch8mmxy0rtfrlarg7ucrxxfzds5pamg73h7370aa87d80gyhqxq7fqng6m6"
 
@@ -27,6 +28,7 @@ BITCOIN_CASHADDRESS_REGTEST = "bchreg:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqg6939eeq
 BITCOIN_CASHADDRESS_REGTEST_COMPRESSED = (
     "bchreg:qzvsaasdvw6mt9j2rs3gyps673gj86flevt7e3kuu4"
 )
+BITCOIN_CASHADDRESS_REGTEST_CATKN = "bchreg:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq0sk0tlxn"
 BITCOIN_CASHADDRESS_REGTEST_PAY2SH20 = "bchreg:pp23x8hm0g8d6nrkesamaqeml3v6daeudvlnvykj0n"
 
 VALID_ENDPOINT_URLS = [

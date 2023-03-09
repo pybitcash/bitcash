@@ -14,13 +14,17 @@ from bitcash.format import (
     verify_sig,
     wif_checksum_check,
     wif_to_bytes,
+    address_to_cashtokenaddress,
+    cashtokenaddress_to_address
 )
 from .samples import (
     BITCOIN_ADDRESS,
     BITCOIN_ADDRESS_COMPRESSED,
+    BITCOIN_CASHADDRESS_CATKN,
     BITCOIN_CASHADDRESS_PAY2SH20,
     BITCOIN_CASHADDRESS_PAY2SH32,
     BITCOIN_ADDRESS_TEST,
+    BITCOIN_CASHADDRESS_TEST_CATKN,
     BITCOIN_ADDRESS_TEST_COMPRESSED,
     BITCOIN_ADDRESS_REGTEST,
     BITCOIN_ADDRESS_REGTEST_COMPRESSED,
@@ -329,3 +333,11 @@ def test_address_to_public_key_hash():
         address_to_public_key_hash(BITCOIN_CASHADDRESS_REGTEST_PAY2SH20)
         == PUBKEY_HASH_P2SH20
     )
+
+def test_to_and_from_cashtokenaddress():
+    cashtokenaddress = address_to_cashtokenaddress(BITCOIN_CASHADDRESS)
+    assert cashtokenaddress == BITCOIN_CASHADDRESS_CATKN
+    assert cashtokenaddress_to_address(cashtokenaddress) == BITCOIN_CASHADDRESS
+    cashtokenaddress = address_to_cashtokenaddress(BITCOIN_CASHADDRESS_TEST)
+    assert cashtokenaddress == BITCOIN_CASHADDRESS_TEST_CATKN
+    assert cashtokenaddress_to_address(cashtokenaddress) == BITCOIN_CASHADDRESS_TEST
