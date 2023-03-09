@@ -12,3 +12,7 @@ class InvalidNetwork(Exception):
 
 class InvalidEndpointURLProvided(Exception):
     pass
+
+
+class InvalidCashToken(ValueError):
+    pass

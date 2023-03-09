@@ -4,7 +4,7 @@ from bitcash.network.meta import Unspent
 from bitcash.cashaddress import Address
 from bitcash.utils import int_to_varint
 from bitcash.op import OpCodes
-from bitcash.exceptions import InsufficientFunds
+from bitcash.exceptions import InsufficientFunds, InvalidCashToken
 
 
 # block after 1684152000 MTP (2023-05-15T12:00:00.000Z)
@@ -12,10 +12,6 @@ from bitcash.exceptions import InsufficientFunds
 CASHTOKEN_ACTIVATION_BLOCKHEIGHT = 782467
 COMMITMENT_LENGTH = 40
 DUST_VALUE = 512
-
-
-class InvalidCashToken(ValueError):
-    pass
 
 
 class CashTokenOutput:
@@ -188,7 +184,7 @@ class CashTokenUnspents:
     Incoming data is assumed to be valid, tests are performed when making
     outputs
 
-    >>> tokendata = {
+    >>> cashtoken.tokendata = {
             "category_id" : {           (string) token id hex
                 "token_amount" : "xxx", (int) fungible amount
                 "nft" : [{
@@ -198,14 +194,14 @@ class CashTokenUnspents:
                 }]
             }
         }
-    >>> cashtoken = CashToken(50, tokendata)
     """
 
-    def __init__(self, unspents):
+    def __init__(self, unspents=None):
         self.amount = 0
         self.tokendata = {}
-        for unspent in unspents:
-            self.add_unspent(unspent)
+        if unspents is not None:
+            for unspent in unspents:
+                self.add_unspent(unspent)
 
     def to_dict(self):
         return {
@@ -424,45 +420,6 @@ def _subtract_minting_nft(catagorydata):
             return catagorydata
 
     raise InsufficientFunds("No minting nft")
-
-
-def generate_new_cashtoken_output(
-    unspent,
-    destinations
-):
-    """
-    generate new cashtoken aware outputs to destinations
-
-    :param unspent: Unspent to generate the new cashtoken
-    :type unspent: Unspent
-    :param destinations: list of (destination_address, nft_capability,
-                         nft_commitment, token_amount) for the nft
-    :type destinations: ``list``
-    :rtype: ``list``
-    """
-    if unspent.txindex != 0:
-        raise InvalidCashToken("Unspent should have txindex 0")
-    outputs = []
-    for destination in destinations:
-        dest, nft_capability, nft_commitment, token_amount = destination
-        if not isinstance(dest, Address):
-            dest = Address.from_string(dest)
-
-        cashtokenoutput = CashTokenOutput(
-            catagory_id=unspent.txid,
-            nft_capability=nft_capability,
-            nft_commitment=nft_commitment,
-            token_amount=token_amount,
-            amount=DUST_VALUE,
-            _genesis=True
-        )
-        outputs.append((
-            cashtokenoutput.token_prefix + dest.scriptcode,
-            DUST_VALUE,
-            cashtokenoutput
-        ))
-
-    return outputs
 
 
 class CashTokenOutputs:

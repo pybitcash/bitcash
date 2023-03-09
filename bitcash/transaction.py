@@ -132,8 +132,25 @@ def sanitize_tx_data(
     """
 
     outputs = outputs.copy()
+    # if catagory id is txid of unspent, then the unspent is mandatory
+    mandatory_unspent_indices = []
+    unspent_txids = [_.txid for _ in unspents]
 
     for i, output in enumerate(outputs):
+        # if cashtoken catagory_id in unspent txid, add unspent as mandatory
+        if len(output) == 7:
+            if output[3] in unspent_txids:
+                indx = unspent_txids.index(output[3])
+                if unspents[indx].txindex == 0:
+                    # CashToken genesis tx
+                    mandatory_unspent_indices.append(indx)
+                    # (script, satoshi value, CashTokenOutput)
+                    output = prepare_cashtoken_aware_output(output)
+                    output[2]._genesis = True
+                    outputs[i] = output
+                else:
+                    # could be output unused from the parent tx
+                    pass
         # (script, satoshi value, CashTokenOutput)
         outputs[i] = prepare_cashtoken_aware_output(output)
 
@@ -201,6 +218,11 @@ def sanitize_tx_data(
         outputs += leftover_outputs
 
     else:
+        unspents = deepcopy(unspents)
+        # add mandatory unspents, for genesis cashtoken
+        unspents_used = []
+        for id_ in sorted(mandatory_unspent_indices)[::-1]:
+            unspents_used.append(unspents.pop(id_))
         # split unspent with cashtoken from rest
         unspents_cashtoken = []
         pop_ids = []
@@ -213,7 +235,6 @@ def sanitize_tx_data(
 
         # sort and use required cashtoken unspents
         unspents_cashtoken = sorted(unspents_cashtoken)
-        unspents_used = []
         pop_ids = []
         cashtokenoutputs = CashTokenOutputs(outputs)
         for i, unspent in enumerate(unspents_cashtoken):
@@ -229,9 +250,13 @@ def sanitize_tx_data(
         # sort the rest unspents and fund the bch amount
         # __gt__ and __eq__ will sort them with no cashtoken unspents first
         unspents = sorted(unspents + unspents_cashtoken)
+        if len(unspents_used) > 0:
+            unspents = [unspents_used[-1]] + unspents
+            unspents_used = unspents_used[:-1]
 
         index = 0
 
+        error = None
         cashtoken = CashTokenUnspents(unspents_used)
         for index, unspent in enumerate(unspents):
             cashtoken.add_unspent(unspent)
@@ -239,7 +264,8 @@ def sanitize_tx_data(
             try:
                 for output in outputs:
                     test_token.subtract_output(output[2])
-            except InsufficientFunds:
+            except InsufficientFunds as err:
+                error = err
                 continue
 
             (leftover_outputs,
@@ -255,7 +281,8 @@ def sanitize_tx_data(
             if calculated_fee < leftover_amount:
                 break
         else:
-            raise InsufficientFunds(f"{cashtoken.amount} is insufficient")
+            raise InsufficientFunds(error
+                                    or f"{cashtoken.amount} is insufficient")
 
         if calculated_fee:
             last_out = list(leftover_outputs[-1])

@@ -1,7 +1,7 @@
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
-from bitcash.exceptions import InsufficientFunds
+from bitcash.exceptions import InsufficientFunds, InvalidCashToken
 from bitcash.network.meta import Unspent
 from bitcash.cashtoken import CashTokenOutput
 from bitcash import cashtoken as _cashtoken
@@ -273,7 +273,6 @@ class TestSanitizeTxData:
             combine=False,
             message=None,
         )
-        print(unspents)
         assert unspents == [Unspent(1500, 0, "", "", 0),
                             Unspent(1600, 0, "", "", 0)]
         assert len(outputs) == 2
@@ -488,6 +487,59 @@ class TestSanitizeTxDataCashToken:
         assert outputs[1][1] == 500
         assert outputs[1][0] == script
         assert outputs[1][2] == CashTokenOutput(amount=500)
+
+    def test_genesis(self):
+        unspents_original = [
+            Unspent(1000, 0, "script", "cafe", 0),
+            Unspent(1000, 0, "script", "caca", 1, "caff", "immutable"),
+            Unspent(1000, 0, "script", "txid", 1, "caff", "minting")
+        ]
+        outputs_original = [[
+            BITCOIN_CASHADDRESS,
+            500,
+            "satoshi",
+            "cafe",
+            "immutable",
+            None,
+            None
+        ]]
+
+        unspents, outputs = sanitize_tx_data(
+            unspents_original,
+            outputs_original,
+            0,
+            BITCOIN_CASHADDRESS,
+            combine=False
+        )
+
+        assert len(unspents) == 1
+        assert unspents[0] == unspents_original[0]
+        assert len(outputs) == 2
+        assert outputs[0][2] == CashTokenOutput("cafe", "immutable",
+                                                amount=500, _genesis=True)
+        assert outputs[1][2] == CashTokenOutput(amount=500)
+
+        # fail genesis
+        outputs_original = [[
+            BITCOIN_CASHADDRESS,
+            500,
+            "satoshi",
+            "caca",
+            "immutable",
+            None,
+            None
+        ]]
+
+        # caca is not genesis, since txindex = 1. Thus it is treated as
+        # normal cashtoken output. But unspents don't have caca cashtoken
+        with pytest.raises(InsufficientFunds):
+            unspents, outputs = sanitize_tx_data(
+                unspents_original,
+                outputs_original,
+                0,
+                BITCOIN_CASHADDRESS,
+                combine=False
+            )
 
 
 class TestCreateSignedTransaction:
