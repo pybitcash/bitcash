@@ -7,7 +7,7 @@ from bitcash.exceptions import InsufficientFunds
 from bitcash.cashtoken import (
     prepare_cashtoken_aware_output,
     CashTokenUnspents,
-    CashTokenOutputs
+    select_cashtoken_utxo
 )
 from bitcash.op import OpCodes
 from bitcash.utils import (
@@ -130,32 +130,15 @@ def sanitize_tx_data(
 
     fee is in satoshis per byte.
     """
-
+    unspents = deepcopy(unspents)
     outputs = outputs.copy()
-    # if catagory id is txid of unspent, then the unspent is mandatory
-    mandatory_unspent_indices = []
-    unspent_txids = [_.txid for _ in unspents]
-
-    for i, output in enumerate(outputs):
-        # if cashtoken catagory_id in unspent txid, add unspent as mandatory
-        if len(output) == 7:
-            if output[3] in unspent_txids:
-                indx = unspent_txids.index(output[3])
-                if unspents[indx].txindex == 0:
-                    # CashToken genesis tx
-                    mandatory_unspent_indices.append(indx)
-                    # (script, satoshi value, CashTokenOutput)
-                    output = prepare_cashtoken_aware_output(output)
-                    output[2]._genesis = True
-                    outputs[i] = output
-                else:
-                    # could be output unused from the parent tx
-                    pass
-        # (script, satoshi value, CashTokenOutput)
-        outputs[i] = prepare_cashtoken_aware_output(output)
 
     if not unspents:
         raise ValueError("Transactions must have at least one unspent.")
+
+    for i, output in enumerate(outputs):
+        # (script, satoshi value, CashTokenOutput)
+        outputs[i] = prepare_cashtoken_aware_output(output)
 
     # Temporary storage so all outputs precede messages.
     messages = []
@@ -218,45 +201,14 @@ def sanitize_tx_data(
         outputs += leftover_outputs
 
     else:
-        unspents = deepcopy(unspents)
-        # add mandatory unspents, for genesis cashtoken
-        unspents_used = []
-        for id_ in sorted(mandatory_unspent_indices)[::-1]:
-            unspents_used.append(unspents.pop(id_))
-        # split unspent with cashtoken from rest
-        unspents_cashtoken = []
-        pop_ids = []
-        for i, unspent in enumerate(unspents):
-            if unspent.has_cashtoken:
-                unspents_cashtoken.append(unspent)
-                pop_ids.append(i)
-        for id_ in sorted(pop_ids)[::-1]:
-            unspents.pop(id_)
+        unspents, unspents_used = select_cashtoken_utxo(unspents, outputs)
 
-        # sort and use required cashtoken unspents
-        unspents_cashtoken = sorted(unspents_cashtoken)
-        pop_ids = []
-        cashtokenoutputs = CashTokenOutputs(outputs)
-        for i, unspent in enumerate(unspents_cashtoken):
-            try:
-                cashtokenoutputs.subtract_unspent(unspent)
-            except ValueError:
-                continue
-            unspents_used.append(unspent)
-            pop_ids.append(i)
-        for id_ in sorted(pop_ids)[::-1]:
-            unspents_cashtoken.pop(id_)
-
-        # sort the rest unspents and fund the bch amount
-        # __gt__ and __eq__ will sort them with no cashtoken unspents first
-        unspents = sorted(unspents + unspents_cashtoken)
+        error = None
+        # the first unspent is added regardless because of how selection is,
+        # easiest is to pop the last unspent used and add to unspents searched
         if len(unspents_used) > 0:
             unspents = [unspents_used[-1]] + unspents
             unspents_used = unspents_used[:-1]
-
-        index = 0
-
-        error = None
         cashtoken = CashTokenUnspents(unspents_used)
         for index, unspent in enumerate(unspents):
             cashtoken.add_unspent(unspent)

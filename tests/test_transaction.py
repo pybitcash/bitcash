@@ -426,7 +426,9 @@ class TestSanitizeTxDataCashToken:
     def test_combine(self):
         unspents_original = [
             Unspent(1000, 0, "script", "txid", 0),
-            Unspent(1000, 0, "script", "txid", 1, "caff", "immutable")
+            Unspent(1000, 0, "script", "txid", 1, "caff", "immutable"),
+            Unspent(1000, 0, "script", "txid", 1, "caff", "minting"),
+            Unspent(1000, 0, "script", "txid", 1, "caf2", "minting"),
         ]
         outputs_original = [[
             BITCOIN_CASHADDRESS_CATKN,
@@ -437,7 +439,6 @@ class TestSanitizeTxDataCashToken:
             None,
             None
         ]]
-        script = Address.from_string(BITCOIN_CASHADDRESS_CATKN).scriptcode
 
         unspents, outputs = sanitize_tx_data(
             unspents_original,
@@ -446,15 +447,17 @@ class TestSanitizeTxDataCashToken:
             BITCOIN_CASHADDRESS_CATKN,
             combine=True
         )
-        print(outputs)
         assert unspents == unspents_original
 
-        assert len(outputs) == 2
+        assert len(outputs) == 3
+        assert outputs[0][1] == 1000
         assert outputs[0][2] == CashTokenOutput("caff", "immutable",
                                                 amount=1000)
-        assert outputs[1][1] == 1000
-        assert outputs[1][0] == script
-        assert outputs[1][2] == CashTokenOutput(amount=1000)
+        assert outputs[1][1] == 512
+        assert outputs[1][2] == CashTokenOutput("caff", "minting", amount=512)
+        assert outputs[2][1] == 2488
+        assert outputs[2][2] == CashTokenOutput("caf2", "minting",
+                                                amount=2488)
 
     def test_no_combine(self):
         unspents_original = [

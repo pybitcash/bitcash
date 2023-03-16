@@ -292,6 +292,7 @@ class CashTokenUnspents:
             # add leftover amount to last out
             last_out = list(outputs[-1])
             last_out[1] += amount
+            last_out[2].amount += amount
             outputs[-1] = tuple(last_out)
 
         return outputs, amount
@@ -431,31 +432,36 @@ def _subtract_minting_nft(catagorydata):
     raise InsufficientFunds("No minting nft")
 
 
-class CashTokenOutputs:
+def select_cashtoken_utxo(unspents, outputs):
     """
-    class to count sanitized outputs and select unspents that cover them
-
+    Function to select unspents that cover cashtokens of sanitized outputs
     """
-    def __init__(self, outputs):
-        self.amount = 0
-        self.tokendata = {}
-        for output in outputs:
-            self.add_output(output)
+    unspents_used = []
 
-    def add_output(self, output):
-        # sanitize
-        prepare_cashtoken_aware_output(output)
-        _, amount, cashtokenoutput = output
-        if cashtokenoutput is None:
-            # OP_RETURN or message output
-            return
-        if hasattr(cashtokenoutput, "_genesis") and cashtokenoutput._genesis:
-            # genesis cashtoken, won't have equivalent unspent cashtoken
-            self.amount += amount
-            return
+    # if catagory id is txid of unspent, then the unspent is mandatory
+    mandatory_unspent_indices = set()
+    unspent_txids = [_.txid for _ in unspents]
 
-        if cashtokenoutput.has_cashtoken:
-            catagorydata = self.tokendata.get(cashtokenoutput.catagory_id, {})
+    # tokendata in outputs
+    tokendata = {}
+
+    # calculate needed cashtokens
+    for output in outputs:
+        cashtokenoutput = output[2]
+        if (
+            cashtokenoutput is not None
+            and cashtokenoutput.has_cashtoken
+        ):
+            if cashtokenoutput.catagory_id in unspent_txids:
+                indx = unspent_txids.index(cashtokenoutput.catagory_id)
+                if unspents[indx].txindex == 0:
+                    # Cashtoken genesis tx
+                    cashtokenoutput._genesis = True
+                    mandatory_unspent_indices.add(indx)
+                    # not count cashtoken from genesis tx
+                    # the catagory id won't be in utxo
+                    continue
+            catagorydata = tokendata.get(cashtokenoutput.catagory_id, {})
             if cashtokenoutput.has_amount:
                 catagorydata["token_amount"] = (
                     catagorydata.get("token_amount", 0)
@@ -469,15 +475,34 @@ class CashTokenOutputs:
                     catagorydata.get("nft", [])
                     + [nftdata]
                 )
-            self.tokendata.update({cashtokenoutput.catagory_id: catagorydata})
+            tokendata.update({cashtokenoutput.catagory_id: catagorydata})
 
-    def subtract_unspent(self, unspent):
-        """
-        subtract unspent that'll pay cashtoken part of the output
-        """
+    # add mandatory unspents, for genesis cashtoken
+    for id_ in sorted(mandatory_unspent_indices)[::-1]:
+        unspents_used.append(unspents.pop(id_))
+
+    # add utxo that can fund the output tokendata
+    # split unspent with cashtoken from rest
+    unspents_cashtoken = []
+    pop_ids = []
+    for i, unspent in enumerate(unspents):
+        if unspent.has_cashtoken:
+            unspents_cashtoken.append(unspent)
+            pop_ids.append(i)
+    for id_ in sorted(pop_ids)[::-1]:
+        unspents.pop(id_)
+
+    # sort and use required cashtoken unspents
+    # cashtokens are selected with the same criteria as utxo selection for BCH
+    # small token_amount is spent first, and for nft the order is to spend an
+    # immutable if possible, or then spend a mutable with mutation or then
+    # finally use a minting token to mint the output nft.
+    unspents_cashtoken = sorted(unspents_cashtoken)
+    pop_ids = []
+    for i, unspent in enumerate(unspents_cashtoken):
         unspent_used = False
 
-        catagorydata = self.tokendata.get(unspent.catagory_id, {})
+        catagorydata = tokendata.get(unspent.catagory_id, {})
         # check token_amount
         if unspent.has_amount and "token_amount" in catagorydata:
             unspent_used = True
@@ -493,18 +518,23 @@ class CashTokenOutputs:
                 unspent_used = True
 
         if not unspent_used:
-            raise ValueError("Unspent not used")
+            continue
 
-        # update self
+        # use unspent
+        unspents_used.append(unspent)
+        pop_ids.append(i)
+        # update tokendata
         if catagorydata == {}:
-            self.tokendata.pop(unspent.catagory_id)
+            tokendata.pop(unspent.catagory_id)
         else:
-            self.tokendata.update({unspent.catagory_id: catagorydata})
-        # not used, but just for completeness
-        # amount is added with individually adding unpents later
-        self.amount -= unspent.amount
-        if self.amount < 0:
-            self.amount = 0
+            tokendata.update({unspent.catagory_id: catagorydata})
+    for id_ in sorted(pop_ids)[::-1]:
+        unspents_cashtoken.pop(id_)
+
+    # sort the rest unspents and fund the bch amount
+    # __gt__ and __eq__ will sort them with no cashtoken unspents first
+    unspents = sorted(unspents + unspents_cashtoken)
+    return unspents, unspents_used
 
 
 def _subtract_nft_output(unspent, catagorydata):

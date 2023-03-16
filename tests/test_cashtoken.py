@@ -5,9 +5,9 @@ from bitcash import cashtoken as _cashtoken
 from bitcash.network.meta import Unspent
 from bitcash.cashtoken import (
     CashTokenOutput,
-    CashTokenOutputs,
     prepare_cashtoken_aware_output,
     CashTokenUnspents,
+    select_cashtoken_utxo
 )
 from bitcash.exceptions import (
     InsufficientFunds,
@@ -511,178 +511,164 @@ class TestCashTokenUnspents:
         assert leftover_amount == 50
 
 
-class TestCashTokenOutputs:
-    def setup_method(self):
-        self.monkeypatch = MonkeyPatch()
-        self.monkeypatch.setattr(_cashtoken, "NetworkAPI", NetworkAPI)
+def test_select_cashtoken_utxo():
+    monkeypatch = MonkeyPatch()
+    monkeypatch.setattr(_cashtoken, "NetworkAPI", NetworkAPI)
 
-    def test_add_output(self):
-        # OP_RETURN
-        cashtokenoutputs = CashTokenOutputs([[BITCOIN_CASHADDRESS_CATKN,
-                                              50, None]])
-        assert cashtokenoutputs.tokendata == {}
+    unspent1 = Unspent(50, 1234, "script", "txid", 1, "c1", "minting")
+    unspent2 = Unspent(50, 1234, "script", "txid", 1, "c1", "immutable")
+    unspent3 = Unspent(50, 1234, "script", "txid", 1, "c1", "mutable")
+    unspent4 = Unspent(50, 1234, "script", "c2", 1)
+    unspent41 = Unspent(50, 1234, "script", "c2", 0)  # genesis
+    unspent5 = Unspent(50, 1234, "script", "txid", 1, "c2", "mutable")
+    unspent6 = Unspent(50, 1234, "script", "txid", 1, "c1", "immutable",
+                       b"commitment")
+    unspent7 = Unspent(50, 1234, "script", "txid", 1, "c1", None, None, 10)
+    unspent8 = Unspent(50, 1234, "script", "txid", 1, "c1", "mutable", None,
+                       10)
+    unspent9 = Unspent(50, 1234, "script", "txid", 1, "c1", None, None, 60)
 
-        # genesis cashtoken
-        cashtokenoutputs = CashTokenOutputs([
-            [
-                BITCOIN_CASHADDRESS_CATKN,
-                50,
-                CashTokenOutput(
-                    "catagory_id",
-                    token_amount=50,
-                    amount=50,
-                    _genesis=True
-                )
-            ]
-        ])
-        assert cashtokenoutputs.tokendata == {}
+    output1 = (
+        BITCOIN_CASHADDRESS_CATKN,
+        512,
+        CashTokenOutput("c1", "mutable", None, None, 512)
+    )
+    output2 = (
+        BITCOIN_CASHADDRESS_CATKN,
+        512,
+        CashTokenOutput("c1", "immutable",
+                        b"commitment", None, 512)
+    )
+    output3 = (
+        BITCOIN_CASHADDRESS_CATKN,
+        512,
+        CashTokenOutput("c2", "minting", None, 50, 512)
+    )
+    output4 = (
+        BITCOIN_CASHADDRESS_CATKN,
+        512,
+        CashTokenOutput("c2", None, None, 50, 512)
+    )
+    output5 = (
+        BITCOIN_CASHADDRESS_CATKN,
+        512,
+        CashTokenOutput("c1", None, None, 50, 512)
+    )
+    outputs = [output1, output2, output3, output4]
 
-        # test token amount
-        cashtokenoutputs = CashTokenOutputs([
-            [
-                BITCOIN_CASHADDRESS_CATKN,
-                50,
-                CashTokenOutput(
-                    "catagory_id",
-                    token_amount=50,
-                    amount=50
-                )
-            ]
-        ])
-        assert cashtokenoutputs.tokendata == {"catagory_id": {
-            "token_amount": 50
-        }}
+    # unused unspents
+    # no immutable commitment
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent2],
+        outputs
+    )
+    assert len(unspents) == 1 and len(unspents_used) == 0
+    # no tokens in nft
+    unspents, unspents_used = select_cashtoken_utxo(
+        [Unspent(50, 1234, "script", "txid", 1, "c1", token_amount=1)],
+        outputs
+    )
+    assert len(unspents) == 1 and len(unspents_used) == 0
+    # no nft in token amount
+    unspents, unspents_used = select_cashtoken_utxo(
+        [Unspent(50, 1234, "script", "txid", 1, "c1", "minting")],
+        [output5]
+    )
+    assert len(unspents) == 1 and len(unspents_used) == 0
+    # no nft
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent5],
+        outputs
+    )
+    assert len(unspents) == 1 and len(unspents_used) == 0
+    # no genesis
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent4],
+        outputs
+    )
+    assert len(unspents) == 1 and len(unspents_used) == 0
 
-        # test nft
-        cashtokenoutputs = CashTokenOutputs([
-            [
-                BITCOIN_CASHADDRESS_CATKN,
-                50,
-                CashTokenOutput(
-                    "catagory_id",
-                    nft_capability="immutable",
-                    amount=50
-                )
-            ]
-        ])
-        assert cashtokenoutputs.tokendata == {"catagory_id": {
-            "nft": [{"capability": "immutable"}]
-        }}
+    # test minting
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent1],
+        outputs
+    )
+    assert unspents == [] and unspents_used == [unspent1]
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent1],
+        [output2]
+    )
+    assert unspents == [] and unspents_used == [unspent1]
 
-        # test both
-        cashtokenoutputs = CashTokenOutputs([
-            [
-                BITCOIN_CASHADDRESS_CATKN,
-                50,
-                CashTokenOutput(
-                    "catagory_id",
-                    nft_capability="immutable",
-                    token_amount=500,
-                    amount=50
-                )
-            ]
-        ])
-        assert cashtokenoutputs.tokendata == {"catagory_id": {
-            "token_amount": 500,
-            "nft": [{"capability": "immutable"}]
-        }}
+    # test mutable
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent1, unspent3],
+        [output1]
+    )
+    assert unspents == [unspent1] and unspents_used == [unspent3]
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent1, unspent3],
+        [output2]
+    )
+    assert unspents == [unspent1] and unspents_used == [unspent3]
 
-    def test_subtract_unspent(self):
-        cashtokenoutput1 = CashTokenOutput("c1", "mutable", None, None, 512)
-        cashtokenoutput2 = CashTokenOutput("c1", "immutable",
-                                           b"commitment", None, 512)
-        cashtokenoutput3 = CashTokenOutput("c2", "minting", None, 50, 512)
-        cashtokenoutput4 = CashTokenOutput("c2", None, None, 50, 512)
-        outputs = [
-            (BITCOIN_CASHADDRESS_CATKN, 512, cashtokenoutput1),
-            (BITCOIN_CASHADDRESS_CATKN, 512, cashtokenoutput2),
-            (BITCOIN_CASHADDRESS_CATKN, 512, cashtokenoutput3),
-            (BITCOIN_CASHADDRESS_CATKN, 512, cashtokenoutput4),
-        ]
+    # test immutable
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent1, unspent2, unspent3],
+        [output2]
+    )
+    assert unspents == [unspent2, unspent1] and unspents_used == [unspent3]
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent1, unspent2, unspent3],
+        [output2]
+    )
+    assert unspents == [unspent2, unspent1] and unspents_used == [unspent3]
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent1, unspent6, unspent3],
+        [output2]
+    )
+    assert unspents == [unspent3, unspent1] and unspents_used == [unspent6]
 
-        cashtokenoutputs = CashTokenOutputs(outputs)
-        # errors
-        with pytest.raises(ValueError):
-            cashtokenoutputs.subtract_unspent(
-                Unspent(50, 1234, "script", "txid", 0, "c1", "immutable")
-            )
-        with pytest.raises(ValueError):
-            cashtokenoutputs.subtract_unspent(
-                Unspent(50, 1234, "script", "txid", 0, "c1", token_amount=1)
-            )
-        with pytest.raises(ValueError):
-            cashtokenoutputs.subtract_unspent(
-                Unspent(50, 1234, "script", "txid", 0, "c2", "mutable")
-            )
-        # test minting
-        cashtokenoutputs.subtract_unspent(
-            Unspent(50, 1234, "script", "txid", 0, "c1", "minting")
-        )
-        assert cashtokenoutputs.tokendata == {"c2": {
-            "token_amount": 100,
-            "nft": [{"capability": "minting"}]
-        }}
+    # test genesis
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent41],
+        outputs
+    )
+    assert unspents == [] and unspents_used == [unspent41]
 
-        # test mutable
-        cashtokenoutputs = CashTokenOutputs(outputs)
-        cashtokenoutputs.subtract_unspent(
-            Unspent(50, 1234, "script", "txid", 0, "c1", "mutable")
-        )
-        assert cashtokenoutputs.tokendata == {
-            "c1": {
-                "nft": [{"capability": "immutable",
-                         "commitment": b"commitment"}]
-            },
-            "c2": {
-                "token_amount": 100,
-                "nft": [{"capability": "minting"}]
-            }
-        }
-        # another mutable will cover immutable
-        cashtokenoutputs.subtract_unspent(
-            Unspent(50, 1234, "script", "txid", 0, "c1", "mutable")
-        )
-        assert cashtokenoutputs.tokendata == {
-            "c2": {
-                "token_amount": 100,
-                "nft": [{"capability": "minting"}]
-            }
-        }
-        # another mutable will raise error
-        with pytest.raises(ValueError):
-            cashtokenoutputs.subtract_unspent(
-                Unspent(50, 1234, "script", "txid", 0, "c1", "mutable")
-            )
-
-        # test immutable
-        cashtokenoutputs = CashTokenOutputs(outputs)
-        cashtokenoutputs.subtract_unspent(
-            Unspent(50, 1234, "script", "txid", 0, "c1", "immutable",
-                    b"commitment")
-        )
-        assert cashtokenoutputs.tokendata == {
-            "c1": {
-                "nft": [{"capability": "mutable"}]
-            },
-            "c2": {
-                "token_amount": 100,
-                "nft": [{"capability": "minting"}]
-            }
-        }
-
-        # test amount
-        cashtokenoutputs = CashTokenOutputs(outputs)
-        cashtokenoutputs.subtract_unspent(
-            Unspent(50, 1234, "script", "txid", 0, "c2", token_amount=20)
-        )
-        assert cashtokenoutputs.tokendata == {
-            "c1": {
-                "nft": [{"capability": "mutable"},
-                        {"capability": "immutable",
-                         "commitment": b"commitment"}]
-            },
-            "c2": {
-                "token_amount": 80,
-                "nft": [{"capability": "minting"}]
-            }
-        }
+    # test token amount
+    # under funded
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent7],
+        [output5]
+    )
+    assert unspents == [] and unspents_used == [unspent7]
+    # over funded
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent7, unspent9],
+        [output5]
+    )
+    assert unspents == [] and unspents_used == [unspent7, unspent9]
+    # over funded
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent8, unspent9],
+        [output5]
+    )
+    # unspent8 has an nft too, sorted last
+    assert unspents == [unspent8] and unspents_used == [unspent9]
+    # over over funded
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent9, unspent8, unspent7],
+        [output5]
+    )
+    # unspent8 has an nft too, sorted last
+    # unspent7 is considered first due to sorting mechanism, hence both are
+    # spent
+    assert unspents == [unspent8] and unspents_used == [unspent7, unspent9]
+    # over over over funded
+    unspents, unspents_used = select_cashtoken_utxo(
+        [unspent9, unspent8, unspent7],
+        [(BITCOIN_CASHADDRESS_CATKN, 512,
+          CashTokenOutput("c1", None, None, 75, 512))]
+    )
+    assert unspents == [] and unspents_used == [unspent7, unspent9, unspent8]
