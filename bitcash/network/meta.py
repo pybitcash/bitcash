@@ -73,6 +73,8 @@ class Unspent:
             return
 
         self.catagory_id = scriptcode[2:66]
+        # OP_HASH256 byte order
+        self.catagory_id = bytes.fromhex(self.catagory_id)[::-1].hex()
 
         token_bitfield = scriptcode[66:68]
         # 4 bit prefix

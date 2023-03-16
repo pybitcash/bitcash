@@ -101,7 +101,9 @@ class CashTokenOutput:
         if not self.has_cashtoken:
             return b""
 
-        script = OpCodes.OP_TOKENPREFIX.b + bytes.fromhex(self.catagory_id)
+        # OP_HASH256 byte order
+        script = (OpCodes.OP_TOKENPREFIX.b
+                  + bytes.fromhex(self.catagory_id)[::-1])
         prefix_structure = 0
         if self.nft_commitment is not None:
             prefix_structure += 4

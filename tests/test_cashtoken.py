@@ -142,8 +142,8 @@ class TestCashTokenOutput:
                                     CASHTOKEN_COMMITMENT, CASHTOKEN_AMOUNT)
 
         assert repr(cashtoken) == (
-            "CashToken(catagory_id='b770119192864ac47ac7753df4f31c702bdd0d39"
-            "cc3858594eae2a562e0bb100', nft_commitment=b'commitment',"
+            "CashToken(catagory_id='00fb7b8704f843caf33c436e3386a469e1d00"
+            "4403c388a8b054282d02034f598', nft_commitment=b'commitment',"
             " nft_capability='immutable', token_amount=50, amount=0, "
             "_genesis=False)"
         )
