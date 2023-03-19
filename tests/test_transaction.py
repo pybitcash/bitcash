@@ -520,7 +520,7 @@ class TestSanitizeTxDataCashToken:
         assert unspents[0] == unspents_original[0]
         assert len(outputs) == 2
         assert outputs[0][2] == CashTokenOutput("cafe", "immutable",
-                                                amount=500, _genesis=True)
+                                                amount=500)
         assert outputs[1][2] == CashTokenOutput(amount=500)
 
         # fail genesis

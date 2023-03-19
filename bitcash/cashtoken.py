@@ -21,7 +21,7 @@ DUST_VALUE = 512
 class CashTokenOutput:
 
     __slots__ = ("catagory_id", "nft_commitment", "nft_capability",
-                 "token_amount", "amount", "_genesis")
+                 "token_amount", "amount")
 
     def __init__(
         self,
@@ -30,7 +30,6 @@ class CashTokenOutput:
         nft_commitment=None,
         token_amount=None,
         amount=0,
-        _genesis=False,
     ):
         if catagory_id is None:
             if (
@@ -73,7 +72,6 @@ class CashTokenOutput:
         self.nft_commitment = nft_commitment
         self.nft_capability = nft_capability
         self.token_amount = token_amount
-        self._genesis = _genesis
 
     def to_dict(self):
         return {attr: getattr(self, attr)
@@ -147,9 +145,7 @@ class CashTokenOutput:
 def prepare_cashtoken_aware_output(output):
     if len(output) == 3:
         if isinstance(output[2], CashTokenOutput) or output[2] is None:
-            # already cashtoken aware
-            # usefull when genesis token output are made with _genesis=True
-            # or is OP_RETURN message
+            # already cashtoken aware or is OP_RETURN message
             return output
         dest, amount, currency = output
         if not isinstance(dest, Address):
@@ -210,6 +206,8 @@ class CashTokenUnspents:
     def __init__(self, unspents=None):
         self.amount = 0
         self.tokendata = {}
+        # unspent txid that are valid genesis unspent
+        self.genesis_unspent_txid = []
         if unspents is not None:
             for unspent in unspents:
                 self.add_unspent(unspent)
@@ -245,6 +243,10 @@ class CashTokenUnspents:
                     + [nftdata]
                 )
             self.tokendata.update({unspent.catagory_id: catagorydata})
+
+        # possible cashtoken genesis unspent
+        if unspent.txindex == 0:
+            self.genesis_unspent_txid.append(unspent.txid)
 
     def get_outputs(self, leftover):
         """
@@ -305,10 +307,10 @@ class CashTokenUnspents:
         self.amount -= ctoutput.amount
 
         if ctoutput.has_cashtoken:
-            if hasattr(ctoutput, "_genesis") and ctoutput._genesis:
+            catagory_id = ctoutput.catagory_id
+            if catagory_id in self.genesis_unspent_txid:
                 # new token generated
                 return
-            catagory_id = ctoutput.catagory_id
             if catagory_id not in self.tokendata.keys():
                 raise InsufficientFunds("unspent catagory_id does not exist")
             catagorydata = self.tokendata[catagory_id]
@@ -440,9 +442,12 @@ def select_cashtoken_utxo(unspents, outputs):
     """
     unspents_used = []
 
-    # if catagory id is txid of unspent, then the unspent is mandatory
+    # if catagory id is txid of genesis unspent, then the unspent is mandatory
     mandatory_unspent_indices = set()
-    unspent_txids = [_.txid for _ in unspents]
+    genesis_unspent_txid = {
+        unspent.txid: i for i, unspent in enumerate(unspents)
+        if unspent.txindex == 0
+    }
 
     # tokendata in outputs
     tokendata = {}
@@ -454,15 +459,12 @@ def select_cashtoken_utxo(unspents, outputs):
             cashtokenoutput is not None
             and cashtokenoutput.has_cashtoken
         ):
-            if cashtokenoutput.catagory_id in unspent_txids:
-                indx = unspent_txids.index(cashtokenoutput.catagory_id)
-                if unspents[indx].txindex == 0:
-                    # Cashtoken genesis tx
-                    cashtokenoutput._genesis = True
-                    mandatory_unspent_indices.add(indx)
-                    # not count cashtoken from genesis tx
-                    # the catagory id won't be in utxo
-                    continue
+            if cashtokenoutput.catagory_id in genesis_unspent_txid.keys():
+                indx = genesis_unspent_txid[cashtokenoutput.catagory_id]
+                mandatory_unspent_indices.add(indx)
+                # not count cashtoken from genesis tx
+                # the catagory id won't be in utxo
+                continue
             catagorydata = tokendata.get(cashtokenoutput.catagory_id, {})
             if cashtokenoutput.has_amount:
                 catagorydata["token_amount"] = (

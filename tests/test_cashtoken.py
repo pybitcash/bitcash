@@ -144,8 +144,7 @@ class TestCashTokenOutput:
         assert repr(cashtoken) == (
             "CashToken(catagory_id='00fb7b8704f843caf33c436e3386a469e1d00"
             "4403c388a8b054282d02034f598', nft_commitment=b'commitment',"
-            " nft_capability='immutable', token_amount=50, amount=0, "
-            "_genesis=False)"
+            " nft_capability='immutable', token_amount=50, amount=0)"
         )
 
 
@@ -279,20 +278,31 @@ class TestCashTokenUnspents:
         assert cashtoken.tokendata == tokendata
 
         # New token
-        cashtoken = CashTokenUnspents([])
-        cashtoken.amount = 1000
-        cashtoken.tokendata = tokendata
+        cashtoken = CashTokenUnspents([
+            Unspent(500, 12, "script", "catagory_new", 0),
+            Unspent(500, 12, "script", "txid", 2, "catagory1", "minting")
+        ])
         cashtoken.subtract_output(
             CashTokenOutput("catagory_new", "immutable", token_amount=30,
-                            amount=500, _genesis=True)
+                            amount=500)
         )
         assert cashtoken.amount == 500
-        assert cashtoken.tokendata == tokendata
+        assert cashtoken.tokendata == {"catagory1": {"nft": [{"capability":
+                                                             "minting"}]}}
 
         # raise errors
         cashtoken = CashTokenUnspents([])
         cashtoken.amount = 1000
         cashtoken.tokendata = tokendata
+        # bad genesis
+        with pytest.raises(InsufficientFunds):
+            cashtoken = CashTokenUnspents([
+                Unspent(500, 12, "script", "catagory_new", 1),
+            ])
+            cashtoken.subtract_output(
+                CashTokenOutput("catagory_new", "immutable", token_amount=30,
+                                amount=500)
+            )
         # catagory does not exist
         with pytest.raises(InsufficientFunds):
             cashtoken.subtract_output(
