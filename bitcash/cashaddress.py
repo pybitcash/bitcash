@@ -1,5 +1,6 @@
 from bitcash.exceptions import InvalidAddress
 from bitcash.op import OpCodes
+from bitcash.utils import varint_to_int
 
 CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
 
@@ -163,6 +164,28 @@ class Address:
 
     @classmethod
     def from_script(cls, scriptcode):
+        # cashtoken suffix
+        catkn = ""
+        if scriptcode.startswith(OpCodes.OP_TOKENPREFIX.b):
+            catkn = "-CATKN"
+            script_counter = 34
+
+            token_bitfield = scriptcode[33:34].hex()
+            # 4 bit prefix
+            _ = bin(int(token_bitfield[0], 16))[2:]
+            _ = "0" * (4 - len(_)) + _
+            prefix_structure = [bit == "1" for bit in _]
+            if prefix_structure[1]:
+                # has commitment length
+                length, bytes_used = varint_to_int(scriptcode[script_counter:])
+                script_counter += length + bytes_used
+            if prefix_structure[3]:
+                # has amount
+                _, bytes_used = varint_to_int(scriptcode[script_counter:])
+                script_counter += bytes_used
+            # only use locking script for the rest
+            scriptcode = scriptcode[script_counter:]
+
         # P2PKH
         if len(scriptcode) == 25:
             if (
@@ -176,7 +199,7 @@ class Address:
                     + OpCodes.OP_CHECKSIG.b
                 )
             ):
-                return cls("P2PKH", list(scriptcode[3:23]))
+                return cls("P2PKH" + catkn, list(scriptcode[3:23]))
         # P2SH20
         if len(scriptcode) == 23:
             if (
@@ -186,7 +209,7 @@ class Address:
                 )
                 and scriptcode.endswith(OpCodes.OP_EQUAL.b)
             ):
-                return cls("P2SH20", list(scriptcode[2:22]))
+                return cls("P2SH20" + catkn, list(scriptcode[2:22]))
         # P2SH32
         if len(scriptcode) == 35:
             if (
@@ -196,7 +219,7 @@ class Address:
                 )
                 and scriptcode.endswith(OpCodes.OP_EQUAL.b)
             ):
-                return cls("P2SH32", list(scriptcode[2:34]))
+                return cls("P2SH32" + catkn, list(scriptcode[2:34]))
         raise ValueError("Unknown script")
 
     @staticmethod

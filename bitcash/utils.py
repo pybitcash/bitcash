@@ -50,3 +50,21 @@ def int_to_varint(val):
         return b"\xfe" + val.to_bytes(4, "little")
     else:
         return b"\xff" + val.to_bytes(8, "little")
+
+
+def varint_to_int(val):
+    """
+    Converts varint to int from incoming bytecode.
+    Also returns the number of bytes used.
+
+    :param val: the bytecode starting with varint
+    :type val: ``bytes``
+    :returns: tuple of (int, bytes_used)
+    """
+    if val.startswith(b"\xff"):
+        return (int.from_bytes(val[1:9], "little"), 9)
+    if val.startswith(b"\xfe"):
+        return (int.from_bytes(val[1:5], "little"), 5)
+    if val.startswith(b"\xfd"):
+        return (int.from_bytes(val[1:3], "little"), 3)
+    return (int.from_bytes(val[:1], "little"), 1)

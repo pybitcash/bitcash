@@ -8,6 +8,7 @@ from bitcash.utils import (
     int_to_hex,
     int_to_unknown_bytes,
     int_to_varint,
+    varint_to_int,
 )
 
 BIG_INT = 123456789**5
@@ -67,6 +68,23 @@ class TestIntToVarInt:
 
     def test_val_more_than_4294967295(self):
         assert int_to_varint(10000000000) == b"\xff\x00\xe4\x0bT\x02\x00\x00\x00"
+
+
+class TestVarIntToInt:
+    def test_val_less_than_253(self):
+        assert varint_to_int(b"\x14T") == (20, 1)
+
+    def test_val_less_than_65535(self):
+        assert varint_to_int(b"\xfd\xff\xffT") == (65535, 3)
+
+    def test_val_less_than_4294967295(self):
+        assert varint_to_int(b"\xfe\xfe\xff\xff\xffT") == (4294967294, 5)
+
+    def test_val_more_than_4294967295(self):
+        assert varint_to_int(b"\xff\x00\xe4\x0bT\x02\x00\x00\x00T") == (
+            10000000000,
+            9
+        )
 
 
 def test_hex_to_bytes():

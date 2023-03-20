@@ -1,4 +1,5 @@
 from bitcash.op import OpCodes
+from bitcash.utils import varint_to_int
 
 
 TX_TRUST_LOW = 1
@@ -93,44 +94,20 @@ class Unspent:
             self.nft_capability = Unspent.NFT_CAPABILITY[nft_capability_bit]
         script_counter = 68
         if has_commitment_length:
-            next_byte = scriptcode[script_counter:script_counter+2]
-            if next_byte == "ff":
-                start_counter, script_counter = (script_counter + 2,
-                                                 script_counter + 18)
-            elif next_byte == "fe":
-                start_counter, script_counter = (script_counter + 2,
-                                                 script_counter + 10)
-            elif next_byte == "fd":
-                start_counter, script_counter = (script_counter + 2,
-                                                 script_counter + 6)
-            else:
-                start_counter, script_counter = (script_counter,
-                                                 script_counter + 2)
-            commitment_length = int.from_bytes(bytes.fromhex(
-                scriptcode[start_counter:script_counter]
-            ), "little") * 2  # hex
+            commitment_length, bytes_used = varint_to_int(
+                bytes.fromhex(scriptcode[script_counter:])
+            )
+            commitment_length *= 2  # hex
+            script_counter += bytes_used * 2  # hex
 
             _ = script_counter + commitment_length
             self.nft_commitment = bytes.fromhex(scriptcode[script_counter:_])
             script_counter += commitment_length
 
         if has_amount:
-            next_byte = scriptcode[script_counter:script_counter+2]
-            if next_byte == "ff":
-                start_counter, script_counter = (script_counter + 2,
-                                                 script_counter + 18)
-            elif next_byte == "fe":
-                start_counter, script_counter = (script_counter + 2,
-                                                 script_counter + 10)
-            elif next_byte == "fd":
-                start_counter, script_counter = (script_counter + 2,
-                                                 script_counter + 6)
-            else:
-                start_counter, script_counter = (script_counter,
-                                                 script_counter + 2)
-            self.token_amount = int.from_bytes(bytes.fromhex(
-                scriptcode[start_counter:script_counter]
-            ), "little")
+            self.token_amount, _ = varint_to_int(
+                bytes.fromhex(scriptcode[script_counter:])
+            )
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
