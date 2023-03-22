@@ -1,3 +1,7 @@
+import pytest
+import json
+import pathlib
+
 from bitcash.network.meta import Unspent
 from ..samples import (
     CASHTOKEN_CATAGORY_ID,
@@ -10,6 +14,17 @@ from ..samples import (
     PREFIX_CAPABILITY_COMMITMENT_AMOUNT,
     PREFIX_AMOUNT,
 )
+
+
+# read token-prefix-valid.json
+# test vectors from https://github.com/bitjson/cashtokens
+@pytest.fixture
+def test_vectors(request):
+    file = pathlib.Path(request.node.fspath.strpath)
+    config = file.with_name("token-prefix-valid.json")
+    with config.open() as fio:
+        data = json.load(fio)
+    return data
 
 
 class TestUnspent:
@@ -30,7 +45,7 @@ class TestUnspent:
         assert unspent.has_nft is True
         assert unspent.has_cashtoken is True
 
-    def test_parse_script(self):
+    def test_parse_script(self, test_vectors):
         script = PREFIX_CAPABILITY.hex()
         unspent = Unspent(10000, 7, script, "txid", 0, CASHTOKEN_CATAGORY_ID,
                           nft_capability=CASHTOKEN_CAPABILITY)
@@ -59,6 +74,29 @@ class TestUnspent:
         unspent = Unspent(10000, 7, script, "txid", 0, CASHTOKEN_CATAGORY_ID,
                           token_amount=CASHTOKEN_AMOUNT)
         assert unspent == Unspent(10000, 7, script, "txid", 0)
+
+        # test vectors from https://github.com/bitjson/cashtokens
+        for test_vector in test_vectors:
+            script = test_vector["prefix"]
+            catagory_id = test_vector["data"]["category"]
+            token_amount = int(test_vector["data"]["amount"])
+            nft = test_vector["data"].get("nft", None)
+            if nft is None:
+                nft_capability = None
+                nft_commitment = None
+            else:
+                nft_capability = test_vector["data"]["nft"]["capability"]
+                nft_commitment = test_vector["data"]["nft"]["commitment"]
+                nft_commitment = bytes.fromhex(nft_commitment)
+                if nft_capability == "none":
+                    nft_capability = "immutable"
+                if nft_commitment == b"":
+                    nft_commitment = None
+            if token_amount == 0:
+                token_amount = None
+            unspent = Unspent(100, 7, script, "txid", 0, catagory_id,
+                              nft_capability, nft_commitment, token_amount)
+            assert unspent == Unspent(100, 7, script, "txid", 0)
 
     def test_dict_conversion(self):
         unspent = Unspent(10000, 7, "script", "txid", 0)

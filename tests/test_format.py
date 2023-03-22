@@ -341,3 +341,15 @@ def test_to_and_from_cashtokenaddress():
     cashtokenaddress = address_to_cashtokenaddress(BITCOIN_CASHADDRESS_TEST)
     assert cashtokenaddress == BITCOIN_CASHADDRESS_TEST_CATKN
     assert cashtokenaddress_to_address(cashtokenaddress) == BITCOIN_CASHADDRESS_TEST
+
+    # test vectors from https://github.com/bitjson/cashtokens
+    address = address_to_cashtokenaddress("bitcoincash:qr7fzmep8g7h7ymfxy74lgc0v950j3r2959lhtxxsl")
+    assert "bitcoincash:zr7fzmep8g7h7ymfxy74lgc0v950j3r295z4y4gq0v" == address
+    address = address_to_cashtokenaddress("bchtest:qr7fzmep8g7h7ymfxy74lgc0v950j3r295pdnvy3hr")
+    assert "bchtest:zr7fzmep8g7h7ymfxy74lgc0v950j3r295x8qj2hgs" == address
+    address = address_to_cashtokenaddress("bchreg:qr7fzmep8g7h7ymfxy74lgc0v950j3r295m39d8z59")
+    assert "bchreg:zr7fzmep8g7h7ymfxy74lgc0v950j3r295umknfytk" == address
+    address = address_to_cashtokenaddress("bitcoincash:ppawqn2h74a4t50phuza84kdp3794pq3ccvm92p8sh")
+    assert "bitcoincash:rpawqn2h74a4t50phuza84kdp3794pq3cct3k50p0y" == address
+    address = address_to_cashtokenaddress("bitcoincash:pvqqqqqqqqqqqqqqqqqqqqqqzg69v7ysqqqqqqqqqqqqqqqqqqqqqpkp7fqn0")
+    assert "bitcoincash:rvqqqqqqqqqqqqqqqqqqqqqqzg69v7ysqqqqqqqqqqqqqqqqqqqqqn9alsp2y" == address
