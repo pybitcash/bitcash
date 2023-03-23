@@ -426,7 +426,7 @@ class TestSanitizeTxDataCashToken:
     def test_combine(self):
         unspents_original = [
             Unspent(1000, 0, "script", "txid", 0),
-            Unspent(1000, 0, "script", "txid", 1, "caff", "immutable"),
+            Unspent(1000, 0, "script", "txid", 1, "caff", "none"),
             Unspent(1000, 0, "script", "txid", 1, "caff", "minting"),
             Unspent(1000, 0, "script", "txid", 1, "caf2", "minting"),
         ]
@@ -435,7 +435,7 @@ class TestSanitizeTxDataCashToken:
             1000,
             "satoshi",
             "caff",
-            "immutable",
+            "none",
             None,
             None
         ]]
@@ -451,7 +451,7 @@ class TestSanitizeTxDataCashToken:
 
         assert len(outputs) == 3
         assert outputs[0][1] == 1000
-        assert outputs[0][2] == CashTokenOutput("caff", "immutable",
+        assert outputs[0][2] == CashTokenOutput("caff", "none",
                                                 amount=1000)
         assert outputs[1][1] == 512
         assert outputs[1][2] == CashTokenOutput("caff", "minting", amount=512)
@@ -462,7 +462,7 @@ class TestSanitizeTxDataCashToken:
     def test_no_combine(self):
         unspents_original = [
             Unspent(1000, 0, "script", "txid", 0),
-            Unspent(1000, 0, "script", "txid", 1, "caff", "immutable"),
+            Unspent(1000, 0, "script", "txid", 1, "caff", "none"),
             Unspent(1000, 0, "script", "txid", 1, "caff", "minting")
         ]
         outputs_original = [[
@@ -470,7 +470,7 @@ class TestSanitizeTxDataCashToken:
             1500,
             "satoshi",
             "caff",
-            "immutable",
+            "none",
             None,
             None
         ]]
@@ -486,7 +486,7 @@ class TestSanitizeTxDataCashToken:
 
         assert len(unspents) == 2
         assert len(outputs) == 2
-        assert outputs[0][2] == CashTokenOutput("caff", "immutable",
+        assert outputs[0][2] == CashTokenOutput("caff", "none",
                                                 amount=1500)
         assert outputs[1][1] == 500
         assert outputs[1][0] == script
@@ -495,7 +495,7 @@ class TestSanitizeTxDataCashToken:
     def test_genesis(self):
         unspents_original = [
             Unspent(1000, 0, "script", "cafe", 0),
-            Unspent(1000, 0, "script", "caca", 1, "caff", "immutable"),
+            Unspent(1000, 0, "script", "caca", 1, "caff", "none"),
             Unspent(1000, 0, "script", "txid", 1, "caff", "minting")
         ]
         outputs_original = [[
@@ -503,7 +503,7 @@ class TestSanitizeTxDataCashToken:
             500,
             "satoshi",
             "cafe",
-            "immutable",
+            "none",
             None,
             None
         ]]
@@ -519,7 +519,7 @@ class TestSanitizeTxDataCashToken:
         assert len(unspents) == 1
         assert unspents[0] == unspents_original[0]
         assert len(outputs) == 2
-        assert outputs[0][2] == CashTokenOutput("cafe", "immutable",
+        assert outputs[0][2] == CashTokenOutput("cafe", "none",
                                                 amount=500)
         assert outputs[1][2] == CashTokenOutput(amount=500)
 
@@ -529,7 +529,7 @@ class TestSanitizeTxDataCashToken:
             500,
             "satoshi",
             "caca",
-            "immutable",
+            "none",
             None,
             None
         ]]

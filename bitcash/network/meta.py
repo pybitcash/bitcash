@@ -16,7 +16,7 @@ class Unspent:
                  "txindex", "catagory_id", "nft_capability", "nft_commitment",
                  "token_amount")
 
-    NFT_CAPABILITY = ["immutable", "mutable", "minting"]
+    NFT_CAPABILITY = ["none", "mutable", "minting"]
 
     def __init__(
         self,

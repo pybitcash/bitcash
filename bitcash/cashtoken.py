@@ -195,7 +195,7 @@ class CashTokenUnspents:
             "category_id" : {           (string) token id hex
                 "token_amount" : "xxx", (int) fungible amount
                 "nft" : [{
-                  "capability" : "xxx", (string) one of "immutable", "mutable",
+                  "capability" : "xxx", (string) one of "none", "mutable",
                                         "minting"
                   "commitment" : b"xxx" (bytes) NFT commitment
                 }]
@@ -359,19 +359,20 @@ def _subtract_nft(catagorydata, nft):
     # minting mints new nft.
     # if minting nft is asked, then minting nft mints new.
 
-    if nft[0] in ["immutable"]:
+    if nft[0] in ["none"]:
+        # immutable
         try:
             return _subtract_immutable_nft(catagorydata, nft[1])
         except InsufficientFunds:
             pass
 
-    if nft[0] in ["immutable", "mutable"]:
+    if nft[0] in ["none", "mutable"]:
         try:
             return _subtract_mutable_nft(catagorydata)
         except InsufficientFunds:
             pass
 
-    if nft[0] in ["immutable", "mutable", "minting"]:
+    if nft[0] in ["none", "mutable", "minting"]:
         try:
             return _subtract_minting_nft(catagorydata)
         except InsufficientFunds:
@@ -397,7 +398,7 @@ def _subtract_immutable_nft(catagorydata, commitment):
     # find an immutable to send
     for i in range(len(catagorydata["nft"])):
         if (
-            nft_capabilities[i] == "immutable"
+            nft_capabilities[i] == "none"
             and nft_commitments[i] == commitment
         ):
             # found immutable with same commitment
@@ -554,14 +555,14 @@ def _subtract_nft_output(unspent, catagorydata):
                 return _sanitize(catagorydata), True
         else:
             for i, nft in enumerate(catagorydata["nft"]):
-                if nft["capability"] == "immutable":
+                if nft["capability"] == "none":
                     catagorydata["nft"].pop(i)
                     return _sanitize(catagorydata), True
     else:  # immutable
         nft_commitment = unspent.nft_commitment or "None"
         for i, nft in enumerate(catagorydata["nft"]):
             if (
-                nft["capability"] == "immutable"
+                nft["capability"] == "none"
                 and nft_commitment == nft.get("commitment", "None")
             ):
                 catagorydata["nft"].pop(i)

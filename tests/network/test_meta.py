@@ -30,7 +30,7 @@ def test_vectors(request):
 class TestUnspent:
     def test_init(self):
         unspent = Unspent(10000, 7, "script", "txid", 0, "catagory_id",
-                          "immutable", "nft_commitment", 50)
+                          "none", "nft_commitment", 50)
         assert unspent.amount == 10000
         assert unspent.confirmations == 7
         assert unspent.script == "script"
@@ -38,7 +38,7 @@ class TestUnspent:
         assert unspent.txindex == 0
         assert unspent.catagory_id == "catagory_id"
         assert unspent.nft_commitment == "nft_commitment"
-        assert unspent.nft_capability == "immutable"
+        assert unspent.nft_capability == "none"
         assert unspent.token_amount == 50
         # CashToken properties
         assert unspent.has_amount is True
@@ -88,8 +88,6 @@ class TestUnspent:
                 nft_capability = test_vector["data"]["nft"]["capability"]
                 nft_commitment = test_vector["data"]["nft"]["commitment"]
                 nft_commitment = bytes.fromhex(nft_commitment)
-                if nft_capability == "none":
-                    nft_capability = "immutable"
                 if nft_commitment == b"":
                     nft_commitment = None
             if token_amount == 0:
@@ -122,9 +120,9 @@ class TestUnspent:
         unspent = Unspent(10000, 7, "script", "txid", 0)
         unspent1 = Unspent(20000, 7, "script", "txid", 0)
         unspent2 = Unspent(10000, 7, "script", "txid", 0, "catagory_id",
-                           "immutable")
+                           "none")
         unspent3 = Unspent(30000, 7, "script", "txid", 0, "catagory_id",
-                           "immutable")
+                           "none")
         unspent4 = Unspent(10000, 7, "script", "txid", 0, "catagory_id",
                            "mutable")
         unspent5 = Unspent(20000, 7, "script", "txid", 0, "catagory_id",
