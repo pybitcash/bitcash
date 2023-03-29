@@ -1,7 +1,6 @@
 import pytest
 
 
-from bitcash import cashtoken as _cashtoken
 from bitcash.network.meta import Unspent
 from bitcash.cashtoken import (
     CashTokenOutput,
@@ -15,7 +14,6 @@ from bitcash.exceptions import (
     InvalidAddress
 )
 from bitcash.cashaddress import Address
-from _pytest.monkeypatch import MonkeyPatch
 from .samples import (
     CASHTOKEN_CATAGORY_ID,
     CASHTOKEN_CAPABILITY,
@@ -31,28 +29,7 @@ from .samples import (
 )
 
 
-# Monkeypatch NETWORKAPI
-class DummyTX:
-    def __init__(self, block):
-        self.block = block
-
-
-class NetworkAPI_badheight:
-    def get_transaction(catagory_id):
-        return DummyTX(0)
-
-
-class NetworkAPI:
-    def get_transaction(catagory_id):
-        # tx block height 1e6 much later than cashtoken activation
-        return DummyTX(1e6)
-
-
 class TestCashTokenOutput:
-    def setup_method(self):
-        self.monkeypatch = MonkeyPatch()
-        self.monkeypatch.setattr(_cashtoken, "NetworkAPI", NetworkAPI)
-
     def test_init(self):
         cashtoken = CashTokenOutput(CASHTOKEN_CATAGORY_ID, "none",
                                     CASHTOKEN_COMMITMENT, CASHTOKEN_AMOUNT)
@@ -66,11 +43,7 @@ class TestCashTokenOutput:
         assert cashtoken.has_cashtoken is True
 
         # test bad inputs
-        # bad catagory id
-        with MonkeyPatch.context() as mct:
-            mct.setattr(_cashtoken, "NetworkAPI", NetworkAPI_badheight)
-            with pytest.raises(InvalidCashToken):
-                CashTokenOutput(CASHTOKEN_CATAGORY_ID, CASHTOKEN_AMOUNT)
+        # missing cashtoken fields
         with pytest.raises(InvalidCashToken):
             CashTokenOutput(CASHTOKEN_CATAGORY_ID)
         # bad capability
@@ -149,10 +122,6 @@ class TestCashTokenOutput:
 
 
 class TestPrepareCashtokenAwareOutput:
-    def setup_method(self):
-        self.monkeypatch = MonkeyPatch()
-        self.monkeypatch.setattr(_cashtoken, "NetworkAPI", NetworkAPI)
-
     def test_output(self):
         output = (BITCOIN_CASHADDRESS, 20, "bch")
         output = prepare_cashtoken_aware_output(output)
@@ -181,10 +150,6 @@ class TestPrepareCashtokenAwareOutput:
 
 
 class TestCashTokenUnspents:
-    def setup_method(self):
-        self.monkeypatch = MonkeyPatch()
-        self.monkeypatch.setattr(_cashtoken, "NetworkAPI", NetworkAPI)
-
     def test_empty(self):
         unspents = [Unspent(1000, 42, "script", "txid", 0)]
         cashtoken = CashTokenUnspents(unspents)
@@ -522,9 +487,6 @@ class TestCashTokenUnspents:
 
 
 def test_select_cashtoken_utxo():
-    monkeypatch = MonkeyPatch()
-    monkeypatch.setattr(_cashtoken, "NetworkAPI", NetworkAPI)
-
     unspent1 = Unspent(50, 1234, "script", "txid", 1, "c1", "minting")
     unspent2 = Unspent(50, 1234, "script", "txid", 1, "c1", "none")
     unspent3 = Unspent(50, 1234, "script", "txid", 1, "c1", "mutable")

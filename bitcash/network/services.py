@@ -85,7 +85,6 @@ class NetworkAPI:
         :raises ConnectionError: If all API services fail.
         :rtype: ``int``
         """
-
         for endpoint in get_endpoints_for(network):
             try:
                 return endpoint.get_balance(address, timeout=DEFAULT_TIMEOUT)
@@ -103,7 +102,6 @@ class NetworkAPI:
         :raises ConnectionError: If all API services fail.
         :rtype: ``list`` of ``str``
         """
-
         for endpoint in get_endpoints_for(network):
             try:
                 return endpoint.get_transactions(address, timeout=DEFAULT_TIMEOUT)

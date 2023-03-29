@@ -1,10 +1,8 @@
 import pytest
-from _pytest.monkeypatch import MonkeyPatch
 
 from bitcash.exceptions import InsufficientFunds
 from bitcash.network.meta import Unspent
 from bitcash.cashtoken import CashTokenOutput
-from bitcash import cashtoken as _cashtoken
 from bitcash.transaction import (
     TxIn,
     calc_txid,
@@ -406,23 +404,7 @@ class TestSanitizeTxData:
         assert outputs[2][1] == 5686730
 
 
-# Monkeypatch NETWORKAPI
-class DummyTX:
-    def __init__(self, block):
-        self.block = block
-
-
-class NetworkAPI:
-    def get_transaction(catagory_id):
-        # tx block height 1e6 much later than cashtoken activation
-        return DummyTX(1e6)
-
-
 class TestSanitizeTxDataCashToken:
-    def setup_method(self):
-        self.monkeypatch = MonkeyPatch()
-        self.monkeypatch.setattr(_cashtoken, "NetworkAPI", NetworkAPI)
-
     def test_combine(self):
         unspents_original = [
             Unspent(1000, 0, "script", "txid", 0),

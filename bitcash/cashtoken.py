@@ -1,4 +1,3 @@
-from bitcash.network import NetworkAPI
 from bitcash.network.rates import currency_to_satoshi_cached
 from bitcash.network.meta import Unspent
 from bitcash.cashaddress import Address
@@ -11,9 +10,6 @@ from bitcash.exceptions import (
 )
 
 
-# block after 1684152000 MTP (2023-05-15T12:00:00.000Z)
-# !FIXME
-CASHTOKEN_ACTIVATION_BLOCKHEIGHT = 782467
 COMMITMENT_LENGTH = 40
 DUST_VALUE = 512
 
@@ -38,10 +34,6 @@ class CashTokenOutput:
             ):
                 raise InvalidCashToken("catagory_id missing")
         else:
-            # checking for Pre-activation token-forgery outputs (PATFOs)
-            tx = NetworkAPI.get_transaction(catagory_id)
-            if tx.block < CASHTOKEN_ACTIVATION_BLOCKHEIGHT:
-                raise InvalidCashToken("Pre-activation token-forgery output")
             if token_amount is None and nft_capability is None:
                 raise InvalidCashToken("CashToken must have either amount or"
                                        " capability")
@@ -58,8 +50,12 @@ class CashTokenOutput:
                                        " nft capability")
             if not isinstance(nft_commitment, bytes):
                 raise ValueError("expected nft_commitment as bytes")
-            if len(nft_commitment) > 40 or len(nft_commitment) == 0:
-                raise InvalidCashToken("0 < valid nft commitment length <= 40")
+            if (
+                len(nft_commitment) > COMMITMENT_LENGTH
+                or len(nft_commitment) == 0
+            ):
+                raise InvalidCashToken(f"0 < valid nft commitment length"
+                                       f" <= {COMMITMENT_LENGTH}")
         if (
             token_amount is not None
             and (token_amount > 9223372036854775807 or token_amount < 1)
