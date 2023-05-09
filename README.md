@@ -60,11 +60,11 @@ If you are intrigued, continue reading. If not, continue all the same!
 ## Installation
 
 BitCash is distributed on `PyPI` as a universal wheel and is available on Linux/macOS
-and Windows and supports Python 3.6+ and PyPy3.6-v5.7.1+.
+and Windows and supports Python 3.7+.
 
 
 ```shell
-$ pip install bitcash  # pip3 if pip is Python 2 on your system.
+pip install bitcash  # pip3 if pip is Python 2 on your system.
 ```
 
 ## Documentation
