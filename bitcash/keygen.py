@@ -16,7 +16,6 @@ def generate_key_address_pair():  # pragma: no cover
 
 
 def generate_matching_address(prefix, cores="all"):  # pragma: no cover
-
     for char in prefix:
         if char not in BASE58_ALPHABET:
             raise ValueError(f"{char} is an invalid base58 encoded " f"character.")
@@ -68,7 +67,6 @@ def generate_matching_address(prefix, cores="all"):  # pragma: no cover
 
 
 def generate_key_address_pairs(prefix, counter, match, queue):  # pragma: no cover
-
     context = Context()
 
     while True:

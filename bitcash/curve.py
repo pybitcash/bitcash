@@ -13,7 +13,6 @@ def parity(num):
 
 
 def x_to_y(x, y_parity):
-
     y = pow(x**3 + 7, TONELLI_SHANKS_CONSTANT, FIELD_SIZE)
 
     if parity(y) != y_parity:

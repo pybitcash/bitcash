@@ -165,7 +165,6 @@ class TestNetworkAPI:
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
 class TestBitcoinDotComAPI:
-
     # Mainnet
     # Note: There are 1 second sleeps because the default mainnet API has
     # rate limiting and will return 503 if we query it too quickly.

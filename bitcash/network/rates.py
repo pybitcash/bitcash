@@ -312,7 +312,6 @@ class RatesAPI:
 
     @classmethod
     def usd_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.USD_RATES:
             try:
                 return api_call()
@@ -323,7 +322,6 @@ class RatesAPI:
 
     @classmethod
     def eur_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.EUR_RATES:
             try:
                 return api_call()
@@ -334,7 +332,6 @@ class RatesAPI:
 
     @classmethod
     def gbp_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.GBP_RATES:
             try:
                 return api_call()
@@ -345,7 +342,6 @@ class RatesAPI:
 
     @classmethod
     def jpy_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.JPY_RATES:
             try:
                 return api_call()
@@ -356,7 +352,6 @@ class RatesAPI:
 
     @classmethod
     def cny_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.CNY_RATES:
             try:
                 return api_call()
@@ -367,7 +362,6 @@ class RatesAPI:
 
     @classmethod
     def hkd_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.HKD_RATES:
             try:
                 return api_call()
@@ -378,7 +372,6 @@ class RatesAPI:
 
     @classmethod
     def cad_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.CAD_RATES:
             try:
                 return api_call()
@@ -389,7 +382,6 @@ class RatesAPI:
 
     @classmethod
     def aud_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.AUD_RATES:
             try:
                 return api_call()
@@ -400,7 +392,6 @@ class RatesAPI:
 
     @classmethod
     def nzd_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.NZD_RATES:
             try:
                 return api_call()
@@ -411,7 +402,6 @@ class RatesAPI:
 
     @classmethod
     def rub_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.RUB_RATES:
             try:
                 return api_call()
@@ -422,7 +412,6 @@ class RatesAPI:
 
     @classmethod
     def brl_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.BRL_RATES:
             try:
                 return api_call()
@@ -433,7 +422,6 @@ class RatesAPI:
 
     @classmethod
     def chf_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.CHF_RATES:
             try:
                 return api_call()
@@ -444,7 +432,6 @@ class RatesAPI:
 
     @classmethod
     def sek_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.SEK_RATES:
             try:
                 return api_call()
@@ -455,7 +442,6 @@ class RatesAPI:
 
     @classmethod
     def dkk_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.DKK_RATES:
             try:
                 return api_call()
@@ -466,7 +452,6 @@ class RatesAPI:
 
     @classmethod
     def isk_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.ISK_RATES:
             try:
                 return api_call()
@@ -477,7 +462,6 @@ class RatesAPI:
 
     @classmethod
     def pln_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.PLN_RATES:
             try:
                 return api_call()
@@ -488,7 +472,6 @@ class RatesAPI:
 
     @classmethod
     def krw_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.KRW_RATES:
             try:
                 return api_call()
@@ -499,7 +482,6 @@ class RatesAPI:
 
     @classmethod
     def clp_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.CLP_RATES:
             try:
                 return api_call()
@@ -510,7 +492,6 @@ class RatesAPI:
 
     @classmethod
     def sgd_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.SGD_RATES:
             try:
                 return api_call()
@@ -521,7 +502,6 @@ class RatesAPI:
 
     @classmethod
     def thb_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.THB_RATES:
             try:
                 return api_call()
@@ -532,7 +512,6 @@ class RatesAPI:
 
     @classmethod
     def twd_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.TWD_RATES:
             try:
                 return api_call()
@@ -543,7 +522,6 @@ class RatesAPI:
 
     @classmethod
     def mxn_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.MXN_RATES:
             try:
                 return api_call()
@@ -553,7 +531,6 @@ class RatesAPI:
 
     @classmethod
     def ars_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.ARS_RATES:
             try:
                 return api_call()
@@ -564,7 +541,6 @@ class RatesAPI:
 
     @classmethod
     def cop_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.COP_RATES:
             try:
                 return api_call()
@@ -575,7 +551,6 @@ class RatesAPI:
 
     @classmethod
     def cup_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.CUP_RATES:
             try:
                 return api_call()
@@ -586,7 +561,6 @@ class RatesAPI:
 
     @classmethod
     def pen_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.PEN_RATES:
             try:
                 return api_call()
@@ -597,7 +571,6 @@ class RatesAPI:
 
     @classmethod
     def uyu_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.UYU_RATES:
             try:
                 return api_call()
@@ -608,7 +581,6 @@ class RatesAPI:
 
     @classmethod
     def dop_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.DOP_RATES:
             try:
                 return api_call()
@@ -619,7 +591,6 @@ class RatesAPI:
 
     @classmethod
     def bob_to_satoshi(cls):  # pragma: no cover
-
         for api_call in cls.BOB_RATES:
             try:
                 return api_call()

@@ -22,7 +22,6 @@ def bytes_to_hex(bytestr, upper=False):
 
 
 def hex_to_bytes(hexed):
-
     if len(hexed) & 1:
         hexed = "0" + hexed
 
@@ -43,7 +42,6 @@ def flip_hex_byte_order(string):
 
 
 def int_to_varint(val):
-
     if val < 253:
         return val.to_bytes(1, "little")
     elif val <= 65535:

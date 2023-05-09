@@ -56,7 +56,6 @@ def address_to_public_key_hash(address):
 
 
 def bytes_to_wif(private_key, version="main", compressed=False):
-
     if version == "test":
         prefix = TEST_PRIVATE_KEY
     elif version == "regtest":
@@ -75,7 +74,6 @@ def bytes_to_wif(private_key, version="main", compressed=False):
 
 
 def wif_to_bytes(wif, regtest=False):
-
     private_key = b58decode_check(wif)
 
     version = private_key[:1]
@@ -105,7 +103,6 @@ def wif_to_bytes(wif, regtest=False):
 
 
 def wif_checksum_check(wif):
-
     try:
         decoded = b58decode_check(wif)
     except ValueError:
@@ -136,7 +133,6 @@ def public_key_to_address(public_key, version="main"):
 
 
 def public_key_to_coords(public_key):
-
     length = len(public_key)
 
     if length == 33:
@@ -155,7 +151,6 @@ def public_key_to_coords(public_key):
 
 
 def coords_to_public_key(x, y, compressed=True):
-
     if compressed:
         y = PUBLIC_KEY_COMPRESSED_ODD_Y if y & 1 else PUBLIC_KEY_COMPRESSED_EVEN_Y
         return y + x.to_bytes(32, "big")

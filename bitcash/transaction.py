@@ -81,7 +81,6 @@ def calc_txid(tx_hex):
 def estimate_tx_fee(
     n_in, n_out_p2pkh, n_out_p2sh, satoshis, compressed, op_return_size=0
 ):
-
     if not satoshis:
         return 0
 
@@ -271,7 +270,6 @@ def sanitize_tx_data(
 
 
 def construct_output_block(outputs, custom_pushdata=False):
-
     output_block = b""
 
     for data in outputs:
@@ -324,7 +322,6 @@ def construct_output_block(outputs, custom_pushdata=False):
 
 
 def construct_input_block(inputs):
-
     input_block = b""
     sequence = SEQUENCE
 
@@ -337,7 +334,6 @@ def construct_input_block(inputs):
 
 
 def create_p2pkh_transaction(private_key, unspents, outputs, custom_pushdata=False):
-
     public_key = private_key.public_key
     public_key_len = len(public_key).to_bytes(1, byteorder="little")
 

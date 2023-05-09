@@ -9,7 +9,6 @@ BASE58_ALPHABET_INDEX = {char: index for index, char in enumerate(BASE58_ALPHABE
 
 
 def b58encode(bytestr):
-
     alphabet = BASE58_ALPHABET_LIST
 
     encoded = deque()
@@ -39,7 +38,6 @@ def b58encode_check(bytestr):
 
 
 def b58decode(string):
-
     alphabet_index = BASE58_ALPHABET_INDEX
 
     num = 0
@@ -66,7 +64,6 @@ def b58decode(string):
 
 
 def b58decode_check(string):
-
     decoded = b58decode(string)
     shortened = decoded[:-4]
     decoded_checksum = decoded[-4:]
