@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
@@ -10,14 +9,11 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Network" href="network.html" />
+    <link rel="next" title="CashAddr" href="cashaddr.html" />
     <link rel="prev" title="Installation" href="install.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -55,10 +51,10 @@ on the curve from that value.</p>
 simply <a class="reference internal" href="../dev/api.html#bitcash.Key" title="bitcash.Key"><code class="xref py py-class docutils literal notranslate"><span class="pre">Key</span></code></a>, and <a class="reference internal" href="../dev/api.html#bitcash.PrivateKeyTestnet" title="bitcash.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a>. Both classes
 have the exact same functionality.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">PrivateKey</span><span class="p">,</span> <span class="n">PrivateKeyTestnet</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Key</span> <span class="o">==</span> <span class="n">PrivateKey</span>
 <span class="go">True</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">dir</span><span class="p">(</span><span class="n">Key</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dir</span><span class="p">(</span><span class="n">PrivateKeyTestnet</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
@@ -106,7 +102,7 @@ derive your address and is needed in the construction of every transaction.</p>
 <span class="go">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span>
 </pre></div>
 </div>
-<p>This is what you share with others to receive payments.</p>
+<p>The address follows a <a class="reference internal" href="cashaddr.html#cashaddr"><span class="std std-ref">CashAddr</span></a> format. This is what you share with others to receive payments.</p>
 </section>
 <section id="formats">
 <h2>Formats<a class="headerlink" href="#formats" title="Permalink to this heading">¶</a></h2>
@@ -131,7 +127,7 @@ the initializer:</p>
 <p>If you don’t know what kind of private key your WIF represents, and you don’t
 want to force the use of a particular class, you can do this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">wif_to_key</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">wif_to_key</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 <span class="go">&lt;PrivateKeyTestnet: muUFbvTKDEokGTVUjScMhw1QF2rtv5hxCz&gt;</span>
@@ -208,7 +204,7 @@ want to force the use of a particular class, you can do this:</p>
         Previous topic: <a href="install.html">Installation</a>
       </li>
       <li>
-        Next topic: <a href="network.html">Network</a>
+        Next topic: <a href="cashaddr.html">CashAddr</a>
       </li>
     </ul>
     </div>
@@ -289,7 +285,7 @@ want to force the use of a particular class, you can do this:</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
       <li>Previous: <a href="install.html" title="previous chapter">Installation</a></li>
-      <li>Next: <a href="network.html" title="next chapter">Network</a></li>
+      <li>Next: <a href="cashaddr.html" title="next chapter">CashAddr</a></li>
   </ul></li>
 </ul>
 </div>

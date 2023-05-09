@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
@@ -10,9 +9,6 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -58,28 +54,28 @@ compressed public keys (meaning such keys could literally not spend money), and
 docs.</p>
 <p>All of these libraries are also slow. Let’s take a look at some common operations.</p>
 <p>Instantiate a compressed private key and get its computed public key:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m timeit -s <span class="s2">&quot;from bitcash import Key&quot;</span> <span class="s2">&quot;Key(&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;).public_key&quot;</span>
-<span class="m">1000</span> loops, best of <span class="m">3</span>: <span class="m">89</span> usec per loop
-$ python -m timeit -s <span class="s2">&quot;from two1.bitcoincash.crypto import PrivateKey&quot;</span> <span class="s2">&quot;PrivateKey.from_b58check(&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;).public_key.compressed_bytes&quot;</span>
-<span class="m">100</span> loops, best of <span class="m">3</span>: <span class="m">11</span> msec per loop
-$ python -m timeit -s <span class="s2">&quot;from pycoin.key import Key&quot;</span> <span class="s2">&quot;Key.from_text(&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;).sec()&quot;</span>
-<span class="m">10</span> loops, best of <span class="m">3</span>: <span class="m">48</span>.2 msec per loop
-<span class="o">(</span>py2<span class="o">)</span> &gt;python -m timeit -s <span class="s2">&quot;from pybitcoin import BitcoinPrivateKey&quot;</span> <span class="s2">&quot;BitcoinCashPrivateKey(&#39;c28a9f80738f770d527803a566cf6fc3edf6cea586c4fc4a5223a5ad797e1ac3&#39;).public_key().to_hex()&quot;</span>
-<span class="m">10</span> loops, best of <span class="m">3</span>: <span class="m">190</span> msec per loop
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>timeit<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;from bitcash import Key&quot;</span><span class="w"> </span><span class="s2">&quot;Key(&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;).public_key&quot;</span>
+<span class="m">1000</span><span class="w"> </span>loops,<span class="w"> </span>best<span class="w"> </span>of<span class="w"> </span><span class="m">3</span>:<span class="w"> </span><span class="m">89</span><span class="w"> </span>usec<span class="w"> </span>per<span class="w"> </span>loop
+$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>timeit<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;from two1.bitcoincash.crypto import PrivateKey&quot;</span><span class="w"> </span><span class="s2">&quot;PrivateKey.from_b58check(&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;).public_key.compressed_bytes&quot;</span>
+<span class="m">100</span><span class="w"> </span>loops,<span class="w"> </span>best<span class="w"> </span>of<span class="w"> </span><span class="m">3</span>:<span class="w"> </span><span class="m">11</span><span class="w"> </span>msec<span class="w"> </span>per<span class="w"> </span>loop
+$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>timeit<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;from pycoin.key import Key&quot;</span><span class="w"> </span><span class="s2">&quot;Key.from_text(&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;).sec()&quot;</span>
+<span class="m">10</span><span class="w"> </span>loops,<span class="w"> </span>best<span class="w"> </span>of<span class="w"> </span><span class="m">3</span>:<span class="w"> </span><span class="m">48</span>.2<span class="w"> </span>msec<span class="w"> </span>per<span class="w"> </span>loop
+<span class="o">(</span>py2<span class="o">)</span><span class="w"> </span>&gt;python<span class="w"> </span>-m<span class="w"> </span>timeit<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;from pybitcoin import BitcoinPrivateKey&quot;</span><span class="w"> </span><span class="s2">&quot;BitcoinCashPrivateKey(&#39;c28a9f80738f770d527803a566cf6fc3edf6cea586c4fc4a5223a5ad797e1ac3&#39;).public_key().to_hex()&quot;</span>
+<span class="m">10</span><span class="w"> </span>loops,<span class="w"> </span>best<span class="w"> </span>of<span class="w"> </span><span class="m">3</span>:<span class="w"> </span><span class="m">190</span><span class="w"> </span>msec<span class="w"> </span>per<span class="w"> </span>loop
 </pre></div>
 </div>
 <p>We’ll use two1 only as that was the closest to bit. Getting the address:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m timeit -s <span class="s2">&quot;from bitcash import Key;k=Key()&quot;</span> <span class="s2">&quot;k.address&quot;</span>
-<span class="m">1000000</span> loops, best of <span class="m">3</span>: <span class="m">0</span>.249 usec per loop
-$ python -m timeit -s <span class="s2">&quot;from two1.bitcoin.crypto import PrivateKey;k=PrivateKey.from_random()&quot;</span> <span class="s2">&quot;k.public_key.address()&quot;</span>
-<span class="m">10000</span> loops, best of <span class="m">3</span>: <span class="m">31</span>.1 usec per loop
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>timeit<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;from bitcash import Key;k=Key()&quot;</span><span class="w"> </span><span class="s2">&quot;k.address&quot;</span>
+<span class="m">1000000</span><span class="w"> </span>loops,<span class="w"> </span>best<span class="w"> </span>of<span class="w"> </span><span class="m">3</span>:<span class="w"> </span><span class="m">0</span>.249<span class="w"> </span>usec<span class="w"> </span>per<span class="w"> </span>loop
+$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>timeit<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;from two1.bitcoin.crypto import PrivateKey;k=PrivateKey.from_random()&quot;</span><span class="w"> </span><span class="s2">&quot;k.public_key.address()&quot;</span>
+<span class="m">10000</span><span class="w"> </span>loops,<span class="w"> </span>best<span class="w"> </span>of<span class="w"> </span><span class="m">3</span>:<span class="w"> </span><span class="m">31</span>.1<span class="w"> </span>usec<span class="w"> </span>per<span class="w"> </span>loop
 </pre></div>
 </div>
 <p>Signing, which is the most used operation:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m timeit -s <span class="s2">&quot;from bitcash import Key;k=Key()&quot;</span> <span class="s2">&quot;k.sign(b&#39;data&#39;)&quot;</span>
-<span class="m">1000</span> loops, best of <span class="m">3</span>: <span class="m">91</span> usec per loop
-$ python -m timeit -s <span class="s2">&quot;from two1.bitcoin.crypto import PrivateKey;k=PrivateKey.from_random()&quot;</span> <span class="s2">&quot;k.raw_sign(b&#39;data&#39;)&quot;</span>
-<span class="m">100</span> loops, best of <span class="m">3</span>: <span class="m">10</span>.7 msec per loop
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>timeit<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;from bitcash import Key;k=Key()&quot;</span><span class="w"> </span><span class="s2">&quot;k.sign(b&#39;data&#39;)&quot;</span>
+<span class="m">1000</span><span class="w"> </span>loops,<span class="w"> </span>best<span class="w"> </span>of<span class="w"> </span><span class="m">3</span>:<span class="w"> </span><span class="m">91</span><span class="w"> </span>usec<span class="w"> </span>per<span class="w"> </span>loop
+$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>timeit<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;from two1.bitcoin.crypto import PrivateKey;k=PrivateKey.from_random()&quot;</span><span class="w"> </span><span class="s2">&quot;k.raw_sign(b&#39;data&#39;)&quot;</span>
+<span class="m">100</span><span class="w"> </span>loops,<span class="w"> </span>best<span class="w"> </span>of<span class="w"> </span><span class="m">3</span>:<span class="w"> </span><span class="m">10</span>.7<span class="w"> </span>msec<span class="w"> </span>per<span class="w"> </span>loop
 </pre></div>
 </div>
 <div class="admonition note">
