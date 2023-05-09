@@ -161,7 +161,7 @@ class Address:
 
 
 def parse_cashaddress(data):
-    """ Parse CashAddress address URI, with params attached
+    """Parse CashAddress address URI, with params attached
 
     :param data: Cashaddress uri to be parsed
     :type data: `str`

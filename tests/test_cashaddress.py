@@ -228,23 +228,18 @@ class TestAddress:
 def test_parse_cashaddress():
     # good address
     address, params = parse_cashaddress(
-        BITCOIN_CASHADDRESS
-        + "?amount=0.1337&label=Satoshi"
+        BITCOIN_CASHADDRESS + "?amount=0.1337&label=Satoshi"
     )
     assert address.cash_address() == BITCOIN_CASHADDRESS
     assert params == {"amount": "0.1337", "label": "Satoshi"}
 
     address, params = parse_cashaddress(
-        BITCOIN_CASHADDRESS
-        + "?amount=0.1337&label=Satoshi%20a&label=Satoshi%20b"
+        BITCOIN_CASHADDRESS + "?amount=0.1337&label=Satoshi%20a&label=Satoshi%20b"
     )
     assert address.cash_address() == BITCOIN_CASHADDRESS
     assert params == {"amount": "0.1337", "label": ["Satoshi a", "Satoshi b"]}
 
-    address, params = parse_cashaddress(
-        BITCOIN_CASHADDRESS
-        + ""
-    )
+    address, params = parse_cashaddress(BITCOIN_CASHADDRESS + "")
     assert address.cash_address() == BITCOIN_CASHADDRESS
     assert params == {}
 
@@ -254,36 +249,26 @@ def test_parse_cashaddress():
     # bad address
     with pytest.raises(InvalidAddress):
         address, params = parse_cashaddress(
-            "bchtest:abc"
-            + "?amount=0.1337&label=Satoshi&label=Satoshi"
+            "bchtest:abc" + "?amount=0.1337&label=Satoshi&label=Satoshi"
         )
 
     with pytest.raises(InvalidAddress):
         address, params = parse_cashaddress(
-            "bch:"
-            + "?amount=0.1337&label=Satoshi&label=Satoshi"
+            "bch:" + "?amount=0.1337&label=Satoshi&label=Satoshi"
         )
 
 
 def test_generate_cashaddress():
     assert generate_cashaddress(BITCOIN_CASHADDRESS) == BITCOIN_CASHADDRESS
 
-    cashaddress = generate_cashaddress(
-        "bitcoincash:",
-        {"message": "Satoshi Nakamoto"}
-    )
+    cashaddress = generate_cashaddress("bitcoincash:", {"message": "Satoshi Nakamoto"})
     assert cashaddress == "bitcoincash:?message=Satoshi+Nakamoto"
     cashaddress = generate_cashaddress(
         BITCOIN_CASHADDRESS,
-        {
-            "amount": 0.1337,
-            "data": ['a', 1],
-            "message": "Satoshi Nakamoto"
-        }
+        {"amount": 0.1337, "data": ["a", 1], "message": "Satoshi Nakamoto"},
     )
     assert cashaddress == (
-        BITCOIN_CASHADDRESS
-        + "?amount=0.1337&data=a&data=1&message=Satoshi+Nakamoto"
+        BITCOIN_CASHADDRESS + "?amount=0.1337&data=a&data=1&message=Satoshi+Nakamoto"
     )
 
     with pytest.raises(InvalidAddress):
