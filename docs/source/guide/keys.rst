@@ -93,7 +93,7 @@ All keys possess an :func:`~bitcash.PrivateKey.address` property which is derive
     >>> key.address
     'bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5'
 
-This is what you share with others to receive payments.
+The address follows a :ref:`cashaddr` format. This is what you share with others to receive payments.
 
 Formats
 -------

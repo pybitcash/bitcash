@@ -79,6 +79,7 @@ of best practices.
     guide/intro
     guide/install
     guide/keys
+    guide/cashaddr
     guide/network
     guide/node
     guide/transactions

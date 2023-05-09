@@ -26,6 +26,15 @@ Keys
     :members:
     :undoc-members:
 
+CashAddress
+-----------
+
+.. autoclass:: bitcash.cashaddress.Address
+   :members:
+
+.. autoclass:: bitcash.cashaddress.generate_cashaddress
+.. autoclass:: bitcash.cashaddress.parse_cashaddress
+
 Network
 -------
 

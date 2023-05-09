@@ -19,6 +19,8 @@ Unreleased (see `master <https://github.com/ofek/bitcash>`_)
 - Wallets can pay to script hash. However, P2SH utxo spending is still
   not supported.
 
+- Supports CashAddress URIs.
+
 0.5.2 (2018-05-16)
 ------------------
 
