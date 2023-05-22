@@ -14,6 +14,7 @@ from bitcash.format import (
     verify_sig,
     wif_checksum_check,
     wif_to_bytes,
+    hex_to_asm,
     address_to_cashtokenaddress,
     cashtokenaddress_to_address
 )
@@ -334,6 +335,7 @@ def test_address_to_public_key_hash():
         == PUBKEY_HASH_P2SH20
     )
 
+
 def test_to_and_from_cashtokenaddress():
     cashtokenaddress = address_to_cashtokenaddress(BITCOIN_CASHADDRESS)
     assert cashtokenaddress == BITCOIN_CASHADDRESS_CATKN
@@ -353,3 +355,22 @@ def test_to_and_from_cashtokenaddress():
     assert "bitcoincash:rpawqn2h74a4t50phuza84kdp3794pq3cct3k50p0y" == address
     address = address_to_cashtokenaddress("bitcoincash:pvqqqqqqqqqqqqqqqqqqqqqqzg69v7ysqqqqqqqqqqqqqqqqqqqqqpkp7fqn0")
     assert "bitcoincash:rvqqqqqqqqqqqqqqqqqqqqqqzg69v7ysqqqqqqqqqqqqqqqqqqqqqn9alsp2y" == address
+
+
+def test_hex_to_asm():
+    asm = hex_to_asm("76a9147ff07a9532d16a3fe14112e8c856093b81c25a6a88ac")
+    assert asm == ("OP_DUP OP_HASH160 7ff07a9532d16a3fe14112e8c856093b81c25a6a"
+                   " OP_EQUALVERIFY OP_CHECKSIG")
+    asm = hex_to_asm("6a0442434d52206b2000be5ce5527cd653c49cdba486e2fd0ec4214"
+                     "da2f71d7e56ad027b2139f448676973742e67697468756275736572"
+                     "636f6e74656e742e636f6d2f6d722d7a776574732f3834623030353"
+                     "7383038616632306466333932383135666232376434613636312f72"
+                     "6177")
+    assert asm == ("OP_RETURN 42434d52 6b2000be5ce5527cd653c49cdba486e2fd0"
+                   "ec4214da2f71d7e56ad027b2139f4 676973742e6769746875627573"
+                   "6572636f6e74656e742e636f6d2f6d722d7a776574732f3834623030"
+                   "3537383038616632306466333932383135666232376434613636312f"
+                   "726177")
+    # empty test
+    asm = hex_to_asm("6a4c00147ff07a9532d16a3fe14112e8c856093b81c25a6a")
+    assert asm == ("OP_RETURN  7ff07a9532d16a3fe14112e8c856093b81c25a6a")

@@ -1,3 +1,6 @@
+from bitcash.format import hex_to_asm
+
+
 class Transaction:
     """
     Representation of a transaction returned from the network.
@@ -42,10 +45,13 @@ class TxPart:
     Representation of a single input or output.
     """
 
-    def __init__(self, address, amount, asm=None):
+    def __init__(self, address, amount, asm=None, data_hex=None):
         self.address = address
         self.amount = amount
         self.op_return = None
+
+        if data_hex is not None:
+            asm = hex_to_asm(data_hex)
 
         if address is None and asm is not None:
             if asm.startswith("OP_RETURN "):
