@@ -2,6 +2,7 @@ from bitcash.network.http import session
 from decimal import Decimal
 from bitcash.exceptions import InvalidEndpointURLProvided
 from bitcash.network import currency_to_satoshi
+from bitcash.network.APIs import BaseAPI
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
 
@@ -12,7 +13,7 @@ BCH_TO_SAT_MULTIPLIER = 100000000
 # TODO: Refactor constant above into a 'constants.py' file
 
 
-class BitcoinDotComAPI:
+class BitcoinDotComAPI(BaseAPI):
     """rest.bitcoin.com API"""
 
     def __init__(self, network_endpoint: str):
