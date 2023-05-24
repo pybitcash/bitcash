@@ -20,6 +20,20 @@ class Transaction:
         self.inputs = []
         self.outputs = []
 
+    def to_dict(self):
+        return {
+            "txid": self.txid,
+            "block": self.block,
+            "amount_in": self.amount_in,
+            "amount_out": self.amount_out,
+            "amount_fee": self.amount_fee,
+            "inputs": [input_.to_dict() for input_ in self.inputs],
+            "outputs": [output.to_dict() for output in self.outputs]
+        }
+
+    def __eq__(self, other):
+        return self.to_dict() == other.to_dict()
+
     def add_input(self, part):
         self.inputs.append(part)
 
@@ -45,9 +59,21 @@ class TxPart:
     Representation of a single input or output.
     """
 
-    def __init__(self, address, amount, asm=None, data_hex=None):
+    def __init__(self,
+                 address,
+                 amount,
+                 catagory_id=None,
+                 nft_capability=None,
+                 nft_commitment=None,
+                 token_amount=None,
+                 asm=None,
+                 data_hex=None):
         self.address = address
         self.amount = amount
+        self.catagory_id = catagory_id
+        self.nft_capability = nft_capability
+        self.nft_commitment = nft_commitment
+        self.token_amount = token_amount
         self.op_return = None
 
         if data_hex is not None:
@@ -58,6 +84,17 @@ class TxPart:
                 self.op_return = asm[10:]
             elif asm.startswith("return ["):
                 self.op_return = asm[8:-1]
+
+    def to_dict(self):
+        return {
+            "address": self.address,
+            "amount": self.amount,
+            "catagory_id": self.catagory_id,
+            "nft_capability": self.nft_capability,
+            "nft_commitment": self.nft_commitment,
+            "token_amount": self.token_amount,
+            "op_return": self.op_return,
+        }
 
     def message(self):
         """Attempt to decode the op_return value (if there is one) as a UTF-8 string."""
