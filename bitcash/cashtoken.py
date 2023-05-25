@@ -1,7 +1,7 @@
 from bitcash.network.rates import currency_to_satoshi_cached
-from bitcash.network.meta import Unspent
 from bitcash.cashaddress import Address
-from bitcash.utils import int_to_varint
+from bitcash.network.meta import Unspent
+from bitcash.utils import int_to_varint, varint_to_int
 from bitcash.op import OpCodes
 from bitcash.exceptions import (
     InsufficientFunds,
@@ -55,7 +55,8 @@ class CashTokenOutput:
                 or len(nft_commitment) == 0
             ):
                 raise InvalidCashToken(f"0 < valid nft commitment length"
-                                       f" <= {COMMITMENT_LENGTH}")
+                                       f" <= {COMMITMENT_LENGTH}, received"
+                                       f" length: {len(nft_commitment)}")
         if (
             token_amount is not None
             and (token_amount > 9223372036854775807 or token_amount < 1)
@@ -122,9 +123,54 @@ class CashTokenOutput:
 
     @classmethod
     def from_script(cls, script):
-        instance = cls()
-        Unspent.parse_script(instance, script.hex())
-        return instance
+        self = cls()
+        if isinstance(script, bytes):
+            script = script.hex()
+        # Assumes valid script
+        has_commitment_length = False
+        has_nft = False
+        has_amount = False
+
+        if not script.startswith(OpCodes.OP_TOKENPREFIX.h):
+            # no token info available
+            return self
+
+        self.catagory_id = script[2:66]
+        # OP_HASH256 byte order
+        self.catagory_id = bytes.fromhex(self.catagory_id)[::-1].hex()
+
+        token_bitfield = script[66:68]
+        # 4 bit prefix
+        _ = bin(int(token_bitfield[0], 16))[2:]
+        _ = "0" * (4 - len(_)) + _
+        prefix_structure = [bit == "1" for bit in _]
+        if prefix_structure[1]:
+            has_commitment_length = True
+        if prefix_structure[2]:
+            has_nft = True
+        if prefix_structure[3]:
+            has_amount = True
+
+        nft_capability_bit = int(token_bitfield[1], 16)
+        if has_nft:
+            self.nft_capability = Unspent.NFT_CAPABILITY[nft_capability_bit]
+        script_counter = 68
+        if has_commitment_length:
+            commitment_length, bytes_used = varint_to_int(
+                bytes.fromhex(script[script_counter:])
+            )
+            commitment_length *= 2  # hex
+            script_counter += bytes_used * 2  # hex
+
+            _ = script_counter + commitment_length
+            self.nft_commitment = bytes.fromhex(script[script_counter:_])
+            script_counter += commitment_length
+
+        if has_amount:
+            self.token_amount, _ = varint_to_int(
+                bytes.fromhex(script[script_counter:])
+            )
+        return self
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()

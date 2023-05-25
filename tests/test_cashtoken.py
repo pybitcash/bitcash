@@ -1,6 +1,10 @@
 import pytest
+import json
+import pathlib
 
 
+from _pytest.monkeypatch import MonkeyPatch
+from bitcash import cashtoken as _cashtoken
 from bitcash.network.meta import Unspent
 from bitcash.cashtoken import (
     CashTokenOutput,
@@ -27,6 +31,17 @@ from .samples import (
     BITCOIN_CASHADDRESS,
     BITCOIN_CASHADDRESS_CATKN
 )
+
+
+# read token-prefix-valid.json
+# test vectors from https://github.com/bitjson/cashtokens
+@pytest.fixture
+def test_vectors(request):
+    file = pathlib.Path(request.node.fspath.strpath)
+    config = file.with_name("token-prefix-valid.json")
+    with config.open() as fio:
+        data = json.load(fio)
+    return data
 
 
 class TestCashTokenOutput:
@@ -69,7 +84,7 @@ class TestCashTokenOutput:
             CashTokenOutput(CASHTOKEN_CATAGORY_ID,
                             token_amount=9223372036854775808)
 
-    def test_prefix_script(self):
+    def test_prefix_script(self, test_vectors):
         script = PREFIX_CAPABILITY
         cashtoken = CashTokenOutput.from_script(script)
         assert script == cashtoken.token_prefix
@@ -93,6 +108,31 @@ class TestCashTokenOutput:
         script = b""
         cashtoken = CashTokenOutput.from_script(script)
         assert script == cashtoken.token_prefix
+
+        # test vectors from https://github.com/bitjson/cashtokens
+        # change COMMITMENT_LENGTH
+        COMMITMENT_LENGTH = 1500
+        monkeypatch = MonkeyPatch()
+        monkeypatch.setattr(_cashtoken, "COMMITMENT_LENGTH", COMMITMENT_LENGTH)
+        for test_vector in test_vectors:
+            script = test_vector["prefix"]
+            catagory_id = test_vector["data"]["category"]
+            token_amount = int(test_vector["data"]["amount"])
+            nft = test_vector["data"].get("nft", None)
+            if nft is None:
+                nft_capability = None
+                nft_commitment = None
+            else:
+                nft_capability = test_vector["data"]["nft"]["capability"]
+                nft_commitment = test_vector["data"]["nft"]["commitment"]
+                nft_commitment = bytes.fromhex(nft_commitment)
+                if nft_commitment == b"":
+                    nft_commitment = None
+            if token_amount == 0:
+                token_amount = None
+            cashtoken = CashTokenOutput(catagory_id, nft_capability,
+                                        nft_commitment, token_amount)
+            assert cashtoken == CashTokenOutput.from_script(script)
 
     def test_dict_conversion(self):
         cashtoken = CashTokenOutput(CASHTOKEN_CATAGORY_ID, "none",

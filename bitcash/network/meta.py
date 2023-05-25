@@ -1,7 +1,3 @@
-from bitcash.op import OpCodes
-from bitcash.utils import varint_to_int
-
-
 TX_TRUST_LOW = 1
 TX_TRUST_MEDIUM = 6
 TX_TRUST_HIGH = 30
@@ -40,10 +36,6 @@ class Unspent:
         self.nft_commitment = nft_commitment
         self.token_amount = token_amount
 
-        # if API doesn't support CashToken implicitly
-        if self.catagory_id is None:
-            self.parse_script(script)
-
     def to_dict(self):
         return {attr: getattr(self, attr) for attr in Unspent.__slots__}
 
@@ -62,52 +54,6 @@ class Unspent:
     @property
     def has_cashtoken(self):
         return self.has_amount or self.has_nft
-
-    def parse_script(self, scriptcode):
-        # Assumes valid scriptcode
-        has_commitment_length = False
-        has_nft = False
-        has_amount = False
-
-        if not scriptcode.startswith(OpCodes.OP_TOKENPREFIX.h):
-            # no token info available
-            return
-
-        self.catagory_id = scriptcode[2:66]
-        # OP_HASH256 byte order
-        self.catagory_id = bytes.fromhex(self.catagory_id)[::-1].hex()
-
-        token_bitfield = scriptcode[66:68]
-        # 4 bit prefix
-        _ = bin(int(token_bitfield[0], 16))[2:]
-        _ = "0" * (4 - len(_)) + _
-        prefix_structure = [bit == "1" for bit in _]
-        if prefix_structure[1]:
-            has_commitment_length = True
-        if prefix_structure[2]:
-            has_nft = True
-        if prefix_structure[3]:
-            has_amount = True
-
-        nft_capability_bit = int(token_bitfield[1], 16)
-        if has_nft:
-            self.nft_capability = Unspent.NFT_CAPABILITY[nft_capability_bit]
-        script_counter = 68
-        if has_commitment_length:
-            commitment_length, bytes_used = varint_to_int(
-                bytes.fromhex(scriptcode[script_counter:])
-            )
-            commitment_length *= 2  # hex
-            script_counter += bytes_used * 2  # hex
-
-            _ = script_counter + commitment_length
-            self.nft_commitment = bytes.fromhex(scriptcode[script_counter:_])
-            script_counter += commitment_length
-
-        if has_amount:
-            self.token_amount, _ = varint_to_int(
-                bytes.fromhex(scriptcode[script_counter:])
-            )
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
