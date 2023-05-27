@@ -3,9 +3,13 @@ import requests
 
 # Import supported endpoint APIs
 from bitcash.network.APIs.BitcoinDotComAPI import BitcoinDotComAPI
+from bitcash.network.APIs.ChaingraphAPI import ChaingraphAPI
 
 # Dictionary of supported endpoint APIs
-ENDPOINT_ENV_VARIABLES = {"BITCOINCOM": BitcoinDotComAPI}
+ENDPOINT_ENV_VARIABLES = {
+    "BITCOINCOM": BitcoinDotComAPI,
+    "CHAINGRAPH": ChaingraphAPI
+}
 
 # Default API call total time timeout
 DEFAULT_TIMEOUT = 5
