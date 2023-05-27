@@ -81,7 +81,7 @@ class BitcoinDotComAPI(BaseAPI):
         )
 
         for txin in response["vin"]:
-            part = TxPart(txin["cashAddress"], txin["value"], txin["scriptSig"]["asm"])
+            part = TxPart(txin["cashAddress"], txin["value"], asm=txin["scriptSig"]["asm"])
             tx.add_input(part)
 
         for txout in response["vout"]:
@@ -95,7 +95,7 @@ class BitcoinDotComAPI(BaseAPI):
             part = TxPart(
                 addr,
                 (Decimal(txout["value"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
-                txout["scriptPubKey"]["asm"],
+                asm=txout["scriptPubKey"]["asm"],
             )
             tx.add_output(part)
 
