@@ -22,7 +22,10 @@ class ChaingraphAPI(BaseAPI):
 
     # Default endpoints to use for this interface
     DEFAULT_ENDPOINTS = {
-        "mainnet": [],
+        "mainnet": [
+            "https://demo.chaingraph.cash/v1/graphql",
+            "https://gql.chaingraph.pat.mn/v1/graphql"
+        ],
         "testnet": [],
         "regtest": [],
     }
