@@ -216,12 +216,12 @@ def sanitize_tx_data(
             try:
                 for output in outputs:
                     test_token.subtract_output(output[2])
+                (leftover_outputs,
+                 leftover_amount) = test_token.get_outputs(leftover)
             except InsufficientFunds as err:
                 error = err
                 continue
 
-            (leftover_outputs,
-             leftover_amount) = test_token.get_outputs(leftover)
             output_script_list += [_[0] for _ in leftover_outputs]
 
             calculated_fee = estimate_tx_fee(
