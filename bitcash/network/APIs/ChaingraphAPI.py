@@ -47,9 +47,9 @@ class ChaingraphAPI(BaseAPI):
     def get_balance(self, address, *args, **kwargs):
         json_request = {
             "query": """
-query GetUTXO($lb: String!) {
-  search_output_prefix(
-    args: { locking_bytecode_prefix_hex: $lb }
+query GetUTXO($lb: _text) {
+  search_output(
+    args: { locking_bytecode_hex: $lb }
     where: { _not: { spent_by: {} } }
   ) {
     value_satoshis
@@ -57,24 +57,24 @@ query GetUTXO($lb: String!) {
 }
 """,
             "variables": {
-                "lb": Address.from_string(address).scriptcode.hex()
+                "lb": f"{{{Address.from_string(address).scriptcode.hex()}}}"
             }
         }
         json = self.send_request(json_request, *args, **kwargs)
-        data = json["data"]["search_output_prefix"]
+        data = json["data"]["search_output"]
         return sum([int(_["value_satoshis"]) for _ in data])
 
     def get_transactions(self, address, *args, **kwargs):
         json_request = {
             "query": """
-query GetOutputs($lb: String!) {
+query GetOutputs($lb: _text!) {
   block(
     limit: 1
     order_by: {height: desc}
   ){
     height
   }
-  search_output_prefix(args: { locking_bytecode_prefix_hex: $lb }) {
+  search_output(args: { locking_bytecode_hex: $lb }) {
     transaction_hash
     transaction {
       block_inclusions {
@@ -97,13 +97,13 @@ query GetOutputs($lb: String!) {
 }
 """,
             "variables": {
-                "lb": Address.from_string(address).scriptcode.hex()
+                "lb": f"{{{Address.from_string(address).scriptcode.hex()}}}"
             }
         }
         json = self.send_request(json_request, *args, **kwargs)
         blockheight = int(json["data"]["block"][0]["height"])
         transactions = []
-        for output in json["data"]["search_output_prefix"]:
+        for output in json["data"]["search_output"]:
             # outputs
             block_inclusions = output["transaction"]["block_inclusions"]
             if len(block_inclusions) == 0:
@@ -138,47 +138,8 @@ query GetOutputs($lb: String!) {
         return transactions
 
     def get_transaction(self, txid, *args, **kwargs):
-        json_request = {
-            "query": """
-query GetTransactionDetails($tx: bytea!) {
-  transaction(where: { hash: { _eq: $tx } }) {
-    hash
-    fee_satoshis
-    input_value_satoshis
-    output_value_satoshis
-    block_inclusions {
-      block {
-        height
-      }
-    }
-    inputs(order_by: { input_index: asc }) {
-      value_satoshis
-      unlocking_bytecode
-      outpoint {
-        locking_bytecode
-        token_category
-        nonfungible_token_capability
-        nonfungible_token_commitment
-        fungible_token_amount
-      }
-    }
-    outputs(order_by: { output_index: asc }) {
-      value_satoshis
-      locking_bytecode
-      token_category
-      nonfungible_token_capability
-      nonfungible_token_commitment
-      fungible_token_amount
-    }
-  }
-}
-""",
-            "variables": {
-                "tx": f"\\x{txid}"
-            }
-        }
-        json = self.send_request(json_request, *args, **kwargs)
-        response = json["data"]["transaction"][0]
+
+        response = self.get_raw_transaction(txid, *args, **kwargs)
 
         block_inclusions = response["block_inclusions"]
         if len(block_inclusions) == 0:
@@ -260,15 +221,15 @@ query GetOutput($tx: bytea!, $txind: bigint!) {
     def get_unspent(self, address, *args, **kwargs):
         json_request = {
             "query": """
-query GetUTXO($lb: String!) {
+query GetUTXO($lb: _text!) {
   block(
     limit: 1
     order_by: {height: desc}
   ){
     height
   }
-  search_output_prefix(
-    args: { locking_bytecode_prefix_hex: $lb }
+  search_output(
+    args: { locking_bytecode_hex: $lb }
     where: { _not: { spent_by: {} } }
   ) {
     transaction_hash
@@ -290,13 +251,13 @@ query GetUTXO($lb: String!) {
 }
 """,
             "variables": {
-                "lb": Address.from_string(address).scriptcode.hex()
+                "lb": f"{{{Address.from_string(address).scriptcode.hex()}}}"
             }
         }
         data = self.send_request(json_request, *args, **kwargs)["data"]
         blockheight = int(data["block"][0]["height"])
         unspents = []
-        for utxo in data["search_output_prefix"]:
+        for utxo in data["search_output"]:
             block_inclusions = utxo["transaction"]["block_inclusions"]
             if len(block_inclusions) == 0:
                 # unconfirmed
@@ -332,7 +293,34 @@ query GetUTXO($lb: String!) {
             "query": """
 query GetTransactionDetails($tx: bytea!) {
   transaction(where: { hash: { _eq: $tx } }) {
-    encoded_hex
+    hash
+    fee_satoshis
+    input_value_satoshis
+    output_value_satoshis
+    block_inclusions {
+      block {
+        height
+      }
+    }
+    inputs(order_by: { input_index: asc }) {
+      value_satoshis
+      unlocking_bytecode
+      outpoint {
+        locking_bytecode
+        token_category
+        nonfungible_token_capability
+        nonfungible_token_commitment
+        fungible_token_amount
+      }
+    }
+    outputs(order_by: { output_index: asc }) {
+      value_satoshis
+      locking_bytecode
+      token_category
+      nonfungible_token_capability
+      nonfungible_token_commitment
+      fungible_token_amount
+    }
   }
 }
 """,
@@ -341,7 +329,7 @@ query GetTransactionDetails($tx: bytea!) {
             }
         }
         json = self.send_request(json_request, *args, **kwargs)
-        return json["data"]["transaction"][0]["encoded_hex"]
+        return json["data"]["transaction"][0]
 
     def broadcast_tx(self, tx_hex, *args, **kwargs):  # pragma: no cover
         json_request = {
@@ -378,6 +366,7 @@ mutation BroadcastTx($tx_hex: String!, $node: bigint!){
             json_request["variables"]["node"] = node_id
             json = self.send_request(json_request, *args,
                                      **kwargs)["data"]["send_transaction"]
+            print(json)
             if json["transmission_success"] and json["validation_success"]:
                 return True
         return False

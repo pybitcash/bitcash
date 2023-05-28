@@ -42,7 +42,7 @@ class TestChaingraphAPI:
     def test_get_balance(self):
         return_json = {
             "data": {
-              "search_output_prefix": [
+              "search_output": [
                 {
                   "value_satoshis": "1000"
                 },
@@ -69,7 +69,7 @@ class TestChaingraphAPI:
                   "height": "793970"
                 }
               ],
-              "search_output_prefix": [
+              "search_output": [
                 {
                   "transaction_hash": "\\x2c39cebc1ea104243f87d78a522ec1d499d98ffc2f145c08d474889573300dd7",
                   "transaction": {
@@ -373,7 +373,7 @@ class TestChaingraphAPI:
                   "height": "794046"
                 }
               ],
-              "search_output_prefix": [
+              "search_output": [
                 {
                   "transaction_hash": "\\x8aa279c9c46a812273c12fe78efff995ab6493cffb130ef54da73d4268a1bc9f",
                   "output_index": "0",
@@ -534,7 +534,7 @@ class TestChaingraphAPI:
             "data": {
               "transaction": [
                 {
-                  "encoded_hex": "0200000002cff9a2b2ba6fa0c0bb958ead6178256bd354c3f63030eecd51e34d604fd9738400000000644177033dfa31b3ab4ad8a147d0b7bd10da60e7fe1df51bf1767f5ba7273767d7ffad55feec5c201ea89c6c07a1c8368d8a378aae2f48ddd2076324769b2c23a1ac4121031aa8f87cde6c87de9bf1bdb9e575801a754d2a600be4d1fc89e36eae6db63bc600000000cf9a546cb9d6997c68c3c92a2daa658ef8e8778a30e92d7da0b963d0a213ef79010000006441b818b5c19459d64c4f16ac8fbaff844a6c0d05de8cf563173737d56908de56033a1e367f3c7cae8cf3240af06659bcde09d543bc064e208a31d576bbf074bb714121031aa8f87cde6c87de9bf1bdb9e575801a754d2a600be4d1fc89e36eae6db63bc60000000003e80300000000000044efcff9a2b2ba6fa0c0bb958ead6178256bd354c3f63030eecd51e34d604fd9738410ff0078a6982000000076a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac0000000000000000706a0442434d52206b2000be5ce5527cd653c49cdba486e2fd0ec4214da2f71d7e56ad027b2139f448676973742e67697468756275736572636f6e74656e742e636f6d2f6d722d7a776574732f38346230303537383038616632306466333932383135666232376434613636312f72617745430000000000001976a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac00000000"
+                  "dummy": "dummy"
                 }
               ]
             }
@@ -545,4 +545,4 @@ class TestChaingraphAPI:
         tx = self.api.get_raw_transaction(
             "446f83e975d2870de740917df1b5221aa4bc52c6e2540188f5897c4ce775b7f4",
         )
-        assert tx == "0200000002cff9a2b2ba6fa0c0bb958ead6178256bd354c3f63030eecd51e34d604fd9738400000000644177033dfa31b3ab4ad8a147d0b7bd10da60e7fe1df51bf1767f5ba7273767d7ffad55feec5c201ea89c6c07a1c8368d8a378aae2f48ddd2076324769b2c23a1ac4121031aa8f87cde6c87de9bf1bdb9e575801a754d2a600be4d1fc89e36eae6db63bc600000000cf9a546cb9d6997c68c3c92a2daa658ef8e8778a30e92d7da0b963d0a213ef79010000006441b818b5c19459d64c4f16ac8fbaff844a6c0d05de8cf563173737d56908de56033a1e367f3c7cae8cf3240af06659bcde09d543bc064e208a31d576bbf074bb714121031aa8f87cde6c87de9bf1bdb9e575801a754d2a600be4d1fc89e36eae6db63bc60000000003e80300000000000044efcff9a2b2ba6fa0c0bb958ead6178256bd354c3f63030eecd51e34d604fd9738410ff0078a6982000000076a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac0000000000000000706a0442434d52206b2000be5ce5527cd653c49cdba486e2fd0ec4214da2f71d7e56ad027b2139f448676973742e67697468756275736572636f6e74656e742e636f6d2f6d722d7a776574732f38346230303537383038616632306466333932383135666232376434613636312f72617745430000000000001976a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac00000000"
+        assert tx == {"dummy": "dummy"}
