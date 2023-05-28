@@ -7,8 +7,8 @@ from bitcash.network.APIs.ChaingraphAPI import ChaingraphAPI
 
 # Dictionary of supported endpoint APIs
 ENDPOINT_ENV_VARIABLES = {
+    "CHAINGRAPH": ChaingraphAPI,
     "BITCOINCOM": BitcoinDotComAPI,
-    "CHAINGRAPH": ChaingraphAPI
 }
 
 # Default API call total time timeout

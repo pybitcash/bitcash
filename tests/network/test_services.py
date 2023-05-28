@@ -124,7 +124,8 @@ class TestNetworkAPI:
         time.sleep(1)
         results = NetworkAPI.get_raw_transaction(MAIN_TX, network="mainnet")
         assert isinstance(results, dict)
-        assert len(results) == 16
+        # assert len(results) == 16  # BitcoinDotCOM
+        assert len(results) == 7  # Chaingraph
 
     # Testnet
     @pytest.mark.skip
@@ -178,7 +179,7 @@ class TestBitcoinDotComAPI:
         os.environ["BITCOINCOM_API_MAINNET"] = VALID_ENDPOINT_URLS[0]
         endpoints = get_endpoints_for("mainnet")
         # assert len(endpoints) == 1
-        assert isinstance(endpoints[0], BitcoinDotComAPI)
+        assert isinstance(endpoints[2], BitcoinDotComAPI)
         os.environ.pop("BITCOINCOM_API_MAINNET")
 
     def test_get_multiple_endpoint_for_env_variable(self):
@@ -186,8 +187,8 @@ class TestBitcoinDotComAPI:
         os.environ["BITCOINCOM_API_MAINNET_2"] = VALID_ENDPOINT_URLS[1]
         endpoints = get_endpoints_for("mainnet")
         # assert len(endpoints) == 2
-        assert isinstance(endpoints[0], BitcoinDotComAPI)
-        assert isinstance(endpoints[1], BitcoinDotComAPI)
+        assert isinstance(endpoints[2], BitcoinDotComAPI)
+        assert isinstance(endpoints[3], BitcoinDotComAPI)
         os.environ.pop("BITCOINCOM_API_MAINNET_1")
         os.environ.pop("BITCOINCOM_API_MAINNET_2")
 
