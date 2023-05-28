@@ -1,3 +1,4 @@
+import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from bitcash.network.APIs import ChaingraphAPI as _capi
 
@@ -60,6 +61,18 @@ class TestChaingraphAPI:
                                  DummySession(return_json))
         balance = self.api.get_balance(BITCOIN_CASHADDRESS_CATKN)
         assert balance == 3000
+
+        # zero return
+        return_json = {
+            "data": {
+              "search_output": []
+            }
+        }
+        self.monkeypatch.setattr(_capi,
+                                 "session",
+                                 DummySession(return_json))
+        balance = self.api.get_balance(BITCOIN_CASHADDRESS_CATKN)
+        assert balance == 0
 
     def test_get_transactions(self):
         return_json = {
@@ -162,6 +175,24 @@ class TestChaingraphAPI:
                                 "2cd47128e4af9ab1c3df0bce0305c2bbf5ad7fdecbba3c0b73766294bc88eaf8",
                                 "616c8f5c64847645a9052d9aec822abf6fb526ec7b01cc918e392cdf24df8f89",
                                 "2c39cebc1ea104243f87d78a522ec1d499d98ffc2f145c08d474889573300dd7"]
+
+        # zero return
+        return_json = {
+            "data": {
+              "block": [
+                {
+                  "height": "793970"
+                }
+              ],
+              "search_output": []
+            }
+        }
+        self.monkeypatch.setattr(_capi,
+                                 "session",
+                                 DummySession(return_json))
+        transactions = self.api.get_transactions(BITCOIN_CASHADDRESS_CATKN)
+
+        assert transactions == []
 
     def test_get_transaction(self):
         return_json = {
@@ -365,6 +396,22 @@ class TestChaingraphAPI:
         )
         assert amount == 1000
 
+        # zero return
+        return_json = {
+            "data": {
+              "output": []
+            }
+          }
+        self.monkeypatch.setattr(_capi,
+                                 "session",
+                                 DummySession(return_json))
+        with pytest.raises(RuntimeError):
+            # a tx that does not exist
+            amount = self.api.get_tx_amount(
+                "546f83e975d2870de740917df1b5221aa4bc52c6e2540188f5897c4ce775b7f4",
+                0
+            )
+
     def test_get_unspent(self):
         return_json = {
             "data": {
@@ -529,6 +576,23 @@ class TestChaingraphAPI:
             ),
         ]
 
+        # zero return
+        return_json = {
+            "data": {
+              "block": [
+                {
+                  "height": "794046"
+                }
+              ],
+              "search_output": []
+            }
+        }
+        self.monkeypatch.setattr(_capi,
+                                 "session",
+                                 DummySession(return_json))
+        unspents = self.api.get_unspent(BITCOIN_CASHADDRESS_CATKN)
+        assert unspents == []
+
     def test_get_raw_transaction(self):
         return_json = {
             "data": {
@@ -546,3 +610,18 @@ class TestChaingraphAPI:
             "446f83e975d2870de740917df1b5221aa4bc52c6e2540188f5897c4ce775b7f4",
         )
         assert tx == {"dummy": "dummy"}
+
+        # zero return
+        return_json = {
+            "data": {
+              "transaction": []
+            }
+        }
+        self.monkeypatch.setattr(_capi,
+                                 "session",
+                                 DummySession(return_json))
+        with pytest.raises(RuntimeError):
+            # a tx that does not exist
+            tx = self.api.get_raw_transaction(
+                "546f83e975d2870de740917df1b5221aa4bc52c6e2540188f5897c4ce775b7f4",
+            )

@@ -199,6 +199,12 @@ class NetworkAPI:
         success = None
 
         for endpoint in get_endpoints_for(network):
+            if (
+                endpoint.network_endpoint in
+                ChaingraphAPI.DEFAULT_ENDPOINTS[network]
+            ):
+                # Default chaingraphapi do not support broadcast tx
+                continue
             try:
                 success = endpoint.broadcast_tx(tx_hex, timeout=DEFAULT_TIMEOUT)
                 if not success:

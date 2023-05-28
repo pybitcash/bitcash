@@ -216,6 +216,8 @@ query GetOutput($tx: bytea!, $txind: bigint!) {
             }
         }
         json = self.send_request(json_request, *args, **kwargs)
+        if len(json["data"]["output"]) == 0:
+            raise RuntimeError(f"Output {txid}:{txindex} does not exist")
         return int(json["data"]["output"][0]["value_satoshis"])
 
     def get_unspent(self, address, *args, **kwargs):
@@ -329,6 +331,8 @@ query GetTransactionDetails($tx: bytea!) {
             }
         }
         json = self.send_request(json_request, *args, **kwargs)
+        if len(json["data"]["transaction"]) == 0:
+            raise RuntimeError(f"Transaction {txid} does not exist")
         return json["data"]["transaction"][0]
 
     def broadcast_tx(self, tx_hex, *args, **kwargs):  # pragma: no cover
@@ -366,7 +370,6 @@ mutation BroadcastTx($tx_hex: String!, $node: bigint!){
             json_request["variables"]["node"] = node_id
             json = self.send_request(json_request, *args,
                                      **kwargs)["data"]["send_transaction"]
-            print(json)
             if json["transmission_success"] and json["validation_success"]:
                 return True
         return False
