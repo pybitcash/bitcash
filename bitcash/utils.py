@@ -8,7 +8,7 @@ class Decimal(decimal.Decimal):
 
 
 def chunk_data(data, size):
-    return (data[i : i + size] for i in range(0, len(data), size))
+    return (data[i: i + size] for i in range(0, len(data), size))
 
 
 def int_to_unknown_bytes(num, byteorder="big"):
@@ -54,17 +54,17 @@ def int_to_varint(val):
 
 def varint_to_int(val):
     """
-    Converts varint to int from incoming bytecode.
-    Also returns the number of bytes used.
+    Converts varint to int from incoming bytestream.
 
     :param val: the bytecode starting with varint
-    :type val: ``bytes``
-    :returns: tuple of (int, bytes_used)
+    :type val: ``io.BytesIO``
+    :returns: ``int``
     """
-    if val.startswith(b"\xff"):
-        return (int.from_bytes(val[1:9], "little"), 9)
-    if val.startswith(b"\xfe"):
-        return (int.from_bytes(val[1:5], "little"), 5)
-    if val.startswith(b"\xfd"):
-        return (int.from_bytes(val[1:3], "little"), 3)
-    return (int.from_bytes(val[:1], "little"), 1)
+    start_byte = val.read(1)
+    if start_byte == b"\xff":
+        return int.from_bytes(val.read(8), "little")
+    if start_byte == b"\xfe":
+        return int.from_bytes(val.read(4), "little")
+    if start_byte == b"\xfd":
+        return int.from_bytes(val.read(2), "little")
+    return int.from_bytes(start_byte, "little")

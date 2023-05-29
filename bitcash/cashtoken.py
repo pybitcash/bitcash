@@ -1,3 +1,5 @@
+import io
+
 from bitcash.network.rates import currency_to_satoshi_cached
 from bitcash.cashaddress import Address
 from bitcash.network.meta import Unspent
@@ -141,22 +143,22 @@ class CashTokenOutput:
     @classmethod
     def from_script(cls, script):
         self = cls()
-        if isinstance(script, bytes):
-            script = script.hex()
         # Assumes valid script
         has_commitment_length = False
         has_nft = False
         has_amount = False
 
-        if not script.startswith(OpCodes.OP_TOKENPREFIX.h):
+        # make bytestream
+        stream = io.BytesIO(script)
+
+        if stream.read(1) != OpCodes.OP_TOKENPREFIX.b:
             # no token info available
             return self
 
-        self.catagory_id = script[2:66]
         # OP_HASH256 byte order
-        self.catagory_id = bytes.fromhex(self.catagory_id)[::-1].hex()
+        self.catagory_id = stream.read(32)[::-1].hex()
 
-        token_bitfield = script[66:68]
+        token_bitfield = stream.read(1).hex()
         # 4 bit prefix
         _ = bin(int(token_bitfield[0], 16))[2:]
         _ = "0" * (4 - len(_)) + _
@@ -171,22 +173,11 @@ class CashTokenOutput:
         nft_capability_bit = int(token_bitfield[1], 16)
         if has_nft:
             self.nft_capability = Unspent.NFT_CAPABILITY[nft_capability_bit]
-        script_counter = 68
         if has_commitment_length:
-            commitment_length, bytes_used = varint_to_int(
-                bytes.fromhex(script[script_counter:])
-            )
-            commitment_length *= 2  # hex
-            script_counter += bytes_used * 2  # hex
-
-            _ = script_counter + commitment_length
-            self.nft_commitment = bytes.fromhex(script[script_counter:_])
-            script_counter += commitment_length
-
+            commitment_length = varint_to_int(stream)
+            self.nft_commitment = stream.read(commitment_length)
         if has_amount:
-            self.token_amount, _ = varint_to_int(
-                bytes.fromhex(script[script_counter:])
-            )
+            self.token_amount = varint_to_int(stream)
         return self
 
     def __eq__(self, other):

@@ -115,7 +115,7 @@ class TestCashTokenOutput:
         monkeypatch = MonkeyPatch()
         monkeypatch.setattr(_cashtoken, "COMMITMENT_LENGTH", COMMITMENT_LENGTH)
         for test_vector in test_vectors:
-            script = test_vector["prefix"]
+            script = bytes.fromhex(test_vector["prefix"])
             catagory_id = test_vector["data"]["category"]
             token_amount = int(test_vector["data"]["amount"])
             nft = test_vector["data"].get("nft", None)

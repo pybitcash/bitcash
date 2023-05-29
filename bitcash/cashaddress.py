@@ -1,3 +1,4 @@
+import io
 from bitcash.exceptions import InvalidAddress
 from bitcash.op import OpCodes
 from bitcash.utils import varint_to_int
@@ -168,23 +169,22 @@ class Address:
         catkn = ""
         if scriptcode.startswith(OpCodes.OP_TOKENPREFIX.b):
             catkn = "-CATKN"
-            script_counter = 34
+            stream = io.BytesIO(scriptcode[33:])
 
-            token_bitfield = scriptcode[33:34].hex()
+            token_bitfield = stream.read(1).hex()
             # 4 bit prefix
             _ = bin(int(token_bitfield[0], 16))[2:]
             _ = "0" * (4 - len(_)) + _
             prefix_structure = [bit == "1" for bit in _]
             if prefix_structure[1]:
                 # has commitment length
-                length, bytes_used = varint_to_int(scriptcode[script_counter:])
-                script_counter += length + bytes_used
+                length = varint_to_int(stream)
+                _ = stream.read(length)
             if prefix_structure[3]:
                 # has amount
-                _, bytes_used = varint_to_int(scriptcode[script_counter:])
-                script_counter += bytes_used
+                _ = varint_to_int(stream)
             # only use locking script for the rest
-            scriptcode = scriptcode[script_counter:]
+            scriptcode = stream.read()
 
         # P2PKH
         if len(scriptcode) == 25:
