@@ -7,6 +7,7 @@ from bitcash.exceptions import InsufficientFunds
 from bitcash.cashtoken import (
     prepare_cashtoken_aware_output,
     CashTokenUnspents,
+    CashTokenOutput,
     select_cashtoken_utxo
 )
 from bitcash.op import OpCodes
@@ -286,9 +287,6 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
     public_key = private_key.public_key
     public_key_len = len(public_key).to_bytes(1, byteorder="little")
 
-    scriptCode = private_key.scriptcode
-    scriptCode_len = int_to_varint(len(scriptCode))
-
     version = VERSION_1
     lock_time = LOCK_TIME
     # sequence = SEQUENCE
@@ -302,7 +300,10 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
     inputs = []
     for unspent in unspents:
         script = hex_to_bytes(unspent.script)
-        script_len = int_to_unknown_bytes(len(script), byteorder="little")
+        # get cashtoken prefix
+        cashtoken = CashTokenOutput.from_unspent(unspent)
+        script = cashtoken.token_prefix + script
+        script_len = int_to_varint(len(script))
         txid = hex_to_bytes(unspent.txid)[::-1]
         txindex = unspent.txindex.to_bytes(4, byteorder="little")
         amount = unspent.amount.to_bytes(8, byteorder="little")
@@ -322,8 +323,8 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
             + hashSequence
             + txin.txid
             + txin.txindex
-            + scriptCode_len
-            + scriptCode
+            + txin.script_len
+            + txin.script
             + txin.amount
             + SEQUENCE
             + hashOutputs

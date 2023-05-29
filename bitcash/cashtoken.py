@@ -86,6 +86,16 @@ class CashTokenOutput:
         return CashTokenOutput(**{attr: d[attr]
                                   for attr in CashTokenOutput.__slots__})
 
+    @classmethod
+    def from_unspent(cls, unspent):
+        return cls(
+            unspent.catagory_id,
+            unspent.nft_capability,
+            unspent.nft_commitment,
+            unspent.token_amount,
+            unspent.amount
+        )
+
     @property
     def has_nft(self):
         return self.nft_capability is not None

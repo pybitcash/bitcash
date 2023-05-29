@@ -6,6 +6,25 @@ TX_TRUST_HIGH = 30
 class Unspent:
     """
     Represents an unspent transaction output (UTXO) with CashToken
+
+    :param amount: Amount in satoshi
+    :type amount: ``int``
+    :param confirmations: Number of confirmations of the UTXO
+    :type confirmations: ``int``
+    :param script: locking bytecode hex of the UTXO, with no cashtoken prefix
+    :type script: ``str``
+    :param txid: txid hex of the transaction of UTXO
+    :type txid: ``str``
+    :param txindex: transaction output index of UTXO
+    :type txindex: ``int``
+    :param catagory_id: catagory_id of cashtoken attached to the UTXO
+    :type catagory_id: ``str``
+    :param nft_capability: nft_capability of the cashtoken attached
+    :type nft_capability: ``str``
+    :param nft_commitment: nft_commitment of the cashtoken attached
+    :type nft_commitment: ``bytes``
+    :param token_amount: fungible token amount of the cashtoken attached
+    :type token_amount: ``int``
     """
 
     __slots__ = ("amount", "confirmations", "script", "txid",

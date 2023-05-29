@@ -241,7 +241,7 @@ class TestPrivateKey:
             fee=1,
             leftover="bitcoincash:qpqpu8xr56gmccalfssssjm2pcpv6d2fhur48wjdzf",
         )
-        out = tx[476:]
+        out = tx[478:]
 
         # test outputs
         assert out[:2] == "02"
