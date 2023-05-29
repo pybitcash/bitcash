@@ -71,11 +71,18 @@ class CashTokenOutput:
         self.token_amount = token_amount
 
     def to_dict(self):
-        return {attr: getattr(self, attr)
-                for attr in CashTokenOutput.__slots__}
+        dict_ = {attr: getattr(self, attr)
+                 for attr in CashTokenOutput.__slots__}
+        # save nft_commitment as hex
+        if dict_["nft_commitment"] is not None:
+            dict_["nft_commitment"] = dict_["nft_commitment"].hex()
+        return dict_
 
     @classmethod
     def from_dict(cls, d):
+        # convert nft_commitment to bytes
+        if d["nft_commitment"] is not None:
+            d["nft_commitment"] = bytes.fromhex(d["nft_commitment"])
         return CashTokenOutput(**{attr: d[attr]
                                   for attr in CashTokenOutput.__slots__})
 

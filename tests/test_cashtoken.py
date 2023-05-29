@@ -156,7 +156,8 @@ class TestCashTokenOutput:
 
         assert repr(cashtoken) == (
             "CashToken(catagory_id='00fb7b8704f843caf33c436e3386a469e1d00"
-            "4403c388a8b054282d02034f598', nft_commitment=b'commitment',"
+            "4403c388a8b054282d02034f598',"
+            " nft_commitment='636f6d6d69746d656e74',"
             " nft_capability='none', token_amount=50, amount=0)"
         )
 

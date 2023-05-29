@@ -1,7 +1,7 @@
 import json
 
 from bitcash.crypto import ECPrivateKey
-from bitcash.cashtoken import CashTokenUnspents
+from bitcash.cashtoken import CashTokenUnspents, CashTokenOutput
 from bitcash.curve import Point
 from bitcash.exceptions import InvalidNetwork
 from bitcash.format import (
@@ -448,7 +448,8 @@ class PrivateKey(BaseKey):
 
         data = {
             "unspents": [unspent.to_dict() for unspent in unspents],
-            "outputs": outputs,
+            "outputs": [(script.hex(), value, cashtoken.to_dict())
+                        for (script, value, cashtoken) in outputs],
         }
 
         return json.dumps(data, separators=(",", ":"))
@@ -465,7 +466,12 @@ class PrivateKey(BaseKey):
         data = json.loads(tx_data)
 
         unspents = [Unspent.from_dict(unspent) for unspent in data["unspents"]]
-        outputs = data["outputs"]
+        outputs = [
+            (bytes.fromhex(script),
+             value,
+             CashTokenOutput.from_dict(cashtoken))
+            for (script, value, cashtoken) in data["outputs"]
+        ]
 
         return create_p2pkh_transaction(self, unspents, outputs)
 
