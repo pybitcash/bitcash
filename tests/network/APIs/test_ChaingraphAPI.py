@@ -527,7 +527,7 @@ class TestChaingraphAPI:
                 0,
                 "b3d668379a421820fe89cf1bda4bfd7295202a516a0fa5ca0c8011e4c2fc256d",
                 "none",
-                b"0a",
+                b"\n",
                 None
             ),
             Unspent(

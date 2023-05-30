@@ -182,7 +182,7 @@ query GetOutputs($lb: _text!) {
                 part.nft_capability = txpart["nonfungible_token_capability"]
                 nft_commitment = txpart["nonfungible_token_commitment"]
                 if nft_commitment:
-                    part.nft_commitment = nft_commitment[2:].encode() or None
+                    part.nft_commitment = bytes.fromhex(nft_commitment[2:]) or None
                 token_amount = txpart["fungible_token_amount"]
                 if token_amount:
                     part.token_amount = int(token_amount) or None
@@ -272,7 +272,7 @@ query GetUTXO($lb: _text!) {
                 token_catagory = token_catagory[2:]
             nft_commitment = utxo["nonfungible_token_commitment"]
             if nft_commitment:
-                nft_commitment = nft_commitment[2:].encode()
+                nft_commitment = bytes.fromhex(nft_commitment[2:]) or None
             token_amount = utxo["fungible_token_amount"]
             if token_amount:
                 token_amount = int(token_amount)

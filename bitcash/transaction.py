@@ -232,7 +232,7 @@ def sanitize_tx_data(
             output_script_list += [_[0] for _ in leftover_outputs]
 
             calculated_fee = estimate_tx_fee(
-                len(unspents[: index + 1]),
+                len(unspents[: index + 1]) + len(unspents_used),
                 output_script_list,
                 fee,
                 compressed,

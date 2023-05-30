@@ -233,6 +233,9 @@ def hex_to_asm(data):
             next_len = int(data[indx:indx+2], 16)
             indx += 2
             value, indx = _add_value(next_len, indx)
+            if next_len <= 8:
+                # !TODO: check implementation
+                value = str(int.from_bytes(bytes.fromhex(value), "little"))
         else:
             indx += 2
             value = op_code.name

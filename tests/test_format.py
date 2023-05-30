@@ -1,10 +1,8 @@
 import pytest
 from bitcash import crypto
 from _pytest.monkeypatch import MonkeyPatch
-from bitcash.exceptions import InvalidAddress
 
 from bitcash.format import (
-    Address,
     address_to_public_key_hash,
     bytes_to_wif,
     coords_to_public_key,
@@ -366,7 +364,7 @@ def test_hex_to_asm():
                      "636f6e74656e742e636f6d2f6d722d7a776574732f3834623030353"
                      "7383038616632306466333932383135666232376434613636312f72"
                      "6177")
-    assert asm == ("OP_RETURN 42434d52 6b2000be5ce5527cd653c49cdba486e2fd0"
+    assert asm == ("OP_RETURN 1380795202 6b2000be5ce5527cd653c49cdba486e2fd0"
                    "ec4214da2f71d7e56ad027b2139f4 676973742e6769746875627573"
                    "6572636f6e74656e742e636f6d2f6d722d7a776574732f3834623030"
                    "3537383038616632306466333932383135666232376434613636312f"

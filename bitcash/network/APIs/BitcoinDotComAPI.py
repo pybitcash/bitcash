@@ -5,6 +5,7 @@ from bitcash.network import currency_to_satoshi
 from bitcash.network.APIs import BaseAPI
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
+from bitcash.format import cashtokenaddress_to_address
 
 # This class is the interface for Bitcash to interact with
 # Bitcoin.com based RESTful interfaces.
@@ -54,6 +55,7 @@ class BitcoinDotComAPI(BaseAPI):
         return self.network_endpoint + self.PATHS[path]
 
     def get_balance(self, address, *args, **kwargs):
+        address = cashtokenaddress_to_address(address)
         api_url = self.make_endpoint_url("address").format(address)
         r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()
@@ -61,6 +63,7 @@ class BitcoinDotComAPI(BaseAPI):
         return data["balanceSat"] + data["unconfirmedBalanceSat"]
 
     def get_transactions(self, address, *args, **kwargs):
+        address = cashtokenaddress_to_address(address)
         api_url = self.make_endpoint_url("address").format(address)
         r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()
@@ -74,14 +77,17 @@ class BitcoinDotComAPI(BaseAPI):
 
         tx = Transaction(
             response["txid"],
-            response["blockheight"],
-            (Decimal(response["valueIn"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
-            (Decimal(response["valueOut"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
-            (Decimal(response["fees"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
+            response.get("blockheight", None),
+            int((Decimal(response["valueIn"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()),
+            int((Decimal(response["valueOut"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()),
+            int((Decimal(response["fees"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()),
         )
 
         for txin in response["vin"]:
-            part = TxPart(txin["cashAddress"], txin["value"], asm=txin["scriptSig"]["asm"])
+            part = TxPart(
+                txin["cashAddress"],
+                int((Decimal(txin["value"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()),
+                asm=txin["scriptSig"]["asm"])
             tx.add_input(part)
 
         for txout in response["vout"]:
@@ -92,9 +98,24 @@ class BitcoinDotComAPI(BaseAPI):
             ):
                 addr = txout["scriptPubKey"]["cashAddrs"][0]
 
+            catagory_id = None
+            nft_capability = None
+            nft_commitment = None
+            token_amount = None
+            if "tokenData" in txout:
+                token_data = txout["tokenData"]
+                catagory_id = token_data["category"]
+                token_amount = int(token_data["amount"]) or None
+                if "nft" in token_data:
+                    nft_capability = token_data["nft"]["capability"]
+                    nft_commitment = token_data["nft"]["commitment"] or None
             part = TxPart(
                 addr,
-                (Decimal(txout["value"]) * BCH_TO_SAT_MULTIPLIER).normalize(),
+                int((Decimal(txout["value"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()),
+                catagory_id,
+                nft_capability,
+                nft_commitment,
+                token_amount,
                 asm=txout["scriptPubKey"]["asm"],
             )
             tx.add_output(part)
@@ -106,11 +127,16 @@ class BitcoinDotComAPI(BaseAPI):
         r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()
         response = r.json(parse_float=Decimal)
-        return (
-            Decimal(response["vout"][txindex]["value"]) * BCH_TO_SAT_MULTIPLIER
-        ).normalize()
+        return int(
+            (
+                Decimal(response["vout"][txindex]["value"])
+                * BCH_TO_SAT_MULTIPLIER
+            ).to_integral_value()
+        )
 
     def get_unspent(self, address, *args, **kwargs):
+        # !TODO: update for cashtokens
+        address = cashtokenaddress_to_address(address)
         api_url = self.make_endpoint_url("unspent").format(address)
         r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()
