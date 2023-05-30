@@ -36,14 +36,19 @@ MESSAGE_LIMIT = 220
 
 
 class TxIn:
-    __slots__ = ("script", "script_len", "txid", "txindex", "amount")
+    __slots__ = ("script", "script_len", "txid", "txindex", "amount",
+                 "token_prefix")
 
-    def __init__(self, script, script_len, txid, txindex, amount):
+    def __init__(self, script, script_len, txid, txindex, amount,
+                 token_prefix=None):
+        if token_prefix is None:
+            token_prefix = b""
         self.script = script
         self.script_len = script_len
         self.txid = txid
         self.txindex = txindex
         self.amount = amount
+        self.token_prefix = token_prefix
 
     def __eq__(self, other):
         return (
@@ -52,6 +57,7 @@ class TxIn:
             and self.txid == other.txid
             and self.txindex == other.txindex
             and self.amount == other.amount
+            and self.token_prefix == other.token_prefix
         )
 
     def __repr__(self):
@@ -60,7 +66,7 @@ class TxIn:
             f"{repr(self.script_len)}, "
             f"{repr(self.txid)}, "
             f"{repr(self.txindex)}, "
-            f"{repr(self.amount)})"
+            f"{repr(self.amount)}, {repr(self.token_prefix)})"
         )
 
 
@@ -300,15 +306,15 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
     inputs = []
     for unspent in unspents:
         script = hex_to_bytes(unspent.script)
+        script_len = int_to_varint(len(script))
         # get cashtoken prefix
         cashtoken = CashTokenOutput.from_unspent(unspent)
-        script = cashtoken.token_prefix + script
-        script_len = int_to_varint(len(script))
         txid = hex_to_bytes(unspent.txid)[::-1]
         txindex = unspent.txindex.to_bytes(4, byteorder="little")
         amount = unspent.amount.to_bytes(8, byteorder="little")
 
-        inputs.append(TxIn(script, script_len, txid, txindex, amount))
+        inputs.append(TxIn(script, script_len, txid, txindex, amount,
+                           cashtoken.token_prefix))
 
     hashPrevouts = double_sha256(b"".join([i.txid + i.txindex
                                            for i in inputs]))
@@ -323,6 +329,7 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
             + hashSequence
             + txin.txid
             + txin.txindex
+            + txin.token_prefix
             + txin.script_len
             + txin.script
             + txin.amount

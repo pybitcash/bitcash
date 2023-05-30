@@ -113,11 +113,12 @@ SIGNED_DATA = (
 
 class TestTxIn:
     def test_init(self):
-        txin = TxIn(b"script", b"\x06", b"txid", b"\x04", 0)
+        txin = TxIn(b"script", b"\x06", b"txid", b"\x04", 0, b"a")
         assert txin.script == b"script"
         assert txin.script_len == b"\x06"
         assert txin.txid == b"txid"
         assert txin.txindex == b"\x04"
+        assert txin.token_prefix == b"a"
 
     def test_equality(self):
         txin1 = TxIn(b"script", b"\x06", b"txid", b"\x04", 0)
@@ -128,8 +129,8 @@ class TestTxIn:
 
     def test_repr(self):
         txin = TxIn(b"script", b"\x06", b"txid", b"\x04", 0)
-        assert repr(txin) == "TxIn(b'script', {}, b'txid', {}, 0)" "".format(
-            repr(b"\x06"), repr(b"\x04")
+        assert repr(txin) == "TxIn(b'script', {}, b'txid', {}, 0, {})" "".format(
+            repr(b"\x06"), repr(b"\x04"), repr(b"")
         )
 
 
