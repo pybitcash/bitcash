@@ -28,7 +28,7 @@ class Transaction:
             "amount_out": self.amount_out,
             "amount_fee": self.amount_fee,
             "inputs": [input_.to_dict() for input_ in self.inputs],
-            "outputs": [output.to_dict() for output in self.outputs]
+            "outputs": [output.to_dict() for output in self.outputs],
         }
 
     def __eq__(self, other):
@@ -59,15 +59,17 @@ class TxPart:
     Representation of a single input or output.
     """
 
-    def __init__(self,
-                 address,
-                 amount,
-                 category_id=None,
-                 nft_capability=None,
-                 nft_commitment=None,
-                 token_amount=None,
-                 asm=None,
-                 data_hex=None):
+    def __init__(
+        self,
+        address,
+        amount,
+        category_id=None,
+        nft_capability=None,
+        nft_commitment=None,
+        token_amount=None,
+        asm=None,
+        data_hex=None,
+    ):
         self.address = address
         self.amount = amount
         self.category_id = category_id

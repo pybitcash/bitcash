@@ -78,16 +78,29 @@ class BitcoinDotComAPI(BaseAPI):
         tx = Transaction(
             response["txid"],
             response.get("blockheight", None),
-            int((Decimal(response["valueIn"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()),
-            int((Decimal(response["valueOut"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()),
-            int((Decimal(response["fees"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()),
+            int(
+                (
+                    Decimal(response["valueIn"]) * BCH_TO_SAT_MULTIPLIER
+                ).to_integral_value()
+            ),
+            int(
+                (
+                    Decimal(response["valueOut"]) * BCH_TO_SAT_MULTIPLIER
+                ).to_integral_value()
+            ),
+            int(
+                (Decimal(response["fees"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()
+            ),
         )
 
         for txin in response["vin"]:
             part = TxPart(
                 txin["cashAddress"],
-                int((Decimal(txin["value"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()),
-                asm=txin["scriptSig"]["asm"])
+                int(
+                    (Decimal(txin["value"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()
+                ),
+                asm=txin["scriptSig"]["asm"],
+            )
             tx.add_input(part)
 
         for txout in response["vout"]:
@@ -111,7 +124,11 @@ class BitcoinDotComAPI(BaseAPI):
                     nft_commitment = token_data["nft"]["commitment"] or None
             part = TxPart(
                 addr,
-                int((Decimal(txout["value"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()),
+                int(
+                    (
+                        Decimal(txout["value"]) * BCH_TO_SAT_MULTIPLIER
+                    ).to_integral_value()
+                ),
                 category_id,
                 nft_capability,
                 nft_commitment,
@@ -129,8 +146,7 @@ class BitcoinDotComAPI(BaseAPI):
         response = r.json(parse_float=Decimal)
         return int(
             (
-                Decimal(response["vout"][txindex]["value"])
-                * BCH_TO_SAT_MULTIPLIER
+                Decimal(response["vout"][txindex]["value"]) * BCH_TO_SAT_MULTIPLIER
             ).to_integral_value()
         )
 

@@ -8,7 +8,7 @@ from bitcash.cashtoken import (
     prepare_cashtoken_aware_output,
     CashTokenUnspents,
     CashTokenOutput,
-    select_cashtoken_utxo
+    select_cashtoken_utxo,
 )
 from bitcash.op import OpCodes
 from bitcash.utils import (
@@ -36,11 +36,9 @@ MESSAGE_LIMIT = 220
 
 
 class TxIn:
-    __slots__ = ("script", "script_len", "txid", "txindex", "amount",
-                 "token_prefix")
+    __slots__ = ("script", "script_len", "txid", "txindex", "amount", "token_prefix")
 
-    def __init__(self, script, script_len, txid, txindex, amount,
-                 token_prefix=None):
+    def __init__(self, script, script_len, txid, txindex, amount, token_prefix=None):
         if token_prefix is None:
             token_prefix = b""
         self.script = script
@@ -78,7 +76,6 @@ def calc_txid(tx_hex):
 
 
 def estimate_tx_fee(n_in, output_script_list, satoshis, compressed):
-
     if not satoshis:
         return 0
 
@@ -96,10 +93,7 @@ def estimate_tx_fee(n_in, output_script_list, satoshis, compressed):
 
     estimated_fee = estimated_size * satoshis
 
-    logging.debug(
-        f"Estimated fee: {estimated_fee}"
-        f" satoshis for {estimated_size} bytes"
-    )
+    logging.debug(f"Estimated fee: {estimated_fee} satoshis for {estimated_size} bytes")
 
     return estimated_fee
 
@@ -159,19 +153,13 @@ def sanitize_tx_data(
         message_chunks = chunk_data(message, MESSAGE_LIMIT)
 
         for message in message_chunks:
-            script = (
-                OpCodes.OP_RETURN.b
-                + get_op_pushdata_code(message)
-                + message
-            )
+            script = OpCodes.OP_RETURN.b + get_op_pushdata_code(message) + message
             messages.append((script, 0, None))
 
     elif message and (custom_pushdata is True):
         if len(message) >= 220:
             # FIXME add capability for >220 bytes for custom pushdata elements
-            raise ValueError(
-                "Currently cannot exceed 220 bytes with custom_pushdata."
-            )
+            raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
         else:
             # manual control over number of bytes in each batch of pushdata
             if type(message) != bytes:
@@ -223,8 +211,7 @@ def sanitize_tx_data(
             try:
                 for output in outputs:
                     test_token.subtract_output(output[2])
-                (leftover_outputs,
-                 leftover_amount) = test_token.get_outputs(leftover)
+                (leftover_outputs, leftover_amount) = test_token.get_outputs(leftover)
             except InsufficientFunds as err:
                 error = err
                 continue
@@ -240,8 +227,7 @@ def sanitize_tx_data(
             if calculated_fee < leftover_amount:
                 break
         else:
-            raise InsufficientFunds(error
-                                    or f"{cashtoken.amount} is insufficient")
+            raise InsufficientFunds(error or f"{cashtoken.amount} is insufficient")
 
         if calculated_fee:
             last_out = list(leftover_outputs[-1])
@@ -258,7 +244,6 @@ def sanitize_tx_data(
 
 
 def construct_output_block(outputs):
-
     output_block = b""
 
     for data in outputs:
@@ -289,7 +274,6 @@ def construct_input_block(inputs):
 
 
 def create_p2pkh_transaction(private_key, unspents, outputs):
-
     public_key = private_key.public_key
     public_key_len = len(public_key).to_bytes(1, byteorder="little")
 
@@ -313,11 +297,11 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
         txindex = unspent.txindex.to_bytes(4, byteorder="little")
         amount = unspent.amount.to_bytes(8, byteorder="little")
 
-        inputs.append(TxIn(script, script_len, txid, txindex, amount,
-                           cashtoken.token_prefix))
+        inputs.append(
+            TxIn(script, script_len, txid, txindex, amount, cashtoken.token_prefix)
+        )
 
-    hashPrevouts = double_sha256(b"".join([i.txid + i.txindex
-                                           for i in inputs]))
+    hashPrevouts = double_sha256(b"".join([i.txid + i.txindex for i in inputs]))
     hashSequence = double_sha256(b"".join([SEQUENCE for i in inputs]))
     hashOutputs = double_sha256(output_block)
 
@@ -351,8 +335,7 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
         )
 
         inputs[i].script = script_sig
-        inputs[i].script_len = int_to_unknown_bytes(len(script_sig),
-                                                    byteorder="little")
+        inputs[i].script_len = int_to_unknown_bytes(len(script_sig), byteorder="little")
 
     return bytes_to_hex(
         version

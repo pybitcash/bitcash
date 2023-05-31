@@ -27,9 +27,17 @@ class Unspent:
     :type token_amount: ``int``
     """
 
-    __slots__ = ("amount", "confirmations", "script", "txid",
-                 "txindex", "category_id", "nft_capability", "nft_commitment",
-                 "token_amount")
+    __slots__ = (
+        "amount",
+        "confirmations",
+        "script",
+        "txid",
+        "txindex",
+        "category_id",
+        "nft_capability",
+        "nft_commitment",
+        "token_amount",
+    )
 
     NFT_CAPABILITY = ["none", "mutable", "minting"]
 
@@ -43,7 +51,7 @@ class Unspent:
         category_id=None,
         nft_capability=None,
         nft_commitment=None,
-        token_amount=None
+        token_amount=None,
     ):
         self.amount = amount
         self.confirmations = confirmations
@@ -91,32 +99,31 @@ class Unspent:
         if self.has_nft:
             if not other.has_nft:
                 return True
-            if (
-                Unspent.NFT_CAPABILITY.index(self.nft_capability)
-                > Unspent.NFT_CAPABILITY.index(other.nft_capability)
-            ):
+            if Unspent.NFT_CAPABILITY.index(
+                self.nft_capability
+            ) > Unspent.NFT_CAPABILITY.index(other.nft_capability):
                 return True
-            if (
-                Unspent.NFT_CAPABILITY.index(self.nft_capability)
-                < Unspent.NFT_CAPABILITY.index(other.nft_capability)
-            ):
+            if Unspent.NFT_CAPABILITY.index(
+                self.nft_capability
+            ) < Unspent.NFT_CAPABILITY.index(other.nft_capability):
                 return False
         elif other.has_nft:
             return False
         if self.has_amount:
             if not other.has_amount:
                 return True
-            if (self.token_amount > other.token_amount):
+            if self.token_amount > other.token_amount:
                 return True
-            if (self.token_amount < other.token_amount):
+            if self.token_amount < other.token_amount:
                 return False
         elif other.has_amount:
             return False
         return self.amount > other.amount
 
     def __repr__(self):
-
-        var_list = [f"{key}={repr(value)}"
-                    for key, value in self.to_dict().items()
-                    if value is not None]
+        var_list = [
+            f"{key}={repr(value)}"
+            for key, value in self.to_dict().items()
+            if value is not None
+        ]
         return "Unspent({})".format(", ".join(var_list))

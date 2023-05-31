@@ -1,5 +1,6 @@
 from enum import IntEnum
 
+
 # Derived from Bitcoin Cash Node src/script/script.h
 # as implemented in Electron cash wallet, electroncash/bitcoin.py
 # ref: reference.cash/protocol/blockchain/script
@@ -7,10 +8,10 @@ class OpCodes(IntEnum):
     # push value
     OP_0 = 0x00
     OP_FALSE = OP_0
-    OP_PUSHDATA1 = 0x4c
-    OP_PUSHDATA2 = 0x4d
-    OP_PUSHDATA4 = 0x4e
-    OP_1NEGATE = 0x4f
+    OP_PUSHDATA1 = 0x4C
+    OP_PUSHDATA2 = 0x4D
+    OP_PUSHDATA4 = 0x4E
+    OP_1NEGATE = 0x4F
     OP_RESERVED = 0x50
     OP_1 = 0x51
     OP_TRUE = OP_1
@@ -22,12 +23,12 @@ class OpCodes(IntEnum):
     OP_7 = 0x57
     OP_8 = 0x58
     OP_9 = 0x59
-    OP_10 = 0x5a
-    OP_11 = 0x5b
-    OP_12 = 0x5c
-    OP_13 = 0x5d
-    OP_14 = 0x5e
-    OP_15 = 0x5f
+    OP_10 = 0x5A
+    OP_11 = 0x5B
+    OP_12 = 0x5C
+    OP_13 = 0x5D
+    OP_14 = 0x5E
+    OP_15 = 0x5F
     OP_16 = 0x60
     OP_DATA_1 = 0x01
     OP_DATA_2 = 0x02
@@ -38,12 +39,12 @@ class OpCodes(IntEnum):
     OP_DATA_7 = 0x07
     OP_DATA_8 = 0x08
     OP_DATA_9 = 0x09
-    OP_DATA_10 = 0x0a
-    OP_DATA_11 = 0x0b
-    OP_DATA_12 = 0x0c
-    OP_DATA_13 = 0x0d
-    OP_DATA_14 = 0x0e
-    OP_DATA_15 = 0x0f
+    OP_DATA_10 = 0x0A
+    OP_DATA_11 = 0x0B
+    OP_DATA_12 = 0x0C
+    OP_DATA_13 = 0x0D
+    OP_DATA_14 = 0x0E
+    OP_DATA_15 = 0x0F
     OP_DATA_16 = 0x10
     OP_DATA_17 = 0x11
     OP_DATA_18 = 0x12
@@ -54,12 +55,12 @@ class OpCodes(IntEnum):
     OP_DATA_23 = 0x17
     OP_DATA_24 = 0x18
     OP_DATA_25 = 0x19
-    OP_DATA_26 = 0x1a
-    OP_DATA_27 = 0x1b
-    OP_DATA_28 = 0x1c
-    OP_DATA_29 = 0x1d
-    OP_DATA_30 = 0x1e
-    OP_DATA_31 = 0x1f
+    OP_DATA_26 = 0x1A
+    OP_DATA_27 = 0x1B
+    OP_DATA_28 = 0x1C
+    OP_DATA_29 = 0x1D
+    OP_DATA_30 = 0x1E
+    OP_DATA_31 = 0x1F
     OP_DATA_32 = 0x20
     OP_DATA_33 = 0x21
     OP_DATA_34 = 0x22
@@ -70,12 +71,12 @@ class OpCodes(IntEnum):
     OP_DATA_39 = 0x27
     OP_DATA_40 = 0x28
     OP_DATA_41 = 0x29
-    OP_DATA_42 = 0x2a
-    OP_DATA_43 = 0x2b
-    OP_DATA_44 = 0x2c
-    OP_DATA_45 = 0x2d
-    OP_DATA_46 = 0x2e
-    OP_DATA_47 = 0x2f
+    OP_DATA_42 = 0x2A
+    OP_DATA_43 = 0x2B
+    OP_DATA_44 = 0x2C
+    OP_DATA_45 = 0x2D
+    OP_DATA_46 = 0x2E
+    OP_DATA_47 = 0x2F
     OP_DATA_48 = 0x30
     OP_DATA_49 = 0x31
     OP_DATA_50 = 0x32
@@ -86,12 +87,12 @@ class OpCodes(IntEnum):
     OP_DATA_55 = 0x37
     OP_DATA_56 = 0x38
     OP_DATA_57 = 0x39
-    OP_DATA_58 = 0x3a
-    OP_DATA_59 = 0x3b
-    OP_DATA_60 = 0x3c
-    OP_DATA_61 = 0x3d
-    OP_DATA_62 = 0x3e
-    OP_DATA_63 = 0x3f
+    OP_DATA_58 = 0x3A
+    OP_DATA_59 = 0x3B
+    OP_DATA_60 = 0x3C
+    OP_DATA_61 = 0x3D
+    OP_DATA_62 = 0x3E
+    OP_DATA_63 = 0x3F
     OP_DATA_64 = 0x40
     OP_DATA_65 = 0x41
     OP_DATA_66 = 0x42
@@ -102,8 +103,8 @@ class OpCodes(IntEnum):
     OP_DATA_71 = 0x47
     OP_DATA_72 = 0x48
     OP_DATA_73 = 0x49
-    OP_DATA_74 = 0x4a
-    OP_DATA_75 = 0x4b
+    OP_DATA_74 = 0x4A
+    OP_DATA_75 = 0x4B
 
     # control
     OP_NOP = 0x61
@@ -115,14 +116,14 @@ class OpCodes(IntEnum):
     OP_ELSE = 0x67
     OP_ENDIF = 0x68
     OP_VERIFY = 0x69
-    OP_RETURN = 0x6a
+    OP_RETURN = 0x6A
 
     # stack ops
-    OP_TOALTSTACK = 0x6b
-    OP_FROMALTSTACK = 0x6c
-    OP_2DROP = 0x6d
-    OP_2DUP = 0x6e
-    OP_3DUP = 0x6f
+    OP_TOALTSTACK = 0x6B
+    OP_FROMALTSTACK = 0x6C
+    OP_2DROP = 0x6D
+    OP_2DUP = 0x6E
+    OP_3DUP = 0x6F
     OP_2OVER = 0x70
     OP_2ROT = 0x71
     OP_2SWAP = 0x72
@@ -133,16 +134,16 @@ class OpCodes(IntEnum):
     OP_NIP = 0x77
     OP_OVER = 0x78
     OP_PICK = 0x79
-    OP_ROLL = 0x7a
-    OP_ROT = 0x7b
-    OP_SWAP = 0x7c
-    OP_TUCK = 0x7d
+    OP_ROLL = 0x7A
+    OP_ROT = 0x7B
+    OP_SWAP = 0x7C
+    OP_TUCK = 0x7D
 
     # splice ops
-    OP_CAT = 0x7e
-    OP_SPLIT = 0x7f   # after monolith upgrade (May 2018)
-    OP_NUM2BIN = 0x80 # after monolith upgrade (May 2018)
-    OP_BIN2NUM = 0x81 # after monolith upgrade (May 2018)
+    OP_CAT = 0x7E
+    OP_SPLIT = 0x7F  # after monolith upgrade (May 2018)
+    OP_NUM2BIN = 0x80  # after monolith upgrade (May 2018)
+    OP_BIN2NUM = 0x81  # after monolith upgrade (May 2018)
     OP_SIZE = 0x82
 
     # bit logic
@@ -153,14 +154,14 @@ class OpCodes(IntEnum):
     OP_EQUAL = 0x87
     OP_EQUALVERIFY = 0x88
     OP_RESERVED1 = 0x89
-    OP_RESERVED2 = 0x8a
+    OP_RESERVED2 = 0x8A
 
     # numeric
-    OP_1ADD = 0x8b
-    OP_1SUB = 0x8c
-    OP_2MUL = 0x8d
-    OP_2DIV = 0x8e
-    OP_NEGATE = 0x8f
+    OP_1ADD = 0x8B
+    OP_1SUB = 0x8C
+    OP_2MUL = 0x8D
+    OP_2DIV = 0x8E
+    OP_NEGATE = 0x8F
     OP_ABS = 0x90
     OP_NOT = 0x91
     OP_0NOTEQUAL = 0x92
@@ -173,77 +174,77 @@ class OpCodes(IntEnum):
     OP_LSHIFT = 0x98
     OP_RSHIFT = 0x99
 
-    OP_BOOLAND = 0x9a
-    OP_BOOLOR = 0x9b
-    OP_NUMEQUAL = 0x9c
-    OP_NUMEQUALVERIFY = 0x9d
-    OP_NUMNOTEQUAL = 0x9e
-    OP_LESSTHAN = 0x9f
-    OP_GREATERTHAN = 0xa0
-    OP_LESSTHANOREQUAL = 0xa1
-    OP_GREATERTHANOREQUAL = 0xa2
-    OP_MIN = 0xa3
-    OP_MAX = 0xa4
+    OP_BOOLAND = 0x9A
+    OP_BOOLOR = 0x9B
+    OP_NUMEQUAL = 0x9C
+    OP_NUMEQUALVERIFY = 0x9D
+    OP_NUMNOTEQUAL = 0x9E
+    OP_LESSTHAN = 0x9F
+    OP_GREATERTHAN = 0xA0
+    OP_LESSTHANOREQUAL = 0xA1
+    OP_GREATERTHANOREQUAL = 0xA2
+    OP_MIN = 0xA3
+    OP_MAX = 0xA4
 
-    OP_WITHIN = 0xa5
+    OP_WITHIN = 0xA5
 
     # crypto
-    OP_RIPEMD160 = 0xa6
-    OP_SHA1 = 0xa7
-    OP_SHA256 = 0xa8
-    OP_HASH160 = 0xa9
-    OP_HASH256 = 0xaa
-    OP_CODESEPARATOR = 0xab
-    OP_CHECKSIG = 0xac
-    OP_CHECKSIGVERIFY = 0xad
-    OP_CHECKMULTISIG = 0xae
-    OP_CHECKMULTISIGVERIFY = 0xaf
+    OP_RIPEMD160 = 0xA6
+    OP_SHA1 = 0xA7
+    OP_SHA256 = 0xA8
+    OP_HASH160 = 0xA9
+    OP_HASH256 = 0xAA
+    OP_CODESEPARATOR = 0xAB
+    OP_CHECKSIG = 0xAC
+    OP_CHECKSIGVERIFY = 0xAD
+    OP_CHECKMULTISIG = 0xAE
+    OP_CHECKMULTISIGVERIFY = 0xAF
 
     # expansion
-    OP_NOP1 = 0xb0
-    OP_CHECKLOCKTIMEVERIFY = 0xb1
+    OP_NOP1 = 0xB0
+    OP_CHECKLOCKTIMEVERIFY = 0xB1
     OP_NOP2 = OP_CHECKLOCKTIMEVERIFY
-    OP_CHECKSEQUENCEVERIFY = 0xb2
+    OP_CHECKSEQUENCEVERIFY = 0xB2
     OP_NOP3 = OP_CHECKSEQUENCEVERIFY
-    OP_NOP4 = 0xb3
-    OP_NOP5 = 0xb4
-    OP_NOP6 = 0xb5
-    OP_NOP7 = 0xb6
-    OP_NOP8 = 0xb7
-    OP_NOP9 = 0xb8
-    OP_NOP10 = 0xb9
+    OP_NOP4 = 0xB3
+    OP_NOP5 = 0xB4
+    OP_NOP6 = 0xB5
+    OP_NOP7 = 0xB6
+    OP_NOP8 = 0xB7
+    OP_NOP9 = 0xB8
+    OP_NOP10 = 0xB9
 
     # More crypto
-    OP_CHECKDATASIG = 0xba
-    OP_CHECKDATASIGVERIFY = 0xbb
+    OP_CHECKDATASIG = 0xBA
+    OP_CHECKDATASIGVERIFY = 0xBB
 
     # additional byte string operations
-    OP_REVERSEBYTES = 0xbc
+    OP_REVERSEBYTES = 0xBC
 
     # Native Introspection opcodes
-    OP_INPUTINDEX = 0xc0
-    OP_ACTIVEBYTECODE = 0xc1
-    OP_TXVERSION = 0xc2
-    OP_TXINPUTCOUNT = 0xc3
-    OP_TXOUTPUTCOUNT = 0xc4
-    OP_TXLOCKTIME = 0xc5
-    OP_UTXOVALUE = 0xc6
-    OP_UTXOBYTECODE = 0xc7
-    OP_OUTPOINTTXHASH = 0xc8
-    OP_OUTPOINTINDEX = 0xc9
-    OP_INPUTBYTECODE = 0xca
-    OP_INPUTSEQUENCENUMBER = 0xcb
-    OP_OUTPUTVALUE = 0xcc
-    OP_OUTPUTBYTECODE = 0xcd
+    OP_INPUTINDEX = 0xC0
+    OP_ACTIVEBYTECODE = 0xC1
+    OP_TXVERSION = 0xC2
+    OP_TXINPUTCOUNT = 0xC3
+    OP_TXOUTPUTCOUNT = 0xC4
+    OP_TXLOCKTIME = 0xC5
+    OP_UTXOVALUE = 0xC6
+    OP_UTXOBYTECODE = 0xC7
+    OP_OUTPOINTTXHASH = 0xC8
+    OP_OUTPOINTINDEX = 0xC9
+    OP_INPUTBYTECODE = 0xCA
+    OP_INPUTSEQUENCENUMBER = 0xCB
+    OP_OUTPUTVALUE = 0xCC
+    OP_OUTPUTBYTECODE = 0xCD
 
     # CashTokens opcodes
-    OP_UTXOTOKENCATEGORY = 0xce
-    OP_UTXOTOKENCOMMITMENT = 0xcf
-    OP_UTXOTOKENAMOUNT = 0xd0
-    OP_OUTPUTTOKENCATEGORY = 0xd1
-    OP_OUTPUTTOKENCOMMITMENT = 0xd2
-    OP_OUTPUTTOKENAMOUNT = 0xd3
-    OP_TOKENPREFIX = 0xef
+    OP_UTXOTOKENCATEGORY = 0xCE
+    OP_UTXOTOKENCOMMITMENT = 0xCF
+    OP_UTXOTOKENAMOUNT = 0xD0
+    OP_OUTPUTTOKENCATEGORY = 0xD1
+    OP_OUTPUTTOKENCOMMITMENT = 0xD2
+    OP_OUTPUTTOKENAMOUNT = 0xD3
+    OP_TOKENPREFIX = 0xEF
 
     @property
     def b(self):

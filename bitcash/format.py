@@ -116,8 +116,7 @@ def wif_checksum_check(wif):
 
 def public_key_to_address(public_key, version="main"):
     # Currently Bitcash only support P2PKH (not P2SH) utxos
-    VERSIONS = {"main": "P2PKH", "test": "P2PKH-TESTNET",
-                "regtest": "P2PKH-REGTEST"}
+    VERSIONS = {"main": "P2PKH", "test": "P2PKH-TESTNET", "regtest": "P2PKH-REGTEST"}
 
     try:
         version = VERSIONS[version]
@@ -193,44 +192,44 @@ def hex_to_asm(data):
     def _add_value(next_len, indx):
         next_len *= 2  # hex byte
         # !TODO: add Signature hash type delineation
-        value = data[indx:indx+next_len]
+        value = data[indx : indx + next_len]
         if len(value) != next_len:
-            raise RuntimeError('Data ended prematurely')
+            raise RuntimeError("Data ended prematurely")
         indx += next_len
         return value, indx
 
     indx = 0
     out = []
     while indx < len(data):
-        op_code = data[indx:indx+2]
+        op_code = data[indx : indx + 2]
         op_code = OpCodes(int(op_code, 16))
         if op_code == OpCodes.OP_PUSHDATA1:
             indx += 2
-            next_len = int(data[indx:indx+2], 16)
+            next_len = int(data[indx : indx + 2], 16)
             indx += 2
             value, indx = _add_value(next_len, indx)
         elif op_code == OpCodes.OP_PUSHDATA2:
             indx += 2
-            a = data[indx:indx+2]
+            a = data[indx : indx + 2]
             indx += 2
-            b = data[indx:indx+2]
-            next_len = int(b+a, 16)
+            b = data[indx : indx + 2]
+            next_len = int(b + a, 16)
             indx += 2
             value, indx = _add_value(next_len, indx)
         elif op_code == OpCodes.OP_PUSHDATA4:
             indx += 2
-            a = data[indx:indx+2]
+            a = data[indx : indx + 2]
             indx += 2
-            b = data[indx:indx+2]
+            b = data[indx : indx + 2]
             indx += 2
-            c = data[indx:indx+2]
+            c = data[indx : indx + 2]
             indx += 2
-            d = data[indx:indx+2]
-            next_len = int(d+c+b+a, 16)
+            d = data[indx : indx + 2]
+            next_len = int(d + c + b + a, 16)
             indx += 2
             value, indx = _add_value(next_len, indx)
         elif op_code.name.startswith("OP_DATA"):
-            next_len = int(data[indx:indx+2], 16)
+            next_len = int(data[indx : indx + 2], 16)
             indx += 2
             value, indx = _add_value(next_len, indx)
             if next_len <= 8:

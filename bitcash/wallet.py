@@ -10,16 +10,12 @@ from bitcash.format import (
     public_key_to_coords,
     wif_to_bytes,
     address_to_public_key_hash,
-    address_to_cashtokenaddress
+    address_to_cashtokenaddress,
 )
 from bitcash.network import NetworkAPI, satoshi_to_currency_cached
 from bitcash.network.meta import Unspent
 from bitcash.op import OpCodes
-from bitcash.transaction import (
-    calc_txid,
-    create_p2pkh_transaction,
-    sanitize_tx_data
-)
+from bitcash.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
 
 
 NETWORKS = {"main": "mainnet", "test": "testnet", "regtest": "regtest"}
@@ -314,9 +310,7 @@ class PrivateKey(BaseKey):
             custom_pushdata=custom_pushdata,
         )
 
-        return create_p2pkh_transaction(
-            self, unspents, outputs
-        )
+        return create_p2pkh_transaction(self, unspents, outputs)
 
     def send(
         self,
@@ -448,8 +442,10 @@ class PrivateKey(BaseKey):
 
         data = {
             "unspents": [unspent.to_dict() for unspent in unspents],
-            "outputs": [(script.hex(), value, cashtoken.to_dict())
-                        for (script, value, cashtoken) in outputs],
+            "outputs": [
+                (script.hex(), value, cashtoken.to_dict())
+                for (script, value, cashtoken) in outputs
+            ],
         }
 
         return json.dumps(data, separators=(",", ":"))
@@ -467,9 +463,7 @@ class PrivateKey(BaseKey):
 
         unspents = [Unspent.from_dict(unspent) for unspent in data["unspents"]]
         outputs = [
-            (bytes.fromhex(script),
-             value,
-             CashTokenOutput.from_dict(cashtoken))
+            (bytes.fromhex(script), value, CashTokenOutput.from_dict(cashtoken))
             for (script, value, cashtoken) in data["outputs"]
         ]
 

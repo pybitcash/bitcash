@@ -82,26 +82,72 @@ class Address:
         "P2SH32": {"prefix": "bitcoincash", "version_bit": 11, "network": "mainnet"},
         "P2PKH": {"prefix": "bitcoincash", "version_bit": 0, "network": "mainnet"},
         "P2SH20-TESTNET": {"prefix": "bchtest", "version_bit": 8, "network": "testnet"},
-        "P2SH32-TESTNET": {"prefix": "bchtest", "version_bit": 11, "network": "testnet"},
+        "P2SH32-TESTNET": {
+            "prefix": "bchtest",
+            "version_bit": 11,
+            "network": "testnet",
+        },
         "P2PKH-TESTNET": {"prefix": "bchtest", "version_bit": 0, "network": "testnet"},
         "P2SH20-REGTEST": {"prefix": "bchreg", "version_bit": 8, "network": "regtest"},
         "P2SH32-REGTEST": {"prefix": "bchreg", "version_bit": 11, "network": "regtest"},
         "P2PKH-REGTEST": {"prefix": "bchreg", "version_bit": 0, "network": "regtest"},
-        "P2SH20-CATKN": {"prefix": "bitcoincash", "version_bit": 24, "network": "mainnet"},
-        "P2SH32-CATKN": {"prefix": "bitcoincash", "version_bit": 27, "network": "mainnet"},
-        "P2PKH-CATKN": {"prefix": "bitcoincash", "version_bit": 16, "network": "mainnet"},
-        "P2SH20-CATKN-TESTNET": {"prefix": "bchtest", "version_bit": 24, "network": "testnet"},
-        "P2SH32-CATKN-TESTNET": {"prefix": "bchtest", "version_bit": 27, "network": "testnet"},
-        "P2PKH-CATKN-TESTNET": {"prefix": "bchtest", "version_bit": 16, "network": "testnet"},
-        "P2SH20-CATKN-REGTEST": {"prefix": "bchreg", "version_bit": 24, "network": "regtest"},
-        "P2SH32-CATKN-REGTEST": {"prefix": "bchreg", "version_bit": 27, "network": "regtest"},
-        "P2PKH-CATKN-REGTEST": {"prefix": "bchreg", "version_bit": 16, "network": "regtest"},
+        "P2SH20-CATKN": {
+            "prefix": "bitcoincash",
+            "version_bit": 24,
+            "network": "mainnet",
+        },
+        "P2SH32-CATKN": {
+            "prefix": "bitcoincash",
+            "version_bit": 27,
+            "network": "mainnet",
+        },
+        "P2PKH-CATKN": {
+            "prefix": "bitcoincash",
+            "version_bit": 16,
+            "network": "mainnet",
+        },
+        "P2SH20-CATKN-TESTNET": {
+            "prefix": "bchtest",
+            "version_bit": 24,
+            "network": "testnet",
+        },
+        "P2SH32-CATKN-TESTNET": {
+            "prefix": "bchtest",
+            "version_bit": 27,
+            "network": "testnet",
+        },
+        "P2PKH-CATKN-TESTNET": {
+            "prefix": "bchtest",
+            "version_bit": 16,
+            "network": "testnet",
+        },
+        "P2SH20-CATKN-REGTEST": {
+            "prefix": "bchreg",
+            "version_bit": 24,
+            "network": "regtest",
+        },
+        "P2SH32-CATKN-REGTEST": {
+            "prefix": "bchreg",
+            "version_bit": 27,
+            "network": "regtest",
+        },
+        "P2PKH-CATKN-REGTEST": {
+            "prefix": "bchreg",
+            "version_bit": 16,
+            "network": "regtest",
+        },
     }
 
     VERSION_SUFFIXES = {"bitcoincash": "", "bchtest": "-TESTNET", "bchreg": "-REGTEST"}
 
-    ADDRESS_TYPES = {0: "P2PKH", 8: "P2SH20", 11: "P2SH32",
-                     16: "P2PKH-CATKN", 24: "P2SH20-CATKN", 27: "P2SH32-CATKN"}
+    ADDRESS_TYPES = {
+        0: "P2PKH",
+        8: "P2SH20",
+        11: "P2SH32",
+        16: "P2PKH-CATKN",
+        24: "P2SH20-CATKN",
+        27: "P2SH32-CATKN",
+    }
 
     def __init__(self, version, payload):
         if version not in Address.VERSIONS:
@@ -188,37 +234,21 @@ class Address:
 
         # P2PKH
         if len(scriptcode) == 25:
-            if (
-                scriptcode.startswith(
-                    OpCodes.OP_DUP.b
-                    + OpCodes.OP_HASH160.b
-                    + OpCodes.OP_DATA_20.b
-                )
-                and scriptcode.endswith(
-                    OpCodes.OP_EQUALVERIFY.b
-                    + OpCodes.OP_CHECKSIG.b
-                )
-            ):
+            if scriptcode.startswith(
+                OpCodes.OP_DUP.b + OpCodes.OP_HASH160.b + OpCodes.OP_DATA_20.b
+            ) and scriptcode.endswith(OpCodes.OP_EQUALVERIFY.b + OpCodes.OP_CHECKSIG.b):
                 return cls("P2PKH" + catkn, list(scriptcode[3:23]))
         # P2SH20
         if len(scriptcode) == 23:
-            if (
-                scriptcode.startswith(
-                    OpCodes.OP_HASH160.b
-                    + OpCodes.OP_DATA_20.b
-                )
-                and scriptcode.endswith(OpCodes.OP_EQUAL.b)
-            ):
+            if scriptcode.startswith(
+                OpCodes.OP_HASH160.b + OpCodes.OP_DATA_20.b
+            ) and scriptcode.endswith(OpCodes.OP_EQUAL.b):
                 return cls("P2SH20" + catkn, list(scriptcode[2:22]))
         # P2SH32
         if len(scriptcode) == 35:
-            if (
-                scriptcode.startswith(
-                    OpCodes.OP_HASH256.b
-                    + OpCodes.OP_DATA_32.b
-                )
-                and scriptcode.endswith(OpCodes.OP_EQUAL.b)
-            ):
+            if scriptcode.startswith(
+                OpCodes.OP_HASH256.b + OpCodes.OP_DATA_32.b
+            ) and scriptcode.endswith(OpCodes.OP_EQUAL.b):
                 return cls("P2SH32" + catkn, list(scriptcode[2:34]))
         raise ValueError("Unknown script")
 

@@ -199,10 +199,7 @@ class NetworkAPI:
         success = None
 
         for endpoint in get_endpoints_for(network):
-            if (
-                endpoint.network_endpoint in
-                ChaingraphAPI.DEFAULT_ENDPOINTS[network]
-            ):
+            if endpoint.network_endpoint in ChaingraphAPI.DEFAULT_ENDPOINTS[network]:
                 # Default chaingraphapi do not support broadcast tx
                 continue
             try:

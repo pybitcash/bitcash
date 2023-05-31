@@ -24,7 +24,7 @@ class ChaingraphAPI(BaseAPI):
     DEFAULT_ENDPOINTS = {
         "mainnet": [
             "https://demo.chaingraph.cash/v1/graphql",
-            "https://gql.chaingraph.pat.mn/v1/graphql"
+            "https://gql.chaingraph.pat.mn/v1/graphql",
         ],
         "testnet": [],
         "regtest": [],
@@ -32,8 +32,7 @@ class ChaingraphAPI(BaseAPI):
 
     def send_request(self, json_request, *args, **kwargs):
         """Send json request and return receiving json"""
-        r = session.post(self.network_endpoint, json=json_request,
-                         *args, **kwargs)
+        r = session.post(self.network_endpoint, json=json_request, *args, **kwargs)
         r.raise_for_status()
         json = r.json()
         if "errors" in json:
@@ -56,9 +55,7 @@ query GetUTXO($lb: _text) {
   }
 }
 """,
-            "variables": {
-                "lb": f"{{{Address.from_string(address).scriptcode.hex()}}}"
-            }
+            "variables": {"lb": f"{{{Address.from_string(address).scriptcode.hex()}}}"},
         }
         json = self.send_request(json_request, *args, **kwargs)
         data = json["data"]["search_output"]
@@ -96,9 +93,7 @@ query GetOutputs($lb: _text!) {
   }
 }
 """,
-            "variables": {
-                "lb": f"{{{Address.from_string(address).scriptcode.hex()}}}"
-            }
+            "variables": {"lb": f"{{{Address.from_string(address).scriptcode.hex()}}}"},
         }
         json = self.send_request(json_request, *args, **kwargs)
         blockheight = int(json["data"]["block"][0]["height"])
@@ -112,9 +107,7 @@ query GetOutputs($lb: _text!) {
                 height = blockheight + 1
             else:
                 height = int(block_inclusions[0]["block"]["height"])
-            transactions.append(
-                (output["transaction_hash"][2:], height)
-            )
+            transactions.append((output["transaction_hash"][2:], height))
             # inputs
             if len(output["spent_by"]) == 0:
                 # unspent
@@ -125,20 +118,16 @@ query GetOutputs($lb: _text!) {
                 height = blockheight + 1
             else:
                 height = int(block_inclusions[0]["block"]["height"])
-            transactions.append(
-                (input_["hash"][2:], height)
-            )
+            transactions.append((input_["hash"][2:], height))
         # sort by block height
         transactions.sort(key=lambda x: x[1])
         transactions = [_[0] for _ in transactions][::-1]
         # remove duplicates, when address pays itself, spending tx and locking
         # tx are same transactions
-        transactions = sorted(set(transactions),
-                              key=lambda x: transactions.index(x))
+        transactions = sorted(set(transactions), key=lambda x: transactions.index(x))
         return transactions
 
     def get_transaction(self, txid, *args, **kwargs):
-
         response = self.get_raw_transaction(txid, *args, **kwargs)
 
         block_inclusions = response["block_inclusions"]
@@ -158,9 +147,9 @@ query GetOutputs($lb: _text!) {
         for part_name in ["inputs", "outputs"]:
             for txpart in response[part_name]:
                 sats = int(txpart["value_satoshis"])
-                data_hex = txpart["{}locking_bytecode".format(
-                    "un" if part_name == "inputs" else ""
-                )][2:]
+                data_hex = txpart[
+                    "{}locking_bytecode".format("un" if part_name == "inputs" else "")
+                ][2:]
                 # switching to outpoint for inputs
                 if part_name == "inputs":
                     txpart = txpart["outpoint"]
@@ -170,11 +159,7 @@ query GetOutputs($lb: _text!) {
                     cashaddress = cashaddress.cash_address()
                 except ValueError:
                     cashaddress = None
-                part = TxPart(
-                    cashaddress,
-                    sats,
-                    data_hex=data_hex
-                )
+                part = TxPart(cashaddress, sats, data_hex=data_hex)
                 # adding token data
                 token_category = txpart["token_category"]
                 if token_category:
@@ -210,10 +195,7 @@ query GetOutput($tx: bytea!, $txind: bigint!) {
   }
 }
 """,
-            "variables": {
-                "tx": f"\\x{txid}",
-                "txind": txindex
-            }
+            "variables": {"tx": f"\\x{txid}", "txind": txindex},
         }
         json = self.send_request(json_request, *args, **kwargs)
         if len(json["data"]["output"]) == 0:
@@ -252,9 +234,7 @@ query GetUTXO($lb: _text!) {
   }
 }
 """,
-            "variables": {
-                "lb": f"{{{Address.from_string(address).scriptcode.hex()}}}"
-            }
+            "variables": {"lb": f"{{{Address.from_string(address).scriptcode.hex()}}}"},
         }
         data = self.send_request(json_request, *args, **kwargs)["data"]
         blockheight = int(data["block"][0]["height"])
@@ -265,8 +245,9 @@ query GetUTXO($lb: _text!) {
                 # unconfirmed
                 confirmations = 0
             else:
-                confirmations = (-int(block_inclusions[0]["block"]["height"])
-                                 + blockheight + 1)
+                confirmations = (
+                    -int(block_inclusions[0]["block"]["height"]) + blockheight + 1
+                )
             token_category = utxo["token_category"]
             if token_category:
                 token_category = token_category[2:]
@@ -277,17 +258,19 @@ query GetUTXO($lb: _text!) {
             if token_amount:
                 token_amount = int(token_amount)
             # add unspent
-            unspents.append(Unspent(
-                int(utxo["value_satoshis"]),
-                confirmations,
-                utxo["locking_bytecode"][2:],
-                utxo["transaction_hash"][2:],
-                int(utxo["output_index"]),
-                token_category,
-                utxo["nonfungible_token_capability"],
-                nft_commitment or None,  # b"" is None
-                token_amount or None,  # 0 amount is None
-            ))
+            unspents.append(
+                Unspent(
+                    int(utxo["value_satoshis"]),
+                    confirmations,
+                    utxo["locking_bytecode"][2:],
+                    utxo["transaction_hash"][2:],
+                    int(utxo["output_index"]),
+                    token_category,
+                    utxo["nonfungible_token_capability"],
+                    nft_commitment or None,  # b"" is None
+                    token_amount or None,  # 0 amount is None
+                )
+            )
         return unspents
 
     def get_raw_transaction(self, txid, *args, **kwargs):
@@ -326,9 +309,7 @@ query GetTransactionDetails($tx: bytea!) {
   }
 }
 """,
-            "variables": {
-                "tx": f"\\x{txid}"
-            }
+            "variables": {"tx": f"\\x{txid}"},
         }
         json = self.send_request(json_request, *args, **kwargs)
         if len(json["data"]["transaction"]) == 0:
@@ -345,8 +326,7 @@ query GetNodeId{
 }
 """
         }
-        node_ids = self.send_request(json_request,
-                                     *args, **kwargs)["data"]["node"]
+        node_ids = self.send_request(json_request, *args, **kwargs)["data"]["node"]
 
         json_request = {
             "query": """
@@ -361,15 +341,13 @@ mutation BroadcastTx($tx_hex: String!, $node: bigint!){
   }
 }
 """,
-            "variables": {
-                "tx_hex": tx_hex,
-                "node": None
-            }
+            "variables": {"tx_hex": tx_hex, "node": None},
         }
         for node_id in [_["internal_id"] for _ in node_ids]:
             json_request["variables"]["node"] = node_id
-            json = self.send_request(json_request, *args,
-                                     **kwargs)["data"]["send_transaction"]
+            json = self.send_request(json_request, *args, **kwargs)["data"][
+                "send_transaction"
+            ]
             if json["transmission_success"] and json["validation_success"]:
                 return True
         return False

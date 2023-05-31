@@ -3,8 +3,9 @@ from bitcash.network.meta import Unspent
 
 class TestUnspent:
     def test_init(self):
-        unspent = Unspent(10000, 7, "script", "txid", 0, "category_id",
-                          "none", "nft_commitment", 50)
+        unspent = Unspent(
+            10000, 7, "script", "txid", 0, "category_id", "none", "nft_commitment", 50
+        )
         assert unspent.amount == 10000
         assert unspent.confirmations == 7
         assert unspent.script == "script"
@@ -42,18 +43,18 @@ class TestUnspent:
     def test_gt(self):
         unspent = Unspent(10000, 7, "script", "txid", 0)
         unspent1 = Unspent(20000, 7, "script", "txid", 0)
-        unspent2 = Unspent(10000, 7, "script", "txid", 0, "category_id",
-                           "none")
-        unspent3 = Unspent(30000, 7, "script", "txid", 0, "category_id",
-                           "none")
-        unspent4 = Unspent(10000, 7, "script", "txid", 0, "category_id",
-                           "mutable")
-        unspent5 = Unspent(20000, 7, "script", "txid", 0, "category_id",
-                           token_amount=50)
-        unspent6 = Unspent(20000, 7, "script", "txid", 0, "category_id",
-                           token_amount=20)
-        unspent7 = Unspent(30000, 7, "script", "txid", 0, "category_id",
-                           token_amount=20)
+        unspent2 = Unspent(10000, 7, "script", "txid", 0, "category_id", "none")
+        unspent3 = Unspent(30000, 7, "script", "txid", 0, "category_id", "none")
+        unspent4 = Unspent(10000, 7, "script", "txid", 0, "category_id", "mutable")
+        unspent5 = Unspent(
+            20000, 7, "script", "txid", 0, "category_id", token_amount=50
+        )
+        unspent6 = Unspent(
+            20000, 7, "script", "txid", 0, "category_id", token_amount=20
+        )
+        unspent7 = Unspent(
+            30000, 7, "script", "txid", 0, "category_id", token_amount=20
+        )
 
         assert unspent1 > unspent
         assert unspent2 > unspent
