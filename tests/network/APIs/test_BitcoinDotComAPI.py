@@ -287,7 +287,7 @@ class TestBitcoinDotComAPI:
             TxPart(
                 "bitcoincash:qz8wymtvnavrd8u5sexuxccvm6chlt3095hczr7px4",
                 1000,
-                catagory_id="8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf",
+                category_id="8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf",
                 token_amount=140000000000,
                 data_hex="76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac"
             ),
@@ -299,7 +299,7 @@ class TestBitcoinDotComAPI:
             TxPart(
                 "bitcoincash:qz8wymtvnavrd8u5sexuxccvm6chlt3095hczr7px4",
                 17221,
-                catagory_id="8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf",
+                category_id="8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf",
                 nft_capability="minting",
                 data_hex="76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac"
             )

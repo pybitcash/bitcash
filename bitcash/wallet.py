@@ -272,11 +272,11 @@ class PrivateKey(BaseKey):
                         a valid input to ``decimal.Decimal``. The currency
                         must be :ref:`supported <supported currencies>`.
                         To send CashToken, the list of output is made in the
-                        form ``(destination, amount, currency, catagory_id,
+                        form ``(destination, amount, currency, category_id,
                         nft_capability, nft_commitment, token_amount)``. The
                         CashToken property nft_capability, nft_commitment, or
                         the token_amount can be None if not to be sent. If
-                        catagory_id is tx-id of unspent with tx-index 0, then
+                        category_id is tx-id of unspent with tx-index 0, then
                         tx is treated as a genesis tx.
         :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
@@ -337,11 +337,11 @@ class PrivateKey(BaseKey):
                         a valid input to ``decimal.Decimal``. The currency
                         must be :ref:`supported <supported currencies>`.
                         To send CashToken, the list of output is made in the
-                        form ``(destination, amount, currency, catagory_id,
+                        form ``(destination, amount, currency, category_id,
                         nft_capability, nft_commitment, token_amount)``. The
                         CashToken property nft_capability, nft_commitment, or
                         the token_amount can be None if not to be sent. If
-                        catagory_id is tx-id of unspent with tx-index 0, then
+                        category_id is tx-id of unspent with tx-index 0, then
                         tx is treated as a genesis tx.
         :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
@@ -403,11 +403,11 @@ class PrivateKey(BaseKey):
                         a valid input to ``decimal.Decimal``. The currency
                         must be :ref:`supported <supported currencies>`.
                         To send CashToken, the list of output is made in the
-                        form ``(destination, amount, currency, catagory_id,
+                        form ``(destination, amount, currency, category_id,
                         nft_capability, nft_commitment, token_amount)``. The
                         CashToken property nft_capability, nft_commitment, or
                         the token_amount can be None if not to be sent. If
-                        catagory_id is tx-id of unspent with tx-index 0, then
+                        category_id is tx-id of unspent with tx-index 0, then
                         tx is treated as a genesis tx.
         :type outputs: ``list`` of ``tuple``
         :param compressed: Whether or not the ``address`` corresponds to a

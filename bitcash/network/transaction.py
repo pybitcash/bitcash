@@ -62,7 +62,7 @@ class TxPart:
     def __init__(self,
                  address,
                  amount,
-                 catagory_id=None,
+                 category_id=None,
                  nft_capability=None,
                  nft_commitment=None,
                  token_amount=None,
@@ -70,7 +70,7 @@ class TxPart:
                  data_hex=None):
         self.address = address
         self.amount = amount
-        self.catagory_id = catagory_id
+        self.category_id = category_id
         self.nft_capability = nft_capability
         self.nft_commitment = nft_commitment
         self.token_amount = token_amount
@@ -89,7 +89,7 @@ class TxPart:
         return {
             "address": self.address,
             "amount": self.amount,
-            "catagory_id": self.catagory_id,
+            "category_id": self.category_id,
             "nft_capability": self.nft_capability,
             "nft_commitment": self.nft_commitment,
             "token_amount": self.token_amount,

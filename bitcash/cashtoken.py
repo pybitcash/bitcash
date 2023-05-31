@@ -17,24 +17,29 @@ DUST_VALUE = 512
 
 
 class CashTokenOutput:
+    """
+    Representation of a cashtoken output with verified token properties
 
-    __slots__ = ("catagory_id", "nft_commitment", "nft_capability",
+    :param category_id: category of the cashtoken
+    """
+
+    __slots__ = ("category_id", "nft_commitment", "nft_capability",
                  "token_amount", "amount")
 
     def __init__(
         self,
-        catagory_id=None,
+        category_id=None,
         nft_capability=None,
         nft_commitment=None,
         token_amount=None,
         amount=0,
     ):
-        if catagory_id is None:
+        if category_id is None:
             if (
                 nft_capability is not None
                 or token_amount is not None
             ):
-                raise InvalidCashToken("catagory_id missing")
+                raise InvalidCashToken("category_id missing")
         else:
             if token_amount is None and nft_capability is None:
                 raise InvalidCashToken("CashToken must have either amount or"
@@ -67,7 +72,7 @@ class CashTokenOutput:
                                    "9223372036854775807")
 
         self.amount = amount
-        self.catagory_id = catagory_id
+        self.category_id = category_id
         self.nft_commitment = nft_commitment
         self.nft_capability = nft_capability
         self.token_amount = token_amount
@@ -91,7 +96,7 @@ class CashTokenOutput:
     @classmethod
     def from_unspent(cls, unspent):
         return cls(
-            unspent.catagory_id,
+            unspent.category_id,
             unspent.nft_capability,
             unspent.nft_commitment,
             unspent.token_amount,
@@ -117,7 +122,7 @@ class CashTokenOutput:
 
         # OP_HASH256 byte order
         script = (OpCodes.OP_TOKENPREFIX.b
-                  + bytes.fromhex(self.catagory_id)[::-1])
+                  + bytes.fromhex(self.category_id)[::-1])
         prefix_structure = 0
         if self.nft_commitment is not None:
             prefix_structure += 4
@@ -156,7 +161,7 @@ class CashTokenOutput:
             return self
 
         # OP_HASH256 byte order
-        self.catagory_id = stream.read(32)[::-1].hex()
+        self.category_id = stream.read(32)[::-1].hex()
 
         token_bitfield = stream.read(1).hex()
         # 4 bit prefix
@@ -207,7 +212,7 @@ def prepare_cashtoken_aware_output(output):
             CashTokenOutput(amount=amount),
         )
 
-    (dest, amount, currency, catagory_id, nft_capability, nft_commitment,
+    (dest, amount, currency, category_id, nft_capability, nft_commitment,
      token_amount) = output
 
     if not isinstance(dest, Address):
@@ -217,7 +222,7 @@ def prepare_cashtoken_aware_output(output):
 
     cashtoken = CashTokenOutput(
         amount=amount,
-        catagory_id=catagory_id,
+        category_id=category_id,
         nft_commitment=nft_commitment,
         nft_capability=nft_capability,
         token_amount=token_amount
@@ -278,21 +283,21 @@ class CashTokenUnspents:
     def add_unspent(self, unspent):
         self.amount += unspent.amount
         if unspent.has_cashtoken:
-            catagorydata = self.tokendata.get(unspent.catagory_id, {})
+            categorydata = self.tokendata.get(unspent.category_id, {})
             if unspent.has_amount:
-                catagorydata["token_amount"] = (
-                    catagorydata.get("token_amount", 0)
+                categorydata["token_amount"] = (
+                    categorydata.get("token_amount", 0)
                     + unspent.token_amount
                 )
             if unspent.has_nft:
                 nftdata = {"capability": unspent.nft_capability}
                 if unspent.nft_commitment is not None:
                     nftdata["commitment"] = unspent.nft_commitment
-                catagorydata["nft"] = (
-                    catagorydata.get("nft", [])
+                categorydata["nft"] = (
+                    categorydata.get("nft", [])
                     + [nftdata]
                 )
-            self.tokendata.update({unspent.catagory_id: catagorydata})
+            self.tokendata.update({unspent.category_id: categorydata})
 
         # possible cashtoken genesis unspent
         if unspent.txindex == 0:
@@ -310,7 +315,7 @@ class CashTokenUnspents:
 
         amount = self.amount
 
-        for catagory_id, value in self.tokendata.items():
+        for category_id, value in self.tokendata.items():
             token_amount = None
             if "token_amount" in value:
                 token_amount = value["token_amount"]
@@ -319,7 +324,7 @@ class CashTokenUnspents:
                     nft_capability = nft["capability"]
                     nft_commitment = nft.get("commitment", None)
                     outputs.append(prepare_cashtoken_aware_output(
-                        (leftover, DUST_VALUE, "satoshi", catagory_id,
+                        (leftover, DUST_VALUE, "satoshi", category_id,
                          nft_capability, nft_commitment, token_amount)
                     ))
                     # add token to first nft
@@ -328,7 +333,7 @@ class CashTokenUnspents:
             elif token_amount is not None:
                 # token_amount but no nft
                 outputs.append(prepare_cashtoken_aware_output(
-                    (leftover, DUST_VALUE, "satoshi", catagory_id,
+                    (leftover, DUST_VALUE, "satoshi", category_id,
                      None, None, token_amount)
                 ))
                 amount -= DUST_VALUE
@@ -357,50 +362,50 @@ class CashTokenUnspents:
         self.amount -= ctoutput.amount
 
         if ctoutput.has_cashtoken:
-            catagory_id = ctoutput.catagory_id
-            if catagory_id in self.genesis_unspent_txid:
+            category_id = ctoutput.category_id
+            if category_id in self.genesis_unspent_txid:
                 # new token generated
                 return
-            if catagory_id not in self.tokendata.keys():
-                raise InsufficientFunds("unspent catagory_id does not exist")
-            catagorydata = self.tokendata[catagory_id]
+            if category_id not in self.tokendata.keys():
+                raise InsufficientFunds("unspent category_id does not exist")
+            categorydata = self.tokendata[category_id]
             if ctoutput.has_amount:
-                catagorydata = _subtract_token_amount(catagorydata,
+                categorydata = _subtract_token_amount(categorydata,
                                                       ctoutput.token_amount)
             if ctoutput.has_nft:
                 nft = [
                     ctoutput.nft_capability,
                     ctoutput.nft_commitment or "None"
                 ]
-                catagorydata = _subtract_nft(catagorydata, nft)
+                categorydata = _subtract_nft(categorydata, nft)
 
             # update tokendata
-            if catagorydata == {}:
-                self.tokendata.pop(catagory_id)
+            if categorydata == {}:
+                self.tokendata.pop(category_id)
             else:
-                self.tokendata.update({catagory_id: catagorydata})
+                self.tokendata.update({category_id: categorydata})
 
 
-def _subtract_token_amount(catagorydata, token_amount):
-    if "token_amount" not in catagorydata:
+def _subtract_token_amount(categorydata, token_amount):
+    if "token_amount" not in categorydata:
         raise InsufficientFunds("No token amount")
-    if catagorydata["token_amount"] < token_amount:
+    if categorydata["token_amount"] < token_amount:
         raise InsufficientFunds("Not enough token amount")
-    catagorydata["token_amount"] -= token_amount
+    categorydata["token_amount"] -= token_amount
 
     if (
-        "token_amount" in catagorydata
-        and catagorydata["token_amount"] == 0
+        "token_amount" in categorydata
+        and categorydata["token_amount"] == 0
     ):
-        catagorydata.pop("token_amount")
-    return catagorydata
+        categorydata.pop("token_amount")
+    return categorydata
 
 
-def _subtract_nft(catagorydata, nft):
+def _subtract_nft(categorydata, nft):
     """
     nft: [capability, commitment]
     """
-    if "nft" not in catagorydata:
+    if "nft" not in categorydata:
         raise InsufficientFunds("No nft found")
     # if immutable nft is asked, then immutable nft is spent
     # then a mutable nft is made to immutable, then minting
@@ -412,77 +417,77 @@ def _subtract_nft(catagorydata, nft):
     if nft[0] in ["none"]:
         # immutable
         try:
-            return _subtract_immutable_nft(catagorydata, nft[1])
+            return _subtract_immutable_nft(categorydata, nft[1])
         except InsufficientFunds:
             pass
 
     if nft[0] in ["none", "mutable"]:
         try:
-            return _subtract_mutable_nft(catagorydata)
+            return _subtract_mutable_nft(categorydata)
         except InsufficientFunds:
             pass
 
     if nft[0] in ["none", "mutable", "minting"]:
         try:
-            return _subtract_minting_nft(catagorydata)
+            return _subtract_minting_nft(categorydata)
         except InsufficientFunds:
             # none found
             raise InsufficientFunds("No capable nft found")
 
 
-def _sanitize(catagorydata):
+def _sanitize(categorydata):
     if (
-        "nft" in catagorydata
-        and len(catagorydata["nft"]) == 0
+        "nft" in categorydata
+        and len(categorydata["nft"]) == 0
     ):
-        catagorydata.pop("nft")
-    return catagorydata
+        categorydata.pop("nft")
+    return categorydata
 
 
-def _subtract_immutable_nft(catagorydata, commitment):
+def _subtract_immutable_nft(categorydata, commitment):
     nft_capabilities = [_["capability"]
-                        for _ in catagorydata["nft"]]
+                        for _ in categorydata["nft"]]
     nft_commitments = [_.get("commitment", "None")
-                       for _ in catagorydata["nft"]]
+                       for _ in categorydata["nft"]]
 
     # find an immutable to send
-    for i in range(len(catagorydata["nft"])):
+    for i in range(len(categorydata["nft"])):
         if (
             nft_capabilities[i] == "none"
             and nft_commitments[i] == commitment
         ):
             # found immutable with same commitment
-            catagorydata["nft"].pop(i)
-            return _sanitize(catagorydata)
+            categorydata["nft"].pop(i)
+            return _sanitize(categorydata)
 
     raise InsufficientFunds("No immutable nft")
 
 
-def _subtract_mutable_nft(catagorydata):
+def _subtract_mutable_nft(categorydata):
     nft_capabilities = [_["capability"]
-                        for _ in catagorydata["nft"]]
+                        for _ in categorydata["nft"]]
     # find a mutable to send
-    for i in range(len(catagorydata["nft"])):
+    for i in range(len(categorydata["nft"])):
         if (
             nft_capabilities[i] == "mutable"
         ):
             # found mutable
-            catagorydata["nft"].pop(i)
-            return _sanitize(catagorydata)
+            categorydata["nft"].pop(i)
+            return _sanitize(categorydata)
 
     raise InsufficientFunds("No mutable nft")
 
 
-def _subtract_minting_nft(catagorydata):
+def _subtract_minting_nft(categorydata):
     nft_capabilities = [_["capability"]
-                        for _ in catagorydata["nft"]]
+                        for _ in categorydata["nft"]]
     # find a minting to mint
-    for i in range(len(catagorydata["nft"])):
+    for i in range(len(categorydata["nft"])):
         if (
             nft_capabilities[i] == "minting"
         ):
             # found minting
-            return catagorydata
+            return categorydata
 
     raise InsufficientFunds("No minting nft")
 
@@ -493,7 +498,7 @@ def select_cashtoken_utxo(unspents, outputs):
     """
     unspents_used = []
 
-    # if catagory id is txid of genesis unspent, then the unspent is mandatory
+    # if category id is txid of genesis unspent, then the unspent is mandatory
     mandatory_unspent_indices = set()
     genesis_unspent_txid = {
         unspent.txid: i for i, unspent in enumerate(unspents)
@@ -510,27 +515,27 @@ def select_cashtoken_utxo(unspents, outputs):
             cashtokenoutput is not None
             and cashtokenoutput.has_cashtoken
         ):
-            if cashtokenoutput.catagory_id in genesis_unspent_txid.keys():
-                indx = genesis_unspent_txid[cashtokenoutput.catagory_id]
+            if cashtokenoutput.category_id in genesis_unspent_txid.keys():
+                indx = genesis_unspent_txid[cashtokenoutput.category_id]
                 mandatory_unspent_indices.add(indx)
                 # not count cashtoken from genesis tx
-                # the catagory id won't be in utxo
+                # the category id won't be in utxo
                 continue
-            catagorydata = tokendata.get(cashtokenoutput.catagory_id, {})
+            categorydata = tokendata.get(cashtokenoutput.category_id, {})
             if cashtokenoutput.has_amount:
-                catagorydata["token_amount"] = (
-                    catagorydata.get("token_amount", 0)
+                categorydata["token_amount"] = (
+                    categorydata.get("token_amount", 0)
                     + cashtokenoutput.token_amount
                 )
             if cashtokenoutput.has_nft:
                 nftdata = {"capability": cashtokenoutput.nft_capability}
                 if cashtokenoutput.nft_commitment is not None:
                     nftdata["commitment"] = cashtokenoutput.nft_commitment
-                catagorydata["nft"] = (
-                    catagorydata.get("nft", [])
+                categorydata["nft"] = (
+                    categorydata.get("nft", [])
                     + [nftdata]
                 )
-            tokendata.update({cashtokenoutput.catagory_id: catagorydata})
+            tokendata.update({cashtokenoutput.category_id: categorydata})
 
     # add mandatory unspents, for genesis cashtoken
     for id_ in sorted(mandatory_unspent_indices)[::-1]:
@@ -557,18 +562,18 @@ def select_cashtoken_utxo(unspents, outputs):
     for i, unspent in enumerate(unspents_cashtoken):
         unspent_used = False
 
-        catagorydata = tokendata.get(unspent.catagory_id, {})
+        categorydata = tokendata.get(unspent.category_id, {})
         # check token_amount
-        if unspent.has_amount and "token_amount" in catagorydata:
+        if unspent.has_amount and "token_amount" in categorydata:
             unspent_used = True
-            catagorydata["token_amount"] -= unspent.token_amount
-            if catagorydata["token_amount"] < 0:
-                catagorydata.pop("token_amount")
+            categorydata["token_amount"] -= unspent.token_amount
+            if categorydata["token_amount"] < 0:
+                categorydata.pop("token_amount")
 
         # check nft
-        if unspent.has_nft and "nft" in catagorydata:
-            catagorydata, nft_used = _subtract_nft_output(unspent,
-                                                          catagorydata)
+        if unspent.has_nft and "nft" in categorydata:
+            categorydata, nft_used = _subtract_nft_output(unspent,
+                                                          categorydata)
             if nft_used:
                 unspent_used = True
 
@@ -579,10 +584,10 @@ def select_cashtoken_utxo(unspents, outputs):
         unspents_used.append(unspent)
         pop_ids.append(i)
         # update tokendata
-        if catagorydata == {}:
-            tokendata.pop(unspent.catagory_id)
+        if categorydata == {}:
+            tokendata.pop(unspent.category_id)
         else:
-            tokendata.update({unspent.catagory_id: catagorydata})
+            tokendata.update({unspent.category_id: categorydata})
     for id_ in sorted(pop_ids)[::-1]:
         unspents_cashtoken.pop(id_)
 
@@ -592,29 +597,29 @@ def select_cashtoken_utxo(unspents, outputs):
     return unspents, unspents_used
 
 
-def _subtract_nft_output(unspent, catagorydata):
+def _subtract_nft_output(unspent, categorydata):
     if unspent.nft_capability == "minting":
         # minting pays all
-        catagorydata.pop("nft")
-        return _sanitize(catagorydata), True
+        categorydata.pop("nft")
+        return _sanitize(categorydata), True
     elif unspent.nft_capability == "mutable":
         # pays first mutable, or first immutable
-        for i, nft in enumerate(catagorydata["nft"]):
+        for i, nft in enumerate(categorydata["nft"]):
             if nft["capability"] == "mutable":
-                catagorydata["nft"].pop(i)
-                return _sanitize(catagorydata), True
+                categorydata["nft"].pop(i)
+                return _sanitize(categorydata), True
         else:
-            for i, nft in enumerate(catagorydata["nft"]):
+            for i, nft in enumerate(categorydata["nft"]):
                 if nft["capability"] == "none":
-                    catagorydata["nft"].pop(i)
-                    return _sanitize(catagorydata), True
+                    categorydata["nft"].pop(i)
+                    return _sanitize(categorydata), True
     else:  # immutable
         nft_commitment = unspent.nft_commitment or "None"
-        for i, nft in enumerate(catagorydata["nft"]):
+        for i, nft in enumerate(categorydata["nft"]):
             if (
                 nft["capability"] == "none"
                 and nft_commitment == nft.get("commitment", "None")
             ):
-                catagorydata["nft"].pop(i)
-                return _sanitize(catagorydata), True
-    return catagorydata, False
+                categorydata["nft"].pop(i)
+                return _sanitize(categorydata), True
+    return categorydata, False

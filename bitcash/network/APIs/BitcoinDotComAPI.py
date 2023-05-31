@@ -98,13 +98,13 @@ class BitcoinDotComAPI(BaseAPI):
             ):
                 addr = txout["scriptPubKey"]["cashAddrs"][0]
 
-            catagory_id = None
+            category_id = None
             nft_capability = None
             nft_commitment = None
             token_amount = None
             if "tokenData" in txout:
                 token_data = txout["tokenData"]
-                catagory_id = token_data["category"]
+                category_id = token_data["category"]
                 token_amount = int(token_data["amount"]) or None
                 if "nft" in token_data:
                     nft_capability = token_data["nft"]["capability"]
@@ -112,7 +112,7 @@ class BitcoinDotComAPI(BaseAPI):
             part = TxPart(
                 addr,
                 int((Decimal(txout["value"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()),
-                catagory_id,
+                category_id,
                 nft_capability,
                 nft_commitment,
                 token_amount,

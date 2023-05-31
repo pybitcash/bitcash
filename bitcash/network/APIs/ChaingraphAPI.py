@@ -176,9 +176,9 @@ query GetOutputs($lb: _text!) {
                     data_hex=data_hex
                 )
                 # adding token data
-                token_catagory = txpart["token_category"]
-                if token_catagory:
-                    part.catagory_id = token_catagory[2:]
+                token_category = txpart["token_category"]
+                if token_category:
+                    part.category_id = token_category[2:]
                 part.nft_capability = txpart["nonfungible_token_capability"]
                 nft_commitment = txpart["nonfungible_token_commitment"]
                 if nft_commitment:
@@ -267,9 +267,9 @@ query GetUTXO($lb: _text!) {
             else:
                 confirmations = (-int(block_inclusions[0]["block"]["height"])
                                  + blockheight + 1)
-            token_catagory = utxo["token_category"]
-            if token_catagory:
-                token_catagory = token_catagory[2:]
+            token_category = utxo["token_category"]
+            if token_category:
+                token_category = token_category[2:]
             nft_commitment = utxo["nonfungible_token_commitment"]
             if nft_commitment:
                 nft_commitment = bytes.fromhex(nft_commitment[2:]) or None
@@ -283,7 +283,7 @@ query GetUTXO($lb: _text!) {
                 utxo["locking_bytecode"][2:],
                 utxo["transaction_hash"][2:],
                 int(utxo["output_index"]),
-                token_catagory,
+                token_category,
                 utxo["nonfungible_token_capability"],
                 nft_commitment or None,  # b"" is None
                 token_amount or None,  # 0 amount is None

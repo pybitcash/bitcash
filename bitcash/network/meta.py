@@ -17,8 +17,8 @@ class Unspent:
     :type txid: ``str``
     :param txindex: transaction output index of UTXO
     :type txindex: ``int``
-    :param catagory_id: catagory_id of cashtoken attached to the UTXO
-    :type catagory_id: ``str``
+    :param category_id: category_id of cashtoken attached to the UTXO
+    :type category_id: ``str``
     :param nft_capability: nft_capability of the cashtoken attached
     :type nft_capability: ``str``
     :param nft_commitment: nft_commitment of the cashtoken attached
@@ -28,7 +28,7 @@ class Unspent:
     """
 
     __slots__ = ("amount", "confirmations", "script", "txid",
-                 "txindex", "catagory_id", "nft_capability", "nft_commitment",
+                 "txindex", "category_id", "nft_capability", "nft_commitment",
                  "token_amount")
 
     NFT_CAPABILITY = ["none", "mutable", "minting"]
@@ -40,7 +40,7 @@ class Unspent:
         script,
         txid,
         txindex,
-        catagory_id=None,
+        category_id=None,
         nft_capability=None,
         nft_commitment=None,
         token_amount=None
@@ -50,7 +50,7 @@ class Unspent:
         self.script = script
         self.txid = txid
         self.txindex = txindex
-        self.catagory_id = catagory_id
+        self.category_id = category_id
         self.nft_capability = nft_capability
         self.nft_commitment = nft_commitment
         self.token_amount = token_amount
