@@ -2,7 +2,6 @@ import pytest
 
 from bitcash.exceptions import InsufficientFunds
 from bitcash.network.meta import Unspent
-from bitcash.cashtoken import CashTokenOutput
 from bitcash.transaction import (
     TxIn,
     calc_txid,
@@ -78,10 +77,28 @@ UNSPENTS = [
         1,
     )
 ]
-OUTPUTS = [(Address.from_string(BITCOIN_CASHADDRESS).scriptcode, 50000, CashTokenOutput()),
-           (Address.from_string(BITCOIN_CASHADDRESS_COMPRESSED).scriptcode, 83658760, CashTokenOutput())]
-MESSAGES = [(OpCodes.OP_RETURN.b + b"\x05" + b"hello", 0, None),
-            (OpCodes.OP_RETURN.b + b"\x05" + b"there", 0, None)]
+OUTPUTS = [
+    (
+        Address.from_string(BITCOIN_CASHADDRESS).scriptcode,
+        50000,
+        None,
+        None,
+        None,
+        None,
+    ),
+    (
+        Address.from_string(BITCOIN_CASHADDRESS_COMPRESSED).scriptcode,
+        83658760,
+        None,
+        None,
+        None,
+        None,
+    ),
+]
+MESSAGES = [
+    (OpCodes.OP_RETURN.b + b"\x05" + b"hello", 0, None, None, None, None),
+    (OpCodes.OP_RETURN.b + b"\x05" + b"there", 0, None, None, None, None),
+]
 OUTPUT_BLOCK = (
     "50c30000000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac"
     "0888fc04000000001976a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac"
@@ -205,7 +222,7 @@ class TestSanitizeTxData:
 
         assert unspents == unspents_original
         _ = Address.from_string(BITCOIN_CASHADDRESS_COMPRESSED).scriptcode
-        assert outputs == [(_, 2000, CashTokenOutput(amount=2000))]
+        assert outputs == [(_, 2000, None, None, None, None)]
 
     def test_combine_remaining(self):
         unspents_original = [Unspent(1000, 0, "", "", 0), Unspent(1000, 0, "", "", 0)]
@@ -273,8 +290,7 @@ class TestSanitizeTxData:
             combine=False,
             message=None,
         )
-        assert unspents == [Unspent(1500, 0, "", "", 0),
-                            Unspent(1600, 0, "", "", 0)]
+        assert unspents == [Unspent(1500, 0, "", "", 0), Unspent(1600, 0, "", "", 0)]
         assert len(outputs) == 2
         assert outputs[1][0] == Address.from_string(RETURN_ADDRESS).scriptcode
         assert outputs[1][1] == 1100
@@ -413,50 +429,33 @@ class TestSanitizeTxDataCashToken:
             Unspent(1000, 0, "script", "txid", 1, "caff", "minting"),
             Unspent(1000, 0, "script", "txid", 1, "caf2", "minting"),
         ]
-        outputs_original = [[
-            BITCOIN_CASHADDRESS_CATKN,
-            1000,
-            "satoshi",
-            "caff",
-            "none",
-            None,
-            None
-        ]]
+        outputs_original = [
+            [BITCOIN_CASHADDRESS_CATKN, 1000, "satoshi", "caff", "none", None, None]
+        ]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original,
             outputs_original,
             0,
             BITCOIN_CASHADDRESS_CATKN,
-            combine=True
+            combine=True,
         )
         assert unspents == unspents_original
 
         assert len(outputs) == 3
-        assert outputs[0][1] == 1000
-        assert outputs[0][2] == CashTokenOutput("caff", "none",
-                                                amount=1000)
-        assert outputs[1][1] == 512
-        assert outputs[1][2] == CashTokenOutput("caff", "minting", amount=512)
-        assert outputs[2][1] == 2488
-        assert outputs[2][2] == CashTokenOutput("caf2", "minting",
-                                                amount=2488)
+        assert outputs[0][1:] == (1000, "caff", "none", None, None)
+        assert outputs[1][1:] == (512, "caff", "minting", None, None)
+        assert outputs[2][1:] == (2488, "caf2", "minting", None, None)
 
     def test_no_combine(self):
         unspents_original = [
             Unspent(1000, 0, "script", "txid", 0),
             Unspent(1000, 0, "script", "txid", 1, "caff", "none"),
-            Unspent(1000, 0, "script", "txid", 1, "caff", "minting")
+            Unspent(1000, 0, "script", "txid", 1, "caff", "minting"),
         ]
-        outputs_original = [[
-            BITCOIN_CASHADDRESS_CATKN,
-            1500,
-            "satoshi",
-            "caff",
-            "none",
-            None,
-            None
-        ]]
+        outputs_original = [
+            [BITCOIN_CASHADDRESS_CATKN, 1500, "satoshi", "caff", "none", None, None]
+        ]
         script = Address.from_string(BITCOIN_CASHADDRESS_CATKN).scriptcode
 
         unspents, outputs = sanitize_tx_data(
@@ -464,58 +463,42 @@ class TestSanitizeTxDataCashToken:
             outputs_original,
             0,
             BITCOIN_CASHADDRESS_CATKN,
-            combine=False
+            combine=False,
         )
 
         assert len(unspents) == 2
         assert len(outputs) == 2
-        assert outputs[0][2] == CashTokenOutput("caff", "none",
-                                                amount=1500)
-        assert outputs[1][1] == 500
-        assert outputs[1][0] == script
-        assert outputs[1][2] == CashTokenOutput(amount=500)
+        assert outputs[0][1:] == (1500, "caff", "none", None, None)
+        assert outputs[1] == (script, 500, None, None, None, None)
 
     def test_genesis(self):
         unspents_original = [
             Unspent(1000, 0, "script", "cafe", 0),
             Unspent(1000, 0, "script", "caca", 1, "caff", "none"),
-            Unspent(1000, 0, "script", "txid", 1, "caff", "minting")
+            Unspent(1000, 0, "script", "txid", 1, "caff", "minting"),
         ]
-        outputs_original = [[
-            BITCOIN_CASHADDRESS_CATKN,
-            500,
-            "satoshi",
-            "cafe",
-            "none",
-            None,
-            None
-        ]]
+        outputs_original = [
+            [BITCOIN_CASHADDRESS_CATKN, 500, "satoshi", "cafe", "none", None, None]
+        ]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original,
             outputs_original,
             0,
             BITCOIN_CASHADDRESS_CATKN,
-            combine=False
+            combine=False,
         )
 
         assert len(unspents) == 1
         assert unspents[0] == unspents_original[0]
         assert len(outputs) == 2
-        assert outputs[0][2] == CashTokenOutput("cafe", "none",
-                                                amount=500)
-        assert outputs[1][2] == CashTokenOutput(amount=500)
+        assert outputs[0][1:] == (500, "cafe", "none", None, None)
+        assert outputs[1][1:] == (500, None, None, None, None)
 
         # fail genesis
-        outputs_original = [[
-            BITCOIN_CASHADDRESS_CATKN,
-            500,
-            "satoshi",
-            "caca",
-            "none",
-            None,
-            None
-        ]]
+        outputs_original = [
+            [BITCOIN_CASHADDRESS_CATKN, 500, "satoshi", "caca", "none", None, None]
+        ]
 
         # caca is not genesis, since txindex = 1. Thus it is treated as
         # normal cashtoken output. But unspents don't have caca cashtoken
@@ -525,7 +508,7 @@ class TestSanitizeTxDataCashToken:
                 outputs_original,
                 0,
                 BITCOIN_CASHADDRESS_CATKN,
-                combine=False
+                combine=False,
             )
 
 
@@ -540,26 +523,26 @@ class TestCreateSignedTransaction:
 class TestEstimateTxFee:
     def test_accurate_compressed(self):
         # 2 p2pkh
-        output_script_list = [b"\x00"*25] * 2
+        output_script_list = [b"\x00" * 25] * 2
         assert estimate_tx_fee(1, output_script_list, 70, True) == 15820
         # 2 p2pkh 2 p2sh20
-        output_script_list = [b"\x00"*25] * 2 + [b"\x00"*23] * 2
+        output_script_list = [b"\x00" * 25] * 2 + [b"\x00" * 23] * 2
         assert estimate_tx_fee(1, output_script_list, 70, True) == 20300
         # 2 p2sh20
-        output_script_list = [b"\x00"*23] * 2
+        output_script_list = [b"\x00" * 23] * 2
         assert estimate_tx_fee(1, output_script_list, 70, True) == 15540
         # 2 p2sh32
-        output_script_list = [b"\x00"*35] * 2
+        output_script_list = [b"\x00" * 35] * 2
         assert estimate_tx_fee(1, output_script_list, 70, True) == 17220
 
     def test_accurate_uncompressed(self):
         # 2 p2pkh
-        output_script_list = [b"\x00"*25] * 2
+        output_script_list = [b"\x00" * 25] * 2
         assert estimate_tx_fee(1, output_script_list, 70, False) == 18060
 
     def test_none(self):
         # 5 p2pkh
-        output_script_list = [b"\x00"*34] * 5
+        output_script_list = [b"\x00" * 34] * 5
         assert estimate_tx_fee(5, output_script_list, 0, True) == 0
 
 
@@ -576,8 +559,10 @@ class TestConstructOutputBlock:
         amount = b"\x00\x00\x00\x00\x00\x00\x00\x00"
         _, outputs = sanitize_tx_data(
             UNSPENTS,
-            [(Address.from_script(out[0]).cash_address(), out[1], "satoshi")
-             for out in OUTPUTS],
+            [
+                (Address.from_script(out[0]).cash_address(), out[1], "satoshi")
+                for out in OUTPUTS
+            ],
             0,
             RETURN_ADDRESS,
             message="hello" * 50,
@@ -586,11 +571,13 @@ class TestConstructOutputBlock:
         assert construct_output_block(outputs).count(amount) == 2
 
     def test_pushdata_message(self):
-        BYTES = (OpCodes.OP_RETURN.b
-                 + len(b"hello").to_bytes(1, byteorder="little")
-                 + b"hello")
+        BYTES = (
+            OpCodes.OP_RETURN.b
+            + len(b"hello").to_bytes(1, byteorder="little")
+            + b"hello"
+        )
         assert construct_output_block(
-            OUTPUTS + [(BYTES, 0, None)]
+            OUTPUTS + [(BYTES, 0, None, None, None, None)]
         ) == hex_to_bytes(OUTPUT_BLOCK_MESSAGE_PUSHDATA)
 
     def test_long_pushdata(self):
@@ -601,8 +588,10 @@ class TestConstructOutputBlock:
         with pytest.raises(ValueError):
             sanitize_tx_data(
                 UNSPENTS,
-                [(Address.from_script(out[0]).cash_address(), out[1], "satoshi")
-                 for out in OUTPUTS],
+                [
+                    (Address.from_script(out[0]).cash_address(), out[1], "satoshi")
+                    for out in OUTPUTS
+                ],
                 0,
                 RETURN_ADDRESS,
                 message=BYTES * 40,

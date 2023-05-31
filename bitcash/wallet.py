@@ -1,7 +1,7 @@
 import json
 
 from bitcash.crypto import ECPrivateKey
-from bitcash.cashtoken import CashTokenUnspents, CashTokenOutput
+from bitcash.cashtoken import Unspents
 from bitcash.curve import Point
 from bitcash.exceptions import InvalidNetwork
 from bitcash.format import (
@@ -212,7 +212,7 @@ class PrivateKey(BaseKey):
         self.unspents[:] = NetworkAPI.get_unspent(
             self.address, network=NETWORKS[self._network]
         )
-        _ = CashTokenUnspents(self.unspents)
+        _ = Unspents(self.unspents)
         self.balance = _.amount
         self.cashtoken_balance = _.tokendata
         return self.balance_as(currency)
@@ -235,7 +235,7 @@ class PrivateKey(BaseKey):
         self.unspents[:] = NetworkAPI.get_unspent(
             self.address, network=NETWORKS[self._network]
         )
-        _ = CashTokenUnspents(self.unspents)
+        _ = Unspents(self.unspents)
         self.balance = _.amount
         self.cashtoken_balance = _.tokendata
         return self.unspents
@@ -440,12 +440,16 @@ class PrivateKey(BaseKey):
             compressed=compressed,
         )
 
+        for output in outputs:
+            # script
+            output[0] = output[0].hex()
+            # nft_commitment
+            if output[4] is not None:
+                output[4] = output[4].hex()
+
         data = {
             "unspents": [unspent.to_dict() for unspent in unspents],
-            "outputs": [
-                (script.hex(), value, cashtoken.to_dict())
-                for (script, value, cashtoken) in outputs
-            ],
+            "outputs": outputs,
         }
 
         return json.dumps(data, separators=(",", ":"))
@@ -462,10 +466,13 @@ class PrivateKey(BaseKey):
         data = json.loads(tx_data)
 
         unspents = [Unspent.from_dict(unspent) for unspent in data["unspents"]]
-        outputs = [
-            (bytes.fromhex(script), value, CashTokenOutput.from_dict(cashtoken))
-            for (script, value, cashtoken) in data["outputs"]
-        ]
+        outputs = data["outputs"]
+        for output in outputs:
+            # script
+            output[0] = bytes.fromhex(output[0])
+            # nft_commitment
+            if output[4] is not None:
+                output[4] = bytes.fromhex(output[4])
 
         return create_p2pkh_transaction(self, unspents, outputs)
 

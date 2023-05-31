@@ -12,186 +12,147 @@ COMMITMENT_LENGTH = 40
 DUST_VALUE = 512
 
 
-class CashTokenOutput:
+def verify_cashtoken_output_data(
+    category_id=None, nft_capability=None, nft_commitment=None, token_amount=None
+):
     """
-    Representation of a cashtoken output with verified token properties
+    Verifies cashtoken data for an output
 
-    :param category_id: category of the cashtoken
+    :param category_id: Category hex of the cashtoken
+    :type category_id: ``str``
+    :param nft_capability: Capability of the non-fungible token
+    :type nft_capability: ``str``
+    :param nft_commitment: Commitment bytes of the non-fungible token
+    :type nft_commitment: ``bytes``
+    :param token_amount: Fungible token amount of the cashtoken
+    :type token_amount: ``int``
+    :returns: None
     """
+    if category_id is None:
+        if nft_capability is not None or token_amount is not None:
+            raise InvalidCashToken("category_id missing")
+    else:
+        if token_amount is None and nft_capability is None:
+            raise InvalidCashToken("CashToken must have either amount or capability")
 
-    __slots__ = (
-        "category_id",
-        "nft_commitment",
-        "nft_capability",
-        "token_amount",
-        "amount",
-    )
-
-    def __init__(
-        self,
-        category_id=None,
-        nft_capability=None,
-        nft_commitment=None,
-        token_amount=None,
-        amount=0,
+    if nft_capability is not None and nft_capability not in Unspent.NFT_CAPABILITY:
+        raise InvalidCashToken(f"nft capability not in {Unspent.NFT_CAPABILITY}")
+    if nft_commitment is not None:
+        if nft_capability is None:
+            raise InvalidCashToken("nft commitment found without nft capability")
+        if not isinstance(nft_commitment, bytes):
+            raise ValueError("expected nft_commitment as bytes")
+        if len(nft_commitment) > COMMITMENT_LENGTH or len(nft_commitment) == 0:
+            raise InvalidCashToken(
+                f"0 < valid nft commitment length"
+                f" <= {COMMITMENT_LENGTH}, received"
+                f" length: {len(nft_commitment)}"
+            )
+    if token_amount is not None and (
+        token_amount > 9223372036854775807 or token_amount < 1
     ):
-        if category_id is None:
-            if nft_capability is not None or token_amount is not None:
-                raise InvalidCashToken("category_id missing")
-        else:
-            if token_amount is None and nft_capability is None:
-                raise InvalidCashToken(
-                    "CashToken must have either amount or capability"
-                )
-
-        if nft_capability is not None and nft_capability not in Unspent.NFT_CAPABILITY:
-            raise InvalidCashToken(f"nft capability not in {Unspent.NFT_CAPABILITY}")
-        if nft_commitment is not None:
-            if nft_capability is None:
-                raise InvalidCashToken("nft commitment found without nft capability")
-            if not isinstance(nft_commitment, bytes):
-                raise ValueError("expected nft_commitment as bytes")
-            if len(nft_commitment) > COMMITMENT_LENGTH or len(nft_commitment) == 0:
-                raise InvalidCashToken(
-                    f"0 < valid nft commitment length"
-                    f" <= {COMMITMENT_LENGTH}, received"
-                    f" length: {len(nft_commitment)}"
-                )
-        if token_amount is not None and (
-            token_amount > 9223372036854775807 or token_amount < 1
-        ):
-            raise InvalidCashToken("1 <= valid token amount <= 9223372036854775807")
-
-        self.amount = amount
-        self.category_id = category_id
-        self.nft_commitment = nft_commitment
-        self.nft_capability = nft_capability
-        self.token_amount = token_amount
-
-    def to_dict(self):
-        dict_ = {attr: getattr(self, attr) for attr in CashTokenOutput.__slots__}
-        # save nft_commitment as hex
-        if dict_["nft_commitment"] is not None:
-            dict_["nft_commitment"] = dict_["nft_commitment"].hex()
-        return dict_
-
-    @classmethod
-    def from_dict(cls, d):
-        # convert nft_commitment to bytes
-        if d["nft_commitment"] is not None:
-            d["nft_commitment"] = bytes.fromhex(d["nft_commitment"])
-        return CashTokenOutput(**{attr: d[attr] for attr in CashTokenOutput.__slots__})
-
-    @classmethod
-    def from_unspent(cls, unspent):
-        return cls(
-            unspent.category_id,
-            unspent.nft_capability,
-            unspent.nft_commitment,
-            unspent.token_amount,
-            unspent.amount,
-        )
-
-    @property
-    def has_nft(self):
-        return self.nft_capability is not None
-
-    @property
-    def has_amount(self):
-        return self.token_amount is not None
-
-    @property
-    def has_cashtoken(self):
-        return self.has_amount or self.has_nft
-
-    @property
-    def token_prefix(self):
-        if not self.has_cashtoken:
-            return b""
-
-        # OP_HASH256 byte order
-        script = OpCodes.OP_TOKENPREFIX.b + bytes.fromhex(self.category_id)[::-1]
-        prefix_structure = 0
-        if self.nft_commitment is not None:
-            prefix_structure += 4
-        if self.has_nft:
-            prefix_structure += 2
-        if self.has_amount:
-            prefix_structure += 1
-        nft_capability = (
-            0
-            if self.nft_capability is None
-            else Unspent.NFT_CAPABILITY.index(self.nft_capability)
-        )
-        # token bitfield
-        token_bitfield = hex(prefix_structure)[2:] + hex(nft_capability)[2:]
-        script += bytes.fromhex(token_bitfield)
-        if self.nft_commitment is not None:
-            script += int_to_varint(len(self.nft_commitment))
-            script += self.nft_commitment
-        if self.has_amount:
-            script += int_to_varint(self.token_amount)
-
-        return script
-
-    @classmethod
-    def from_script(cls, script):
-        self = cls()
-        # Assumes valid script
-        has_commitment_length = False
-        has_nft = False
-        has_amount = False
-
-        # make bytestream
-        stream = io.BytesIO(script)
-
-        if stream.read(1) != OpCodes.OP_TOKENPREFIX.b:
-            # no token info available
-            return self
-
-        # OP_HASH256 byte order
-        self.category_id = stream.read(32)[::-1].hex()
-
-        token_bitfield = stream.read(1).hex()
-        # 4 bit prefix
-        _ = bin(int(token_bitfield[0], 16))[2:]
-        _ = "0" * (4 - len(_)) + _
-        prefix_structure = [bit == "1" for bit in _]
-        if prefix_structure[1]:
-            has_commitment_length = True
-        if prefix_structure[2]:
-            has_nft = True
-        if prefix_structure[3]:
-            has_amount = True
-
-        nft_capability_bit = int(token_bitfield[1], 16)
-        if has_nft:
-            self.nft_capability = Unspent.NFT_CAPABILITY[nft_capability_bit]
-        if has_commitment_length:
-            commitment_length = varint_to_int(stream)
-            self.nft_commitment = stream.read(commitment_length)
-        if has_amount:
-            self.token_amount = varint_to_int(stream)
-        return self
-
-    def __eq__(self, other):
-        return self.to_dict() == other.to_dict()
-
-    def __repr__(self):
-        var_list = [
-            f"{key}={repr(value)}"
-            for key, value in self.to_dict().items()
-            if value is not None
-        ]
-
-        return "CashToken({})".format(", ".join(var_list))
+        raise InvalidCashToken("1 <= valid token amount <= 9223372036854775807")
 
 
-def prepare_cashtoken_aware_output(output):
+def parse_cashtoken_prefix(script):
+    """
+    Parses cashtoken prefix
+
+    :param script: Token prefix with OP_TOKENPREFIX
+    :type script: ``bytes``
+    :returns: Tuple of category_id, nft_capability, nft_commitment, token_amount
+    :rtype: ``tuple``
+    """
+    # Assumes valid script
+    category_id = None
+    nft_capability = None
+    nft_commitment = None
+    token_amount = None
+
+    has_commitment_length = False
+    has_nft = False
+    has_amount = False
+
+    # make bytestream
+    stream = io.BytesIO(script)
+
+    if stream.read(1) != OpCodes.OP_TOKENPREFIX.b:
+        # no token info available
+        return (category_id, nft_capability, nft_commitment, token_amount)
+
+    # OP_HASH256 byte order
+    category_id = stream.read(32)[::-1].hex()
+
+    token_bitfield = stream.read(1).hex()
+    # 4 bit prefix
+    _ = bin(int(token_bitfield[0], 16))[2:]
+    _ = "0" * (4 - len(_)) + _
+    prefix_structure = [bit == "1" for bit in _]
+    if prefix_structure[1]:
+        has_commitment_length = True
+    if prefix_structure[2]:
+        has_nft = True
+    if prefix_structure[3]:
+        has_amount = True
+
+    nft_capability_bit = int(token_bitfield[1], 16)
+    if has_nft:
+        nft_capability = Unspent.NFT_CAPABILITY[nft_capability_bit]
+    if has_commitment_length:
+        commitment_length = varint_to_int(stream)
+        nft_commitment = stream.read(commitment_length)
+    if has_amount:
+        token_amount = varint_to_int(stream)
+
+    return (category_id, nft_capability, nft_commitment, token_amount)
+
+
+def generate_cashtoken_prefix(
+    category_id=None, nft_capability=None, nft_commitment=None, token_amount=None
+):
+    """
+    Generates cashtoken prefix from cashtoken data
+
+    :param category_id: Category hex of the cashtoken
+    :type category_id: ``str``
+    :param nft_capability: Capability of the non-fungible token
+    :type nft_capability: ``str``
+    :param nft_commitment: Commitment bytes of the non-fungible token
+    :type nft_commitment: ``bytes``
+    :param token_amount: Fungible token amount of the cashtoken
+    :type token_amount: ``int``
+    :returns: Cahstoken prefix
+    :rtype: ``bytes``
+    """
+    if category_id is None:
+        return b""
+
+    # OP_HASH256 byte order
+    script = OpCodes.OP_TOKENPREFIX.b + bytes.fromhex(category_id)[::-1]
+    prefix_structure = 0
+    if nft_commitment is not None:
+        prefix_structure += 4
+    if nft_capability is not None:
+        prefix_structure += 2
+    if token_amount is not None:
+        prefix_structure += 1
+    nft_capability = (
+        0 if nft_capability is None else Unspent.NFT_CAPABILITY.index(nft_capability)
+    )
+    # token bitfield
+    token_bitfield = hex(prefix_structure)[2:] + hex(nft_capability)[2:]
+    script += bytes.fromhex(token_bitfield)
+    if nft_commitment is not None:
+        script += int_to_varint(len(nft_commitment))
+        script += nft_commitment
+    if token_amount is not None:
+        script += int_to_varint(token_amount)
+
+    return script
+
+
+def prepare_output(output):
     if len(output) == 3:
-        if isinstance(output[2], CashTokenOutput) or output[2] is None:
-            # already cashtoken aware or is OP_RETURN message
-            return output
         dest, amount, currency = output
         if not isinstance(dest, Address):
             dest = Address.from_string(dest)
@@ -199,7 +160,19 @@ def prepare_cashtoken_aware_output(output):
         return (
             dest.scriptcode,
             amount,
-            CashTokenOutput(amount=amount),
+            None,
+            None,
+            None,
+            None,
+        )
+    elif len(output) == 6 and isinstance(output[0], bytes):
+        # already prepared
+        return output
+    elif len(output) != 7:
+        raise RuntimeError(
+            "Output does not follow output format: (address, amount, currency) or "
+            "(address, amount, currency, category_id, nft_capability, nft_commitment, "
+            "token_amount)"
         )
 
     (
@@ -217,30 +190,38 @@ def prepare_cashtoken_aware_output(output):
 
     amount = currency_to_satoshi_cached(amount, currency)
 
-    cashtoken = CashTokenOutput(
-        amount=amount,
-        category_id=category_id,
-        nft_commitment=nft_commitment,
-        nft_capability=nft_capability,
-        token_amount=token_amount,
+    verify_cashtoken_output_data(
+        category_id, nft_capability, nft_commitment, token_amount
     )
 
     # check for CashToken signal
-    if "CATKN" not in dest.version and cashtoken.has_cashtoken:
+    if "CATKN" not in dest.version and category_id is not None:
         raise InvalidAddress(
             f"{dest.cash_address()} does not signal CashToken support."
         )
 
-    return (cashtoken.token_prefix + dest.scriptcode, amount, cashtoken)
+    return (
+        (
+            generate_cashtoken_prefix(
+                category_id, nft_capability, nft_commitment, token_amount
+            )
+            + dest.scriptcode
+        ),
+        amount,
+        category_id,
+        nft_capability,
+        nft_commitment,
+        token_amount,
+    )
 
 
-class CashTokenUnspents:
+class Unspents:
     """
-    Class to count CashToken Unspent
+    Class to count Unspents with cashtokens
     Incoming data is assumed to be valid, tests are performed when making
     outputs
 
-    >>> cashtoken.tokendata = {
+    >>> unspents.tokendata = {
             "category_id" : {           (string) token id hex
                 "token_amount" : "xxx", (int) fungible amount
                 "nft" : [{
@@ -311,7 +292,7 @@ class CashTokenUnspents:
                     nft_capability = nft["capability"]
                     nft_commitment = nft.get("commitment", None)
                     outputs.append(
-                        prepare_cashtoken_aware_output(
+                        prepare_output(
                             (
                                 leftover,
                                 DUST_VALUE,
@@ -329,7 +310,7 @@ class CashTokenUnspents:
             elif token_amount is not None:
                 # token_amount but no nft
                 outputs.append(
-                    prepare_cashtoken_aware_output(
+                    prepare_output(
                         (
                             leftover,
                             DUST_VALUE,
@@ -347,39 +328,36 @@ class CashTokenUnspents:
             # no tokendata
             if amount > 0:
                 # add leftover amount
-                outputs.append(
-                    prepare_cashtoken_aware_output((leftover, amount, "satoshi"))
-                )
+                outputs.append(prepare_output((leftover, amount, "satoshi")))
         else:
             if amount < 0:
                 raise InsufficientFunds("Not enough sats")
             # add leftover amount to last out
             last_out = list(outputs[-1])
             last_out[1] += amount
-            last_out[2].amount += amount
             outputs[-1] = tuple(last_out)
 
         return outputs, amount
 
-    def subtract_output(self, ctoutput):
-        if self.amount < ctoutput.amount:
+    def subtract_output(self, output):
+        output = prepare_output(output)
+        _, amount, category_id, nft_capability, nft_commitment, token_amount = output
+        if self.amount < amount:
             raise InsufficientFunds("Not enough amount")
-        self.amount -= ctoutput.amount
+        self.amount -= amount
 
-        if ctoutput.has_cashtoken:
-            category_id = ctoutput.category_id
+        if category_id is not None:
             if category_id in self.genesis_unspent_txid:
                 # new token generated
+                # only amount to be subtracted, the cashtoken doesn't exist in UTXO
                 return
             if category_id not in self.tokendata.keys():
                 raise InsufficientFunds("unspent category_id does not exist")
             categorydata = self.tokendata[category_id]
-            if ctoutput.has_amount:
-                categorydata = _subtract_token_amount(
-                    categorydata, ctoutput.token_amount
-                )
-            if ctoutput.has_nft:
-                nft = [ctoutput.nft_capability, ctoutput.nft_commitment or "None"]
+            if token_amount is not None:
+                categorydata = _subtract_token_amount(categorydata, token_amount)
+            if nft_capability is not None:
+                nft = [nft_capability, nft_commitment or "None"]
                 categorydata = _subtract_nft(categorydata, nft)
 
             # update tokendata
@@ -480,9 +458,10 @@ def _subtract_minting_nft(categorydata):
 
 def select_cashtoken_utxo(unspents, outputs):
     """
-    Function to select unspents that cover cashtokens of sanitized outputs
+    Function to select unspents that cover cashtokens of prepared outputs
     """
     unspents_used = []
+    outputs = [prepare_output(output) for output in outputs]
 
     # if category id is txid of genesis unspent, then the unspent is mandatory
     mandatory_unspent_indices = set()
@@ -495,25 +474,25 @@ def select_cashtoken_utxo(unspents, outputs):
 
     # calculate needed cashtokens
     for output in outputs:
-        cashtokenoutput = output[2]
-        if cashtokenoutput is not None and cashtokenoutput.has_cashtoken:
-            if cashtokenoutput.category_id in genesis_unspent_txid.keys():
-                indx = genesis_unspent_txid[cashtokenoutput.category_id]
+        category_id, nft_capability, nft_commitment, token_amount = output[2:]
+        if category_id is not None:
+            if category_id in genesis_unspent_txid.keys():
+                indx = genesis_unspent_txid[category_id]
                 mandatory_unspent_indices.add(indx)
                 # not count cashtoken from genesis tx
                 # the category id won't be in utxo
                 continue
-            categorydata = tokendata.get(cashtokenoutput.category_id, {})
-            if cashtokenoutput.has_amount:
+            categorydata = tokendata.get(category_id, {})
+            if token_amount is not None:
                 categorydata["token_amount"] = (
-                    categorydata.get("token_amount", 0) + cashtokenoutput.token_amount
+                    categorydata.get("token_amount", 0) + token_amount
                 )
-            if cashtokenoutput.has_nft:
-                nftdata = {"capability": cashtokenoutput.nft_capability}
-                if cashtokenoutput.nft_commitment is not None:
-                    nftdata["commitment"] = cashtokenoutput.nft_commitment
+            if nft_capability is not None:
+                nftdata = {"capability": nft_capability}
+                if nft_commitment is not None:
+                    nftdata["commitment"] = nft_commitment
                 categorydata["nft"] = categorydata.get("nft", []) + [nftdata]
-            tokendata.update({cashtokenoutput.category_id: categorydata})
+            tokendata.update({category_id: categorydata})
 
     # add mandatory unspents, for genesis cashtoken
     for id_ in sorted(mandatory_unspent_indices)[::-1]:
@@ -545,7 +524,7 @@ def select_cashtoken_utxo(unspents, outputs):
         if unspent.has_amount and "token_amount" in categorydata:
             unspent_used = True
             categorydata["token_amount"] -= unspent.token_amount
-            if categorydata["token_amount"] < 0:
+            if categorydata["token_amount"] <= 0:
                 categorydata.pop("token_amount")
 
         # check nft
