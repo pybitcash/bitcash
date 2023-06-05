@@ -444,8 +444,8 @@ class TestSanitizeTxDataCashToken:
 
         assert len(outputs) == 3
         assert outputs[0][1:] == (1000, "caff", "none", None, None)
-        assert outputs[1][1:] == (512, "caff", "minting", None, None)
-        assert outputs[2][1:] == (2488, "caf2", "minting", None, None)
+        assert outputs[1][1:] == (546, "caff", "minting", None, None)
+        assert outputs[2][1:] == (2454, "caf2", "minting", None, None)
 
     def test_no_combine(self):
         unspents_original = [

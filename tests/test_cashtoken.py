@@ -432,15 +432,15 @@ class TestUnspents:
             "c4": {"nft": [{"capability": "none"}]},
         }
 
-        cashtokenoutput_10 = (512, "c1", "mutable", None, None)
-        cashtokenoutput_11 = (512, "c1", "none", b"commitment", None)
-        cashtokenoutput_20 = (512, "c2", "minting", None, 50)
-        cashtokenoutput_21 = (512, "c2", "minting", None, None)
-        cashtokenoutput_30 = (512, "c3", None, None, 50)
-        cashtokenoutput_40 = (512, "c4", "none", None, None)
+        cashtokenoutput_10 = (546, "c1", "mutable", None, None)
+        cashtokenoutput_11 = (546, "c1", "none", b"commitment", None)
+        cashtokenoutput_20 = (546, "c2", "minting", None, 50)
+        cashtokenoutput_21 = (546, "c2", "minting", None, None)
+        cashtokenoutput_30 = (546, "c3", None, None, 50)
+        cashtokenoutput_40 = (546, "c4", "none", None, None)
 
         cashtoken = Unspents([])
-        cashtoken.amount = 3072
+        cashtoken.amount = 3276
         cashtoken.tokendata = tokendata
         (outputs, leftover_amount) = cashtoken.get_outputs(BITCOIN_CASHADDRESS_CATKN)
 

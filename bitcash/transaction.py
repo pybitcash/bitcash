@@ -58,6 +58,9 @@ class TxIn:
             and self.token_prefix == other.token_prefix
         )
 
+    def to_dict(self):
+        return {attr: getattr(self, attr) for attr in TxIn.__slots__}
+
     def __repr__(self):
         return (
             f"TxIn({repr(self.script)}, "

@@ -59,7 +59,10 @@ def get_endpoints_for(network):
                 network
             )
             for each in defaults_endpoints:
-                endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
+                if hasattr(each, "__iter__") and not isinstance(each, str):
+                    endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each))
+                else:
+                    endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
 
     return endpoints
 

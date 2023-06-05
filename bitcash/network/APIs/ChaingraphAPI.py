@@ -7,26 +7,39 @@ from bitcash.cashaddress import Address
 
 
 class ChaingraphAPI(BaseAPI):
-    """ChaingraphAPI API, chaingraph.cash"""
+    """ChaingraphAPI API, chaingraph.cash
 
-    def __init__(self, network_endpoint: str):
+    :param network_endpoint: The url for the network endpoint
+    :type network_endpoint: ``str``
+    :param node_like: node name to match for with "_like" string comparison expression
+    :type node_like: ``str``
+    """
+
+    def __init__(self, network_endpoint: str, node_like: str = None):
         try:
             assert isinstance(network_endpoint, str)
         except AssertionError:
             raise InvalidEndpointURLProvided(
                 f"Provided endpoint '{network_endpoint}' is not a valid URL"
-                f" for a Chaingraph-based REST endpoint"
+                f" for a Chaingraph-based endpoint"
             )
 
         self.network_endpoint = network_endpoint
+        if node_like is None:
+            self.node_like = "%"
+        else:
+            self.node_like = node_like
 
     # Default endpoints to use for this interface
     DEFAULT_ENDPOINTS = {
         "mainnet": [
-            "https://demo.chaingraph.cash/v1/graphql",
-            "https://gql.chaingraph.pat.mn/v1/graphql",
+            ("https://demo.chaingraph.cash/v1/graphql", "%mainnet"),
+            ("https://gql.chaingraph.pat.mn/v1/graphql", "%mainnet"),
         ],
-        "testnet": [],
+        "testnet": [
+            ("https://demo.chaingraph.cash/v1/graphql", "%testnet"),
+            ("https://gql.chaingraph.pat.mn/v1/graphql", "%testnet"),
+        ],
         "regtest": [],
     }
 
@@ -46,16 +59,28 @@ class ChaingraphAPI(BaseAPI):
     def get_balance(self, address, *args, **kwargs):
         json_request = {
             "query": """
-query GetUTXO($lb: _text) {
+query GetUTXO($lb: _text, $node: String!) {
   search_output(
     args: { locking_bytecode_hex: $lb }
-    where: { _not: { spent_by: {} } }
+    where: {
+      _and: {
+        _not: { spent_by: {} }
+        transaction: {
+          block_inclusions: {
+            block: { accepted_by: { node: { name: { _like: $node } } } }
+          }
+        }
+      }
+    }
   ) {
     value_satoshis
   }
 }
 """,
-            "variables": {"lb": f"{{{Address.from_string(address).scriptcode.hex()}}}"},
+            "variables": {
+                "lb": f"{{{Address.from_string(address).scriptcode.hex()}}}",
+                "node": self.node_like,
+            },
         }
         json = self.send_request(json_request, *args, **kwargs)
         data = json["data"]["search_output"]
@@ -64,14 +89,24 @@ query GetUTXO($lb: _text) {
     def get_transactions(self, address, *args, **kwargs):
         json_request = {
             "query": """
-query GetOutputs($lb: _text!) {
+query GetOutputs($lb: _text!, $node: String!) {
   block(
     limit: 1
-    order_by: {height: desc}
-  ){
+    order_by: { height: desc }
+    where: { accepted_by: { node: { name: { _like: $node } } } }
+  ) {
     height
   }
-  search_output(args: { locking_bytecode_hex: $lb }) {
+  search_output(
+    args: { locking_bytecode_hex: $lb }
+    where: {
+      transaction: {
+        block_inclusions: {
+          block: { accepted_by: { node: { name: { _like: $node } } } }
+        }
+      }
+    }
+  ) {
     transaction_hash
     transaction {
       block_inclusions {
@@ -93,7 +128,10 @@ query GetOutputs($lb: _text!) {
   }
 }
 """,
-            "variables": {"lb": f"{{{Address.from_string(address).scriptcode.hex()}}}"},
+            "variables": {
+                "lb": f"{{{Address.from_string(address).scriptcode.hex()}}}",
+                "node": self.node_like,
+            },
         }
         json = self.send_request(json_request, *args, **kwargs)
         blockheight = int(json["data"]["block"][0]["height"])
@@ -182,12 +220,17 @@ query GetOutputs($lb: _text!) {
     def get_tx_amount(self, txid, txindex, *args, **kwargs):
         json_request = {
             "query": """
-query GetOutput($tx: bytea!, $txind: bigint!) {
+query GetOutput($tx: bytea!, $txind: bigint!, $node: String!) {
   output(
     where: {
       _and: {
-        transaction_hash: {_eq: $tx},
-        output_index: {_eq: $txind}
+        transaction_hash: { _eq: $tx }
+        output_index: { _eq: $txind }
+        transaction: {
+          block_inclusions: {
+            block: { accepted_by: { node: { name: { _like: $node } } } }
+          }
+        }
       }
     }
   ) {
@@ -195,7 +238,7 @@ query GetOutput($tx: bytea!, $txind: bigint!) {
   }
 }
 """,
-            "variables": {"tx": f"\\x{txid}", "txind": txindex},
+            "variables": {"tx": f"\\x{txid}", "txind": txindex, "node": self.node_like},
         }
         json = self.send_request(json_request, *args, **kwargs)
         if len(json["data"]["output"]) == 0:
@@ -205,16 +248,26 @@ query GetOutput($tx: bytea!, $txind: bigint!) {
     def get_unspent(self, address, *args, **kwargs):
         json_request = {
             "query": """
-query GetUTXO($lb: _text!) {
+query GetUTXO($lb: _text!, $node: String!) {
   block(
     limit: 1
-    order_by: {height: desc}
-  ){
+    order_by: { height: desc }
+    where: { accepted_by: { node: { name: { _like: $node } } } }
+  ) {
     height
   }
   search_output(
     args: { locking_bytecode_hex: $lb }
-    where: { _not: { spent_by: {} } }
+    where: {
+      _and: {
+        _not: { spent_by: {} }
+        transaction: {
+          block_inclusions: {
+            block: { accepted_by: { node: { name: { _like: $node } } } }
+          }
+        }
+      }
+    }
   ) {
     transaction_hash
     output_index
@@ -234,7 +287,10 @@ query GetUTXO($lb: _text!) {
   }
 }
 """,
-            "variables": {"lb": f"{{{Address.from_string(address).scriptcode.hex()}}}"},
+            "variables": {
+                "lb": f"{{{Address.from_string(address).scriptcode.hex()}}}",
+                "node": self.node_like,
+            },
         }
         data = self.send_request(json_request, *args, **kwargs)["data"]
         blockheight = int(data["block"][0]["height"])
@@ -276,8 +332,17 @@ query GetUTXO($lb: _text!) {
     def get_raw_transaction(self, txid, *args, **kwargs):
         json_request = {
             "query": """
-query GetTransactionDetails($tx: bytea!) {
-  transaction(where: { hash: { _eq: $tx } }) {
+query GetTransactionDetails($tx: bytea!, $node: String!) {
+  transaction(
+    where: {
+      _and: {
+        hash: { _eq: $tx }
+        block_inclusions: {
+          block: { accepted_by: { node: { name: { _like: $node } } } }
+        }
+      }
+    }
+  ) {
     hash
     fee_satoshis
     input_value_satoshis
@@ -309,7 +374,7 @@ query GetTransactionDetails($tx: bytea!) {
   }
 }
 """,
-            "variables": {"tx": f"\\x{txid}"},
+            "variables": {"tx": f"\\x{txid}", "node": self.node_like},
         }
         json = self.send_request(json_request, *args, **kwargs)
         if len(json["data"]["transaction"]) == 0:
@@ -319,12 +384,15 @@ query GetTransactionDetails($tx: bytea!) {
     def broadcast_tx(self, tx_hex, *args, **kwargs):  # pragma: no cover
         json_request = {
             "query": """
-query GetNodeId{
-  node{
+query GetNodeId($node: String!){
+  node (
+    where: {name: {_like: $node}}
+  ){
     internal_id
   }
 }
-"""
+""",
+            "variables": {"node": self.node_like},
         }
         node_ids = self.send_request(json_request, *args, **kwargs)["data"]["node"]
 

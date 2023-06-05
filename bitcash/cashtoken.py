@@ -9,7 +9,7 @@ from bitcash.exceptions import InsufficientFunds, InvalidCashToken, InvalidAddre
 
 
 COMMITMENT_LENGTH = 40
-DUST_VALUE = 512
+DUST_VALUE = 546
 
 
 def verify_cashtoken_output_data(

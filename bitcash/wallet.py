@@ -440,6 +440,7 @@ class PrivateKey(BaseKey):
             compressed=compressed,
         )
 
+        outputs = list(map(list, outputs))
         for output in outputs:
             # script
             output[0] = output[0].hex()
@@ -473,6 +474,7 @@ class PrivateKey(BaseKey):
             # nft_commitment
             if output[4] is not None:
                 output[4] = bytes.fromhex(output[4])
+        outputs = list(map(tuple, outputs))
 
         return create_p2pkh_transaction(self, unspents, outputs)
 
