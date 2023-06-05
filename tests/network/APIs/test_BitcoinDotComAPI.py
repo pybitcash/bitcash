@@ -28,6 +28,60 @@ class DummySession:
     def get(self, url, *args, **kwargs):
         return DummyRequest(self.return_json)
 
+    def post(self, url, json_request, *args, **kwargs):
+        """
+        Makeshift function to get cashtoken info in unspents by querying tx details.
+        Should be deprecated once BitcoinDotComAPI supports cashtokens in unspents
+        """
+        return DummyRequest(
+            [
+                {
+                    "vout": [
+                        {
+                            "tokenData": {
+                                "category": "b3d668379a421820fe89cf1bda4bfd7295202a516a0fa5ca0c8011e4c2fc256d",
+                                "amount": 0,
+                                "nft": {"capability": "none", "commitment": "0a"},
+                            },
+                        }
+                    ]
+                },
+                {
+                    "vout": [
+                        {
+                            "tokenData": {
+                                "category": "c3d668379a421820fe89cf1bda4bfd7295202a516a0fa5ca0c8011e4c2fc256d",
+                                "amount": 0,
+                                "nft": {"capability": "none", "commitment": ""},
+                            },
+                        },
+                    ]
+                },
+                {
+                    "vout": [
+                        {
+                            "tokenData": {
+                                "category": "55255e66ab1280fae24896c084c360d5027c1b4ef5b1a5588c4b7af246fdcf7a",
+                                "amount": 1000,
+                            },
+                        },
+                    ]
+                },
+                {
+                    "vout": [
+                        {},
+                        {}
+                    ]
+                },
+                {
+                    "vout": [
+                        {},
+                        {}
+                    ]
+                },
+            ]
+        )
+
 
 class TestBitcoinDotComAPI:
     def setup_method(self):
@@ -452,10 +506,10 @@ class TestBitcoinDotComAPI:
                 script,
                 "8aa279c9c46a812273c12fe78efff995ab6493cffb130ef54da73d4268a1bc9f",
                 0,
-                # "b3d668379a421820fe89cf1bda4bfd7295202a516a0fa5ca0c8011e4c2fc256d",
-                # "none",
-                # b"\n",
-                # None
+                "b3d668379a421820fe89cf1bda4bfd7295202a516a0fa5ca0c8011e4c2fc256d",
+                "none",
+                b"\n",
+                None
             ),
             Unspent(
                 1000,
@@ -463,10 +517,10 @@ class TestBitcoinDotComAPI:
                 script,
                 "9aa279c9c46a812273c12fe78efff995ab6493cffb130ef54da73d4268a1bc9f",
                 0,
-                # "c3d668379a421820fe89cf1bda4bfd7295202a516a0fa5ca0c8011e4c2fc256d",
-                # "none",
-                # None,
-                # None
+                "c3d668379a421820fe89cf1bda4bfd7295202a516a0fa5ca0c8011e4c2fc256d",
+                "none",
+                None,
+                None
             ),
             Unspent(
                 1000,
@@ -474,10 +528,10 @@ class TestBitcoinDotComAPI:
                 script,
                 "1c04b42cdd4fe595040a478315c31d9276abcb00cf8e7d2f9e52f81bade279a3",
                 0,
-                # "55255e66ab1280fae24896c084c360d5027c1b4ef5b1a5588c4b7af246fdcf7a",
-                # None,
-                # None,
-                # 1000
+                "55255e66ab1280fae24896c084c360d5027c1b4ef5b1a5588c4b7af246fdcf7a",
+                None,
+                None,
+                1000
             ),
             Unspent(
                 2512699,

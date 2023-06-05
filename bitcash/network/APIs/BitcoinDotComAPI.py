@@ -24,7 +24,8 @@ class BitcoinDotComAPI(BaseAPI):
             assert network_endpoint[-4:] == "/v2/"
         except AssertionError:
             raise InvalidEndpointURLProvided(
-                f"Provided endpoint '{network_endpoint}' is not a valid URL for a Bitcoin.com-based REST endpoint"
+                f"Provided endpoint '{network_endpoint}' is not a valid URL for a "
+                f"Bitcoin.com-based REST endpoint"
             )
 
         self.network_endpoint = network_endpoint
@@ -151,12 +152,50 @@ class BitcoinDotComAPI(BaseAPI):
         )
 
     def get_unspent(self, address, *args, **kwargs):
-        # !TODO: update for cashtokens
+        return self._get_unspent_cashtoken(address, *args, **kwargs)
         address = cashtokenaddress_to_address(address)
         api_url = self.make_endpoint_url("unspent").format(address)
         r = session.get(api_url, *args, **kwargs)
         r.raise_for_status()
-        return [
+        unspents = []
+        for tx in r.json()["utxos"]:
+            category_id = None
+            nft_capability = None
+            nft_commitment = None
+            token_amount = None
+            if "tokenData" in tx:
+                token_data = tx["tokenData"]
+                category_id = token_data["category"]
+                token_amount = int(token_data["amount"]) or None
+                if "nft" in token_data:
+                    nft_capability = token_data["nft"]["capability"]
+                    _ = token_data["nft"]["commitment"]
+                    nft_commitment = bytes.fromhex(_) or None
+            unspents.append(
+                Unspent(
+                    currency_to_satoshi(tx["amount"], "bch"),
+                    tx["confirmations"],
+                    r.json()["scriptPubKey"],
+                    tx["txid"],
+                    tx["vout"],
+                    category_id,
+                    nft_capability,
+                    nft_commitment,
+                    token_amount,
+                )
+            )
+        return unspents
+
+    def _get_unspent_cashtoken(self, address, *args, **kwargs):
+        """
+        Makeshift function to get cashtoken info in unspents by querying tx details.
+        Should be deprecated once BitcoinDotComAPI supports cashtokens in unspents
+        """
+        address = cashtokenaddress_to_address(address)
+        api_url = self.make_endpoint_url("unspent").format(address)
+        r = session.get(api_url, *args, **kwargs)
+        r.raise_for_status()
+        unspents = [
             Unspent(
                 currency_to_satoshi(tx["amount"], "bch"),
                 tx["confirmations"],
@@ -166,6 +205,23 @@ class BitcoinDotComAPI(BaseAPI):
             )
             for tx in r.json()["utxos"]
         ]
+        api_url = self.make_endpoint_url("tx-details").format("")
+        r = session.post(
+            api_url, {"txids": [unspent.txid for unspent in unspents]}, *args, **kwargs
+        )
+        r.raise_for_status()
+        response = r.json(parse_float=Decimal)
+        for i, unspent in enumerate(unspents):
+            txout = response[i]["vout"][unspent.txindex]
+            if "tokenData" in txout:
+                token_data = txout["tokenData"]
+                unspent.category_id = token_data["category"]
+                unspent.token_amount = int(token_data["amount"]) or None
+                if "nft" in token_data:
+                    unspent.nft_capability = token_data["nft"]["capability"]
+                    _ = bytes.fromhex(token_data["nft"]["commitment"])
+                    unspent.nft_commitment = _ or None
+        return unspents
 
     def get_raw_transaction(self, txid, *args, **kwargs):
         api_url = self.make_endpoint_url("tx-details").format(txid)
