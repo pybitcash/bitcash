@@ -63,14 +63,21 @@ query GetUTXO($lb: _text, $node: String!) {
   search_output(
     args: { locking_bytecode_hex: $lb }
     where: {
-      _and: {
-        _not: { spent_by: {} }
-        transaction: {
-          block_inclusions: {
-            block: { accepted_by: { node: { name: { _like: $node } } } }
+      _not: { spent_by: {} }
+      _or: [
+        {
+          transaction: {
+            node_validations: { node: { name: { _like: $node } } }
           }
         }
-      }
+        {
+          transaction: {
+            block_inclusions: {
+              block: { accepted_by: { node: { name: { _like: $node } } } }
+            }
+          }
+        }
+      ]
     }
   ) {
     value_satoshis
@@ -100,11 +107,20 @@ query GetOutputs($lb: _text!, $node: String!) {
   search_output(
     args: { locking_bytecode_hex: $lb }
     where: {
-      transaction: {
-        block_inclusions: {
-          block: { accepted_by: { node: { name: { _like: $node } } } }
+      _or: [
+        {
+          transaction: {
+            node_validations: { node: { name: { _like: $node } } }
+          }
         }
-      }
+        {
+          transaction: {
+            block_inclusions: {
+              block: { accepted_by: { node: { name: { _like: $node } } } }
+            }
+          }
+        }
+      ]
     }
   ) {
     transaction_hash
@@ -223,15 +239,22 @@ query GetOutputs($lb: _text!, $node: String!) {
 query GetOutput($tx: bytea!, $txind: bigint!, $node: String!) {
   output(
     where: {
-      _and: {
-        transaction_hash: { _eq: $tx }
-        output_index: { _eq: $txind }
-        transaction: {
-          block_inclusions: {
-            block: { accepted_by: { node: { name: { _like: $node } } } }
+      transaction_hash: { _eq: $tx }
+      output_index: { _eq: $txind }
+      _or: [
+        {
+          transaction: {
+            block_inclusions: {
+              block: { accepted_by: { node: { name: { _like: $node } } } }
+            }
           }
         }
-      }
+        {
+          transaction: {
+            node_validations: { node: { name: { _like: $node } } }
+          }
+        }
+      ]
     }
   ) {
     value_satoshis
@@ -259,14 +282,21 @@ query GetUTXO($lb: _text!, $node: String!) {
   search_output(
     args: { locking_bytecode_hex: $lb }
     where: {
-      _and: {
-        _not: { spent_by: {} }
-        transaction: {
-          block_inclusions: {
-            block: { accepted_by: { node: { name: { _like: $node } } } }
+      _not: { spent_by: {} }
+      _or: [
+        {
+          transaction: {
+            node_validations: { node: { name: { _like: $node } } }
           }
         }
-      }
+        {
+          transaction: {
+            block_inclusions: {
+              block: { accepted_by: { node: { name: { _like: $node } } } }
+            }
+          }
+        }
+      ]
     }
   ) {
     transaction_hash
@@ -335,12 +365,15 @@ query GetUTXO($lb: _text!, $node: String!) {
 query GetTransactionDetails($tx: bytea!, $node: String!) {
   transaction(
     where: {
-      _and: {
-        hash: { _eq: $tx }
-        block_inclusions: {
-          block: { accepted_by: { node: { name: { _like: $node } } } }
+      hash: { _eq: $tx }
+      _or: [
+        {
+          block_inclusions: {
+            block: { accepted_by: { node: { name: { _like: $node } } } }
+          }
         }
-      }
+        { node_validations: { node: { name: { _like: $node } } } }
+      ]
     }
   ) {
     hash
