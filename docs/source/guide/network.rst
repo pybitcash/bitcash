@@ -46,6 +46,8 @@ terms of other currencies using :func:`~bitcash.PrivateKey.balance_as`.
 
 See also :ref:`unsupported currencies`.
 
+.. _unspent:
+
 Unspent
 -------
 

@@ -269,8 +269,12 @@ class PrivateKey(BaseKey):
                         must be :ref:`supported <supported currencies>`.
                         To send CashToken, the list of output is made in the
                         form ``(destination, amount, currency, category_id,
-                        nft_capability, nft_commitment, token_amount)``. The
-                        CashToken property nft_capability, nft_commitment, or
+                        nft_capability, nft_commitment, token_amount)``. The category_id
+                        is hex of tx-id as ``str``. The nft_capability is the capability
+                        of non-fungible token in ("none", "mutable", "minting"). The
+                        nft_commitment is the commitment of the non-fungible token in
+                        ``bytes``.
+                        The CashToken property nft_capability, nft_commitment, or
                         the token_amount can be None if not to be sent. If
                         category_id is tx-id of unspent with tx-index 0, then
                         tx is treated as a genesis tx.
@@ -332,8 +336,12 @@ class PrivateKey(BaseKey):
                         must be :ref:`supported <supported currencies>`.
                         To send CashToken, the list of output is made in the
                         form ``(destination, amount, currency, category_id,
-                        nft_capability, nft_commitment, token_amount)``. The
-                        CashToken property nft_capability, nft_commitment, or
+                        nft_capability, nft_commitment, token_amount)``. The category_id
+                        is hex of tx-id as ``str``. The nft_capability is the capability
+                        of non-fungible token in ("none", "mutable", "minting"). The
+                        nft_commitment is the commitment of the non-fungible token in
+                        ``bytes``.
+                        The CashToken property nft_capability, nft_commitment, or
                         the token_amount can be None if not to be sent. If
                         category_id is tx-id of unspent with tx-index 0, then
                         tx is treated as a genesis tx.
@@ -398,8 +406,12 @@ class PrivateKey(BaseKey):
                         must be :ref:`supported <supported currencies>`.
                         To send CashToken, the list of output is made in the
                         form ``(destination, amount, currency, category_id,
-                        nft_capability, nft_commitment, token_amount)``. The
-                        CashToken property nft_capability, nft_commitment, or
+                        nft_capability, nft_commitment, token_amount)``. The category_id
+                        is hex of tx-id as ``str``. The nft_capability is the capability
+                        of non-fungible token in ("none", "mutable", "minting"). The
+                        nft_commitment is the commitment of the non-fungible token in
+                        ``bytes``.
+                        The CashToken property nft_capability, nft_commitment, or
                         the token_amount can be None if not to be sent. If
                         category_id is tx-id of unspent with tx-index 0, then
                         tx is treated as a genesis tx.

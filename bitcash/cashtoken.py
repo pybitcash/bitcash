@@ -152,6 +152,17 @@ def generate_cashtoken_prefix(
 
 
 def prepare_output(output):
+    """
+    Prepares output for sending transaction
+
+    :param output: Output tuple of format: (destination address, amount, currency) or
+                   (destination address, amount, currency, category_id, nft_capability,
+                   nft_commitment, token_amount)
+    :type output: ``tuple``
+    :returns: Prepared output tuple of format (scriptcode with token prefix, amount in
+              satoshis, category_id, nft_capability, nft_commitment, token_amount)
+    :rtype: ``tuple``
+    """
     if len(output) == 3:
         dest, amount, currency = output
         if not isinstance(dest, Address):
@@ -222,12 +233,12 @@ class Unspents:
     outputs
 
     >>> unspents.tokendata = {
-            "category_id" : {           (string) token id hex
-                "token_amount" : "xxx", (int) fungible amount
+            "category_id": {           (string) token id hex
+                "token_amount": "xxx", (int) fungible amount
                 "nft" : [{
-                  "capability" : "xxx", (string) one of "none", "mutable",
+                  "capability": "xxx", (string) one of "none", "mutable",
                                         "minting"
-                  "commitment" : b"xxx" (bytes) NFT commitment
+                  "commitment": b"xxx" (bytes) NFT commitment
                 }]
             }
         }
@@ -253,6 +264,13 @@ class Unspents:
         return instance
 
     def add_unspent(self, unspent):
+        """
+        Adds unspent
+
+        :param unspent: An instance of Unspent to add
+        :type unspent: Unspent
+        :returns: None
+        """
         self.amount += unspent.amount
         if unspent.has_cashtoken:
             categorydata = self.tokendata.get(unspent.category_id, {})
@@ -275,7 +293,7 @@ class Unspents:
         """
         Return sanitized outputs for the remaining cashtokens
 
-        :param leftover: leftover address to add the outputs
+        :param leftover: Leftover address to add the outputs
         :type leftover: ``str``
         :rtype: tuple(``list``, ``int``)  # (outputs, leftover_amount)
         """
@@ -340,6 +358,15 @@ class Unspents:
         return outputs, amount
 
     def subtract_output(self, output):
+        """
+        Subtract output from cumulative unspent BCH and cashtoken amounts
+
+        :param output: Prepared output tuple of format (scriptcode with token prefix,
+                       amount in satoshis, category_id, nft_capability, nft_commitment,
+                       token_amount)
+        :type output: ``tuple``
+        :returns: None
+        """
         output = prepare_output(output)
         _, amount, category_id, nft_capability, nft_commitment, token_amount = output
         if self.amount < amount:
@@ -459,6 +486,13 @@ def _subtract_minting_nft(categorydata):
 def select_cashtoken_utxo(unspents, outputs):
     """
     Function to select unspents that cover cashtokens of prepared outputs
+
+    :param unspents: List of unspents to select from
+    :type unspents: ``list``
+    :param outputs: List of prepared outputs to cover cashtokens of
+    :type outputs: ``list``
+    :returns: Tuple of leftover unspents and unspents used to cover given outputs
+    :rtype: ``tuple``
     """
     unspents_used = []
     outputs = [prepare_output(output) for output in outputs]

@@ -164,7 +164,12 @@ def point_to_public_key(point, compressed=True):
 
 def address_to_cashtokenaddress(address):
     """
-    converts regular cashaddress to cashtoken signalling address
+    Converts regular cashaddress to cashtoken signalling address
+
+    :param address: Cashaddress
+    :type address: ``str``
+    :returns: Cashtoken signalling cashaddress
+    :rtype: ``str``
     """
     address = Address.from_string(address)
     if "CATKN" in address.version:
@@ -177,7 +182,12 @@ def address_to_cashtokenaddress(address):
 
 def cashtokenaddress_to_address(address):
     """
-    converts cashtoken signalling cashaddress to regular cashaddress
+    Converts cashtoken signalling cashaddress to regular cashaddress
+
+    :param address: Cashtoken signalling cashaddress
+    :type address: ``str``
+    :returns: Cashaddress
+    :rtype: ``str``
     """
     address = Address.from_string(address)
     if "CATKN" not in address.version:

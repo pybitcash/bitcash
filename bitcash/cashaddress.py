@@ -77,6 +77,14 @@ def prefix_expand(prefix):
 
 
 class Address:
+    """
+    Class to handle CashAddr.
+
+    :param version: Version of CashAddr
+    :type version: ``str``
+    :param payload: Payload of CashAddr as int list of the bytearray
+    :type payload: ``list`` of ``int``
+    """
     VERSIONS = {
         "P2SH20": {"prefix": "bitcoincash", "version_bit": 8, "network": "mainnet"},
         "P2SH32": {"prefix": "bitcoincash", "version_bit": 11, "network": "mainnet"},
@@ -177,6 +185,11 @@ class Address:
             )
 
     def cash_address(self):
+        """
+        Generate CashAddr of the Address
+
+        :rtype: ``str``
+        """
         version_bit = Address.VERSIONS[self.version]["version_bit"]
         payload = [version_bit] + self.payload
         payload = convertbits(payload, 8, 5)
@@ -185,6 +198,11 @@ class Address:
 
     @property
     def scriptcode(self):
+        """
+        Generate the locking script of the Address
+
+        :rtype: ``bytes``
+        """
         if "P2PKH" in self.version:
             return (
                 OpCodes.OP_DUP.b
@@ -211,6 +229,13 @@ class Address:
 
     @classmethod
     def from_script(cls, scriptcode):
+        """
+        Generate Address from a locking script
+
+        :param scriptcode: The locking script
+        :type scriptcode: ``bytes``
+        :returns: Instance of :class:~bitcash.cashaddress.Address
+        """
         # cashtoken suffix
         catkn = ""
         if scriptcode.startswith(OpCodes.OP_TOKENPREFIX.b):
@@ -254,6 +279,13 @@ class Address:
 
     @staticmethod
     def from_string(address):
+        """
+        Generate Address from a cashadress string
+
+        :param scriptcode: The cashaddress string
+        :type scriptcode: ``str``
+        :returns: Instance of :class:~bitcash.cashaddress.Address
+        """
         try:
             address = str(address)
         except Exception:
