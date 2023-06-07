@@ -38,31 +38,70 @@ def get_endpoints_for(network):
 
     endpoints = []
     for endpoint in ENDPOINT_ENV_VARIABLES.keys():
-        if os.getenv(f"{endpoint}_API_{network}".upper()):
-            endpoints.append(
-                ENDPOINT_ENV_VARIABLES[endpoint](
-                    os.getenv(f"{endpoint}_API_{network}".upper())
+        if endpoint == "CHAINGRAPH":
+            if os.getenv(f"{endpoint}_API".upper()):
+                endpoints.append(
+                    ENDPOINT_ENV_VARIABLES[endpoint](
+                        os.getenv(f"{endpoint}_API".upper()),
+                        os.getenv(f"{endpoint}_API_{network}".upper()),
+                    )
                 )
-            )
-        elif os.getenv(f"{endpoint}_API_{network}_1".upper()):
-            counter = 1
-            finished = False
-            while not finished:
-                next_endpoint = os.getenv(f"{endpoint}_API_{network}_{counter}".upper())
-                if next_endpoint:
-                    endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](next_endpoint))
-                    counter += 1
-                else:
-                    finished = True
+            elif os.getenv(f"{endpoint}_API_1".upper()):
+                counter = 1
+                finished = False
+                while not finished:
+                    next_endpoint = os.getenv(f"{endpoint}_API_{counter}".upper())
+                    next_pattern = os.getenv(
+                        f"{endpoint}_API_{network}_{counter}".upper()
+                    )
+                    if next_endpoint:
+                        endpoints.append(
+                            ENDPOINT_ENV_VARIABLES[endpoint](
+                                next_endpoint, next_pattern
+                            )
+                        )
+                        counter += 1
+                    else:
+                        finished = True
+            else:
+                defaults_endpoints = ENDPOINT_ENV_VARIABLES[
+                    endpoint
+                ].get_default_endpoints(network)
+                for each in defaults_endpoints:
+                    if hasattr(each, "__iter__") and not isinstance(each, str):
+                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each))
+                    else:
+                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
         else:
-            defaults_endpoints = ENDPOINT_ENV_VARIABLES[endpoint].get_default_endpoints(
-                network
-            )
-            for each in defaults_endpoints:
-                if hasattr(each, "__iter__") and not isinstance(each, str):
-                    endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each))
-                else:
-                    endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
+            if os.getenv(f"{endpoint}_API_{network}".upper()):
+                endpoints.append(
+                    ENDPOINT_ENV_VARIABLES[endpoint](
+                        os.getenv(f"{endpoint}_API_{network}".upper())
+                    )
+                )
+            elif os.getenv(f"{endpoint}_API_{network}_1".upper()):
+                counter = 1
+                finished = False
+                while not finished:
+                    next_endpoint = os.getenv(
+                        f"{endpoint}_API_{network}_{counter}".upper()
+                    )
+                    if next_endpoint:
+                        endpoints.append(
+                            ENDPOINT_ENV_VARIABLES[endpoint](next_endpoint)
+                        )
+                        counter += 1
+                    else:
+                        finished = True
+            else:
+                defaults_endpoints = ENDPOINT_ENV_VARIABLES[
+                    endpoint
+                ].get_default_endpoints(network)
+                for each in defaults_endpoints:
+                    if hasattr(each, "__iter__") and not isinstance(each, str):
+                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each))
+                    else:
+                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
 
     return endpoints
 
