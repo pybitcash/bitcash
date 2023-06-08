@@ -9,7 +9,18 @@ from bitcash.exceptions import InsufficientFunds, InvalidCashToken, InvalidAddre
 
 
 COMMITMENT_LENGTH = 40
-DUST_VALUE = 546
+
+
+def _calculate_dust_value(
+    address, category_id, nft_capability, nft_commitment, token_amount
+):
+    """
+    Calculates dust value for cashtoken outs
+    """
+    output = Address.from_string(address).scriptcode + generate_cashtoken_prefix(
+        category_id, nft_capability, nft_commitment, token_amount
+    )
+    return 444 + (8 + len(int_to_varint(len(output))) + len(output)) * 3
 
 
 def verify_cashtoken_output_data(
@@ -309,11 +320,18 @@ class Unspents:
                 for i, nft in enumerate(value["nft"]):
                     nft_capability = nft["capability"]
                     nft_commitment = nft.get("commitment", None)
+                    dust_value = _calculate_dust_value(
+                        leftover,
+                        category_id,
+                        nft_capability,
+                        nft_commitment,
+                        token_amount,
+                    )
                     outputs.append(
                         prepare_output(
                             (
                                 leftover,
-                                DUST_VALUE,
+                                dust_value,
                                 "satoshi",
                                 category_id,
                                 nft_capability,
@@ -324,14 +342,17 @@ class Unspents:
                     )
                     # add token to first nft
                     token_amount = None
-                    amount -= DUST_VALUE
+                    amount -= dust_value
             elif token_amount is not None:
                 # token_amount but no nft
+                dust_value = _calculate_dust_value(
+                    leftover, category_id, None, None, token_amount
+                )
                 outputs.append(
                     prepare_output(
                         (
                             leftover,
-                            DUST_VALUE,
+                            dust_value,
                             "satoshi",
                             category_id,
                             None,
@@ -340,7 +361,7 @@ class Unspents:
                         )
                     )
                 )
-                amount -= DUST_VALUE
+                amount -= dust_value
 
         if len(outputs) == 0:
             # no tokendata

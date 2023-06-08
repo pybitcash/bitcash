@@ -19,7 +19,7 @@ network. CashTokens come in two flavours:
 Moreover, an NFT token can have 3 ``capabilities``:
    #. **Minting tokens** (NFTs with the "minting" ``capability``) allow the spending
          transaction to create any number of new NFTs of the same ``category``, each
-         with any ``commitment`` and (optionally) the *minting* or *mutable* capability.
+         with any ``commitment`` and (optionally) the *minting* or *mutable* ``capability``.
    #. **Mutable tokens** (NFTs with the "mutable" ``capability``) allow the spending
          transaction to create one NFT of the same ``category``, with any
          ``commitment`` and (optionally) the *mutable* ``capability``.

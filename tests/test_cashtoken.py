@@ -13,6 +13,7 @@ from bitcash.cashtoken import (
     prepare_output,
     Unspents,
     select_cashtoken_utxo,
+    _calculate_dust_value
 )
 from bitcash.exceptions import InsufficientFunds, InvalidCashToken, InvalidAddress
 from bitcash.cashaddress import Address
@@ -432,25 +433,34 @@ class TestUnspents:
             "c4": {"nft": [{"capability": "none"}]},
         }
 
-        cashtokenoutput_10 = (546, "c1", "mutable", None, None)
-        cashtokenoutput_11 = (546, "c1", "none", b"commitment", None)
-        cashtokenoutput_20 = (546, "c2", "minting", None, 50)
-        cashtokenoutput_21 = (546, "c2", "minting", None, None)
-        cashtokenoutput_30 = (546, "c3", None, None, 50)
-        cashtokenoutput_40 = (546, "c4", "none", None, None)
+        cashtokenoutput = [None for i in range(6)]
+        cashtokenoutput[0] = (546, "c1", "mutable", None, None)
+        cashtokenoutput[1] = (546, "c1", "none", b"commitment", None)
+        cashtokenoutput[2] = (546, "c2", "minting", None, 50)
+        cashtokenoutput[3] = (546, "c2", "minting", None, None)
+        cashtokenoutput[4] = (546, "c3", None, None, 50)
+        cashtokenoutput[5] = (546, "c4", "none", None, None)
+        for i in range(6):
+            dust = _calculate_dust_value(
+                BITCOIN_CASHADDRESS_CATKN,
+                *cashtokenoutput[i][1:]
+            )
+            _ = list(cashtokenoutput[i])
+            _[0] = dust
+            cashtokenoutput[i] = tuple(_)
 
         cashtoken = Unspents([])
-        cashtoken.amount = 3276
+        cashtoken.amount = sum([_[0] for _ in cashtokenoutput])
         cashtoken.tokendata = tokendata
         (outputs, leftover_amount) = cashtoken.get_outputs(BITCOIN_CASHADDRESS_CATKN)
 
         assert len(outputs) == 6
-        assert outputs[0][1:] == cashtokenoutput_10
-        assert outputs[1][1:] == cashtokenoutput_11
-        assert outputs[2][1:] == cashtokenoutput_20
-        assert outputs[3][1:] == cashtokenoutput_21
-        assert outputs[4][1:] == cashtokenoutput_30
-        assert outputs[5][1:] == cashtokenoutput_40
+        assert outputs[0][1:] == cashtokenoutput[0]
+        assert outputs[1][1:] == cashtokenoutput[1]
+        assert outputs[2][1:] == cashtokenoutput[2]
+        assert outputs[3][1:] == cashtokenoutput[3]
+        assert outputs[4][1:] == cashtokenoutput[4]
+        assert outputs[5][1:] == cashtokenoutput[5]
         assert leftover_amount == 0
 
         cashtoken = Unspents([])
@@ -556,3 +566,17 @@ def test_select_cashtoken_utxo():
         [unspent9, unspent8, unspent7], [(b"", 512, "c1", None, None, 75)]
     )
     assert unspents == [] and unspents_used == [unspent7, unspent9, unspent8]
+
+
+def test_calculate_dust_value():
+    for script in [
+        PREFIX_CAPABILITY,
+        PREFIX_CAPABILITY_AMOUNT,
+        PREFIX_CAPABILITY_COMMITMENT,
+        PREFIX_CAPABILITY_COMMITMENT_AMOUNT,
+        PREFIX_AMOUNT,
+        b"",
+    ]:
+        cashtoken = parse_cashtoken_prefix(script)
+        dust = _calculate_dust_value(BITCOIN_CASHADDRESS_CATKN, *cashtoken)
+        assert dust == 546 + len(script) * 3
