@@ -241,8 +241,10 @@ class NetworkAPI:
         success = None
 
         for endpoint in get_endpoints_for(network):
-            if endpoint.network_endpoint in ChaingraphAPI.DEFAULT_ENDPOINTS[network]:
-                # Default chaingraphapi do not support broadcast tx
+            _ = [end[0] for end in ChaingraphAPI.get_default_endpoints(network)]
+            if endpoint in _ and network == "mainnet":
+                # Default chaingraph endpoints do not indicate failed broadcast
+                # no other testnet api
                 continue
             try:
                 success = endpoint.broadcast_tx(tx_hex, timeout=DEFAULT_TIMEOUT)
