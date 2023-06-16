@@ -209,12 +209,7 @@ class PrivateKey(BaseKey):
         :type currency: ``str``
         :rtype: ``str``
         """
-        self.unspents[:] = NetworkAPI.get_unspent(
-            self.address, network=NETWORKS[self._network]
-        )
-        _ = Unspents(self.unspents)
-        self.balance = _.amount
-        self.cashtoken_balance = _.tokendata
+        _ = self.get_unspents()
         return self.balance_as(currency)
 
     def get_cashtokenbalance(self):
@@ -224,7 +219,7 @@ class PrivateKey(BaseKey):
 
         :rtype: ``dict``
         """
-        _ = self.get_balance()
+        _ = self.get_unspents()
         return self.cashtoken_balance
 
     def get_unspents(self):
@@ -304,7 +299,7 @@ class PrivateKey(BaseKey):
         """
 
         unspents, outputs = sanitize_tx_data(
-            unspents or self.unspents,
+            unspents or self.get_unspents(),
             outputs,
             fee or DEFAULT_FEE,
             leftover or self.address,

@@ -162,8 +162,13 @@ class TestPrepareOutput:
             output = prepare_output(output)
 
     def test_token_signal(self):
-        output = (BITCOIN_CASHADDRESS, 20, "bch", "category_id", "none", None, None)
+        output = (BITCOIN_CASHADDRESS, 20, "bch", "341234", "none", None, None)
         with pytest.raises(InvalidAddress):
+            prepare_output(output)
+
+    def test_dust_limit(self):
+        output = (BITCOIN_CASHADDRESS, 20, "satoshi")
+        with pytest.raises(InsufficientFunds):
             prepare_output(output)
 
 
@@ -464,12 +469,12 @@ class TestUnspents:
         assert leftover_amount == 0
 
         cashtoken = Unspents([])
-        cashtoken.amount = 50
+        cashtoken.amount = 546
         (outputs, leftover_amount) = cashtoken.get_outputs(BITCOIN_CASHADDRESS_CATKN)
 
         assert len(outputs) == 1
-        assert outputs[0][1:] == (50, None, None, None, None)
-        assert leftover_amount == 50
+        assert outputs[0][1:] == (546, None, None, None, None)
+        assert leftover_amount == 546
 
 
 def test_select_cashtoken_utxo():

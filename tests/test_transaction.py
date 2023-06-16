@@ -226,7 +226,7 @@ class TestSanitizeTxData:
 
     def test_combine_remaining(self):
         unspents_original = [Unspent(1000, 0, "", "", 0), Unspent(1000, 0, "", "", 0)]
-        outputs_original = [(BITCOIN_CASHADDRESS_COMPRESSED, 500, "satoshi")]
+        outputs_original = [(BITCOIN_CASHADDRESS_COMPRESSED, 600, "satoshi")]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original,
@@ -240,7 +240,7 @@ class TestSanitizeTxData:
         assert unspents == unspents_original
         assert len(outputs) == 2
         assert outputs[1][0] == Address.from_string(RETURN_ADDRESS).scriptcode
-        assert outputs[1][1] == 1500
+        assert outputs[1][1] == 1400
 
     def test_combine_insufficient_funds(self):
         unspents_original = [Unspent(1000, 0, "", "", 0), Unspent(1000, 0, "", "", 0)]
@@ -454,7 +454,7 @@ class TestSanitizeTxDataCashToken:
             Unspent(1000, 0, "script", "txid", 1, "caff", "minting"),
         ]
         outputs_original = [
-            [BITCOIN_CASHADDRESS_CATKN, 1500, "satoshi", "caff", "none", None, None]
+            [BITCOIN_CASHADDRESS_CATKN, 1100, "satoshi", "caff", "none", None, None]
         ]
         script = Address.from_string(BITCOIN_CASHADDRESS_CATKN).scriptcode
 
@@ -468,8 +468,8 @@ class TestSanitizeTxDataCashToken:
 
         assert len(unspents) == 2
         assert len(outputs) == 2
-        assert outputs[0][1:] == (1500, "caff", "none", None, None)
-        assert outputs[1] == (script, 500, None, None, None, None)
+        assert outputs[0][1:] == (1100, "caff", "none", None, None)
+        assert outputs[1] == (script, 900, None, None, None, None)
 
     def test_genesis(self):
         unspents_original = [
@@ -478,7 +478,7 @@ class TestSanitizeTxDataCashToken:
             Unspent(1000, 0, "script", "txid", 1, "caff", "minting"),
         ]
         outputs_original = [
-            [BITCOIN_CASHADDRESS_CATKN, 500, "satoshi", "cafe", "none", None, None]
+            [BITCOIN_CASHADDRESS_CATKN, 800, "satoshi", "cafe", "none", None, None]
         ]
 
         unspents, outputs = sanitize_tx_data(
@@ -489,15 +489,15 @@ class TestSanitizeTxDataCashToken:
             combine=False,
         )
 
-        assert len(unspents) == 1
+        assert len(unspents) == 2
         assert unspents[0] == unspents_original[0]
         assert len(outputs) == 2
-        assert outputs[0][1:] == (500, "cafe", "none", None, None)
-        assert outputs[1][1:] == (500, None, None, None, None)
+        assert outputs[0][1:] == (800, "cafe", "none", None, None)
+        assert outputs[1][1:] == (1200, "caff", "none", None, None)
 
         # fail genesis
         outputs_original = [
-            [BITCOIN_CASHADDRESS_CATKN, 500, "satoshi", "caca", "none", None, None]
+            [BITCOIN_CASHADDRESS_CATKN, 800, "satoshi", "caca", "none", None, None]
         ]
 
         # caca is not genesis, since txindex = 1. Thus it is treated as

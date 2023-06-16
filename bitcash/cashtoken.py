@@ -15,7 +15,19 @@ def _calculate_dust_value(
     address, category_id, nft_capability, nft_commitment, token_amount
 ):
     """
-    Calculates dust value for cashtoken outs
+    Calculates dust value for output
+
+    :param address: CashAddr address
+    :type address: ``str``
+    :param category_id: Category hex of the cashtoken
+    :type category_id: ``str``
+    :param nft_capability: Capability of the non-fungible token
+    :type nft_capability: ``str``
+    :param nft_commitment: Commitment bytes of the non-fungible token
+    :type nft_commitment: ``bytes``
+    :param token_amount: Fungible token amount of the cashtoken
+    :type token_amount: ``int``
+    :returns: None
     """
     output = Address.from_string(address).scriptcode + generate_cashtoken_prefix(
         category_id, nft_capability, nft_commitment, token_amount
@@ -175,18 +187,7 @@ def prepare_output(output):
     :rtype: ``tuple``
     """
     if len(output) == 3:
-        dest, amount, currency = output
-        if not isinstance(dest, Address):
-            dest = Address.from_string(dest)
-        amount = currency_to_satoshi_cached(amount, currency)
-        return (
-            dest.scriptcode,
-            amount,
-            None,
-            None,
-            None,
-            None,
-        )
+        output = (*output, None, None, None, None)
     elif len(output) == 6 and isinstance(output[0], bytes):
         # already prepared
         return output
@@ -212,6 +213,12 @@ def prepare_output(output):
 
     amount = currency_to_satoshi_cached(amount, currency)
 
+    # check dust limit
+    dust = _calculate_dust_value(output[0], *output[3:])
+    if amount < dust:
+        raise InsufficientFunds(f"{amount=} less than {dust=} limit")
+
+    # verify valid cashtokens
     verify_cashtoken_output_data(
         category_id, nft_capability, nft_commitment, token_amount
     )
