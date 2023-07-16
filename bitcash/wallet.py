@@ -170,19 +170,23 @@ class PrivateKey(BaseKey):
             self._address = public_key_to_address(
                 self._public_key, version=self._network
             )
-            self._address = address_to_cashtokenaddress(self._address)
 
         return self._address
 
     @property
+    def cashtoken_address(self):
+        """The public address you share with others to receive cashtokens."""
+        return address_to_cashtokenaddress(self.address)
+
+    @property
     def scriptcode(self):
         self._scriptcode = (
-            OpCodes.OP_DUP.b
-            + OpCodes.OP_HASH160.b
-            + OpCodes.OP_DATA_20.b
+            OpCodes.OP_DUP.binary
+            + OpCodes.OP_HASH160.binary
+            + OpCodes.OP_DATA_20.binary
             + address_to_public_key_hash(self.address)
-            + OpCodes.OP_EQUALVERIFY.b
-            + OpCodes.OP_CHECKSIG.b
+            + OpCodes.OP_EQUALVERIFY.binary
+            + OpCodes.OP_CHECKSIG.binary
         )
         return self._scriptcode
 

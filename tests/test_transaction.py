@@ -96,8 +96,8 @@ OUTPUTS = [
     ),
 ]
 MESSAGES = [
-    (OpCodes.OP_RETURN.b + b"\x05" + b"hello", 0, None, None, None, None),
-    (OpCodes.OP_RETURN.b + b"\x05" + b"there", 0, None, None, None, None),
+    (OpCodes.OP_RETURN.binary + b"\x05" + b"hello", 0, None, None, None, None),
+    (OpCodes.OP_RETURN.binary + b"\x05" + b"there", 0, None, None, None, None),
 ]
 OUTPUT_BLOCK = (
     "50c30000000000001976a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac"
@@ -170,7 +170,7 @@ class TestSanitizeTxData:
         )
 
         assert len(outputs) == 3
-        assert outputs[2][0] == OpCodes.OP_RETURN.b + b"\x05" + b"hello"
+        assert outputs[2][0] == OpCodes.OP_RETURN.binary + b"\x05" + b"hello"
         assert outputs[2][1] == 0
 
     def test_message_pushdata(self):
@@ -190,7 +190,7 @@ class TestSanitizeTxData:
         )
 
         assert len(outputs) == 3
-        assert outputs[2][0] == OpCodes.OP_RETURN.b + b"\x05" + b"hello"
+        assert outputs[2][0] == OpCodes.OP_RETURN.binary + b"\x05" + b"hello"
         assert outputs[2][1] == 0
 
     def test_fee_applied(self):
@@ -572,7 +572,7 @@ class TestConstructOutputBlock:
 
     def test_pushdata_message(self):
         BYTES = (
-            OpCodes.OP_RETURN.b
+            OpCodes.OP_RETURN.binary
             + len(b"hello").to_bytes(1, byteorder="little")
             + b"hello"
         )

@@ -131,7 +131,7 @@ it polls a service and if an error occurs it tries another.
 
 .. note::
    Default chaingraph APIs do not indicate if a transaction broadcast has failed. The NetworkAPI fallbacks to 
-   BitcoinDotComAPI on ``mainnet``.
+   BitcoinDotComAPI on ``mainnet`` to broadcast a transaction.
 
 .. _satoshi: https://en.bitcoin.it/wiki/Satoshi_(unit)
 .. _blockchain: https://en.bitcoin.it/wiki/Block_chain

@@ -247,7 +247,7 @@ class OpCodes(IntEnum):
     OP_TOKENPREFIX = 0xEF
 
     @property
-    def b(self):
+    def binary(self):
         """
         Adds easy way to convert to binary
 
@@ -257,7 +257,7 @@ class OpCodes(IntEnum):
         return self.value.to_bytes(1, "little")
 
     @property
-    def h(self):
+    def hex(self):
         """
         Adds easy way to convert to hex
         >>> OpCodes.OP_0.h

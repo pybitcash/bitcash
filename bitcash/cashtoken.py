@@ -99,7 +99,7 @@ def parse_cashtoken_prefix(script):
     # make bytestream
     stream = io.BytesIO(script)
 
-    if stream.read(1) != OpCodes.OP_TOKENPREFIX.b:
+    if stream.read(1) != OpCodes.OP_TOKENPREFIX.binary:
         # no token info available
         return (category_id, nft_capability, nft_commitment, token_amount)
 
@@ -151,7 +151,7 @@ def generate_cashtoken_prefix(
         return b""
 
     # OP_HASH256 byte order
-    script = OpCodes.OP_TOKENPREFIX.b + bytes.fromhex(category_id)[::-1]
+    script = OpCodes.OP_TOKENPREFIX.binary + bytes.fromhex(category_id)[::-1]
     prefix_structure = 0
     if nft_commitment is not None:
         prefix_structure += 4

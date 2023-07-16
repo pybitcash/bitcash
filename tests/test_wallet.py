@@ -167,7 +167,8 @@ class TestPrivateKey:
 
     def test_address(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
-        assert private_key.address == BITCOIN_CASHADDRESS_CATKN
+        assert private_key.address == BITCOIN_CASHADDRESS
+        assert private_key.cashtoken_address == BITCOIN_CASHADDRESS_CATKN
 
     def test_to_wif(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
@@ -217,7 +218,7 @@ class TestPrivateKey:
     def test_repr(self):
         assert (
             repr(PrivateKey(WALLET_FORMAT_MAIN))
-            == f"<PrivateKey: {BITCOIN_CASHADDRESS_CATKN}>"
+            == f"<PrivateKey: {BITCOIN_CASHADDRESS}>"
         )
 
     def test_pay2sh(self):
@@ -267,7 +268,8 @@ class TestPrivateKeyTestnet:
 
     def test_address(self):
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
-        assert private_key.address == BITCOIN_CASHADDRESS_TEST_CATKN
+        assert private_key.address == BITCOIN_CASHADDRESS_TEST
+        assert private_key.cashtoken_address == BITCOIN_CASHADDRESS_TEST_CATKN
 
     def test_to_wif(self):
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
@@ -354,7 +356,7 @@ class TestPrivateKeyTestnet:
     def test_repr(self):
         assert (
             repr(PrivateKeyTestnet(WALLET_FORMAT_MAIN))
-            == f"<PrivateKeyTestnet: {BITCOIN_CASHADDRESS_TEST_CATKN}>"
+            == f"<PrivateKeyTestnet: {BITCOIN_CASHADDRESS_TEST}>"
         )
 
 
@@ -369,7 +371,8 @@ class TestPrivateKeyRegtest:
 
     def test_address(self):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_REGTEST)
-        assert private_key.address == BITCOIN_CASHADDRESS_REGTEST_CATKN
+        assert private_key.address == BITCOIN_CASHADDRESS_REGTEST
+        assert private_key.cashtoken_address == BITCOIN_CASHADDRESS_REGTEST_CATKN
 
     def test_to_wif(self):
         private_key = PrivateKeyRegtest(WALLET_FORMAT_REGTEST)
@@ -459,5 +462,5 @@ class TestPrivateKeyRegtest:
     def test_repr(self):
         assert (
             repr(PrivateKeyRegtest(WALLET_FORMAT_REGTEST))
-            == f"<PrivateKeyRegtest: {BITCOIN_CASHADDRESS_REGTEST_CATKN}>"
+            == f"<PrivateKeyRegtest: {BITCOIN_CASHADDRESS_REGTEST}>"
         )

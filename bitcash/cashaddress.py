@@ -85,6 +85,7 @@ class Address:
     :param payload: Payload of CashAddr as int list of the bytearray
     :type payload: ``list`` of ``int``
     """
+
     VERSIONS = {
         "P2SH20": {"prefix": "bitcoincash", "version_bit": 8, "network": "mainnet"},
         "P2SH32": {"prefix": "bitcoincash", "version_bit": 11, "network": "mainnet"},
@@ -205,26 +206,26 @@ class Address:
         """
         if "P2PKH" in self.version:
             return (
-                OpCodes.OP_DUP.b
-                + OpCodes.OP_HASH160.b
-                + OpCodes.OP_DATA_20.b
+                OpCodes.OP_DUP.binary
+                + OpCodes.OP_HASH160.binary
+                + OpCodes.OP_DATA_20.binary
                 + bytes(self.payload)
-                + OpCodes.OP_EQUALVERIFY.b
-                + OpCodes.OP_CHECKSIG.b
+                + OpCodes.OP_EQUALVERIFY.binary
+                + OpCodes.OP_CHECKSIG.binary
             )
         if "P2SH20" in self.version:
             return (
-                OpCodes.OP_HASH160.b
-                + OpCodes.OP_DATA_20.b
+                OpCodes.OP_HASH160.binary
+                + OpCodes.OP_DATA_20.binary
                 + bytes(self.payload)
-                + OpCodes.OP_EQUAL.b
+                + OpCodes.OP_EQUAL.binary
             )
         if "P2SH32" in self.version:
             return (
-                OpCodes.OP_HASH256.b
-                + OpCodes.OP_DATA_32.b
+                OpCodes.OP_HASH256.binary
+                + OpCodes.OP_DATA_32.binary
                 + bytes(self.payload)
-                + OpCodes.OP_EQUAL.b
+                + OpCodes.OP_EQUAL.binary
             )
 
     @classmethod
@@ -238,7 +239,7 @@ class Address:
         """
         # cashtoken suffix
         catkn = ""
-        if scriptcode.startswith(OpCodes.OP_TOKENPREFIX.b):
+        if scriptcode.startswith(OpCodes.OP_TOKENPREFIX.binary):
             catkn = "-CATKN"
             stream = io.BytesIO(scriptcode[33:])
 
@@ -260,20 +261,24 @@ class Address:
         # P2PKH
         if len(scriptcode) == 25:
             if scriptcode.startswith(
-                OpCodes.OP_DUP.b + OpCodes.OP_HASH160.b + OpCodes.OP_DATA_20.b
-            ) and scriptcode.endswith(OpCodes.OP_EQUALVERIFY.b + OpCodes.OP_CHECKSIG.b):
+                OpCodes.OP_DUP.binary
+                + OpCodes.OP_HASH160.binary
+                + OpCodes.OP_DATA_20.binary
+            ) and scriptcode.endswith(
+                OpCodes.OP_EQUALVERIFY.binary + OpCodes.OP_CHECKSIG.binary
+            ):
                 return cls("P2PKH" + catkn, list(scriptcode[3:23]))
         # P2SH20
         if len(scriptcode) == 23:
             if scriptcode.startswith(
-                OpCodes.OP_HASH160.b + OpCodes.OP_DATA_20.b
-            ) and scriptcode.endswith(OpCodes.OP_EQUAL.b):
+                OpCodes.OP_HASH160.binary + OpCodes.OP_DATA_20.binary
+            ) and scriptcode.endswith(OpCodes.OP_EQUAL.binary):
                 return cls("P2SH20" + catkn, list(scriptcode[2:22]))
         # P2SH32
         if len(scriptcode) == 35:
             if scriptcode.startswith(
-                OpCodes.OP_HASH256.b + OpCodes.OP_DATA_32.b
-            ) and scriptcode.endswith(OpCodes.OP_EQUAL.b):
+                OpCodes.OP_HASH256.binary + OpCodes.OP_DATA_32.binary
+            ) and scriptcode.endswith(OpCodes.OP_EQUAL.binary):
                 return cls("P2SH32" + catkn, list(scriptcode[2:34]))
         raise ValueError("Unknown script")
 

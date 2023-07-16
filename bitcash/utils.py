@@ -8,7 +8,7 @@ class Decimal(decimal.Decimal):
 
 
 def chunk_data(data, size):
-    return (data[i: i + size] for i in range(0, len(data), size))
+    return (data[i : i + size] for i in range(0, len(data), size))
 
 
 def int_to_unknown_bytes(num, byteorder="big"):

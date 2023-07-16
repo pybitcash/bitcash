@@ -38,9 +38,7 @@ MESSAGE_LIMIT = 220
 class TxIn:
     __slots__ = ("script", "script_len", "txid", "txindex", "amount", "token_prefix")
 
-    def __init__(self, script, script_len, txid, txindex, amount, token_prefix=None):
-        if token_prefix is None:
-            token_prefix = b""
+    def __init__(self, script, script_len, txid, txindex, amount, token_prefix=b""):
         self.script = script
         self.script_len = script_len
         self.txid = txid
@@ -106,15 +104,15 @@ def get_op_pushdata_code(dest):
     if length_data <= 0x4C:  # (https://en.bitcoin.it/wiki/Script)
         return length_data.to_bytes(1, byteorder="little")
     elif length_data <= 0xFF:
-        return OpCodes.OP_PUSHDATA1.b + length_data.to_bytes(
+        return OpCodes.OP_PUSHDATA1.binary + length_data.to_bytes(
             1, byteorder="little"
         )  # OP_PUSHDATA1 format
     elif length_data <= 0xFFFF:
-        return OpCodes.OP_PUSHDATA2.b + length_data.to_bytes(
+        return OpCodes.OP_PUSHDATA2.binary + length_data.to_bytes(
             2, byteorder="little"
         )  # OP_PUSHDATA2 format
     else:
-        return OpCodes.OP_PUSHDATA4.b + length_data.to_bytes(
+        return OpCodes.OP_PUSHDATA4.binary + length_data.to_bytes(
             4, byteorder="little"
         )  # OP_PUSHDATA4 format
 
@@ -157,7 +155,7 @@ def sanitize_tx_data(
         message_chunks = chunk_data(message, MESSAGE_LIMIT)
 
         for message in message_chunks:
-            script = OpCodes.OP_RETURN.b + get_op_pushdata_code(message) + message
+            script = OpCodes.OP_RETURN.binary + get_op_pushdata_code(message) + message
             messages.append((script, 0, None, None, None, None))
 
     elif message and (custom_pushdata is True):
@@ -169,7 +167,7 @@ def sanitize_tx_data(
             if type(message) != bytes:
                 raise TypeError("custom pushdata must be of type: bytes")
             else:
-                script = OpCodes.OP_RETURN.b + message
+                script = OpCodes.OP_RETURN.binary + message
             messages.append((script, 0, None, None, None, None))
 
     # counting outs, will adjust fee estimate

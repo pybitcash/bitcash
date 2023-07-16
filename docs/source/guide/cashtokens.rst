@@ -10,7 +10,6 @@ network. CashTokens come in two flavours:
    #. **Non-Fungible tokens (NFTs)** are a token type in which individual units 
          cannot be merged or divided – each NFT contains a ``commitment``, a short
          byte string attested to by the issuer of the NFT.
-    
    #. **Fungible tokens** are a token type in which individual units are 
          undifferentiated – groups of fungible tokens can be freely divided and merged
          without tracking the identity of individual tokens (much like the Bitcoin
@@ -166,14 +165,11 @@ CashToken signalling CashAddr
 -----------------------------
 
 To signal cashtoken support by wallets, new :ref:`cashaddr` versions are introduced. BitCash 
-automatically signals cashtoken support, and does not allow spending cashtokens to 
+wallet can signal cashtoken support by sharing cashtoken address using 
+:func:`~bitcash.PrivateKey.cashtoken_address`, and BitCash does not allow spending cashtokens to
 non-cashtoken-signalling addresses:
 
 .. code-block:: python
 
-   >>> key.address
+   >>> key.cashtoken_address
    'bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v'
-
-However, some wallets might not support the new CashAddr format yet. For such cases,
-function :func:`~bitcash.format.cashtokenaddress_to_address` is provided to convert to 
-the version which do not signal cashaddress.
