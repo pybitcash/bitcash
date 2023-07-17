@@ -32,8 +32,16 @@ CashAddress
 .. autoclass:: bitcash.cashaddress.Address
    :members:
 
-.. autoclass:: bitcash.cashaddress.generate_cashaddress
-.. autoclass:: bitcash.cashaddress.parse_cashaddress
+.. autofunction:: bitcash.cashaddress.generate_cashaddress
+.. autofunction:: bitcash.cashaddress.parse_cashaddress
+
+CashTokens
+-----------
+
+.. autofunction:: bitcash.cashtoken.verify_cashtoken_output_data
+.. autofunction:: bitcash.cashtoken.parse_cashtoken_prefix
+.. autofunction:: bitcash.cashtoken.generate_cashtoken_prefix
+.. autofunction:: bitcash.format.cashtokenaddress_to_address
 
 Network
 -------

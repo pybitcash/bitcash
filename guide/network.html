@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Network &#8212; bitcash 0.6.8 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -68,7 +68,7 @@ terms of other currencies using <a class="reference internal" href="../dev/api.h
 <p>See also <a class="reference internal" href="rates.html#unsupported-currencies"><span class="std std-ref">Unsupported Currencies</span></a>.</p>
 </section>
 <section id="unspent">
-<h2>Unspent<a class="headerlink" href="#unspent" title="Permalink to this heading">¶</a></h2>
+<span id="id2"></span><h2>Unspent<a class="headerlink" href="#unspent" title="Permalink to this heading">¶</a></h2>
 <p>You can see what <a class="reference external" href="https://en.bitcoin.it/wiki/Transaction#Input">unspent transaction outputs</a> (commonly referred to as UTXO)
 you have available to spend by calling <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.get_unspents" title="bitcash.PrivateKey.get_unspents"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_unspents()</span></code></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">PrivateKeyTestnet</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
@@ -123,14 +123,26 @@ a future release they will become proper objects.</p>
 <section id="services">
 <h2>Services<a class="headerlink" href="#services" title="Permalink to this heading">¶</a></h2>
 <p>BitCash communicates with the blockchain using trusted third-party APIs.
-Specifically, it can access:</p>
+Specifically, on <cite>mainnet</cite>, it can access:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://insight.bitpay.com">https://insight.bitpay.com</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">BitpayAPI</span></code></p></li>
+<li><p><a class="reference external" href="https://demo.chaingraph.cash/v1/graphql">https://demo.chaingraph.cash/v1/graphql</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">ChaingraphAPI</span></code></p></li>
+<li><p><a class="reference external" href="https://gql.chaingraph.pat.mn/v1/graphql">https://gql.chaingraph.pat.mn/v1/graphql</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">ChaingraphAPI</span></code></p></li>
+<li><p><a class="reference external" href="https://rest.bch.actorforth.org/v2/">https://rest.bch.actorforth.org/v2/</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">BitcoinDotComAPI</span></code></p></li>
+</ul>
+<p>And on <cite>testnet</cite>, it can access:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://demo.chaingraph.cash/v1/graphql">https://demo.chaingraph.cash/v1/graphql</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">ChaingraphAPI</span></code></p></li>
+<li><p><a class="reference external" href="https://gql.chaingraph.pat.mn/v1/graphql">https://gql.chaingraph.pat.mn/v1/graphql</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">ChaingraphAPI</span></code></p></li>
 </ul>
 <section id="networkapi">
 <h3>NetworkAPI<a class="headerlink" href="#networkapi" title="Permalink to this heading">¶</a></h3>
 <p>Private key network operations use <a class="reference internal" href="../dev/api.html#bitcash.network.NetworkAPI" title="bitcash.network.NetworkAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">NetworkAPI</span></code></a>. For each method,
 it polls a service and if an error occurs it tries another.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Default chaingraph APIs do not indicate if a transaction broadcast has failed. The NetworkAPI fallbacks to
+BitcoinDotComAPI on <code class="docutils literal notranslate"><span class="pre">mainnet</span></code> to broadcast a transaction.</p>
+</div>
 </section>
 </section>
 </section>

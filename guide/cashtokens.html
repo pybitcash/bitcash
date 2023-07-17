@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>CashTokens &#8212; bitcash 0.6.8 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Exchange Rates" href="rates.html" />
+    <link rel="prev" title="Transactions" href="transactions.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+<div class="documentwrapper">
+  <div class="bodywrapper">
+    <div class="body" role="main">
+    
+  <section id="cashtokens">
+<span id="id1"></span><h1>CashTokens<a class="headerlink" href="#cashtokens" title="Permalink to this heading">¶</a></h1>
+<p>CashTokens enable <a class="reference external" href="https://github.com/cashtokens/cashtokens/blob/master/readme.md">token primitives</a> for BCH. A token is an asset – distinct from
+the Bitcoin Cash currency – that can be created and transferred on the Bitcoin Cash
+network. CashTokens come in two flavours:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><dl class="simple">
+<dt><strong>Non-Fungible tokens (NFTs)</strong> are a token type in which individual units</dt><dd><p>cannot be merged or divided – each NFT contains a <code class="docutils literal notranslate"><span class="pre">commitment</span></code>, a short
+byte string attested to by the issuer of the NFT.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Fungible tokens</strong> are a token type in which individual units are</dt><dd><p>undifferentiated – groups of fungible tokens can be freely divided and merged
+without tracking the identity of individual tokens (much like the Bitcoin
+Cash currency).</p>
+</dd>
+</dl>
+</li>
+</ol>
+</div></blockquote>
+<dl class="simple">
+<dt>Moreover, an NFT token can have 3 <code class="docutils literal notranslate"><span class="pre">capabilities</span></code>:</dt><dd><ol class="arabic simple">
+<li><dl class="simple">
+<dt><strong>Minting tokens</strong> (NFTs with the “minting” <code class="docutils literal notranslate"><span class="pre">capability</span></code>) allow the spending</dt><dd><p>transaction to create any number of new NFTs of the same <code class="docutils literal notranslate"><span class="pre">category</span></code>, each
+with any <code class="docutils literal notranslate"><span class="pre">commitment</span></code> and (optionally) the <em>minting</em> or <em>mutable</em> <code class="docutils literal notranslate"><span class="pre">capability</span></code>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Mutable tokens</strong> (NFTs with the “mutable” <code class="docutils literal notranslate"><span class="pre">capability</span></code>) allow the spending</dt><dd><p>transaction to create one NFT of the same <code class="docutils literal notranslate"><span class="pre">category</span></code>, with any
+<code class="docutils literal notranslate"><span class="pre">commitment</span></code> and (optionally) the <em>mutable</em> <code class="docutils literal notranslate"><span class="pre">capability</span></code>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Immutable tokens</strong> (NFTs with “none” <code class="docutils literal notranslate"><span class="pre">capability</span></code>) cannot have their</dt><dd><p><code class="docutils literal notranslate"><span class="pre">commitment</span></code> modified when spent.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</dd>
+</dl>
+<p>The cashtokens are attached to BCH <a class="reference internal" href="network.html#unspent"><span class="std std-ref">Unspents</span></a>. A single unspent can
+have tokens of a single <code class="docutils literal notranslate"><span class="pre">category</span></code>, which can include one of or both of fungible
+tokens and an NFT.</p>
+<section id="cashtoken-genesis">
+<h2>CashToken genesis<a class="headerlink" href="#cashtoken-genesis" title="Permalink to this heading">¶</a></h2>
+<p>To create cashtokens, an <a class="reference internal" href="network.html#unspent"><span class="std std-ref">unspent</span></a> is required with output index 0 that
+acts as a genesis unspent. This genesis unspent can be spent to create the cashtoken
+required. This cashtoken then gets the transaction id of the genesis output as its
+<code class="docutils literal notranslate"><span class="pre">category</span></code>.</p>
+<figure class="align-default" id="id2">
+<img alt="../_images/cashtoken-creation.svg" src="../_images/cashtoken-creation.svg" /><figcaption>
+<p><span class="caption-text">Two new token <code class="docutils literal notranslate"><span class="pre">categories</span></code> are created by transaction <code class="docutils literal notranslate"><span class="pre">c3a601...</span></code> The first <code class="docutils literal notranslate"><span class="pre">category</span></code> (<code class="docutils literal notranslate"><span class="pre">■</span> <span class="pre">b201a0...</span></code>) is created by spending the 0th output of transaction <code class="docutils literal notranslate"><span class="pre">b201a0...</span></code>; for this <code class="docutils literal notranslate"><span class="pre">category</span></code>, a supply of 150 fungible tokens are created across two outputs (100 and 50). The second <code class="docutils literal notranslate"><span class="pre">category</span></code> (<code class="docutils literal notranslate"><span class="pre">▲</span> <span class="pre">a1efcd...</span></code>) is created by spending the 0th output of transaction <code class="docutils literal notranslate"><span class="pre">a1efcd...</span></code>; for this <code class="docutils literal notranslate"><span class="pre">category</span></code>, a supply of 100 fungible tokens are created across two outputs (20 and 80), and two NFTs are created (each with a <code class="docutils literal notranslate"><span class="pre">commitment</span></code> of <code class="docutils literal notranslate"><span class="pre">0x010203</span></code>).</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Using the <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.get_unspents" title="bitcash.PrivateKey.get_unspents"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_unspents()</span></code></a> you can query the unspent set
+belonging to your address:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_unspents</span><span class="p">()</span>
+<span class="go">[Unspent(amount=900000, confirmations=1, script=&#39;76a914dd9c917762a9f585a40e5c3a54238684d8cc741e88ac&#39;, txid=&#39;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&#39;, txindex=0)]</span>
+</pre></div>
+</div>
+<p>In the above example, the unspent output has an output index 0, which implies it can be
+a cashtoken genesis unspent. The cashtoken generated with this unspent will have a
+<code class="docutils literal notranslate"><span class="pre">category</span></code> of <code class="docutils literal notranslate"><span class="pre">afe979...</span></code>. To generate a cashtoken with an NFT of “minting”
+<code class="docutils literal notranslate"><span class="pre">capability</span></code>, and 10000 fungible tokens we can use an extended <a class="reference internal" href="transactions.html#outputsparam"><span class="std std-ref">output format</span></a>
+which is a tuple of size 7 in the form <cite>(destination, amount, currency, category_id,
+nft_capability, nft_commitment, token_amount)</cite>. This can be sent as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">send</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="p">(</span>
+<span class="gp">... </span>        <span class="s2">&quot;bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v&quot;</span><span class="p">,</span>  <span class="c1"># destination</span>
+<span class="gp">... </span>        <span class="mi">1000</span><span class="p">,</span>  <span class="c1"># amount</span>
+<span class="gp">... </span>        <span class="s2">&quot;satoshi&quot;</span><span class="p">,</span>  <span class="c1"># currency</span>
+<span class="gp">... </span>        <span class="s2">&quot;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&quot;</span><span class="p">,</span>  <span class="c1"># category</span>
+<span class="gp">... </span>        <span class="s2">&quot;minting&quot;</span><span class="p">,</span>  <span class="c1"># NFT capability</span>
+<span class="gp">... </span>        <span class="kc">None</span><span class="p">,</span>  <span class="c1"># NFT commitment, None</span>
+<span class="gp">... </span>        <span class="mi">10000</span>  <span class="c1"># fungible token amount</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">])</span>
+<span class="go">&#39;311e30abebb9d6b35d3d02308bec3985988aa0ef997bffa7bca821fe6094f17f&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_balance</span><span class="p">()</span>  <span class="c1"># to fetch present balance from the network</span>
+<span class="go">&#39;899737&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">cashtoken_balance</span>
+<span class="go">{&#39;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&#39;: {&#39;token_amount&#39;: 10000, &#39;nft&#39;: [{&#39;capability&#39;: &#39;minting&#39;}]}}</span>
+</pre></div>
+</div>
+</section>
+<section id="cashtoken-spending">
+<h2>CashToken spending<a class="headerlink" href="#cashtoken-spending" title="Permalink to this heading">¶</a></h2>
+<p>Much like generating new cashtokens, cashtokens can be spent as well. For example, to
+send 6000 fungible tokens of <code class="docutils literal notranslate"><span class="pre">category</span></code> <code class="docutils literal notranslate"><span class="pre">afe979...</span></code> you can use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">send</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="p">(</span>
+<span class="gp">... </span>        <span class="s2">&quot;bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="mi">1000</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;satoshi&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="kc">None</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="kc">None</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="mi">6000</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">])</span>
+<span class="go">&#39;fec7bff45086ac961e8f2289a9f280f7710144979a61b0a11121f674fed85b15&#39;</span>
+</pre></div>
+</div>
+<p>BitCash automatically handles unspents to form the desired transaction outputs with
+the leftover BCH and cashtokens management.</p>
+<p>We can further use the “minting” <code class="docutils literal notranslate"><span class="pre">capability</span></code> of NFT to mint a cashtoken of “mutable”
+<code class="docutils literal notranslate"><span class="pre">capability</span></code> with a <code class="docutils literal notranslate"><span class="pre">commitment</span></code> of <code class="docutils literal notranslate"><span class="pre">b&quot;bitcash&quot;</span></code> as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">[</span>
+<span class="gp">... </span>    <span class="p">(</span>
+<span class="gp">... </span>        <span class="s2">&quot;bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="mi">1000</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;satoshi&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;mutable&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="sa">b</span><span class="s2">&quot;bitcash&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="kc">None</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">])</span>
+<span class="go">&#39;58292afb507d881e6564f4210e24d2008c7b7d9028e365811cdf7304080ecb08&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_balance</span><span class="p">()</span>
+<span class="go">&#39;898388&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">cashtoken_balance</span>
+<span class="go">{&#39;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&#39;: {&#39;nft&#39;: [{&#39;capability&#39;: &#39;mutable&#39;, &#39;commitment&#39;: b&#39;bitcash&#39;}, {&#39;capability&#39;: &#39;minting&#39;}], &#39;token_amount&#39;: 10000}}</span>
+</pre></div>
+</div>
+<section id="cashtoken-spending-order">
+<h3>CashToken spending order<a class="headerlink" href="#cashtoken-spending-order" title="Permalink to this heading">¶</a></h3>
+<p>When spending unspents, BitCash follows a certain order:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><dl class="simple">
+<dt>When choosing unspents to add BCH to fulfill BCH in outputs, BitCash</dt><dd><p>prioritises adding unspents with no cashtokens. It then chooses unspents
+with just fungible tokens, followed by unspents with NFT. The unspents
+with “none” <code class="docutils literal notranslate"><span class="pre">capability</span></code> are chosen first, then followed by “mutable”
+<code class="docutils literal notranslate"><span class="pre">capability</span></code>, and finally “minting” <code class="docutils literal notranslate"><span class="pre">capability</span></code>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>When an NFT with “none” <code class="docutils literal notranslate"><span class="pre">capability</span></code> is to be sent, then a “none” <code class="docutils literal notranslate"><span class="pre">capability</span></code></dt><dd><p>NFT with the same <code class="docutils literal notranslate"><span class="pre">commitment</span></code> is chosen. If none are found, then an NFT
+with “mutable” <code class="docutils literal notranslate"><span class="pre">capability</span></code> is chosen, whose <code class="docutils literal notranslate"><span class="pre">commitment</span></code> is mutated
+to match the <code class="docutils literal notranslate"><span class="pre">commitment</span></code> of the NFT and is made into the NFT with “none”
+<code class="docutils literal notranslate"><span class="pre">capability</span></code>. If none are found, then an NFT with “minting” <code class="docutils literal notranslate"><span class="pre">capability</span></code>
+is added to the transaction, to mint the required NFT. The “minting”
+<code class="docutils literal notranslate"><span class="pre">capability</span></code> NFT is not consumed and is also present in a leftover output.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>When an NFT with “mutable” <code class="docutils literal notranslate"><span class="pre">capability</span></code> is to be sent, then a “mutable”</dt><dd><p><code class="docutils literal notranslate"><span class="pre">capability</span></code> NFT is chosen, whose <code class="docutils literal notranslate"><span class="pre">commitment</span></code> is mutated to match the
+<code class="docutils literal notranslate"><span class="pre">commitment</span></code> of the “mutable” <code class="docutils literal notranslate"><span class="pre">capability</span></code> NFT sent. If none are found,
+then an NFT with “minting” <code class="docutils literal notranslate"><span class="pre">capability</span></code> is added to the transaction, to
+mint the required NFT. The “minting” <code class="docutils literal notranslate"><span class="pre">capability</span></code> NFT is not consumed and
+is also present in a leftover output.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>When an NFT with “minting” <code class="docutils literal notranslate"><span class="pre">capability</span></code> is to be sent, then a “minting”</dt><dd><p><code class="docutils literal notranslate"><span class="pre">capability</span></code> NFT is chosen. The “minting” <code class="docutils literal notranslate"><span class="pre">capability</span></code> NFT is not consumed
+and is also present in a leftover output.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In all the cases where an NFT is to be sent, the NFT to be spent has to be of the same
+<code class="docutils literal notranslate"><span class="pre">category</span></code>.</p>
+</div>
+<p>If the default behaviour is not suitable, then a curated unspent set can be specified,
+which only includes cashtokens which need to be used.</p>
+</section>
+</section>
+<section id="cashtoken-signalling-cashaddr">
+<h2>CashToken signalling CashAddr<a class="headerlink" href="#cashtoken-signalling-cashaddr" title="Permalink to this heading">¶</a></h2>
+<p>To signal cashtoken support by wallets, new <a class="reference internal" href="cashaddr.html#cashaddr"><span class="std std-ref">CashAddr</span></a> versions are introduced. BitCash
+wallet can signal cashtoken support by sharing cashtoken address using
+<a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.cashtoken_address" title="bitcash.PrivateKey.cashtoken_address"><code class="xref py py-func docutils literal notranslate"><span class="pre">cashtoken_address()</span></code></a>, and BitCash does not allow spending cashtokens to
+non-cashtoken-signalling addresses:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">cashtoken_address</span>
+<span class="go">&#39;bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v&#39;</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+    <br>
+    <ul>
+      <li>
+        Previous topic: <a href="transactions.html">Transactions</a>
+      </li>
+      <li>
+        Next topic: <a href="rates.html">Exchange Rates</a>
+      </li>
+    </ul>
+    </div>
+  </div>
+</div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/sidebarlogo.html -->
+
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/bitcash.png"/>
+  </a>
+</p>
+
+<p>
+  <iframe src="https://ghbtns.com/github-btn.html?user=pybitcash&repo=bitcash&type=watch&count=true&size=large"
+    allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+<p>
+  bitcash is a modern Bitcoin Cash library designed to be a pleasure to use for developers and end users alike.
+</p>
+
+<h3>Stay Informed</h3>
+<p>Receive updates on new releases and upcoming projects.</p>
+
+<p><iframe src="https://ghbtns.com/github-btn.html?user=pybitcash&type=follow&count=false"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200" height="20"></iframe></p>
+
+<p><a href="https://twitter.com/merc1er" class="twitter-follow-button" data-show-count="false">Follow @merc1er</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+
+
+<h3>Other Projects</h3>
+
+<p>More <a href="https://bitcoincash.org/developers.html">Bitcoin Cash</a> projects</p>
+<ul>
+  <!-- <li><a href="#"></a></li> -->
+</ul>
+
+
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://github.com/pybitcash/bitcash">bitcash @ GitHub</a></li>
+  <li><a href="https://pypi.org/project/bitcash">bitcash @ PyPI</a></li>
+  <li><a href="https://github.com/pybitcash/bitcash/issues">Issue Tracker</a></li>
+</ul>
+
+<h3>Dependencies</h3>
+<ul>
+  <li><a href="https://github.com/ofek/coincurve">Coincurve</a></li>
+  <li><a href="https://github.com/kennethreitz/requests">Requests</a></li>
+  <li><a href="#">CashAddress</a></li>
+</ul>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">CashTokens</a><ul>
+<li><a class="reference internal" href="#cashtoken-genesis">CashToken genesis</a></li>
+<li><a class="reference internal" href="#cashtoken-spending">CashToken spending</a><ul>
+<li><a class="reference internal" href="#cashtoken-spending-order">CashToken spending order</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cashtoken-signalling-cashaddr">CashToken signalling CashAddr</a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="transactions.html" title="previous chapter">Transactions</a></li>
+      <li>Next: <a href="rates.html" title="next chapter">Exchange Rates</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/guide/cashtokens.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
+
+<!-- Alabaster (krTheme++) Hacks -->
+
+<!-- CSS Adjustments (I'm very picky.) -->
+<style type="text/css">
+
+  /* Rezzy requires precise alignment. */
+  img.logo {margin-left: -20px!important;}
+
+  /* "Quick Search" should be capitalized. */
+  div#searchbox h3 {text-transform: capitalize;}
+
+  /* Make the document a little wider, less code is cut-off. */
+  div.document {width: 1008px;}
+
+  /* Much-improved spacing around code blocks. */
+  div.highlight pre {padding: 11px 14px;}
+
+  /* Remain Responsive! */
+  @media screen and (max-width: 1008px) {
+    div.sphinxsidebar {display: none;}
+    div.document {width: 100%!important;}
+
+    /* Have code blocks escape the document right-margin. */
+    div.highlight pre {margin-right: -30px;}
+  }
+
+</style>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, BitCash.
+      
+      |
+      <a href="../_sources/guide/cashtokens.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/pybitcash/bitcash" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

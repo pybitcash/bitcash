@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Stay Informed &#8212; bitcash 0.6.8 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -57,8 +57,10 @@ message does not have an encode() function. Increase message
 size to 220 bytes.</p></li>
 <li><p>NetworkAPI.get_tx_amount() is now working and properly handles
 backends returning string or decimal values.</p></li>
-<li><p>Wallets can pay to script hash. However, P2SH utxo spending is still
+<li><p>Wallets can pay to script hash (P2SH20 and P2SH32). However, P2SH utxo spending is still
 not supported.</p></li>
+<li><p>Wallets support CashTokens.</p></li>
+<li><p>ChainGraph API support added, with default networks for mainnet and testnet.</p></li>
 <li><p>Supports CashAddress URIs.</p></li>
 </ul>
 </section>

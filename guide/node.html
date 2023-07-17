@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Customize your node API endpoints &#8212; bitcash 0.6.8 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -31,25 +31,46 @@
     
   <section id="customize-your-node-api-endpoints">
 <span id="node"></span><h1>Customize your node API endpoints<a class="headerlink" href="#customize-your-node-api-endpoints" title="Permalink to this heading">¶</a></h1>
-<p>You can use your own or a compatible node (currently, <a class="reference external" href="https://github.com/actorforth/bch-toolkit">bch toolkit</a> is supported and works out of the box) by setting the following environment variables:</p>
+<p>You can use your own or a compatible node (currently, <a class="reference external" href="https://github.com/actorforth/bch-toolkit">bch toolkit</a> and <a class="reference external" href="https://chaingraph.cash/">ChainGraph</a> are supported and works out of the box) by setting the following environment variables:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BITCOINCOM_API_MAINNET</span>
 <span class="n">BITCOINCOM_API_TESTNET</span>
 <span class="n">BITCOINCOM_API_REGTEST</span>
+<span class="n">CHAINGRAPH_API</span>
+<span class="n">CHAINGRAPH_API_MAINNET</span>
+<span class="n">CHAINGRAPH_API_TESTNET</span>
+<span class="n">CHAINGRAPH_API_REGTEST</span>
 </pre></div>
 </div>
-<p>For example:</p>
+<p>For example, for BitcoinDotComAPI:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">BITCOINCOM_API_MAINNET</span><span class="o">=</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">rest</span><span class="o">.</span><span class="n">bitcoin</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">v2</span><span class="o">/</span>
 </pre></div>
 </div>
+<p>And for ChainGraph API:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">CHAINGRAPH_API</span><span class="o">=</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">demo</span><span class="o">.</span><span class="n">chaingraph</span><span class="o">.</span><span class="n">cash</span><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">graphql</span>
+<span class="n">export</span> <span class="n">CHAINGRAPH_API_MAINNET</span><span class="o">=%</span><span class="n">mainnet</span>
+<span class="n">export</span> <span class="n">CHAINGRAPH_API_TESTNET</span><span class="o">=%</span><span class="n">testnet</span>
+</pre></div>
+</div>
+<p>This is so implemented because a ChainGraph instance can be connected to multiple BCH nodes, even on different networks of mainnet, testnet, or regtest. These nodes can be differently queried by their node names with the node-like pattern given in the relevant environment variable. If the node-like pattern environment variable is missing, then the “%” pattern is used as default.</p>
 <p>You can also specify multiple endpoints for redundancy by setting the following environment variables:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BITCOINCOM_API_MAINNET_1</span>
 <span class="n">BITCOINCOM_API_MAINNET_2</span>
 <span class="n">BITCOINCOM_API_MAINNET_3</span>
 <span class="ow">and</span> <span class="n">so</span> <span class="n">on</span><span class="o">...</span>
+<span class="ow">or</span>
+<span class="n">CHAINGRAPH_API_1</span>
+<span class="n">CHAINGRAPH_API_2</span>
+<span class="n">CHAINGRAPH_API_MAINNET_1</span>
+<span class="n">CHAINGRAPH_API_MAINNET_2</span>
+<span class="n">CHAINGRAPH_API_TESTNET_2</span>
+<span class="ow">and</span> <span class="n">so</span> <span class="n">on</span><span class="o">...</span>
 </pre></div>
 </div>
 <p>This works with any supported network (mainnet, testnet and regtest).</p>
-<p>Note that if, for example, <cite>BITCOINCOM_API_MAINNET</cite> is set, <cite>BITCOINCOM_API_MAINNET_1</cite> and so on will not be taken into account.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If, for example, <cite>BITCOINCOM_API_MAINNET</cite> is set, <cite>BITCOINCOM_API_MAINNET_1</cite> and so on will not be taken into account.</p>
+</div>
 </section>
 
 
