@@ -67,18 +67,8 @@ class DummySession:
                         },
                     ]
                 },
-                {
-                    "vout": [
-                        {},
-                        {}
-                    ]
-                },
-                {
-                    "vout": [
-                        {},
-                        {}
-                    ]
-                },
+                {"vout": [{}, {}]},
+                {"vout": [{}, {}]},
             ]
         )
 
@@ -509,7 +499,7 @@ class TestBitcoinDotComAPI:
                 "b3d668379a421820fe89cf1bda4bfd7295202a516a0fa5ca0c8011e4c2fc256d",
                 "none",
                 b"\n",
-                None
+                None,
             ),
             Unspent(
                 1000,
@@ -520,7 +510,7 @@ class TestBitcoinDotComAPI:
                 "c3d668379a421820fe89cf1bda4bfd7295202a516a0fa5ca0c8011e4c2fc256d",
                 "none",
                 None,
-                None
+                None,
             ),
             Unspent(
                 1000,
@@ -531,7 +521,7 @@ class TestBitcoinDotComAPI:
                 "55255e66ab1280fae24896c084c360d5027c1b4ef5b1a5588c4b7af246fdcf7a",
                 None,
                 None,
-                1000
+                1000,
             ),
             Unspent(
                 2512699,

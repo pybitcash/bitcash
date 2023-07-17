@@ -14,7 +14,9 @@ BITCOIN_CASHADDRESS_COMPRESSED = (
 )
 BITCOIN_CASHADDRESS_CATKN = "bitcoincash:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq37yf2mzf"
 BITCOIN_CASHADDRESS_PAY2SH20 = "bitcoincash:pp23x8hm0g8d6nrkesamaqeml3v6daeudvpa7zhktf"
-BITCOIN_CASHADDRESS_PAY2SH32 = "bitcoincash:pvch8mmxy0rtfrlarg7ucrxxfzds5pamg73h7370aa87d80gyhqxqaw3dsfwg"
+BITCOIN_CASHADDRESS_PAY2SH32 = (
+    "bitcoincash:pvch8mmxy0rtfrlarg7ucrxxfzds5pamg73h7370aa87d80gyhqxqaw3dsfwg"
+)
 
 BITCOIN_CASHADDRESS_TEST = "bchtest:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqjxnsx26x"
 BITCOIN_CASHADDRESS_TEST_COMPRESSED = (
@@ -22,14 +24,18 @@ BITCOIN_CASHADDRESS_TEST_COMPRESSED = (
 )
 BITCOIN_CASHADDRESS_TEST_CATKN = "bchtest:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq4vqwgv94"
 BITCOIN_CASHADDRESS_TEST_PAY2SH20 = "bchtest:pp23x8hm0g8d6nrkesamaqeml3v6daeudv90694pv4"
-BITCOIN_CASHADDRESS_TEST_PAY2SH32 = "bchtest:pvch8mmxy0rtfrlarg7ucrxxfzds5pamg73h7370aa87d80gyhqxq7fqng6m6"
+BITCOIN_CASHADDRESS_TEST_PAY2SH32 = (
+    "bchtest:pvch8mmxy0rtfrlarg7ucrxxfzds5pamg73h7370aa87d80gyhqxq7fqng6m6"
+)
 
 BITCOIN_CASHADDRESS_REGTEST = "bchreg:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqg6939eeq"
 BITCOIN_CASHADDRESS_REGTEST_COMPRESSED = (
     "bchreg:qzvsaasdvw6mt9j2rs3gyps673gj86flevt7e3kuu4"
 )
 BITCOIN_CASHADDRESS_REGTEST_CATKN = "bchreg:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq0sk0tlxn"
-BITCOIN_CASHADDRESS_REGTEST_PAY2SH20 = "bchreg:pp23x8hm0g8d6nrkesamaqeml3v6daeudvlnvykj0n"
+BITCOIN_CASHADDRESS_REGTEST_PAY2SH20 = (
+    "bchreg:pp23x8hm0g8d6nrkesamaqeml3v6daeudvlnvykj0n"
+)
 
 VALID_ENDPOINT_URLS = [
     "https://rest.bch.actorforth.org/v2/",
@@ -169,12 +175,14 @@ CONVERT_BITS_NO_PAD_RETURN = [
 
 
 # CashToken prefixes
-CASHTOKEN_CATAGORY_ID = "00fb7b8704f843caf33c436e3386a469e1d004403c388a8b054282d02034f598"
+CASHTOKEN_CATAGORY_ID = (
+    "00fb7b8704f843caf33c436e3386a469e1d004403c388a8b054282d02034f598"
+)
 CASHTOKEN_CAPABILITY = "none"
 CASHTOKEN_COMMITMENT = b"commitment"
 CASHTOKEN_AMOUNT = 50
-PREFIX_CAPABILITY = b'\xef\x98\xf54 \xd0\x82B\x05\x8b\x8a8<@\x04\xd0\xe1i\xa4\x863nC<\xf3\xcaC\xf8\x04\x87{\xfb\x00 '
-PREFIX_CAPABILITY_AMOUNT = b'\xef\x98\xf54 \xd0\x82B\x05\x8b\x8a8<@\x04\xd0\xe1i\xa4\x863nC<\xf3\xcaC\xf8\x04\x87{\xfb\x0002'
-PREFIX_CAPABILITY_COMMITMENT = b'\xef\x98\xf54 \xd0\x82B\x05\x8b\x8a8<@\x04\xd0\xe1i\xa4\x863nC<\xf3\xcaC\xf8\x04\x87{\xfb\x00`\ncommitment'
-PREFIX_CAPABILITY_COMMITMENT_AMOUNT = b'\xef\x98\xf54 \xd0\x82B\x05\x8b\x8a8<@\x04\xd0\xe1i\xa4\x863nC<\xf3\xcaC\xf8\x04\x87{\xfb\x00p\ncommitment2'
-PREFIX_AMOUNT = b'\xef\x98\xf54 \xd0\x82B\x05\x8b\x8a8<@\x04\xd0\xe1i\xa4\x863nC<\xf3\xcaC\xf8\x04\x87{\xfb\x00\x102'
+PREFIX_CAPABILITY = b"\xef\x98\xf54 \xd0\x82B\x05\x8b\x8a8<@\x04\xd0\xe1i\xa4\x863nC<\xf3\xcaC\xf8\x04\x87{\xfb\x00 "
+PREFIX_CAPABILITY_AMOUNT = b"\xef\x98\xf54 \xd0\x82B\x05\x8b\x8a8<@\x04\xd0\xe1i\xa4\x863nC<\xf3\xcaC\xf8\x04\x87{\xfb\x0002"
+PREFIX_CAPABILITY_COMMITMENT = b"\xef\x98\xf54 \xd0\x82B\x05\x8b\x8a8<@\x04\xd0\xe1i\xa4\x863nC<\xf3\xcaC\xf8\x04\x87{\xfb\x00`\ncommitment"
+PREFIX_CAPABILITY_COMMITMENT_AMOUNT = b"\xef\x98\xf54 \xd0\x82B\x05\x8b\x8a8<@\x04\xd0\xe1i\xa4\x863nC<\xf3\xcaC\xf8\x04\x87{\xfb\x00p\ncommitment2"
+PREFIX_AMOUNT = b"\xef\x98\xf54 \xd0\x82B\x05\x8b\x8a8<@\x04\xd0\xe1i\xa4\x863nC<\xf3\xcaC\xf8\x04\x87{\xfb\x00\x102"

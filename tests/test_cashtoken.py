@@ -13,7 +13,7 @@ from bitcash.cashtoken import (
     prepare_output,
     Unspents,
     select_cashtoken_utxo,
-    _calculate_dust_value
+    _calculate_dust_value,
 )
 from bitcash.exceptions import InsufficientFunds, InvalidCashToken, InvalidAddress
 from bitcash.cashaddress import Address
@@ -447,8 +447,7 @@ class TestUnspents:
         cashtokenoutput[5] = (546, "c4", "none", None, None)
         for i in range(6):
             dust = _calculate_dust_value(
-                BITCOIN_CASHADDRESS_CATKN,
-                *cashtokenoutput[i][1:]
+                BITCOIN_CASHADDRESS_CATKN, *cashtokenoutput[i][1:]
             )
             _ = list(cashtokenoutput[i])
             _[0] = dust
