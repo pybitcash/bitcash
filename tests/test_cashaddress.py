@@ -26,6 +26,14 @@ from .samples import (
     CONVERT_BITS_INVALID_DATA_PAYLOAD,
     CONVERT_BITS_NO_PAD_PAYLOAD,
     CONVERT_BITS_NO_PAD_RETURN,
+    BITCOIN_CASHADDRESS_PAY2SH20,
+    BITCOIN_CASHADDRESS_PAY2SH32,
+    BITCOIN_CASHADDRESS_CATKN,
+    PREFIX_AMOUNT,
+    PREFIX_CAPABILITY,
+    PREFIX_CAPABILITY_AMOUNT,
+    PREFIX_CAPABILITY_COMMITMENT,
+    PREFIX_CAPABILITY_COMMITMENT_AMOUNT,
 )
 
 
@@ -223,6 +231,33 @@ class TestAddress:
         assert address == address
         with pytest.raises(ValueError):
             address == 1
+
+    def test_to_from_script(self):
+        address = Address.from_string(BITCOIN_CASHADDRESS)
+        assert address == Address.from_script(address.scriptcode)
+
+        address = Address.from_string(BITCOIN_CASHADDRESS_PAY2SH20)
+        assert address == Address.from_script(address.scriptcode)
+
+        address = Address.from_string(BITCOIN_CASHADDRESS_PAY2SH32)
+        assert address == Address.from_script(address.scriptcode)
+
+        # cashtoken
+        address = Address.from_string(BITCOIN_CASHADDRESS)
+        address_catkn = Address.from_string(BITCOIN_CASHADDRESS_CATKN)
+        # no cashtoken data
+        assert address == Address.from_script(address_catkn.scriptcode)
+        # with cashtoken data
+        for script in [
+            PREFIX_AMOUNT,
+            PREFIX_CAPABILITY,
+            PREFIX_CAPABILITY_AMOUNT,
+            PREFIX_CAPABILITY_COMMITMENT,
+            PREFIX_CAPABILITY_COMMITMENT_AMOUNT,
+        ]:
+            assert address_catkn == Address.from_script(
+                script + address_catkn.scriptcode
+            )
 
 
 def test_parse_cashaddress():

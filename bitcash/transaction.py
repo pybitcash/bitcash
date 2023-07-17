@@ -1,10 +1,16 @@
 import logging
 from collections import namedtuple
+from copy import deepcopy
 
 from bitcash.crypto import double_sha256, sha256
 from bitcash.exceptions import InsufficientFunds
-from bitcash.format import Address
-from bitcash.network.rates import currency_to_satoshi_cached
+from bitcash.cashtoken import (
+    prepare_output,
+    Unspents,
+    select_cashtoken_utxo,
+    generate_cashtoken_prefix,
+)
+from bitcash.op import OpCodes
 from bitcash.utils import (
     bytes_to_hex,
     chunk_data,
@@ -26,31 +32,19 @@ SIGHASH_FORKID = 0x40.to_bytes(4, byteorder="little")
 HASH_TYPE = 0x41.to_bytes(4, byteorder="little")
 ##
 
-OP_0 = b"\x00"
-OP_CHECKLOCKTIMEVERIFY = b"\xb1"
-OP_CHECKSIG = b"\xac"
-OP_DUP = b"v"
-OP_EQUAL = b"\x87"
-OP_EQUALVERIFY = b"\x88"
-OP_HASH160 = b"\xa9"
-OP_PUSH_20 = b"\x14"
-OP_RETURN = b"\x6a"
-OP_PUSHDATA1 = b"\x4c"
-OP_PUSHDATA2 = b"\x4d"
-OP_PUSHDATA4 = b"\x4e"
-
 MESSAGE_LIMIT = 220
 
 
 class TxIn:
-    __slots__ = ("script", "script_len", "txid", "txindex", "amount")
+    __slots__ = ("script", "script_len", "txid", "txindex", "amount", "token_prefix")
 
-    def __init__(self, script, script_len, txid, txindex, amount):
+    def __init__(self, script, script_len, txid, txindex, amount, token_prefix=b""):
         self.script = script
         self.script_len = script_len
         self.txid = txid
         self.txindex = txindex
         self.amount = amount
+        self.token_prefix = token_prefix
 
     def __eq__(self, other):
         return (
@@ -59,7 +53,11 @@ class TxIn:
             and self.txid == other.txid
             and self.txindex == other.txindex
             and self.amount == other.amount
+            and self.token_prefix == other.token_prefix
         )
+
+    def to_dict(self):
+        return {attr: getattr(self, attr) for attr in TxIn.__slots__}
 
     def __repr__(self):
         return (
@@ -67,7 +65,7 @@ class TxIn:
             f"{repr(self.script_len)}, "
             f"{repr(self.txid)}, "
             f"{repr(self.txindex)}, "
-            f"{repr(self.amount)})"
+            f"{repr(self.amount)}, {repr(self.token_prefix)})"
         )
 
 
@@ -78,60 +76,27 @@ def calc_txid(tx_hex):
     return bytes_to_hex(double_sha256(hex_to_bytes(tx_hex))[::-1])
 
 
-def estimate_tx_fee(
-    n_in, n_out_p2pkh, n_out_p2sh, satoshis, compressed, op_return_size=0
-):
+def estimate_tx_fee(n_in, output_script_list, satoshis, compressed):
     if not satoshis:
         return 0
 
-    n_out = n_out_p2sh + n_out_p2pkh
+    n_out = len(output_script_list)
 
     estimated_size = (
-        4
-        + n_in * (148 if compressed else 180)  # version
+        4  # version
         + len(int_to_unknown_bytes(n_in, byteorder="little"))
-        # excluding op_return outputs, dealt with separately
-        + n_out_p2pkh * 34
-        + n_out_p2sh * 32
+        + n_in * (148 if compressed else 180)
         + len(int_to_unknown_bytes(n_out, byteorder="little"))
-        # grand total size of op_return outputs(s) and related field(s)
-        + op_return_size
+        + n_out * 9  # satoshi_value + script_len
+        + sum([len(script) for script in output_script_list])
         + 4  # time lock
     )
 
     estimated_fee = estimated_size * satoshis
 
-    logging.debug(
-        f"Estimated fee: {estimated_fee}" f" satoshis for {estimated_size} bytes"
-    )
+    logging.debug(f"Estimated fee: {estimated_fee} satoshis for {estimated_size} bytes")
 
     return estimated_fee
-
-
-def get_op_return_size(message, custom_pushdata=False):
-    # calculate op_return size for each individual message
-    if custom_pushdata is False:
-        op_return_size = (
-            8  # int64_t amount 0x00000000
-            + len(OP_RETURN)  # 1 byte
-            + len(
-                get_op_pushdata_code(message)
-            )  # 1 byte if <75 bytes, 2 bytes if OP_PUSHDATA1...
-            + len(message)  # Max 220 bytes at present
-        )
-
-    if custom_pushdata is True:
-        op_return_size = (
-            8  # int64_t amount 0x00000000
-            + len(OP_RETURN)  # 1 byte
-            + len(
-                message
-            )  # Unsure if Max size will be >220 bytes due to extra OP_PUSHDATA codes...
-        )
-
-    # "Var_Int" that preceeds OP_RETURN - 0xdf is max value with current 220 byte limit (so only adds 1 byte)
-    op_return_size += len(int_to_varint(op_return_size))
-    return op_return_size
 
 
 def get_op_pushdata_code(dest):
@@ -139,15 +104,15 @@ def get_op_pushdata_code(dest):
     if length_data <= 0x4C:  # (https://en.bitcoin.it/wiki/Script)
         return length_data.to_bytes(1, byteorder="little")
     elif length_data <= 0xFF:
-        return OP_PUSHDATA1 + length_data.to_bytes(
+        return OpCodes.OP_PUSHDATA1.binary + length_data.to_bytes(
             1, byteorder="little"
         )  # OP_PUSHDATA1 format
     elif length_data <= 0xFFFF:
-        return OP_PUSHDATA2 + length_data.to_bytes(
+        return OpCodes.OP_PUSHDATA2.binary + length_data.to_bytes(
             2, byteorder="little"
         )  # OP_PUSHDATA2 format
     else:
-        return OP_PUSHDATA4 + length_data.to_bytes(
+        return OpCodes.OP_PUSHDATA4.binary + length_data.to_bytes(
             4, byteorder="little"
         )  # OP_PUSHDATA4 format
 
@@ -167,26 +132,19 @@ def sanitize_tx_data(
 
     fee is in satoshis per byte.
     """
-
+    unspents = deepcopy(unspents)
     outputs = outputs.copy()
-
-    for i, output in enumerate(outputs):
-        dest, amount, currency = output
-        dest = Address.from_string(dest)
-
-        if "P2PKH" not in dest.version and "P2SH" not in dest.version:
-            # Bitcash currently only supports P2PKH, P2SH transaction outputs
-            # others will raise ValueError
-            raise ValueError("Bitcash currently only supports" " P2PKH/P2SH outputs")
-
-        outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))
 
     if not unspents:
         raise ValueError("Transactions must have at least one unspent.")
 
+    for i, output in enumerate(outputs):
+        # (script, satoshi value, category_id, nft_capability, nft_commitment,
+        # token_amount)
+        outputs[i] = prepare_output(output)
+
     # Temporary storage so all outputs precede messages.
     messages = []
-    total_op_return_size = 0
 
     if message and (custom_pushdata is False):
         try:
@@ -197,124 +155,106 @@ def sanitize_tx_data(
         message_chunks = chunk_data(message, MESSAGE_LIMIT)
 
         for message in message_chunks:
-            messages.append((message, 0))
-            total_op_return_size += get_op_return_size(message, custom_pushdata=False)
+            script = OpCodes.OP_RETURN.binary + get_op_pushdata_code(message) + message
+            messages.append((script, 0, None, None, None, None))
 
     elif message and (custom_pushdata is True):
         if len(message) >= 220:
             # FIXME add capability for >220 bytes for custom pushdata elements
-            raise ValueError(
-                "Currently cannot exceed 220 " "bytes with custom_pushdata."
-            )
+            raise ValueError("Currently cannot exceed 220 bytes with custom_pushdata.")
         else:
-            messages.append((message, 0))
-            total_op_return_size += get_op_return_size(message, custom_pushdata=True)
+            # manual control over number of bytes in each batch of pushdata
+            if type(message) != bytes:
+                raise TypeError("custom pushdata must be of type: bytes")
+            else:
+                script = OpCodes.OP_RETURN.binary + message
+            messages.append((script, 0, None, None, None, None))
 
-    # Include return address in fee estimate.
-    total_in = 0
-    num_p2pkh_outputs = sum(["P2PKH" in out[0].version for out in outputs])
-    # Bitcash only supports P2PKH utxos, return address is added as P2PKH
-    num_p2pkh_outputs += 1
-    # counting P2SH outs, will adjust fee estimate
-    num_p2sh_outputs = sum(["P2SH" in out[0].version for out in outputs])
-    sum_outputs = sum(out[1] for out in outputs)
+    # counting outs, will adjust fee estimate
+    output_script_list = [_[0] for _ in outputs]
+    output_script_list += [_[0] for _ in messages]
 
     if combine:
+        cashtoken = Unspents(unspents)
+        for output in outputs:
+            cashtoken.subtract_output(output)
+        leftover_outputs, leftover_amount = cashtoken.get_outputs(leftover)
+        output_script_list += [_[0] for _ in leftover_outputs]
         # calculated_fee is in total satoshis.
         calculated_fee = estimate_tx_fee(
             len(unspents),
-            num_p2pkh_outputs,
-            num_p2sh_outputs,
+            output_script_list,
             fee,
             compressed,
-            total_op_return_size,
         )
-        total_out = sum_outputs + calculated_fee
-        unspents = unspents.copy()
-        total_in += sum(unspent.amount for unspent in unspents)
+        if calculated_fee > leftover_amount:
+            raise InsufficientFunds("leftover balance cannot cover fee")
+        if calculated_fee:
+            last_out = list(leftover_outputs[-1])
+            last_out[1] -= calculated_fee
+            leftover_outputs[-1] = tuple(last_out)
+
+        outputs += leftover_outputs
 
     else:
-        unspents = sorted(unspents, key=lambda x: x.amount)
+        unspents, unspents_used = select_cashtoken_utxo(unspents, outputs)
 
-        index = 0
-
+        error = None
+        # the first unspent is added regardless because of how selection is,
+        # easiest is to pop the last unspent used and add to unspents searched
+        if len(unspents_used) > 0:
+            unspents = [unspents_used[-1]] + unspents
+            unspents_used = unspents_used[:-1]
+        cashtoken = Unspents(unspents_used)
         for index, unspent in enumerate(unspents):
-            total_in += unspent.amount
+            cashtoken.add_unspent(unspent)
+            test_token = deepcopy(cashtoken)
+            try:
+                for output in outputs:
+                    test_token.subtract_output(output)
+                (leftover_outputs, leftover_amount) = test_token.get_outputs(leftover)
+            except InsufficientFunds as err:
+                error = err
+                continue
+
+            output_script_list += [_[0] for _ in leftover_outputs]
+
             calculated_fee = estimate_tx_fee(
-                len(unspents[: index + 1]),
-                num_p2pkh_outputs,
-                num_p2sh_outputs,
+                len(unspents[: index + 1]) + len(unspents_used),
+                output_script_list,
                 fee,
                 compressed,
-                total_op_return_size,
             )
-            total_out = sum_outputs + calculated_fee
-
-            if total_in >= total_out:
+            if calculated_fee < leftover_amount:
                 break
+        else:
+            raise InsufficientFunds(error or f"{cashtoken.amount} is insufficient")
 
-        unspents[:] = unspents[: index + 1]
+        if calculated_fee:
+            last_out = list(leftover_outputs[-1])
+            last_out[1] -= calculated_fee
+            leftover_outputs[-1] = tuple(last_out)
 
-    remaining = total_in - total_out
-
-    if remaining > 0:
-        outputs.append((Address.from_string(leftover), remaining))
-    elif remaining < 0:
-        raise InsufficientFunds(
-            f"Balance {total_in} is less than " f"{total_out} (including fee)."
-        )
+        unspents[:] = unspents_used + unspents[: index + 1]
+        outputs += leftover_outputs
 
     outputs.extend(messages)
 
     return unspents, outputs
 
 
-def construct_output_block(outputs, custom_pushdata=False):
+def construct_output_block(outputs):
     output_block = b""
 
     for data in outputs:
-        dest, amount = data
+        script, amount, _, _, _, _ = data
 
-        # Real recipient
-        if amount:
-            if isinstance(dest, str):
-                dest = Address.from_string(dest)
-            if "P2PKH" in dest.version:
-                script = (
-                    OP_DUP
-                    + OP_HASH160
-                    + OP_PUSH_20
-                    + bytes(dest.payload)
-                    + OP_EQUALVERIFY
-                    + OP_CHECKSIG
-                )
-            elif "P2SH" in dest.version:
-                script = OP_HASH160 + OP_PUSH_20 + bytes(dest.payload) + OP_EQUAL
-            else:
-                raise ValueError(
-                    "Bitcash currently only supports" " P2PKH/P2SH outputs"
-                )
+        output_block += amount.to_bytes(8, byteorder="little")
 
-            output_block += amount.to_bytes(8, byteorder="little")
-
-        # Blockchain storage
-        else:
-            if custom_pushdata is False:
-                script = OP_RETURN + get_op_pushdata_code(dest) + dest
-
-                output_block += b"\x00\x00\x00\x00\x00\x00\x00\x00"
-
-            elif custom_pushdata is True:
-                # manual control over number of bytes in each batch of pushdata
-                if type(dest) != bytes:
-                    raise TypeError("custom pushdata must be of type: bytes")
-                else:
-                    script = OP_RETURN + dest
-
-                output_block += b"\x00\x00\x00\x00\x00\x00\x00\x00"
-
-        # Script length in wiki is "Var_int" but there's a note of "modern BitcoinQT" using a more compact "CVarInt"
-        # CVarInt is what I believe we have here - No changes made. If incorrect - only breaks if 220 byte limit is increased.
+        # Script length in wiki is "Var_int" but there's a note of
+        # "modern BitcoinQT" using a more compact "CVarInt"
+        # CVarInt is what I believe we have here - No changes made.
+        # If incorrect - only breaks if 220 byte limit is increased.
         output_block += int_to_unknown_bytes(len(script), byteorder="little")
         output_block += script
 
@@ -333,12 +273,9 @@ def construct_input_block(inputs):
     return input_block
 
 
-def create_p2pkh_transaction(private_key, unspents, outputs, custom_pushdata=False):
+def create_p2pkh_transaction(private_key, unspents, outputs):
     public_key = private_key.public_key
     public_key_len = len(public_key).to_bytes(1, byteorder="little")
-
-    scriptCode = private_key.scriptcode
-    scriptCode_len = int_to_varint(len(scriptCode))
 
     version = VERSION_1
     lock_time = LOCK_TIME
@@ -347,18 +284,25 @@ def create_p2pkh_transaction(private_key, unspents, outputs, custom_pushdata=Fal
     input_count = int_to_unknown_bytes(len(unspents), byteorder="little")
     output_count = int_to_unknown_bytes(len(outputs), byteorder="little")
 
-    output_block = construct_output_block(outputs, custom_pushdata=custom_pushdata)
+    output_block = construct_output_block(outputs)
 
     # Optimize for speed, not memory, by pre-computing values.
     inputs = []
     for unspent in unspents:
         script = hex_to_bytes(unspent.script)
-        script_len = int_to_unknown_bytes(len(script), byteorder="little")
+        script_len = int_to_varint(len(script))
+        # get cashtoken prefix
+        token_prefix = generate_cashtoken_prefix(
+            unspent.category_id,
+            unspent.nft_capability,
+            unspent.nft_commitment,
+            unspent.token_amount,
+        )
         txid = hex_to_bytes(unspent.txid)[::-1]
         txindex = unspent.txindex.to_bytes(4, byteorder="little")
         amount = unspent.amount.to_bytes(8, byteorder="little")
 
-        inputs.append(TxIn(script, script_len, txid, txindex, amount))
+        inputs.append(TxIn(script, script_len, txid, txindex, amount, token_prefix))
 
     hashPrevouts = double_sha256(b"".join([i.txid + i.txindex for i in inputs]))
     hashSequence = double_sha256(b"".join([SEQUENCE for i in inputs]))
@@ -372,8 +316,9 @@ def create_p2pkh_transaction(private_key, unspents, outputs, custom_pushdata=Fal
             + hashSequence
             + txin.txid
             + txin.txindex
-            + scriptCode_len
-            + scriptCode
+            + txin.token_prefix
+            + txin.script_len
+            + txin.script
             + txin.amount
             + SEQUENCE
             + hashOutputs

@@ -1,6 +1,7 @@
 import json
 
 from bitcash.crypto import ECPrivateKey
+from bitcash.cashtoken import Unspents
 from bitcash.curve import Point
 from bitcash.exceptions import InvalidNetwork
 from bitcash.format import (
@@ -9,19 +10,12 @@ from bitcash.format import (
     public_key_to_coords,
     wif_to_bytes,
     address_to_public_key_hash,
+    address_to_cashtokenaddress,
 )
 from bitcash.network import NetworkAPI, satoshi_to_currency_cached
 from bitcash.network.meta import Unspent
-from bitcash.transaction import (
-    calc_txid,
-    create_p2pkh_transaction,
-    sanitize_tx_data,
-    OP_CHECKSIG,
-    OP_DUP,
-    OP_EQUALVERIFY,
-    OP_HASH160,
-    OP_PUSH_20,
-)
+from bitcash.op import OpCodes
+from bitcash.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
 
 
 NETWORKS = {"main": "mainnet", "test": "testnet", "regtest": "regtest"}
@@ -165,6 +159,7 @@ class PrivateKey(BaseKey):
         else:
             raise InvalidNetwork
         self.balance = 0
+        self.cashtoken_balance = {}
         self.unspents = []
         self.transactions = []
 
@@ -179,14 +174,19 @@ class PrivateKey(BaseKey):
         return self._address
 
     @property
+    def cashtoken_address(self):
+        """The public address you share with others to receive cashtokens."""
+        return address_to_cashtokenaddress(self.address)
+
+    @property
     def scriptcode(self):
         self._scriptcode = (
-            OP_DUP
-            + OP_HASH160
-            + OP_PUSH_20
+            OpCodes.OP_DUP.binary
+            + OpCodes.OP_HASH160.binary
+            + OpCodes.OP_DATA_20.binary
             + address_to_public_key_hash(self.address)
-            + OP_EQUALVERIFY
-            + OP_CHECKSIG
+            + OpCodes.OP_EQUALVERIFY.binary
+            + OpCodes.OP_CHECKSIG.binary
         )
         return self._scriptcode
 
@@ -213,11 +213,18 @@ class PrivateKey(BaseKey):
         :type currency: ``str``
         :rtype: ``str``
         """
-        self.unspents[:] = NetworkAPI.get_unspent(
-            self.address, network=NETWORKS[self._network]
-        )
-        self.balance = sum(unspent.amount for unspent in self.unspents)
+        _ = self.get_unspents()
         return self.balance_as(currency)
+
+    def get_cashtokenbalance(self):
+        """Fetches the current cashtoken balance by calling
+        :func:`~bitcash.PrivateKey.get_balance` and returns it as
+        a token dictionary.
+
+        :rtype: ``dict``
+        """
+        _ = self.get_unspents()
+        return self.cashtoken_balance
 
     def get_unspents(self):
         """Fetches all available unspent transaction outputs.
@@ -227,7 +234,9 @@ class PrivateKey(BaseKey):
         self.unspents[:] = NetworkAPI.get_unspent(
             self.address, network=NETWORKS[self._network]
         )
-        self.balance = sum(unspent.amount for unspent in self.unspents)
+        _ = Unspents(self.unspents)
+        self.balance = _.amount
+        self.cashtoken_balance = _.tokendata
         return self.unspents
 
     def get_transactions(self):
@@ -257,6 +266,17 @@ class PrivateKey(BaseKey):
                         be either an int, float, or string as long as it is
                         a valid input to ``decimal.Decimal``. The currency
                         must be :ref:`supported <supported currencies>`.
+                        To send CashToken, the list of output is made in the
+                        form ``(destination, amount, currency, category_id,
+                        nft_capability, nft_commitment, token_amount)``. The category_id
+                        is hex of tx-id as ``str``. The nft_capability is the capability
+                        of non-fungible token in ("none", "mutable", "minting"). The
+                        nft_commitment is the commitment of the non-fungible token in
+                        ``bytes``.
+                        The CashToken property nft_capability, nft_commitment, or
+                        the token_amount can be None if not to be sent. If
+                        category_id is tx-id of unspent with tx-index 0, then
+                        tx is treated as a genesis tx.
         :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
                     Bitcash will poll `<https://bitcoincashfees.earn.com>`_ and use a fee
@@ -283,7 +303,7 @@ class PrivateKey(BaseKey):
         """
 
         unspents, outputs = sanitize_tx_data(
-            unspents or self.unspents,
+            unspents or self.get_unspents(),
             outputs,
             fee or DEFAULT_FEE,
             leftover or self.address,
@@ -293,9 +313,7 @@ class PrivateKey(BaseKey):
             custom_pushdata=custom_pushdata,
         )
 
-        return create_p2pkh_transaction(
-            self, unspents, outputs, custom_pushdata=custom_pushdata
-        )
+        return create_p2pkh_transaction(self, unspents, outputs)
 
     def send(
         self,
@@ -315,6 +333,17 @@ class PrivateKey(BaseKey):
                         be either an int, float, or string as long as it is
                         a valid input to ``decimal.Decimal``. The currency
                         must be :ref:`supported <supported currencies>`.
+                        To send CashToken, the list of output is made in the
+                        form ``(destination, amount, currency, category_id,
+                        nft_capability, nft_commitment, token_amount)``. The category_id
+                        is hex of tx-id as ``str``. The nft_capability is the capability
+                        of non-fungible token in ("none", "mutable", "minting"). The
+                        nft_commitment is the commitment of the non-fungible token in
+                        ``bytes``.
+                        The CashToken property nft_capability, nft_commitment, or
+                        the token_amount can be None if not to be sent. If
+                        category_id is tx-id of unspent with tx-index 0, then
+                        tx is treated as a genesis tx.
         :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
                     Bitcash will poll `<https://bitcoincashfees.earn.com>`_ and use a fee
@@ -374,6 +403,17 @@ class PrivateKey(BaseKey):
                         be either an int, float, or string as long as it is
                         a valid input to ``decimal.Decimal``. The currency
                         must be :ref:`supported <supported currencies>`.
+                        To send CashToken, the list of output is made in the
+                        form ``(destination, amount, currency, category_id,
+                        nft_capability, nft_commitment, token_amount)``. The category_id
+                        is hex of tx-id as ``str``. The nft_capability is the capability
+                        of non-fungible token in ("none", "mutable", "minting"). The
+                        nft_commitment is the commitment of the non-fungible token in
+                        ``bytes``.
+                        The CashToken property nft_capability, nft_commitment, or
+                        the token_amount can be None if not to be sent. If
+                        category_id is tx-id of unspent with tx-index 0, then
+                        tx is treated as a genesis tx.
         :type outputs: ``list`` of ``tuple``
         :param compressed: Whether or not the ``address`` corresponds to a
                            compressed public key. This influences the fee.
@@ -411,6 +451,14 @@ class PrivateKey(BaseKey):
             compressed=compressed,
         )
 
+        outputs = list(map(list, outputs))
+        for output in outputs:
+            # script
+            output[0] = output[0].hex()
+            # nft_commitment
+            if output[4] is not None:
+                output[4] = output[4].hex()
+
         data = {
             "unspents": [unspent.to_dict() for unspent in unspents],
             "outputs": outputs,
@@ -431,6 +479,13 @@ class PrivateKey(BaseKey):
 
         unspents = [Unspent.from_dict(unspent) for unspent in data["unspents"]]
         outputs = data["outputs"]
+        for output in outputs:
+            # script
+            output[0] = bytes.fromhex(output[0])
+            # nft_commitment
+            if output[4] is not None:
+                output[4] = bytes.fromhex(output[4])
+        outputs = list(map(tuple, outputs))
 
         return create_p2pkh_transaction(self, unspents, outputs)
 

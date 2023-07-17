@@ -16,8 +16,12 @@ Unreleased (see `master <https://github.com/ofek/bitcash>`_)
 - NetworkAPI.get_tx_amount() is now working and properly handles
   backends returning string or decimal values.
 
-- Wallets can pay to script hash. However, P2SH utxo spending is still
+- Wallets can pay to script hash (P2SH20 and P2SH32). However, P2SH utxo spending is still
   not supported.
+
+- Wallets support CashTokens.
+
+- ChainGraph API support added, with default networks for mainnet and testnet.
 
 - Supports CashAddress URIs.
 

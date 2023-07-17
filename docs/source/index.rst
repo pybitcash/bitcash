@@ -83,6 +83,7 @@ of best practices.
     guide/network
     guide/node
     guide/transactions
+    guide/cashtokens.rst
     guide/rates
     guide/fees
     guide/advanced

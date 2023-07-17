@@ -3,9 +3,13 @@ import requests
 
 # Import supported endpoint APIs
 from bitcash.network.APIs.BitcoinDotComAPI import BitcoinDotComAPI
+from bitcash.network.APIs.ChaingraphAPI import ChaingraphAPI
 
 # Dictionary of supported endpoint APIs
-ENDPOINT_ENV_VARIABLES = {"BITCOINCOM": BitcoinDotComAPI}
+ENDPOINT_ENV_VARIABLES = {
+    "CHAINGRAPH": ChaingraphAPI,
+    "BITCOINCOM": BitcoinDotComAPI,
+}
 
 # Default API call total time timeout
 DEFAULT_TIMEOUT = 5
@@ -34,28 +38,70 @@ def get_endpoints_for(network):
 
     endpoints = []
     for endpoint in ENDPOINT_ENV_VARIABLES.keys():
-        if os.getenv(f"{endpoint}_API_{network}".upper()):
-            endpoints.append(
-                ENDPOINT_ENV_VARIABLES[endpoint](
-                    os.getenv(f"{endpoint}_API_{network}".upper())
+        if endpoint == "CHAINGRAPH":
+            if os.getenv(f"{endpoint}_API".upper()):
+                endpoints.append(
+                    ENDPOINT_ENV_VARIABLES[endpoint](
+                        os.getenv(f"{endpoint}_API".upper()),
+                        os.getenv(f"{endpoint}_API_{network}".upper()),
+                    )
                 )
-            )
-        elif os.getenv(f"{endpoint}_API_{network}_1".upper()):
-            counter = 1
-            finished = False
-            while not finished:
-                next_endpoint = os.getenv(f"{endpoint}_API_{network}_{counter}".upper())
-                if next_endpoint:
-                    endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](next_endpoint))
-                    counter += 1
-                else:
-                    finished = True
+            elif os.getenv(f"{endpoint}_API_1".upper()):
+                counter = 1
+                finished = False
+                while not finished:
+                    next_endpoint = os.getenv(f"{endpoint}_API_{counter}".upper())
+                    next_pattern = os.getenv(
+                        f"{endpoint}_API_{network}_{counter}".upper()
+                    )
+                    if next_endpoint:
+                        endpoints.append(
+                            ENDPOINT_ENV_VARIABLES[endpoint](
+                                next_endpoint, next_pattern
+                            )
+                        )
+                        counter += 1
+                    else:
+                        finished = True
+            else:
+                defaults_endpoints = ENDPOINT_ENV_VARIABLES[
+                    endpoint
+                ].get_default_endpoints(network)
+                for each in defaults_endpoints:
+                    if hasattr(each, "__iter__") and not isinstance(each, str):
+                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each))
+                    else:
+                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
         else:
-            defaults_endpoints = ENDPOINT_ENV_VARIABLES[endpoint].get_default_endpoints(
-                network
-            )
-            for each in defaults_endpoints:
-                endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
+            if os.getenv(f"{endpoint}_API_{network}".upper()):
+                endpoints.append(
+                    ENDPOINT_ENV_VARIABLES[endpoint](
+                        os.getenv(f"{endpoint}_API_{network}".upper())
+                    )
+                )
+            elif os.getenv(f"{endpoint}_API_{network}_1".upper()):
+                counter = 1
+                finished = False
+                while not finished:
+                    next_endpoint = os.getenv(
+                        f"{endpoint}_API_{network}_{counter}".upper()
+                    )
+                    if next_endpoint:
+                        endpoints.append(
+                            ENDPOINT_ENV_VARIABLES[endpoint](next_endpoint)
+                        )
+                        counter += 1
+                    else:
+                        finished = True
+            else:
+                defaults_endpoints = ENDPOINT_ENV_VARIABLES[
+                    endpoint
+                ].get_default_endpoints(network)
+                for each in defaults_endpoints:
+                    if hasattr(each, "__iter__") and not isinstance(each, str):
+                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each))
+                    else:
+                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
 
     return endpoints
 
@@ -85,7 +131,6 @@ class NetworkAPI:
         :raises ConnectionError: If all API services fail.
         :rtype: ``int``
         """
-
         for endpoint in get_endpoints_for(network):
             try:
                 return endpoint.get_balance(address, timeout=DEFAULT_TIMEOUT)
@@ -103,7 +148,6 @@ class NetworkAPI:
         :raises ConnectionError: If all API services fail.
         :rtype: ``list`` of ``str``
         """
-
         for endpoint in get_endpoints_for(network):
             try:
                 return endpoint.get_transactions(address, timeout=DEFAULT_TIMEOUT)
@@ -197,6 +241,11 @@ class NetworkAPI:
         success = None
 
         for endpoint in get_endpoints_for(network):
+            _ = [end[0] for end in ChaingraphAPI.get_default_endpoints(network)]
+            if endpoint in _ and network == "mainnet":
+                # Default chaingraph endpoints do not indicate failed broadcast
+                # no other testnet api
+                continue
             try:
                 success = endpoint.broadcast_tx(tx_hex, timeout=DEFAULT_TIMEOUT)
                 if not success:

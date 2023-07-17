@@ -1,3 +1,4 @@
+import io
 from bitcash.utils import (
     Decimal,
     bytes_to_hex,
@@ -8,6 +9,7 @@ from bitcash.utils import (
     int_to_hex,
     int_to_unknown_bytes,
     int_to_varint,
+    varint_to_int,
 )
 
 BIG_INT = 123456789**5
@@ -67,6 +69,24 @@ class TestIntToVarInt:
 
     def test_val_more_than_4294967295(self):
         assert int_to_varint(10000000000) == b"\xff\x00\xe4\x0bT\x02\x00\x00\x00"
+
+
+class TestVarIntToInt:
+    def test_val_less_than_253(self):
+        stream = io.BytesIO(b"\x14T")
+        assert varint_to_int(stream) == 20
+
+    def test_val_less_than_65535(self):
+        stream = io.BytesIO(b"\xfd\xff\xffT")
+        assert varint_to_int(stream) == 65535
+
+    def test_val_less_than_4294967295(self):
+        stream = io.BytesIO(b"\xfe\xfe\xff\xff\xffT")
+        assert varint_to_int(stream) == 4294967294
+
+    def test_val_more_than_4294967295(self):
+        stream = io.BytesIO(b"\xff\x00\xe4\x0bT\x02\x00\x00\x00T")
+        assert varint_to_int(stream) == 10000000000
 
 
 def test_hex_to_bytes():

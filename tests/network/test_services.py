@@ -6,6 +6,7 @@ from bitcash.exceptions import InvalidEndpointURLProvided
 from bitcash.network.meta import Unspent
 from bitcash.network.services import (
     BitcoinDotComAPI,
+    ChaingraphAPI,
     NetworkAPI,
     get_endpoints_for,
     set_service_timeout,
@@ -124,7 +125,8 @@ class TestNetworkAPI:
         time.sleep(1)
         results = NetworkAPI.get_raw_transaction(MAIN_TX, network="mainnet")
         assert isinstance(results, dict)
-        assert len(results) == 16
+        # assert len(results) == 16  # BitcoinDotCOM
+        assert len(results) == 7  # Chaingraph
 
     # Testnet
     @pytest.mark.skip
@@ -177,19 +179,47 @@ class TestBitcoinDotComAPI:
     def test_get_single_endpoint_for_env_variable(self):
         os.environ["BITCOINCOM_API_MAINNET"] = VALID_ENDPOINT_URLS[0]
         endpoints = get_endpoints_for("mainnet")
-        assert len(endpoints) == 1
-        assert isinstance(endpoints[0], BitcoinDotComAPI)
+        assert len(endpoints) == 3
+        assert isinstance(endpoints[0], ChaingraphAPI)  # default
+        assert isinstance(endpoints[1], ChaingraphAPI)  # default
+        assert isinstance(endpoints[2], BitcoinDotComAPI)  # env
         os.environ.pop("BITCOINCOM_API_MAINNET")
+        os.environ["CHAINGRAPH_API"] = VALID_ENDPOINT_URLS[0]
+        os.environ["CHAINGRAPH_API_MAINNET"] = "%mainnet"
+        endpoints = get_endpoints_for("mainnet")
+        assert len(endpoints) == 3
+        assert isinstance(endpoints[0], ChaingraphAPI)  # env
+        assert isinstance(endpoints[1], BitcoinDotComAPI)  # default
+        assert isinstance(endpoints[2], BitcoinDotComAPI)  # default
+        assert endpoints[0].node_like == "%mainnet"
+        os.environ.pop("CHAINGRAPH_API")
+        os.environ.pop("CHAINGRAPH_API_MAINNET")
 
     def test_get_multiple_endpoint_for_env_variable(self):
         os.environ["BITCOINCOM_API_MAINNET_1"] = VALID_ENDPOINT_URLS[0]
         os.environ["BITCOINCOM_API_MAINNET_2"] = VALID_ENDPOINT_URLS[1]
         endpoints = get_endpoints_for("mainnet")
-        assert len(endpoints) == 2
-        assert isinstance(endpoints[0], BitcoinDotComAPI)
-        assert isinstance(endpoints[1], BitcoinDotComAPI)
+        assert len(endpoints) == 4
+        assert isinstance(endpoints[0], ChaingraphAPI)  # default
+        assert isinstance(endpoints[1], ChaingraphAPI)  # default
+        assert isinstance(endpoints[2], BitcoinDotComAPI)  # env
+        assert isinstance(endpoints[3], BitcoinDotComAPI)  # env
         os.environ.pop("BITCOINCOM_API_MAINNET_1")
         os.environ.pop("BITCOINCOM_API_MAINNET_2")
+        os.environ["CHAINGRAPH_API_1"] = VALID_ENDPOINT_URLS[0]
+        os.environ["CHAINGRAPH_API_2"] = VALID_ENDPOINT_URLS[1]
+        os.environ["CHAINGRAPH_API_MAINNET_2"] = "%mainnet"
+        endpoints = get_endpoints_for("mainnet")
+        assert len(endpoints) == 4
+        assert isinstance(endpoints[0], ChaingraphAPI)  # default
+        assert isinstance(endpoints[1], ChaingraphAPI)  # default
+        assert isinstance(endpoints[2], BitcoinDotComAPI)  # env
+        assert isinstance(endpoints[3], BitcoinDotComAPI)  # env
+        assert endpoints[0].node_like == "%"
+        assert endpoints[1].node_like == "%mainnet"
+        os.environ.pop("CHAINGRAPH_API_1")
+        os.environ.pop("CHAINGRAPH_API_2")
+        os.environ.pop("CHAINGRAPH_API_MAINNET_2")
 
     def test_get_balance_mainnet_return_type(self):
         time.sleep(1)

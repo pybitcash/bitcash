@@ -50,3 +50,21 @@ def int_to_varint(val):
         return b"\xfe" + val.to_bytes(4, "little")
     else:
         return b"\xff" + val.to_bytes(8, "little")
+
+
+def varint_to_int(val):
+    """
+    Converts varint to int from incoming bytestream.
+
+    :param val: the bytecode starting with varint
+    :type val: ``io.BytesIO``
+    :returns: ``int``
+    """
+    start_byte = val.read(1)
+    if start_byte == b"\xff":
+        return int.from_bytes(val.read(8), "little")
+    if start_byte == b"\xfe":
+        return int.from_bytes(val.read(4), "little")
+    if start_byte == b"\xfd":
+        return int.from_bytes(val.read(2), "little")
+    return int.from_bytes(start_byte, "little")
