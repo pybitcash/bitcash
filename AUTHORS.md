@@ -3,9 +3,9 @@ BitCash is a fork of Ofek's Bit.
 Maintainers
 -----------
 
-- Teran McKinney
+- Teran McKinney (former)
 
-- Corentin Mercier (@merc1er) [merc1er.com](https://merc1er.com)
+- Corentin Mercier (@merc1er)
 
 Contributors
 ------------
@@ -16,6 +16,4 @@ Contributors
 
 - Nicolai Skye (@nicolaiskye)
 
-Any PGP key fingerprints are enclosed in parentheses.
-
-Ofek Lev <ofekmeister@gmail.com> (FFB6 B92B 30B1 7848 546E 9912 972F E913 DAD5 A46E)
+- Yashasvi S. Ranawat (@yashasvi-ranawat)
