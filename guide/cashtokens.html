@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>CashTokens &#8212; bitcash 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=039e1c02" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Exchange Rates" href="rates.html" />
@@ -30,7 +30,7 @@
     <div class="body" role="main">
     
   <section id="cashtokens">
-<span id="id1"></span><h1>CashTokens<a class="headerlink" href="#cashtokens" title="Permalink to this heading">¶</a></h1>
+<span id="id1"></span><h1>CashTokens<a class="headerlink" href="#cashtokens" title="Link to this heading">¶</a></h1>
 <p>CashTokens enable <a class="reference external" href="https://github.com/cashtokens/cashtokens/blob/master/readme.md">token primitives</a> for BCH. A token is an asset – distinct from
 the Bitcoin Cash currency – that can be created and transferred on the Bitcoin Cash
 network. CashTokens come in two flavours:</p>
@@ -77,14 +77,14 @@ with any <code class="docutils literal notranslate"><span class="pre">commitment
 have tokens of a single <code class="docutils literal notranslate"><span class="pre">category</span></code>, which can include one of or both of fungible
 tokens and an NFT.</p>
 <section id="cashtoken-genesis">
-<h2>CashToken genesis<a class="headerlink" href="#cashtoken-genesis" title="Permalink to this heading">¶</a></h2>
+<h2>CashToken genesis<a class="headerlink" href="#cashtoken-genesis" title="Link to this heading">¶</a></h2>
 <p>To create cashtokens, an <a class="reference internal" href="network.html#unspent"><span class="std std-ref">unspent</span></a> is required with output index 0 that
 acts as a genesis unspent. This genesis unspent can be spent to create the cashtoken
 required. This cashtoken then gets the transaction id of the genesis output as its
 <code class="docutils literal notranslate"><span class="pre">category</span></code>.</p>
 <figure class="align-default" id="id2">
 <img alt="../_images/cashtoken-creation.svg" src="../_images/cashtoken-creation.svg" /><figcaption>
-<p><span class="caption-text">Two new token <code class="docutils literal notranslate"><span class="pre">categories</span></code> are created by transaction <code class="docutils literal notranslate"><span class="pre">c3a601...</span></code> The first <code class="docutils literal notranslate"><span class="pre">category</span></code> (<code class="docutils literal notranslate"><span class="pre">■</span> <span class="pre">b201a0...</span></code>) is created by spending the 0th output of transaction <code class="docutils literal notranslate"><span class="pre">b201a0...</span></code>; for this <code class="docutils literal notranslate"><span class="pre">category</span></code>, a supply of 150 fungible tokens are created across two outputs (100 and 50). The second <code class="docutils literal notranslate"><span class="pre">category</span></code> (<code class="docutils literal notranslate"><span class="pre">▲</span> <span class="pre">a1efcd...</span></code>) is created by spending the 0th output of transaction <code class="docutils literal notranslate"><span class="pre">a1efcd...</span></code>; for this <code class="docutils literal notranslate"><span class="pre">category</span></code>, a supply of 100 fungible tokens are created across two outputs (20 and 80), and two NFTs are created (each with a <code class="docutils literal notranslate"><span class="pre">commitment</span></code> of <code class="docutils literal notranslate"><span class="pre">0x010203</span></code>).</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Two new token <code class="docutils literal notranslate"><span class="pre">categories</span></code> are created by transaction <code class="docutils literal notranslate"><span class="pre">c3a601...</span></code> The first <code class="docutils literal notranslate"><span class="pre">category</span></code> (<code class="docutils literal notranslate"><span class="pre">■</span> <span class="pre">b201a0...</span></code>) is created by spending the 0th output of transaction <code class="docutils literal notranslate"><span class="pre">b201a0...</span></code>; for this <code class="docutils literal notranslate"><span class="pre">category</span></code>, a supply of 150 fungible tokens are created across two outputs (100 and 50). The second <code class="docutils literal notranslate"><span class="pre">category</span></code> (<code class="docutils literal notranslate"><span class="pre">▲</span> <span class="pre">a1efcd...</span></code>) is created by spending the 0th output of transaction <code class="docutils literal notranslate"><span class="pre">a1efcd...</span></code>; for this <code class="docutils literal notranslate"><span class="pre">category</span></code>, a supply of 100 fungible tokens are created across two outputs (20 and 80), and two NFTs are created (each with a <code class="docutils literal notranslate"><span class="pre">commitment</span></code> of <code class="docutils literal notranslate"><span class="pre">0x010203</span></code>).</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>Using the <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.get_unspents" title="bitcash.PrivateKey.get_unspents"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_unspents()</span></code></a> you can query the unspent set
@@ -120,7 +120,7 @@ nft_capability, nft_commitment, token_amount)</cite>. This can be sent as:</p>
 </div>
 </section>
 <section id="cashtoken-spending">
-<h2>CashToken spending<a class="headerlink" href="#cashtoken-spending" title="Permalink to this heading">¶</a></h2>
+<h2>CashToken spending<a class="headerlink" href="#cashtoken-spending" title="Link to this heading">¶</a></h2>
 <p>Much like generating new cashtokens, cashtokens can be spent as well. For example, to
 send 6000 fungible tokens of <code class="docutils literal notranslate"><span class="pre">category</span></code> <code class="docutils literal notranslate"><span class="pre">afe979...</span></code> you can use:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">send</span><span class="p">([</span>
@@ -161,7 +161,7 @@ the leftover BCH and cashtokens management.</p>
 </pre></div>
 </div>
 <section id="cashtoken-spending-order">
-<h3>CashToken spending order<a class="headerlink" href="#cashtoken-spending-order" title="Permalink to this heading">¶</a></h3>
+<h3>CashToken spending order<a class="headerlink" href="#cashtoken-spending-order" title="Link to this heading">¶</a></h3>
 <p>When spending unspents, BitCash follows a certain order:</p>
 <blockquote>
 <div><ol class="arabic simple">
@@ -210,7 +210,7 @@ which only includes cashtokens which need to be used.</p>
 </section>
 </section>
 <section id="cashtoken-signalling-cashaddr">
-<h2>CashToken signalling CashAddr<a class="headerlink" href="#cashtoken-signalling-cashaddr" title="Permalink to this heading">¶</a></h2>
+<h2>CashToken signalling CashAddr<a class="headerlink" href="#cashtoken-signalling-cashaddr" title="Link to this heading">¶</a></h2>
 <p>To signal cashtoken support by wallets, new <a class="reference internal" href="cashaddr.html#cashaddr"><span class="std std-ref">CashAddr</span></a> versions are introduced. BitCash
 wallet can signal cashtoken support by sharing cashtoken address using
 <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.cashtoken_address" title="bitcash.PrivateKey.cashtoken_address"><code class="xref py py-func docutils literal notranslate"><span class="pre">cashtoken_address()</span></code></a>, and BitCash does not allow spending cashtokens to

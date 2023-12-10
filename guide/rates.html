@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Exchange Rates &#8212; bitcash 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=039e1c02" />
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Fees" href="fees.html" />
@@ -30,20 +30,20 @@
     <div class="body" role="main">
     
   <section id="exchange-rates">
-<span id="id1"></span><h1>Exchange Rates<a class="headerlink" href="#exchange-rates" title="Permalink to this heading">¶</a></h1>
+<span id="id1"></span><h1>Exchange Rates<a class="headerlink" href="#exchange-rates" title="Link to this heading">¶</a></h1>
 <p>BitCash gets exchange rate data from trusted third-party APIs. Specifically,
 it can access:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://bitpay.com/bitcoincash-exchange-rates">https://bitpay.com/bitcoincash-exchange-rates</a> via <a class="reference internal" href="../dev/api.html#bitcash.network.rates.BitpayRates" title="bitcash.network.rates.BitpayRates"><code class="xref py py-class docutils literal notranslate"><span class="pre">BitpayRates</span></code></a></p></li>
 </ul>
 <section id="ratesapi">
-<h2>RatesAPI<a class="headerlink" href="#ratesapi" title="Permalink to this heading">¶</a></h2>
+<h2>RatesAPI<a class="headerlink" href="#ratesapi" title="Link to this heading">¶</a></h2>
 <p>Core operations use <a class="reference internal" href="../dev/api.html#bitcash.network.rates.RatesAPI" title="bitcash.network.rates.RatesAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">RatesAPI</span></code></a>. For each method,
 it polls a service and if an error occurs it tries another.</p>
 <p>You will likely never use this directly.</p>
 </section>
 <section id="currency-to-satoshi">
-<h2>Currency to Satoshi<a class="headerlink" href="#currency-to-satoshi" title="Permalink to this heading">¶</a></h2>
+<h2>Currency to Satoshi<a class="headerlink" href="#currency-to-satoshi" title="Link to this heading">¶</a></h2>
 <p>BitCash exposes 2 ways to convert a given amount of currency to the equivalent
 number of satoshi: <a class="reference internal" href="../dev/api.html#bitcash.network.currency_to_satoshi" title="bitcash.network.currency_to_satoshi"><code class="xref py py-func docutils literal notranslate"><span class="pre">currency_to_satoshi()</span></code></a> and
 <a class="reference internal" href="../dev/api.html#bitcash.network.currency_to_satoshi_cached" title="bitcash.network.currency_to_satoshi_cached"><code class="xref py py-func docutils literal notranslate"><span class="pre">currency_to_satoshi_cached()</span></code></a>. The latter function will
@@ -63,7 +63,7 @@ transactions:</p>
 </div>
 </section>
 <section id="satoshi-to-currency">
-<h2>Satoshi to Currency<a class="headerlink" href="#satoshi-to-currency" title="Permalink to this heading">¶</a></h2>
+<h2>Satoshi to Currency<a class="headerlink" href="#satoshi-to-currency" title="Link to this heading">¶</a></h2>
 <p>Converting satoshi to another currency as a formatted string can be done using
 <a class="reference internal" href="../dev/api.html#bitcash.network.satoshi_to_currency" title="bitcash.network.satoshi_to_currency"><code class="xref py py-func docutils literal notranslate"><span class="pre">satoshi_to_currency()</span></code></a> or <a class="reference internal" href="../dev/api.html#bitcash.network.satoshi_to_currency_cached" title="bitcash.network.satoshi_to_currency_cached"><code class="xref py py-func docutils literal notranslate"><span class="pre">satoshi_to_currency_cached()</span></code></a>.
 The result will be rounded down to the proper number of decimal places for each currency.</p>
@@ -77,7 +77,7 @@ The result will be rounded down to the proper number of decimal places for each 
 </div>
 </section>
 <section id="supported-currencies">
-<span id="id2"></span><h2>Supported Currencies<a class="headerlink" href="#supported-currencies" title="Permalink to this heading">¶</a></h2>
+<span id="id2"></span><h2>Supported Currencies<a class="headerlink" href="#supported-currencies" title="Link to this heading">¶</a></h2>
 <p>These are all the currencies currently supported by bitcash. Note that converting
 satoshi to itself, ubch, mbch, or bch never requires exchange rate data and
 therefore no network calls are needed.</p>
@@ -171,7 +171,7 @@ therefore no network calls are needed.</p>
 </table>
 </section>
 <section id="unsupported-currencies">
-<span id="id3"></span><h2>Unsupported Currencies<a class="headerlink" href="#unsupported-currencies" title="Permalink to this heading">¶</a></h2>
+<span id="id3"></span><h2>Unsupported Currencies<a class="headerlink" href="#unsupported-currencies" title="Link to this heading">¶</a></h2>
 <p>If you need to use currencies in your <a class="reference internal" href="transactions.html#transactions"><span class="std std-ref">Transactions</span></a> that bitcash does not
 support, convert it yourself to satoshi, ubch, mbch, or bch as these are
 supported natively.</p>
