@@ -306,7 +306,7 @@ class PrivateKey(BaseKey):
             unspents or self.get_unspents(),
             outputs,
             fee or DEFAULT_FEE,
-            leftover or self.address,
+            leftover or self.cashtoken_address,
             combine=combine,
             message=message,
             compressed=self.is_compressed(),

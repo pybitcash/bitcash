@@ -41,6 +41,9 @@ from .samples import (
     BITCOIN_ADDRESS_TEST_PAY2SH20,
     BITCOIN_ADDRESS_REGTEST_PAY2SH20,
     BITCOIN_CASHADDRESS_CATKN,
+    CASHTOKEN_CATAGORY_ID,
+    CASHTOKEN_AMOUNT,
+    PREFIX_AMOUNT,
 )
 
 
@@ -255,6 +258,31 @@ class TestPrivateKey:
         # leftover P2PKH locking script
         _ = "1976a914401e1cc3a691bc63bf4c21084b6a0e02cd3549bf88ac"
         assert out[82:-8] == _
+
+    def test_cashtoken_leftover(self):
+        # test default leftover
+        unspents_original = [
+            Unspent(
+                2000,
+                1,
+                PREFIX_AMOUNT.hex() + "aa",
+                "ab",
+                0,
+                CASHTOKEN_CATAGORY_ID,
+                None,
+                None,
+                CASHTOKEN_AMOUNT,
+            )
+        ]
+        outputs = [(BITCOIN_CASHADDRESS, 1000, "satoshi")]
+
+        key = wif_to_key("cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ")
+        # will raise error if leftover not cashtoken
+        tx = key.create_transaction(
+            outputs,
+            unspents=unspents_original,
+            fee=0,
+        )
 
 
 class TestPrivateKeyTestnet:
