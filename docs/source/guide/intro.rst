@@ -5,8 +5,8 @@ Introduction
 
 BitCash is a fast and compliant Bitcoin Cash library with an extremely easy-to-use API.
 
-Why bitcash?
---------
+Why BitCash?
+------------
 
 - Robust API with sane defaults, making development a breeze
 - Python's fastest available implementation (100x faster than closest library)
@@ -73,7 +73,8 @@ BitCash is licensed under terms of the `MIT License`_.
 Credits
 -------
 
-- `Ofek Lev`_ for the amazing bit library
+- Ofek Lev for the amazing bit library
+
 .. _pybitcointools: https://github.com/vbuterin/pybitcointools
 .. _scary: https://github.com/JoinMarket-Org/joinmarket/issues/61
 .. _pycoin: https://github.com/richardkiss/pycoin
@@ -85,3 +86,4 @@ Credits
 .. _Gregory Maxwell: https://github.com/gmaxwell
 .. _ECC: https://en.wikipedia.org/wiki/Elliptic_curve_cryptography
 .. _Python Package Index: https://pypi.org
+.. _python_bitcoinlib : https://github.com/petertodd/python-bitcoinlib
