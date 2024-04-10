@@ -1,4 +1,2 @@
-Authors
-=======
-
-.. include:: ../../../AUTHORS.rst
+.. include:: ../../../AUTHORS.md
+   :parser: myst_parser.sphinx_

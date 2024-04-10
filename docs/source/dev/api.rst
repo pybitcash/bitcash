@@ -50,19 +50,6 @@ Network
     :members:
     :undoc-members:
 
-.. autoclass:: bitcash.network.services.BitpayAPI
-    :members:
-    :undoc-members:
-    :inherited-members:
-
-.. autoclass:: bitcash.network.services.BlockchainAPI
-    :members:
-    :undoc-members:
-
-.. autoclass:: bitcash.network.services.SmartbitcashAPI
-    :members:
-    :undoc-members:
-
 .. autoclass:: bitcash.network.meta.Unspent
     :members:
     :undoc-members:
@@ -80,10 +67,6 @@ Exchange Rates
     :undoc-members:
 
 .. autoclass:: bitcash.network.rates.BitpayRates
-    :members:
-    :undoc-members:
-
-.. autoclass:: bitcash.network.rates.BlockchainRates
     :members:
     :undoc-members:
 

@@ -10,12 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
-          pip install sphinx
-          pip install .
+          pip install -r docs/requirements.txt
 
       - name: Build
         run: |
