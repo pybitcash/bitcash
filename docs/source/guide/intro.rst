@@ -21,7 +21,7 @@ cross-platform support, and/or slow implementations.
 When Ofek originally went to experiment with sending Bitcoin there were really no
 good choices. Two choices were out almost immediately: `pybitcointools`_ was
 `scary`_, unpleasant to use, and not very maintained, while `python_bitcoinlib`_,
-was far too low level. That left `pycoin`_, which was a bitcash better but still no docs, and 2 libraries from VC funded companies: `two1`_ from `21`_, which had
+was far too low level. That left `pycoin`_, which was a bit better but still no docs, and 2 libraries from VC funded companies: `two1`_ from `21`_, which had
 decent documentation but had an incorrect implementation of the standardized
 compressed public keys (meaning such keys could literally not spend money), and
 `pybitcoin`_ from `Blockstack`_ which did not support Python 3 and had limited
