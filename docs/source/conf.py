@@ -120,11 +120,15 @@ html_static_path = ["_static"]
 # Logo
 # html_logo = "_static/bitcash.png"
 
-# Source code statistics.
+# Community links.
 html_context = {
     "source_type": "github",
     "source_user": "pybitcash",
     "source_repo": "bitcash",
+}
+html_theme_options = {
+    "twitter_url": "https://twitter.com/merc1er",
+    "github_url": "https://github.com/pybitcash/bitcash",
 }
 
 
