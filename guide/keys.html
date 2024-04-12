@@ -1,36 +1,193 @@
-<!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Keys - BitCash 1.0.1 documentation</title>
+    <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="CashAddr" href="cashaddr.html" /><link rel="prev" title="Installation" href="install.html" />
 
-    <title>Keys &#8212; bitcash 1.0.1 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
-    <script src="../_static/documentation_options.js?v=292eb321"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CashAddr" href="cashaddr.html" />
-    <link rel="prev" title="Installation" href="install.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
+  <script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(sessionStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=aecf457f" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=aa21bc99" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Keys"/>
+<meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="document"><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand mr-4" href="../index.html">
+      
+      
+      <strong>BitCash</strong>
+    </a>
+    <div class="sy-head-links" id="NavLinks">
+      <nav class="sy-head-nav"></nav>
+      <div class="sy-head-extra flex items-center print:hidden">
+        
+<form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form>
+        
+        
+        <div class="sy-head-social flex items-center">
+            <a class="flex items-center" href="https://github.com/pybitcash/bitcash" aria-label="GitHub">
+              <i class="i-icon github"></i>
+            </a>
+        </div>
+      </div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden">
+      <button class="js-theme theme-switch flex items-center"
+        data-aria-auto="Switch to light color mode"
+        data-aria-light="Switch to dark color mode"
+        data-aria-dark="Switch to auto color mode">
+        <i class="i-icon theme-icon"></i>
+      </button>
+      <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2 -translate-x-2"></span>
+          <span class="hamburger_3 -translate-x-1"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cashaddr.html">CashAddr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network.html">Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="node.html">Customize your node API endpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transactions.html">Transactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cashtokens.html">CashTokens</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rates.html">Exchange Rates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fees.html">Fees</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../community/faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../community/support.html">Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../community/development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../community/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../community/vulnerabilities.html">Vulnerability Disclosure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../community/updates.html">Stay Informed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../community/authors.html">Authors</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/api.html">Developer Interface</a></li>
+</ul>
 
-  
-  
+        </div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-icon close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4">
+  <div class="localtoc">
+    <h3>On this page</h3>
+    <ul>
+<li><a class="reference internal" href="#what-is-a-private-key">What is a private key?</a></li>
+<li><a class="reference internal" href="#types">Types</a></li>
+<li><a class="reference internal" href="#creation">Creation</a></li>
+<li><a class="reference internal" href="#public-point">Public Point</a></li>
+<li><a class="reference internal" href="#public-key">Public Key</a></li>
+<li><a class="reference internal" href="#address">Address</a></li>
+<li><a class="reference internal" href="#formats">Formats</a><ul>
+<li><a class="reference internal" href="#wif">WIF</a></li>
+<li><a class="reference internal" href="#hex">Hex</a></li>
+<li><a class="reference internal" href="#integer">Integer</a></li>
+<li><a class="reference internal" href="#pem">PEM</a></li>
+<li><a class="reference internal" href="#der">DER</a></li>
+</ul>
+</li>
+</ul>
 
-  </head><body>
-  
-
-    <div class="document">
-<div class="documentwrapper">
-  <div class="bodywrapper">
-    <div class="body" role="main">
-    
-  <section id="keys">
+  </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/pybitcash/bitcash"
+  data-type="github" data-user="pybitcash" data-repo="bitcash">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <i class="i-icon github"></i>
+  </span>
+  <span class="flex-grow px-2">
+    <span>pybitcash/bitcash</span>
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <i class="i-icon star"></i>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <i class="i-icon git-fork"></i>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/pybitcash/bitcash/blob/master/docs/guide/keys.rst">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div>
+    </div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+    <div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-icon menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList">
+      
+      
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">BitCash</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li>
+      
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Keys</strong>
+        <meta itemprop="position" content="2" />
+      </li>
+      
+      
+    </ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-icon outdent"></i>
+      </button>
+    </div>
+  </div>
+</div>
+    <div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="keys">
 <span id="id1"></span><h1>Keys<a class="headerlink" href="#keys" title="Link to this heading">¶</a></h1>
 <p>BitCash assumes the easiest way to reason about BitcoinCash is in the basic unit of a
 <a class="reference external" href="https://en.bitcoin.it/wiki/Private_key">private key</a> and, therefore, all functionality (viewing balance, making
@@ -51,14 +208,14 @@ on the curve from that value.</p>
 <p>bitcash defines 2 kinds of private keys: <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey" title="bitcash.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a>, aliased as
 simply <a class="reference internal" href="../dev/api.html#bitcash.Key" title="bitcash.Key"><code class="xref py py-class docutils literal notranslate"><span class="pre">Key</span></code></a>, and <a class="reference internal" href="../dev/api.html#bitcash.PrivateKeyTestnet" title="bitcash.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a>. Both classes
 have the exact same functionality.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">PrivateKey</span><span class="p">,</span> <span class="n">PrivateKeyTestnet</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Key</span> <span class="o">==</span> <span class="n">PrivateKey</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">dir</span><span class="p">(</span><span class="n">Key</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dir</span><span class="p">(</span><span class="n">PrivateKeyTestnet</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">PrivateKey</span><span class="p">,</span> <span class="n">PrivateKeyTestnet</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt;</span>
+</span><span data-line="3"><span class="gp">&gt;&gt;&gt; </span><span class="n">Key</span> <span class="o">==</span> <span class="n">PrivateKey</span>
+</span><span data-line="4"><span class="go">True</span>
+</span><span data-line="5"><span class="gp">&gt;&gt;&gt;</span>
+</span><span data-line="6"><span class="gp">&gt;&gt;&gt; </span><span class="nb">dir</span><span class="p">(</span><span class="n">Key</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dir</span><span class="p">(</span><span class="n">PrivateKeyTestnet</span><span class="p">)</span>
+</span><span data-line="7"><span class="go">True</span>
+</span></pre></div>
 </div>
 <p>The only difference is the network operations for <a class="reference internal" href="../dev/api.html#bitcash.PrivateKeyTestnet" title="bitcash.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a>
 will use BitcoinCash’s test network where coins have no value. As such, the derived
@@ -67,9 +224,9 @@ address will also be different.</p>
 <section id="creation">
 <h2>Creation<a class="headerlink" href="#creation" title="Link to this heading">¶</a></h2>
 <p>Creation of a new private key is as simple as:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">Key</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">Key</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+</span></pre></div>
 </div>
 </section>
 <section id="public-point">
@@ -78,9 +235,9 @@ address will also be different.</p>
 is a one-way function, there is no known way to derive the private value
 from the point.</p>
 <p>You can see it like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_point</span>
-<span class="go">Point(x=97142194878787224003202190607135598251247304976930950188466413219499502457410, y=43606604972619611673144670688496329906728122067438546662512577612023859619611)</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_point</span>
+</span><span data-line="2"><span class="go">Point(x=97142194878787224003202190607135598251247304976930950188466413219499502457410, y=43606604972619611673144670688496329906728122067438546662512577612023859619611)</span>
+</span></pre></div>
 </div>
 <p>You will never use this directly.</p>
 </section>
@@ -89,9 +246,9 @@ from the point.</p>
 <p>A public key is a public point serialized to bytes. By default all keys will
 use the compressed version. This reduces the size of each transaction and thus fees.</p>
 <p>Access it like so:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_key</span>
-<span class="go">b&#39;\x03\xd6\xc4\x88\xab[S\x1d_\xb1H\x12\xbe\x19C\x08\x16\x90~@\x9fv-\x95\xf0w\x87\xfdB\x81\xa3\xd2B&#39;</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_key</span>
+</span><span data-line="2"><span class="go">b&#39;\x03\xd6\xc4\x88\xab[S\x1d_\xb1H\x12\xbe\x19C\x08\x16\x90~@\x9fv-\x95\xf0w\x87\xfdB\x81\xa3\xd2B&#39;</span>
+</span></pre></div>
 </div>
 <p>You will also never use this directly. This value is only used internally to
 derive your address and is needed in the construction of every transaction.</p>
@@ -99,9 +256,9 @@ derive your address and is needed in the construction of every transaction.</p>
 <section id="address">
 <h2>Address<a class="headerlink" href="#address" title="Link to this heading">¶</a></h2>
 <p>All keys possess an <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.address" title="bitcash.PrivateKey.address"><code class="xref py py-func docutils literal notranslate"><span class="pre">address()</span></code></a> property which is derived from your public key:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
-<span class="go">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
+</span><span data-line="2"><span class="go">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span>
+</span></pre></div>
 </div>
 <p>The address follows a <a class="reference internal" href="cashaddr.html#cashaddr"><span class="std std-ref">CashAddr</span></a> format. This is what you share with others to receive payments.</p>
 </section>
@@ -114,245 +271,152 @@ format stores the secret value as well as some metadata such as whether or not t
 public key should be compressed.</p>
 <p>To import a private key you can pass a key in wallet import format directly to
 the initializer:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="s1">&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
-<span class="go">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="s1">&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;</span><span class="p">)</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
+</span><span data-line="3"><span class="go">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span>
+</span></pre></div>
 </div>
 <p>Export:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_wif</span><span class="p">()</span>
-<span class="go">&#39;KxVhypbvS3hEYPAP3pYuH1LtcfbdEUcugiqg7fNFUUnmEfWVXJV4&#39;</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_wif</span><span class="p">()</span>
+</span><span data-line="3"><span class="go">&#39;KxVhypbvS3hEYPAP3pYuH1LtcfbdEUcugiqg7fNFUUnmEfWVXJV4&#39;</span>
+</span></pre></div>
 </div>
 <p>If you don’t know what kind of private key your WIF represents, and you don’t
 want to force the use of a particular class, you can do this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">wif_to_key</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">wif_to_key</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-<span class="go">&lt;PrivateKeyTestnet: muUFbvTKDEokGTVUjScMhw1QF2rtv5hxCz&gt;</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">wif_to_key</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt;</span>
+</span><span data-line="3"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">wif_to_key</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
+</span><span data-line="4"><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="5"><span class="go">&lt;PrivateKeyTestnet: muUFbvTKDEokGTVUjScMhw1QF2rtv5hxCz&gt;</span>
+</span></pre></div>
 </div>
 </section>
 <section id="hex">
 <h3>Hex<a class="headerlink" href="#hex" title="Link to this heading">¶</a></h3>
 <p>Import:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_hex</span><span class="p">(</span><span class="s1">&#39;c28a9f80738f770d527803a566cf6fc3edf6cea586c4fc4a5223a5ad797e1ac3&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
-<span class="go">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_hex</span><span class="p">(</span><span class="s1">&#39;c28a9f80738f770d527803a566cf6fc3edf6cea586c4fc4a5223a5ad797e1ac3&#39;</span><span class="p">)</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
+</span><span data-line="3"><span class="go">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span>
+</span></pre></div>
 </div>
 <p>Export:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_hex</span><span class="p">()</span>
-<span class="go">&#39;738fc299281ba8d29f54cbc6b064f9b468e064a02fe6807af8367cbb25b20673&#39;</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_hex</span><span class="p">()</span>
+</span><span data-line="3"><span class="go">&#39;738fc299281ba8d29f54cbc6b064f9b468e064a02fe6807af8367cbb25b20673&#39;</span>
+</span></pre></div>
 </div>
 </section>
 <section id="integer">
 <h3>Integer<a class="headerlink" href="#integer" title="Link to this heading">¶</a></h3>
 <p>Import:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_int</span><span class="p">(</span><span class="mi">87993618360805341115891506172036624893404292644470266399436498750715784469187</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
-<span class="go">&#39;bitcoincash:qzvsaasdvw6mt9j2rs3gyps673gj86flev4sthhcc0&#39;</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_int</span><span class="p">(</span><span class="mi">87993618360805341115891506172036624893404292644470266399436498750715784469187</span><span class="p">)</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
+</span><span data-line="3"><span class="go">&#39;bitcoincash:qzvsaasdvw6mt9j2rs3gyps673gj86flev4sthhcc0&#39;</span>
+</span></pre></div>
 </div>
 <p>Export:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_int</span><span class="p">()</span>
-<span class="go">100038680087491563809217308525458351872289809954309021777847614847412668376286</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_int</span><span class="p">()</span>
+</span><span data-line="3"><span class="go">100038680087491563809217308525458351872289809954309021777847614847412668376286</span>
+</span></pre></div>
 </div>
 </section>
 <section id="pem">
 <h3>PEM<a class="headerlink" href="#pem" title="Link to this heading">¶</a></h3>
 <p>Import:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_pem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
-<span class="go">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_pem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
+</span><span data-line="3"><span class="go">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span>
+</span></pre></div>
 </div>
 <p>Export:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_pem</span><span class="p">()</span>
-<span class="go">b&#39;-----BEGIN PRIVATE KEY-----\nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQg93tloWnF8UvDLeK2n0OE\nyf/Si6O73rm33ctZHVhTIBGhRANCAARG3vtgCf5SGfIkwcvuAxNvO/tdy8HnWqS3\nUM+KrWUPpPnHeysZbO6zrG4tN/VBeV2p3whYU6dUhSueOXUPB2Oo\n-----END PRIVATE KEY-----\n&#39;</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_pem</span><span class="p">()</span>
+</span><span data-line="3"><span class="go">b&#39;-----BEGIN PRIVATE KEY-----\nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQg93tloWnF8UvDLeK2n0OE\nyf/Si6O73rm33ctZHVhTIBGhRANCAARG3vtgCf5SGfIkwcvuAxNvO/tdy8HnWqS3\nUM+KrWUPpPnHeysZbO6zrG4tN/VBeV2p3whYU6dUhSueOXUPB2Oo\n-----END PRIVATE KEY-----\n&#39;</span>
+</span></pre></div>
 </div>
 </section>
 <section id="der">
 <h3>DER<a class="headerlink" href="#der" title="Link to this heading">¶</a></h3>
 <p>Import:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_der</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
-<span class="go">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_der</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
+</span><span data-line="3"><span class="go">&#39;bitcoincash:qqrxvhnn88gmpczyxry254vcsnl6canmkqgt98lpn5&#39;</span>
+</span></pre></div>
 </div>
 <p>Export:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_der</span><span class="p">()</span>
-<span class="go">b&#39;0\x81\x84\x02\x01\x000\x10\x06\x07*\x86H\xce=\x02\x01\x06\x05+\x81\x04\x00\n\x04m0k\x02\x01\x01\x04 ld\x8f\xd4\xc0\x19\xbd^\xa1\xf7f\xee\x8b9j\x1c\xd3ZX\x89\x1b\x04\x13|e\xe7|g\x84:\xcf\xab\xa1D\x03B\x00\x04\xb6\x1a\x9bQ\x0c?\xe3\xb7\x80\x05,\xcf7\x01{\xf9,&quot;\xb6\xdf\xe5\xbb\x0b+\x9b\xc5\x07@2\xa1\x8a\x01R&lt;\x86\t\x1c\x02\x0fd\x8d\x90\xb5\x99w\xc5\x84(#\xfdr&gt;^\xd3\xb5|\x9d1\xa1\x9c/\x04\xf5\xdd&#39;</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_der</span><span class="p">()</span>
+</span><span data-line="3"><span class="go">b&#39;0\x81\x84\x02\x01\x000\x10\x06\x07*\x86H\xce=\x02\x01\x06\x05+\x81\x04\x00\n\x04m0k\x02\x01\x01\x04 ld\x8f\xd4\xc0\x19\xbd^\xa1\xf7f\xee\x8b9j\x1c\xd3ZX\x89\x1b\x04\x13|e\xe7|g\x84:\xcf\xab\xa1D\x03B\x00\x04\xb6\x1a\x9bQ\x0c?\xe3\xb7\x80\x05,\xcf7\x01{\xf9,&quot;\xb6\xdf\xe5\xbb\x0b+\x9b\xc5\x07@2\xa1\x8a\x01R&lt;\x86\t\x1c\x02\x0fd\x8d\x90\xb5\x99w\xc5\x84(#\xfdr&gt;^\xd3\xb5|\x9d1\xa1\x9c/\x04\xf5\xdd&#39;</span>
+</span></pre></div>
 </div>
 </section>
 </section>
 </section>
 
-
-    <br>
-    <ul>
-      <li>
-        Previous topic: <a href="install.html">Installation</a>
-      </li>
-      <li>
-        Next topic: <a href="cashaddr.html">CashAddr</a>
-      </li>
-    </ul>
-    </div>
+        </article>
+        <button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button>
+        
+        <div class="navigation flex print:hidden">
+  <div class="navigation-prev">
+    <a href="install.html">
+      <i class="i-icon chevron"></i>
+      <div class="page-info">
+        <span>Previous</span>
+        
+        <div class="title">Installation</div>
+        
+      </div>
+    </a>
+  </div>
+  <div class="navigation-next">
+    <a href="cashaddr.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">CashAddr</div>
+      </div>
+      <i class="i-icon chevron"></i>
+    </a>
   </div>
 </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/sidebarlogo.html -->
-
-<p class="logo">
-  <a href="../index.html">
-    <img class="logo" src="../_static/bitcash.png"/>
-  </a>
-</p>
-
-<p>
-  <iframe src="https://ghbtns.com/github-btn.html?user=pybitcash&repo=bitcash&type=watch&count=true&size=large"
-    allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-<p>
-  bitcash is a modern Bitcoin Cash library designed to be a pleasure to use for developers and end users alike.
-</p>
-
-<h3>Stay Informed</h3>
-<p>Receive updates on new releases and upcoming projects.</p>
-
-<p><iframe src="https://ghbtns.com/github-btn.html?user=pybitcash&type=follow&count=false"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200" height="20"></iframe></p>
-
-<p><a href="https://twitter.com/merc1er" class="twitter-follow-button" data-show-count="false">Follow @merc1er</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
-
-
-<h3>Other Projects</h3>
-
-<p>More <a href="https://bitcoincash.org/developers.html">Bitcoin Cash</a> projects</p>
-<ul>
-  <!-- <li><a href="#"></a></li> -->
-</ul>
-
-
-<h3>Useful Links</h3>
-<ul>
-  <li><a href="https://github.com/pybitcash/bitcash">bitcash @ GitHub</a></li>
-  <li><a href="https://pypi.org/project/bitcash">bitcash @ PyPI</a></li>
-  <li><a href="https://github.com/pybitcash/bitcash/issues">Issue Tracker</a></li>
-</ul>
-
-<h3>Dependencies</h3>
-<ul>
-  <li><a href="https://github.com/ofek/coincurve">Coincurve</a></li>
-  <li><a href="https://github.com/kennethreitz/requests">Requests</a></li>
-  <li><a href="#">CashAddress</a></li>
-</ul>
-  <div>
-    <h3><a href="../index.html">Table of Contents</a></h3>
-    <ul>
-<li><a class="reference internal" href="#">Keys</a><ul>
-<li><a class="reference internal" href="#what-is-a-private-key">What is a private key?</a></li>
-<li><a class="reference internal" href="#types">Types</a></li>
-<li><a class="reference internal" href="#creation">Creation</a></li>
-<li><a class="reference internal" href="#public-point">Public Point</a></li>
-<li><a class="reference internal" href="#public-key">Public Key</a></li>
-<li><a class="reference internal" href="#address">Address</a></li>
-<li><a class="reference internal" href="#formats">Formats</a><ul>
-<li><a class="reference internal" href="#wif">WIF</a></li>
-<li><a class="reference internal" href="#hex">Hex</a></li>
-<li><a class="reference internal" href="#integer">Integer</a></li>
-<li><a class="reference internal" href="#pem">PEM</a></li>
-<li><a class="reference internal" href="#der">DER</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-  </div><div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="install.html" title="previous chapter">Installation</a></li>
-      <li>Next: <a href="cashaddr.html" title="next chapter">CashAddr</a></li>
-  </ul></li>
-</ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/guide/keys.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
-
-<!-- Alabaster (krTheme++) Hacks -->
-
-<!-- CSS Adjustments (I'm very picky.) -->
-<style type="text/css">
-
-  /* Rezzy requires precise alignment. */
-  img.logo {margin-left: -20px!important;}
-
-  /* "Quick Search" should be capitalized. */
-  div#searchbox h3 {text-transform: capitalize;}
-
-  /* Make the document a little wider, less code is cut-off. */
-  div.document {width: 1008px;}
-
-  /* Much-improved spacing around code blocks. */
-  div.highlight pre {padding: 11px 14px;}
-
-  /* Remain Responsive! */
-  @media screen and (max-width: 1008px) {
-    div.sphinxsidebar {display: none;}
-    div.document {width: 100%!important;}
-
-    /* Have code blocks escape the document right-margin. */
-    div.highlight pre {margin-right: -30px;}
-  }
-
-</style>
-        </div>
+        
       </div>
-      <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &#169;2021, BitCash.
-      
-      |
-      <a href="../_sources/guide/keys.rst.txt"
-          rel="nofollow">Page source</a>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, BitCash</p>
+        
+        <p>
+          Made with
+          
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+          
+          <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+        </p>
+      </div>
+      <div class="sy-foot-socials">
+          <a href="https://github.com/pybitcash/bitcash" aria-label="GitHub"><i class="i-icon github"></i></a>
+          <a href="https://twitter.com/merc1er" aria-label="X (Twitter)"><i class="i-icon x-twitter"></i></a>
+      </div>
     </div>
-
+  </div>
+</footer></div>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script src="../_static/shibuya.js?v=9aab5f5b"></script>
     
-    <a href="https://github.com/pybitcash/bitcash" class="github">
-        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
-    </a>
-    
-
-    
-  </body>
+</body>
 </html>
