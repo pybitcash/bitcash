@@ -1,3 +1,8 @@
+.. image:: _static/bitcash.png
+    :alt: BitCash logo
+    :align: center
+    :height: 60px
+
 .. include:: ../../README.md
    :parser: myst_parser.sphinx_
 

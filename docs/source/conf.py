@@ -117,6 +117,16 @@ html_theme = "shibuya"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
+# Logo
+# html_logo = "_static/bitcash.png"
+
+# Source code statistics.
+html_context = {
+    "source_type": "github",
+    "source_user": "pybitcash",
+    "source_repo": "bitcash",
+}
+
 
 # -- Options for HTMLHelp output ------------------------------------------
 
