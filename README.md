@@ -17,7 +17,6 @@ Forked from [Ofek's awesome Bit library](https://github.com/ofek/bit).
 
 **BitCash is so easy to use, in fact, you can do this:**
 
-
 ```python
 >>> from bitcash import Key
 >>>
@@ -62,18 +61,12 @@ If you are intrigued, continue reading. If not, continue all the same!
 BitCash is distributed on `PyPI` as a universal wheel and is available on Linux/macOS
 and Windows and supports Python 3.8+.
 
-
 ```shell
 pip install bitcash  # pip3 if pip is Python 2 on your system.
 ```
 
 ## Documentation
 
-Docs are hosted by Github Pages and are automatically built and published after every successful commit to BitCash's ``master`` branch.
+Docs are hosted by Github Pages and are automatically built and published after every successful commit to BitCash's `master` branch.
 
 [Read the documentation](https://bitcash.dev)
-
-## Credits
-
-- [ofek](https://github.com/ofek/bit) for the original bit codebase.
-- [Additional](AUTHORS.md)

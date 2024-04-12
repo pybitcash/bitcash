@@ -5,8 +5,8 @@ Introduction
 
 BitCash is a fast and compliant Bitcoin Cash library with an extremely easy-to-use API.
 
-Why bitcash?
---------
+Why BitCash?
+------------
 
 - Robust API with sane defaults, making development a breeze
 - Python's fastest available implementation (100x faster than closest library)
@@ -21,7 +21,7 @@ cross-platform support, and/or slow implementations.
 When Ofek originally went to experiment with sending Bitcoin there were really no
 good choices. Two choices were out almost immediately: `pybitcointools`_ was
 `scary`_, unpleasant to use, and not very maintained, while `python_bitcoinlib`_,
-was far too low level. That left `pycoin`_, which was a bitcash better but still no docs, and 2 libraries from VC funded companies: `two1`_ from `21`_, which had
+was far too low level. That left `pycoin`_, which was a bit better but still no docs, and 2 libraries from VC funded companies: `two1`_ from `21`_, which had
 decent documentation but had an incorrect implementation of the standardized
 compressed public keys (meaning such keys could literally not spend money), and
 `pybitcoin`_ from `Blockstack`_ which did not support Python 3 and had limited
@@ -73,7 +73,8 @@ BitCash is licensed under terms of the `MIT License`_.
 Credits
 -------
 
-- `Ofek Lev`_ for the amazing bit library
+- Ofek Lev for the amazing bit library
+
 .. _pybitcointools: https://github.com/vbuterin/pybitcointools
 .. _scary: https://github.com/JoinMarket-Org/joinmarket/issues/61
 .. _pycoin: https://github.com/richardkiss/pycoin
@@ -85,3 +86,4 @@ Credits
 .. _Gregory Maxwell: https://github.com/gmaxwell
 .. _ECC: https://en.wikipedia.org/wiki/Elliptic_curve_cryptography
 .. _Python Package Index: https://pypi.org
+.. _python_bitcoinlib : https://github.com/petertodd/python-bitcoinlib
