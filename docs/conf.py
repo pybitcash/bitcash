@@ -132,9 +132,6 @@ html_theme_options = {
     "github_url": "https://github.com/pybitcash/bitcash",
 }
 
-# Custom CSS
-html_css_files = ["custom.css"]
-
 
 # -- Options for HTMLHelp output ------------------------------------------
 
