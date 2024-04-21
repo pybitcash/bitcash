@@ -37,6 +37,20 @@ class TestChaingraphAPI:
         self.monkeypatch = MonkeyPatch()
         self.api = ChaingraphAPI("https://dummy.com/v1/graphql")
 
+    def test_get_blockheight(self):
+        return_json = {
+            "data": {
+                "block": [
+                    {
+                        "height": "123456"
+                    },
+                ]
+            }
+        }
+        self.monkeypatch.setattr(_capi, "session", DummySession(return_json))
+        blockheight = self.api.get_blockheight()
+        assert blockheight == 123456
+
     def test_get_balance(self):
         return_json = {
             "data": {

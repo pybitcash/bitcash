@@ -43,6 +43,7 @@ class BitcoinDotComAPI(BaseAPI):
         "address": "address/details/{}",
         "raw-tx": "rawtransactions/sendRawTransaction",
         "tx-details": "transaction/details/{}",
+        "block-height": "blockchain/getBlockCount",
     }
 
     @classmethod
@@ -51,6 +52,12 @@ class BitcoinDotComAPI(BaseAPI):
 
     def make_endpoint_url(self, path):
         return self.network_endpoint + self.PATHS[path]
+
+    def get_blockheight(self, *args, **kwargs):
+        api_url = self.make_endpoint_url("block-height")
+        r = session.get(api_url)
+        r.raise_for_status()
+        return r.json()
 
     def get_balance(self, address, *args, **kwargs):
         address = cashtokenaddress_to_address(address)

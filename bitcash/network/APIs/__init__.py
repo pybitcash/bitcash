@@ -24,6 +24,15 @@ class BaseAPI(ABC):
         """
 
     @abstractmethod
+    def get_blockheight(self, *args, **kwargs):
+        """
+        Return the block height.
+
+        :returns: Blockheight
+        :rtype: ``int``
+        """
+
+    @abstractmethod
     def get_balance(self, address, *args, **kwargs):
         """
         Returns balance of an address

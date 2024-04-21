@@ -123,6 +123,47 @@ class NetworkAPI:
     )
 
     @classmethod
+    def get_ordered_endpoints_for(cls, network="mainnet", remove_bad_endpoints=True):
+        """Gets endpoints ordered by their blockheights.
+        Solves the problem when an endpoint is stuck on an older block.
+
+        :param network: network in ["mainnet", "testnet", "regtest"].
+        :param remove_bad_endpoints: remove unreachable or un-synced endpoints.
+        """
+        endpoints = get_endpoints_for(network)
+
+        endpoints_blockheight = [0 for _ in range(len(endpoints))]
+
+        for i, endpoint in enumerate(endpoints):
+            try:
+                endpoints_blockheight[i] = endpoint.get_blockheight(
+                    timeout=DEFAULT_TIMEOUT
+                )
+            except cls.IGNORED_ERRORS:  # pragma: no cover
+                pass
+
+        if sum(endpoints_blockheight) == 0:
+            raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
+
+        ordered_endpoints_blockheight, ordered_endpoints = zip(
+            *sorted(
+                zip(endpoints_blockheight, endpoints),
+                key=lambda tup: tup[0],
+                reverse=True,
+            )
+        )
+
+        ordered_endpoints = list(ordered_endpoints)
+
+        if remove_bad_endpoints:
+            highest_blockheight = ordered_endpoints_blockheight[0]
+            for i in reversed(range(len(ordered_endpoints_blockheight))):
+                if ordered_endpoints_blockheight[i] != highest_blockheight:
+                    ordered_endpoints.pop(i)
+
+        return ordered_endpoints
+
+    @classmethod
     def get_balance(cls, address, network="mainnet"):
         """Gets the balance of an address in satoshi.
 
@@ -131,7 +172,7 @@ class NetworkAPI:
         :raises ConnectionError: If all API services fail.
         :rtype: ``int``
         """
-        for endpoint in get_endpoints_for(network):
+        for endpoint in cls.get_ordered_endpoints_for(network):
             try:
                 return endpoint.get_balance(address, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
@@ -148,7 +189,7 @@ class NetworkAPI:
         :raises ConnectionError: If all API services fail.
         :rtype: ``list`` of ``str``
         """
-        for endpoint in get_endpoints_for(network):
+        for endpoint in cls.get_ordered_endpoints_for(network):
             try:
                 return endpoint.get_transactions(address, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
@@ -166,7 +207,7 @@ class NetworkAPI:
         :rtype: ``Transaction``
         """
 
-        for endpoint in get_endpoints_for(network):
+        for endpoint in cls.get_ordered_endpoints_for(network):
             try:
                 return endpoint.get_transaction(txid, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
@@ -186,7 +227,7 @@ class NetworkAPI:
         :rtype: ``Decimal``
         """
 
-        for endpoint in get_endpoints_for(network):
+        for endpoint in cls.get_ordered_endpoints_for(network):
             try:
                 return endpoint.get_tx_amount(txid, txindex, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
@@ -204,7 +245,7 @@ class NetworkAPI:
         :rtype: ``list`` of :class:`~bitcash.network.meta.Unspent`
         """
 
-        for endpoint in get_endpoints_for(network):
+        for endpoint in cls.get_ordered_endpoints_for(network):
             try:
                 return endpoint.get_unspent(address, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
@@ -222,7 +263,7 @@ class NetworkAPI:
         :rtype: ``Transaction``
         """
 
-        for endpoint in get_endpoints_for(network):
+        for endpoint in cls.get_ordered_endpoints_for(network):
             try:
                 return endpoint.get_raw_transaction(txid, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
@@ -240,7 +281,7 @@ class NetworkAPI:
         """
         success = None
 
-        for endpoint in get_endpoints_for(network):
+        for endpoint in cls.get_ordered_endpoints_for(network):
             _ = [end[0] for end in ChaingraphAPI.get_default_endpoints(network)]
             if endpoint in _ and network == "mainnet":
                 # Default chaingraph endpoints do not indicate failed broadcast
@@ -256,7 +297,7 @@ class NetworkAPI:
 
         if not success:
             raise ConnectionError(
-                "Transaction broadcast failed, or " "Unspents were already used."
+                "Transaction broadcast failed, or Unspents were already used."
             )
 
         raise ConnectionError("All APIs are unreachable.")

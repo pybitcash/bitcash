@@ -78,6 +78,12 @@ class TestBitcoinDotComAPI:
         self.monkeypatch = MonkeyPatch()
         self.api = BitcoinDotComAPI("https://dummy.com/v2/")
 
+    def test_get_blockheight(self):
+        return_json = 800_000
+        self.monkeypatch.setattr(_bapi, "session", DummySession(return_json))
+        blockheight = self.api.get_blockheight()
+        assert blockheight == 800_000
+
     def test_get_balance(self):
         return_json = {
             "balanceSat": 2500,
