@@ -100,11 +100,10 @@ class TestNetworkAPI:
     def test_get_ordered_endpoints_for(self):
         monkeypatch = MonkeyPatch()
         monkeypatch.setattr(_services, "get_endpoints_for", mock_get_endpoints_for)
-        endpoints = NetworkAPI.get_ordered_endpoints_for(
-            network="mainnet",
-            remove_bad_endpoints=True,
-        )
+        endpoints = NetworkAPI.get_sanitized_endpoints_for("mainnet")
         assert len(endpoints) == 4
+        for endpoint in endpoints:
+            assert endpoint.get_blockheight() == 4
         # monkeypatch doesn't unset the attribute
         # this fails the rest of the tests
         monkeypatch.setattr(_services, "get_endpoints_for", get_endpoints_for)
