@@ -130,6 +130,7 @@ html_context = {
 html_theme_options = {
     "twitter_url": "https://twitter.com/merc1er",
     "github_url": "https://github.com/pybitcash/bitcash",
+    "discussion_url": "https://t.me/pybitcash",
 }
 
 
