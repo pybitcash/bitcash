@@ -1,9 +1,10 @@
 from bitcash.network.http import session
 from bitcash.exceptions import InvalidEndpointURLProvided
-from bitcash.network.APIs import BaseAPI
+from bitcash.network.APIs import BaseAPI, DEFAULT_CACHE_TIME
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.cashaddress import Address
+from bitcash.utils import time_cache
 
 
 class ChaingraphAPI(BaseAPI):
@@ -56,6 +57,7 @@ class ChaingraphAPI(BaseAPI):
     def get_default_endpoints(cls, network):
         return cls.DEFAULT_ENDPOINTS[network]
 
+    @time_cache(DEFAULT_CACHE_TIME)
     def get_blockheight(self, *args, **kwargs):
         json_request = {
             "query": """

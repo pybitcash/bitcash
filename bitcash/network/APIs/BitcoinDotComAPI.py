@@ -2,10 +2,11 @@ from bitcash.network.http import session
 from decimal import Decimal
 from bitcash.exceptions import InvalidEndpointURLProvided
 from bitcash.network import currency_to_satoshi
-from bitcash.network.APIs import BaseAPI
+from bitcash.network.APIs import BaseAPI, DEFAULT_CACHE_TIME
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.format import cashtokenaddress_to_address
+from bitcash.utils import time_cache
 
 # This class is the interface for Bitcash to interact with
 # Bitcoin.com based RESTful interfaces.
@@ -53,6 +54,7 @@ class BitcoinDotComAPI(BaseAPI):
     def make_endpoint_url(self, path):
         return self.network_endpoint + self.PATHS[path]
 
+    @time_cache(DEFAULT_CACHE_TIME)
     def get_blockheight(self, *args, **kwargs):
         api_url = self.make_endpoint_url("block-height")
         r = session.get(api_url)

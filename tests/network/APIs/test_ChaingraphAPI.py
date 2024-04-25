@@ -41,9 +41,7 @@ class TestChaingraphAPI:
         return_json = {
             "data": {
                 "block": [
-                    {
-                        "height": "123456"
-                    },
+                    {"height": "123456"},
                 ]
             }
         }

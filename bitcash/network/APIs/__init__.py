@@ -1,6 +1,10 @@
 from abc import ABC, abstractmethod
 
 
+# default cache time for the blockheigt retrieval
+DEFAULT_CACHE_TIME = 120
+
+
 class BaseAPI(ABC):
     """
     Abstract class for API classes
