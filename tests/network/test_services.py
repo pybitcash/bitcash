@@ -1,7 +1,10 @@
-import bitcash
 import os
-import pytest
 import time
+import copy
+import unittest
+
+import pytest
+import bitcash
 from bitcash.exceptions import InvalidEndpointURLProvided
 from bitcash.network.meta import Unspent
 from bitcash.network.services import (
@@ -166,36 +169,46 @@ class TestNetworkAPI:
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
-class TestBitcoinDotComAPI:
+class TestBitcoinDotComAPI(unittest.TestCase):
     # Mainnet
     # Note: There are 1 second sleeps because the default mainnet API has
     # rate limiting and will return 503 if we query it too quickly.
+
+    def setUp(self):
+        # Save a copy of the original os.environ.
+        # Note that this makes the tests slower, but is necessary on some test cases
+        # to avoid side effects.
+        # TODO: Refactor this to only be used when necessary.
+        self.original_environ = copy.deepcopy(os.environ)
+
+    def tearDown(self):
+        # Restore the original os.environ after the test.
+        os.environ = self.original_environ
 
     def test_invalid_endpoint_url_mainnet(self):
         for url in INVALID_ENDPOINT_URLS:
             with pytest.raises(InvalidEndpointURLProvided):
                 BitcoinDotComAPI(url)
 
-    def test_get_single_endpoint_for_env_variable(self):
+    def test_get_single_endpoint_for_env_variable_bitcoincom(self):
         os.environ["BITCOINCOM_API_MAINNET"] = VALID_ENDPOINT_URLS[0]
+        os.environ["CHAINGRAPH_API_MAINNET"] = "%mainnet"
         endpoints = get_endpoints_for("mainnet")
         assert len(endpoints) == 3
         assert isinstance(endpoints[0], ChaingraphAPI)  # default
         assert isinstance(endpoints[1], ChaingraphAPI)  # default
         assert isinstance(endpoints[2], BitcoinDotComAPI)  # env
-        os.environ.pop("BITCOINCOM_API_MAINNET")
+
+    def test_get_single_endpoint_for_env_variable_chaingraph(self):
         os.environ["CHAINGRAPH_API"] = VALID_ENDPOINT_URLS[0]
         os.environ["CHAINGRAPH_API_MAINNET"] = "%mainnet"
         endpoints = get_endpoints_for("mainnet")
-        assert len(endpoints) == 3
+        assert len(endpoints) == 2
         assert isinstance(endpoints[0], ChaingraphAPI)  # env
         assert isinstance(endpoints[1], BitcoinDotComAPI)  # default
-        assert isinstance(endpoints[2], BitcoinDotComAPI)  # default
         assert endpoints[0].node_like == "%mainnet"
-        os.environ.pop("CHAINGRAPH_API")
-        os.environ.pop("CHAINGRAPH_API_MAINNET")
 
-    def test_get_multiple_endpoint_for_env_variable(self):
+    def test_get_multiple_endpoint_for_env_variable_bitcoincom(self):
         os.environ["BITCOINCOM_API_MAINNET_1"] = VALID_ENDPOINT_URLS[0]
         os.environ["BITCOINCOM_API_MAINNET_2"] = VALID_ENDPOINT_URLS[1]
         endpoints = get_endpoints_for("mainnet")
@@ -204,22 +217,19 @@ class TestBitcoinDotComAPI:
         assert isinstance(endpoints[1], ChaingraphAPI)  # default
         assert isinstance(endpoints[2], BitcoinDotComAPI)  # env
         assert isinstance(endpoints[3], BitcoinDotComAPI)  # env
-        os.environ.pop("BITCOINCOM_API_MAINNET_1")
-        os.environ.pop("BITCOINCOM_API_MAINNET_2")
-        os.environ["CHAINGRAPH_API_1"] = VALID_ENDPOINT_URLS[0]
-        os.environ["CHAINGRAPH_API_2"] = VALID_ENDPOINT_URLS[1]
+
+    def test_get_multiple_endpoint_for_env_variable_chaingraph(self):
+        os.environ = self.original_environ
+        os.environ["CHAINGRAPH_API_1"] = "https://demo.chaingraph.cash/v1/graphql"
+        os.environ["CHAINGRAPH_API_2"] = "https://demo.chaingraph.cash/v1/graphql"
         os.environ["CHAINGRAPH_API_MAINNET_2"] = "%mainnet"
         endpoints = get_endpoints_for("mainnet")
-        assert len(endpoints) == 4
+        assert len(endpoints) == 3
         assert isinstance(endpoints[0], ChaingraphAPI)  # default
         assert isinstance(endpoints[1], ChaingraphAPI)  # default
         assert isinstance(endpoints[2], BitcoinDotComAPI)  # env
-        assert isinstance(endpoints[3], BitcoinDotComAPI)  # env
         assert endpoints[0].node_like == "%"
         assert endpoints[1].node_like == "%mainnet"
-        os.environ.pop("CHAINGRAPH_API_1")
-        os.environ.pop("CHAINGRAPH_API_2")
-        os.environ.pop("CHAINGRAPH_API_MAINNET_2")
 
     def test_get_balance_mainnet_return_type(self):
         time.sleep(1)
