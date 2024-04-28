@@ -32,11 +32,8 @@ class BitcoinDotComAPI(BaseAPI):
 
     # Default endpoints to use for this interface
     DEFAULT_ENDPOINTS = {
-        "mainnet": [
-            "https://rest.bch.actorforth.org/v2/",
-            "https://rest.bitcoin.com/v2/",
-        ],
-        "testnet": ["https://trest.bitcoin.com/v2/"],
+        "mainnet": ["https://rest.bch.actorforth.org/v2/"],
+        "testnet": [],
         "regtest": ["http://localhost:12500/v2/"],
     }
 
