@@ -1,11 +1,14 @@
 from time import sleep, time
 
+from _pytest.monkeypatch import MonkeyPatch
 import bitcash
+from bitcash.network import rates as _rates
 from bitcash.network.rates import (
     RatesAPI,
     bch_to_satoshi,
     currency_to_satoshi,
     currency_to_satoshi_cached,
+    EXCHANGE_RATES,
     mbch_to_satoshi,
     satoshi_to_currency,
     satoshi_to_currency_cached,
@@ -73,38 +76,45 @@ def test_rates_close():
     assert rates[-1] / rates[0] < 1.1 and rates[-1] / rates[0] > 0.9
 
 
-class TestRateCache:
-    def test_cache(self):
-        sleep(0.2)
+def _dummy_usd_to_satoshi():
+    sleep(1)
+    return 1
 
+
+DUMMY_EXCHANGE_RATES = {"usd": _dummy_usd_to_satoshi}
+
+
+class TestRateCache:
+    def setup_method(self):
+        self.monkeypatch = MonkeyPatch()
+
+    def test_cache(self):
+        self.monkeypatch.setattr(_rates, "EXCHANGE_RATES", DUMMY_EXCHANGE_RATES)
         start_time = time()
-        set_rate_cache_time(0)
         currency_to_satoshi_cached(1, "usd")
         initial_time = time() - start_time
 
         start_time = time()
-        set_rate_cache_time(60)
-        currency_to_satoshi_cached(1, "usd")
+        currency_to_satoshi_cached(2, "usd")
         cached_time = time() - start_time
 
         assert initial_time > cached_time
+        self.monkeypatch.setattr(_rates, "EXCHANGE_RATES", EXCHANGE_RATES)
 
     def test_expires(self):
-        sleep(0.2)
-
-        set_rate_cache_time(0)
+        self.monkeypatch.setattr(_rates, "EXCHANGE_RATES", DUMMY_EXCHANGE_RATES)
+        set_rate_cache_time(1.2)
         currency_to_satoshi_cached(1, "usd")
 
         start_time = time()
-        set_rate_cache_time(60)
-        currency_to_satoshi_cached(1, "usd")
+        currency_to_satoshi_cached(2, "usd")
         cached_time = time() - start_time
 
         sleep(0.2)
 
         start_time = time()
-        set_rate_cache_time(0.1)
-        currency_to_satoshi_cached(1, "usd")
+        currency_to_satoshi_cached(3, "usd")
         update_time = time() - start_time
 
         assert update_time > cached_time
+        self.monkeypatch.setattr(_rates, "EXCHANGE_RATES", EXCHANGE_RATES)
