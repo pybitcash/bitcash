@@ -72,11 +72,12 @@ def varint_to_int(val):
     return int.from_bytes(start_byte, "little")
 
 
-def time_cache(max_age):
+def time_cache(max_age: int, cache_size: int = 32):
     """
     Timed cache decorator to store a value until time-to-live
 
     :param max_age: Time, in seconds, untill when the value is invalidated.
+    :param cache_size: Size of LRU cache.
     """
 
     class ReturnValue:
@@ -85,7 +86,7 @@ def time_cache(max_age):
             self.expiry = expiry
 
     def _decorator(fn):
-        @functools.cache
+        @functools.lru_cache(maxsize=cache_size)
         def cache_fn(*args, **kwargs):
             value = fn(*args, **kwargs)
             expiry = time.monotonic() + max_age
