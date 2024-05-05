@@ -12,6 +12,7 @@ from bitcash.network.services import (
     ChaingraphAPI,
     NetworkAPI,
     get_endpoints_for,
+    get_sanitized_endpoints_for,
     set_service_timeout,
 )
 from bitcash.network.transaction import Transaction
@@ -96,18 +97,19 @@ def mock_get_endpoints_for(network):
     )
 
 
-class TestNetworkAPI:
-    def test_get_ordered_endpoints_for(self):
-        monkeypatch = MonkeyPatch()
-        monkeypatch.setattr(_services, "get_endpoints_for", mock_get_endpoints_for)
-        endpoints = NetworkAPI.get_sanitized_endpoints_for("mainnet")
-        assert len(endpoints) == 4
-        for endpoint in endpoints:
-            assert endpoint.get_blockheight() == 4
-        # monkeypatch doesn't unset the attribute
-        # this fails the rest of the tests
-        monkeypatch.setattr(_services, "get_endpoints_for", get_endpoints_for)
+def test_get_ordered_endpoints_for():
+    monkeypatch = MonkeyPatch()
+    monkeypatch.setattr(_services, "get_endpoints_for", mock_get_endpoints_for)
+    endpoints = get_sanitized_endpoints_for("mainnet")
+    assert len(endpoints) == 4
+    for endpoint in endpoints:
+        assert endpoint.get_blockheight() == 4
+    # monkeypatch doesn't unset the attribute
+    # this fails the rest of the tests
+    monkeypatch.setattr(_services, "get_endpoints_for", get_endpoints_for)
 
+
+class TestNetworkAPI:
     # Mainnet
     def test_get_balance_mainnet(self):
         time.sleep(1)
