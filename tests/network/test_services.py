@@ -3,13 +3,16 @@ import time
 
 import pytest
 import bitcash
+from _pytest.monkeypatch import MonkeyPatch
 from bitcash.exceptions import InvalidEndpointURLProvided
+from bitcash.network import services as _services
 from bitcash.network.meta import Unspent
 from bitcash.network.services import (
     BitcoinDotComAPI,
     ChaingraphAPI,
     NetworkAPI,
     get_endpoints_for,
+    get_sanitized_endpoints_for,
     set_service_timeout,
 )
 from bitcash.network.transaction import Transaction
@@ -70,6 +73,40 @@ class MockBackend(NetworkAPI):
     @classmethod
     def get_raw_transaction(cls, *args, **kwargs):
         raise_connection_error()
+
+
+class MockEndpoint:
+    def __init__(self, blockheight):
+        self.blockheight = blockheight
+
+    def get_blockheight(self, *args, **kwargs):
+        if self.blockheight < 0:
+            raise NetworkAPI.IGNORED_ERRORS[0]
+        return self.blockheight
+
+
+def mock_get_endpoints_for(network):
+    return (
+        MockEndpoint(4),
+        MockEndpoint(-1),
+        MockEndpoint(0),
+        MockEndpoint(4),
+        MockEndpoint(4),
+        MockEndpoint(4),
+        MockEndpoint(3),
+    )
+
+
+def test_get_ordered_endpoints_for():
+    monkeypatch = MonkeyPatch()
+    monkeypatch.setattr(_services, "get_endpoints_for", mock_get_endpoints_for)
+    endpoints = get_sanitized_endpoints_for("mock_mainnet")
+    assert len(endpoints) == 4
+    for endpoint in endpoints:
+        assert endpoint.get_blockheight() == 4
+    # monkeypatch doesn't unset the attribute
+    # this fails the rest of the tests
+    monkeypatch.setattr(_services, "get_endpoints_for", get_endpoints_for)
 
 
 class TestNetworkAPI:

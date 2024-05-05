@@ -56,6 +56,27 @@ class ChaingraphAPI(BaseAPI):
     def get_default_endpoints(cls, network):
         return cls.DEFAULT_ENDPOINTS[network]
 
+    def get_blockheight(self, *args, **kwargs):
+        json_request = {
+            "query": """
+query GetBlockheight($node: String!) {
+  block(
+    limit: 1
+    order_by: { height: desc }
+    where: { accepted_by: { node: { name: { _like: $node } } } }
+  ) {
+    height
+  }
+}
+""",
+            "variables": {
+                "node": self.node_like,
+            },
+        }
+        json = self.send_request(json_request, *args, **kwargs)
+        blockheight = int(json["data"]["block"][0]["height"])
+        return blockheight
+
     def get_balance(self, address, *args, **kwargs):
         json_request = {
             "query": """

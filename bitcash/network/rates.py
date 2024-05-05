@@ -1,11 +1,9 @@
 from collections import OrderedDict
 from decimal import ROUND_DOWN
-from functools import wraps
-from time import time
 
 import requests
 from bitcash.network.http import session
-from bitcash.utils import Decimal
+from bitcash.utils import Decimal, time_cache
 
 DEFAULT_CACHE_TIME = 60
 
@@ -651,42 +649,9 @@ def currency_to_satoshi(amount, currency):
     return int(satoshis * Decimal(amount))
 
 
-class CachedRate:
-    __slots__ = ("satoshis", "last_update")
-
-    def __init__(self, satoshis, last_update):
-        self.satoshis = satoshis
-        self.last_update = last_update
-
-
-def currency_to_satoshi_local_cache(f):
-    start_time = time()
-
-    cached_rates = dict(
-        [(currency, CachedRate(None, start_time)) for currency in EXCHANGE_RATES.keys()]
-    )
-
-    @wraps(f)
-    def wrapper(amount, currency):
-        now = time()
-
-        cached_rate = cached_rates[currency]
-
-        if (
-            not cached_rate.satoshis
-            or now - cached_rate.last_update > DEFAULT_CACHE_TIME
-        ):
-            cached_rate.satoshis = EXCHANGE_RATES[currency]()
-            cached_rate.last_update = now
-
-        return int(cached_rate.satoshis * Decimal(amount))
-
-    return wrapper
-
-
-@currency_to_satoshi_local_cache
-def currency_to_satoshi_local_cached():
-    pass  # pragma: no cover
+@time_cache(max_age=DEFAULT_CACHE_TIME, cache_size=len(EXCHANGE_RATES))
+def _currency_to_satoshi_cached(currency):
+    return EXCHANGE_RATES[currency]()
 
 
 def currency_to_satoshi_cached(amount, currency):
@@ -700,7 +665,8 @@ def currency_to_satoshi_cached(amount, currency):
     :type currency: ``str``
     :rtype: ``int``
     """
-    return currency_to_satoshi_local_cached(amount, currency)
+    satoshis = _currency_to_satoshi_cached(currency)
+    return int(satoshis * Decimal(amount))
 
 
 def satoshi_to_currency(num, currency):

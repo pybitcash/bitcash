@@ -1,4 +1,6 @@
 import decimal
+import functools
+import time
 from binascii import hexlify
 
 
@@ -68,3 +70,37 @@ def varint_to_int(val):
     if start_byte == b"\xfd":
         return int.from_bytes(val.read(2), "little")
     return int.from_bytes(start_byte, "little")
+
+
+def time_cache(max_age: int, cache_size: int = 32):
+    """
+    Timed cache decorator to store a value until time-to-live
+
+    :param max_age: Time, in seconds, untill when the value is invalidated.
+    :param cache_size: Size of LRU cache.
+    """
+
+    class ReturnValue:
+        def __init__(self, value, expiry):
+            self.value = value
+            self.expiry = expiry
+
+    def _decorator(fn):
+        @functools.lru_cache(maxsize=cache_size)
+        def cache_fn(*args, **kwargs):
+            value = fn(*args, **kwargs)
+            expiry = time.monotonic() + max_age
+            return ReturnValue(value, expiry)
+
+        @functools.wraps(fn)
+        def _wrapped(*args, **kwargs):
+            return_value = cache_fn(*args, **kwargs)
+            if return_value.expiry < time.monotonic():
+                # update the reference to the cache
+                return_value.value = fn(*args, **kwargs)
+                return_value.expiry = time.monotonic() + max_age
+            return return_value.value
+
+        return _wrapped
+
+    return _decorator

@@ -4,6 +4,7 @@ import requests
 # Import supported endpoint APIs
 from bitcash.network.APIs.BitcoinDotComAPI import BitcoinDotComAPI
 from bitcash.network.APIs.ChaingraphAPI import ChaingraphAPI
+from bitcash.utils import time_cache
 
 # Dictionary of supported endpoint APIs
 ENDPOINT_ENV_VARIABLES = {
@@ -13,6 +14,9 @@ ENDPOINT_ENV_VARIABLES = {
 
 # Default API call total time timeout
 DEFAULT_TIMEOUT = 5
+
+# Default sanitized endpoint, based on blockheigt, cache timeout
+DEFAULT_SANITIZED_ENDPOINTS_CACHE_TIME = 300
 
 BCH_TO_SAT_MULTIPLIER = 100000000
 
@@ -103,6 +107,42 @@ def get_endpoints_for(network):
                     else:
                         endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
 
+    return tuple(endpoints)
+
+
+@time_cache(max_age=DEFAULT_SANITIZED_ENDPOINTS_CACHE_TIME, cache_size=len(NETWORKS))
+def get_sanitized_endpoints_for(network="mainnet"):
+    """Gets endpoints sanitized by their blockheights.
+    Solves the problem when an endpoint is stuck on an older block.
+
+    :param network: network in ["mainnet", "testnet", "regtest"].
+    """
+    endpoints = get_endpoints_for(network)
+
+    endpoints_blockheight = [0 for _ in range(len(endpoints))]
+
+    for i, endpoint in enumerate(endpoints):
+        try:
+            endpoints_blockheight[i] = endpoint.get_blockheight(timeout=DEFAULT_TIMEOUT)
+        except NetworkAPI.IGNORED_ERRORS:  # pragma: no cover
+            pass
+
+    if sum(endpoints_blockheight) == 0:
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
+
+    # remove unreachable or un-synced endpoints
+    highest_blockheight = max(endpoints_blockheight)
+    pop_indices = []
+    for i in range(len(endpoints)):
+        if endpoints_blockheight[i] != highest_blockheight:
+            pop_indices.append(i)
+
+    if pop_indices:
+        endpoints = list(endpoints)
+        for i in sorted(pop_indices, reverse=True):
+            endpoints.pop(i)
+        endpoints = tuple(endpoints)
+
     return endpoints
 
 
@@ -131,7 +171,7 @@ class NetworkAPI:
         :raises ConnectionError: If all API services fail.
         :rtype: ``int``
         """
-        for endpoint in get_endpoints_for(network):
+        for endpoint in get_sanitized_endpoints_for(network):
             try:
                 return endpoint.get_balance(address, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
@@ -148,7 +188,7 @@ class NetworkAPI:
         :raises ConnectionError: If all API services fail.
         :rtype: ``list`` of ``str``
         """
-        for endpoint in get_endpoints_for(network):
+        for endpoint in get_sanitized_endpoints_for(network):
             try:
                 return endpoint.get_transactions(address, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
@@ -166,7 +206,7 @@ class NetworkAPI:
         :rtype: ``Transaction``
         """
 
-        for endpoint in get_endpoints_for(network):
+        for endpoint in get_sanitized_endpoints_for(network):
             try:
                 return endpoint.get_transaction(txid, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
@@ -186,7 +226,7 @@ class NetworkAPI:
         :rtype: ``Decimal``
         """
 
-        for endpoint in get_endpoints_for(network):
+        for endpoint in get_sanitized_endpoints_for(network):
             try:
                 return endpoint.get_tx_amount(txid, txindex, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
@@ -204,7 +244,7 @@ class NetworkAPI:
         :rtype: ``list`` of :class:`~bitcash.network.meta.Unspent`
         """
 
-        for endpoint in get_endpoints_for(network):
+        for endpoint in get_sanitized_endpoints_for(network):
             try:
                 return endpoint.get_unspent(address, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
@@ -222,7 +262,7 @@ class NetworkAPI:
         :rtype: ``Transaction``
         """
 
-        for endpoint in get_endpoints_for(network):
+        for endpoint in get_sanitized_endpoints_for(network):
             try:
                 return endpoint.get_raw_transaction(txid, timeout=DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
@@ -240,7 +280,7 @@ class NetworkAPI:
         """
         success = None
 
-        for endpoint in get_endpoints_for(network):
+        for endpoint in get_sanitized_endpoints_for(network):
             _ = [end[0] for end in ChaingraphAPI.get_default_endpoints(network)]
             if endpoint in _ and network == "mainnet":
                 # Default chaingraph endpoints do not indicate failed broadcast
@@ -256,7 +296,7 @@ class NetworkAPI:
 
         if not success:
             raise ConnectionError(
-                "Transaction broadcast failed, or " "Unspents were already used."
+                "Transaction broadcast failed, or Unspents were already used."
             )
 
         raise ConnectionError("All APIs are unreachable.")
