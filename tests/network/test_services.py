@@ -100,7 +100,7 @@ def mock_get_endpoints_for(network):
 def test_get_ordered_endpoints_for():
     monkeypatch = MonkeyPatch()
     monkeypatch.setattr(_services, "get_endpoints_for", mock_get_endpoints_for)
-    endpoints = get_sanitized_endpoints_for("mainnet")
+    endpoints = get_sanitized_endpoints_for("mock_mainnet")
     assert len(endpoints) == 4
     for endpoint in endpoints:
         assert endpoint.get_blockheight() == 4

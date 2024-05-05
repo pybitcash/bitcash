@@ -15,8 +15,8 @@ ENDPOINT_ENV_VARIABLES = {
 # Default API call total time timeout
 DEFAULT_TIMEOUT = 5
 
-# Default blockheigt cache timeout
-DEFAULT_BLOCKHEIGHT_CACHE_TIME = 300
+# Default sanitized endpoint, based on blockheigt, cache timeout
+DEFAULT_SANITIZED_ENDPOINTS_CACHE_TIME = 300
 
 BCH_TO_SAT_MULTIPLIER = 100000000
 
@@ -110,8 +110,15 @@ def get_endpoints_for(network):
     return tuple(endpoints)
 
 
-@time_cache(max_age=DEFAULT_BLOCKHEIGHT_CACHE_TIME, cache_size=1)
-def _get_endpoints_blockheight(endpoints):
+@time_cache(max_age=DEFAULT_SANITIZED_ENDPOINTS_CACHE_TIME, cache_size=len(NETWORKS))
+def get_sanitized_endpoints_for(network="mainnet"):
+    """Gets endpoints sanitized by their blockheights.
+    Solves the problem when an endpoint is stuck on an older block.
+
+    :param network: network in ["mainnet", "testnet", "regtest"].
+    """
+    endpoints = get_endpoints_for(network)
+
     endpoints_blockheight = [0 for _ in range(len(endpoints))]
 
     for i, endpoint in enumerate(endpoints):
@@ -122,19 +129,6 @@ def _get_endpoints_blockheight(endpoints):
 
     if sum(endpoints_blockheight) == 0:
         raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
-
-    return tuple(endpoints_blockheight)
-
-
-def get_sanitized_endpoints_for(network="mainnet"):
-    """Gets endpoints sanitized by their blockheights.
-    Solves the problem when an endpoint is stuck on an older block.
-
-    :param network: network in ["mainnet", "testnet", "regtest"].
-    """
-    endpoints = get_endpoints_for(network)
-
-    endpoints_blockheight = _get_endpoints_blockheight(endpoints)
 
     # remove unreachable or un-synced endpoints
     highest_blockheight = max(endpoints_blockheight)
