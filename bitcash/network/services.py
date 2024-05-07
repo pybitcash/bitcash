@@ -4,11 +4,13 @@ import requests
 # Import supported endpoint APIs
 from bitcash.network.APIs.BitcoinDotComAPI import BitcoinDotComAPI
 from bitcash.network.APIs.ChaingraphAPI import ChaingraphAPI
+from bitcash.network.APIs.FulcrumProtocolAPI import FulcrumProtocolAPI
 from bitcash.utils import time_cache
 
 # Dictionary of supported endpoint APIs
 ENDPOINT_ENV_VARIABLES = {
     "CHAINGRAPH": ChaingraphAPI,
+    "FULCRUM": FulcrumProtocolAPI,
     "BITCOINCOM": BitcoinDotComAPI,
 }
 
