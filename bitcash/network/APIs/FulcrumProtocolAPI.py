@@ -1,3 +1,4 @@
+from functools import wraps
 import json
 import socket
 import ssl
@@ -11,19 +12,15 @@ from bitcash.network.APIs import BaseAPI
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.cashaddress import Address
-from bitcash.utils import time_cache
 
 
 context = ssl.create_default_context()
 FULCRUM_PROTOCOL = "1.5.0"
-# the socket times out in ~600s, a new handshake is performed within that
-HANDSHAKE_TIMEOUT = 500
 
 BCH_TO_SAT_MULTIPLIER = 100000000
 # TODO: Refactor constant above into a 'constants.py' file
 
 
-@time_cache(max_age=HANDSHAKE_TIMEOUT)
 def handshake(hostname: str, port: int) -> ssl.SSLSocket:
     """
     Perform handshake with the host and establish protocol
@@ -36,9 +33,7 @@ def handshake(hostname: str, port: int) -> ssl.SSLSocket:
         raise SSLError(f"{hostname=} doesn't support ssl connection") from e
 
     # send a server.version to establish protocol
-    _ = send_json_rpc_payload(
-        ssock, "server.version", ["Bitcash", FULCRUM_PROTOCOL]
-    )
+    _ = send_json_rpc_payload(ssock, "server.version", ["Bitcash", FULCRUM_PROTOCOL])
     # if no errors, then handshake complete
 
     return ssock
@@ -70,7 +65,7 @@ def send_json_rpc_payload(
         # or the message completed and has endline char
         if not data or data.endswith(b"\n"):
             break
-    if data == b"\n":
+    if data == b"":
         raise ConnectTimeout("TLS/SSL connection has been closed (EOF)")
     return_json = json.loads(data.decode(), parse_float=Decimal)
     if return_json["jsonrpc"] != "2.0" or return_json["id"] != "bitcash":
@@ -82,6 +77,19 @@ def send_json_rpc_payload(
         raise RuntimeError(f"Error in retruned json: {return_json['error']}")
 
     return return_json["result"]
+
+
+def check_stale_sock(fn):
+    @wraps(fn)
+    def wrapper(self, *args, **kwargs):
+        try:
+            result = fn(self, *args, **kwargs)
+        except ConnectTimeout:
+            self.sock = handshake(self.hostname, self.port)
+            result = fn(self, *args, **kwargs)
+        return result
+
+    return wrapper
 
 
 class FulcrumProtocolAPI(BaseAPI):
@@ -122,26 +130,27 @@ class FulcrumProtocolAPI(BaseAPI):
         self.hostname, port = network_endpoint.split(":")
         self.port = int(port)
 
-    @property
-    def sock(self):
-        return handshake(self.hostname, self.port)
+        self.sock = handshake(self.hostname, self.port)
 
     @classmethod
     def get_default_endpoints(cls, network: str):
         return cls.DEFAULT_ENDPOINTS[network]
 
+    @check_stale_sock
     def get_blockheight(self, *args, **kwargs):
         result = send_json_rpc_payload(
             self.sock, "blockchain.headers.get_tip", [], *args, **kwargs
         )
         return result["height"]
 
+    @check_stale_sock
     def get_balance(self, address, *args, **kwargs):
         result = send_json_rpc_payload(
             self.sock, "blockchain.address.get_balance", [address], *args, **kwargs
         )
         return result["confirmed"] + result["unconfirmed"]
 
+    @check_stale_sock
     def get_transactions(self, address, *args, **kwargs):
         result = send_json_rpc_payload(
             self.sock, "blockchain.address.get_history", [address], *args, **kwargs
@@ -152,11 +161,13 @@ class FulcrumProtocolAPI(BaseAPI):
         transactions = [_[0] for _ in transactions][::-1]
         return transactions
 
+    @check_stale_sock
     def get_transaction(self, txid, *args, **kwargs):
         result = self.get_raw_transaction(txid, *args, **kwargs)
         blockheight = self.get_blockheight()
 
-        if result["confirmations"] == 0:
+        confirmations = result.get("confirmations", 0)
+        if confirmations == 0:
             tx_blockheight = None
         else:
             tx_blockheight = blockheight - result["confirmations"] + 1
@@ -187,9 +198,15 @@ class FulcrumProtocolAPI(BaseAPI):
                         nft_commitment = (
                             bytes.fromhex(token_data["nft"]["commitment"]) or None
                         )
+                # convert to Decimal again as json doesn't convert 0 value
+                # that happens in OP_RETRUN
                 part = TxPart(
                     addr,
-                    int((txout["value"] * BCH_TO_SAT_MULTIPLIER).to_integral_value()),
+                    int(
+                        (
+                            Decimal(txout["value"]) * BCH_TO_SAT_MULTIPLIER
+                        ).to_integral_value()
+                    ),
                     category_id,
                     nft_capability,
                     nft_commitment,
@@ -225,15 +242,21 @@ class FulcrumProtocolAPI(BaseAPI):
                 return vout
         raise RuntimeError(f"Transaction {txid=} doesn't have {txindex=}")
 
+    @check_stale_sock
     def get_tx_amount(self, txid: str, txindex: int, *args, **kwargs) -> int:
         result = self.get_raw_transaction(txid, *args, **kwargs)
 
         for vout in result["vout"]:
             if vout["n"] == txindex:
-                sats = int((vout["value"] * BCH_TO_SAT_MULTIPLIER).to_integral_value())
+                # convert to Decimal again as json doesn't convert 0 value
+                # that happens in OP_RETRUN
+                sats = int(
+                    (Decimal(vout["value"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()
+                )
                 return sats
         raise RuntimeError(f"Transaction {txid=} doesn't have {txindex=}")
 
+    @check_stale_sock
     def get_unspent(self, address: str, *args, **kwargs) -> list[Unspent]:
         result = send_json_rpc_payload(
             self.sock, "blockchain.address.listunspent", [address], *args, **kwargs
@@ -270,6 +293,7 @@ class FulcrumProtocolAPI(BaseAPI):
             )
         return unspents
 
+    @check_stale_sock
     def get_raw_transaction(self, txid: str, *args, **kwargs) -> dict[str, Any]:
         result = send_json_rpc_payload(
             self.sock, "blockchain.transaction.get", [txid, True], *args, **kwargs
@@ -277,6 +301,7 @@ class FulcrumProtocolAPI(BaseAPI):
 
         return typing.cast(dict[str, Any], result)
 
+    @check_stale_sock
     def broadcast_tx(self, tx_hex: str, *args, **kwargs) -> bool:  # pragma: no cover
         _ = send_json_rpc_payload(
             self.sock, "blockchain.transaction.broadcast", [tx_hex]
