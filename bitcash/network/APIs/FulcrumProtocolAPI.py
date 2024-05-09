@@ -21,16 +21,16 @@ BCH_TO_SAT_MULTIPLIER = 100000000
 # TODO: Refactor constant above into a 'constants.py' file
 
 
-def handshake(hostname: str, port: int) -> ssl.SSLSocket:
+def handshake(hostname: str, port: int) -> Union[socket.socket, ssl.SSLSocket]:
     """
     Perform handshake with the host and establish protocol
     """
     # make socket connection
-    sock = socket.create_connection((hostname, port))
     try:
+        sock = socket.create_connection((hostname, port))
         ssock = context.wrap_socket(sock, server_hostname=hostname)
-    except ssl.SSLError as e:
-        raise SSLError(f"{hostname=} doesn't support ssl connection") from e
+    except ssl.SSLError:
+        ssock = socket.create_connection((hostname, port))
 
     # send a server.version to establish protocol
     _ = send_json_rpc_payload(ssock, "server.version", ["Bitcash", FULCRUM_PROTOCOL])
