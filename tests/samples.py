@@ -37,12 +37,18 @@ BITCOIN_CASHADDRESS_REGTEST_PAY2SH20 = (
     "bchreg:pp23x8hm0g8d6nrkesamaqeml3v6daeudvlnvykj0n"
 )
 
-VALID_ENDPOINT_URLS = [
+VALID_BITCOINCOM_ENDPOINT_URLS = [
     "https://rest.bch.actorforth.org/v2/",
     "https://rest.bitcoin.com/v2/",
 ]
 
-INVALID_ENDPOINT_URLS = ["htp://fakesite.com/v2", "https://bitcom.org/", 42]
+INVALID_BITCOINCOM_ENDPOINT_URLS = ["htp://fakesite.com/v2", "https://bitcom.org/", 42]
+
+VALID_FULCRUM_ENDPOINT_URLS = [
+    "electron.jochen-hoenicke.de:51002"
+]
+
+INVALID_FULCRUM_ENDPOINT_URLS = ["electron.jochen-hoenicke.de", 42]
 
 PRIVATE_KEY_BYTES = b"\xc2\x8a\x9f\x80s\x8fw\rRx\x03\xa5f\xcfo\xc3\xed\xf6\xce\xa5\x86\xc4\xfcJR#\xa5\xady~\x1a\xc3"
 PRIVATE_KEY_DER = (

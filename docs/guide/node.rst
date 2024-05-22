@@ -3,11 +3,14 @@
 Customize your node API endpoints
 =================================
 
-You can use your own or a compatible node (currently, `bch toolkit`_ and `ChainGraph`_ are supported and works out of the box) by setting the following environment variables::
+You can use your own or a compatible node (currently, `bch toolkit`_, `FulcrumProtocol`_, and `ChainGraph`_ are supported and work out of the box) by setting the following environment variables::
 
     BITCOINCOM_API_MAINNET
     BITCOINCOM_API_TESTNET
     BITCOINCOM_API_REGTEST
+    FULCRUM_API_MAINNET
+    FULCRUM_API_TESTNET
+    FULCRUM_API_REGTEST
     CHAINGRAPH_API
     CHAINGRAPH_API_MAINNET
     CHAINGRAPH_API_TESTNET
@@ -16,6 +19,12 @@ You can use your own or a compatible node (currently, `bch toolkit`_ and `ChainG
 For example, for BitcoinDotComAPI::
 
     export BITCOINCOM_API_MAINNET=https://rest.bitcoin.com/v2/
+
+For Fulcrum Protocol API::
+
+    export FULCRUM_API_MAINNET=electron.jochen-hoenicke.de:51002
+
+The port is a necessary component for a Fulcrum Protocol uri. The Fulcrum protocol is connected directly via tcp, hence, avoid "http://" or "https://" prefix.
 
 And for ChainGraph API::
 
@@ -32,6 +41,11 @@ You can also specify multiple endpoints for redundancy by setting the following 
     BITCOINCOM_API_MAINNET_3
     and so on...
     or
+    FULCRUM_API_MAINNET_1
+    FULCRUM_API_MAINNET_2
+    FULCRUM_API_MAINNET_3
+    and so on...
+    or
     CHAINGRAPH_API_1
     CHAINGRAPH_API_2
     CHAINGRAPH_API_MAINNET_1
@@ -46,3 +60,4 @@ This works with any supported network (mainnet, testnet and regtest).
 
 .. _bch toolkit: https://github.com/actorforth/bch-toolkit
 .. _ChainGraph: https://chaingraph.cash/
+.. _FulcrumProtocol: https://electrum-cash-protocol.readthedocs.io/en/latest/index.html

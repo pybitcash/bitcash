@@ -6,6 +6,7 @@ import bitcash
 from _pytest.monkeypatch import MonkeyPatch
 from bitcash.exceptions import InvalidEndpointURLProvided
 from bitcash.network import services as _services
+from bitcash.network.APIs.FulcrumProtocolAPI import FulcrumProtocolAPI
 from bitcash.network.meta import Unspent
 from bitcash.network.services import (
     BitcoinDotComAPI,
@@ -16,7 +17,11 @@ from bitcash.network.services import (
     set_service_timeout,
 )
 from bitcash.network.transaction import Transaction
-from tests.samples import VALID_ENDPOINT_URLS, INVALID_ENDPOINT_URLS
+from tests.samples import (
+    VALID_BITCOINCOM_ENDPOINT_URLS,
+    INVALID_BITCOINCOM_ENDPOINT_URLS,
+    VALID_FULCRUM_ENDPOINT_URLS,
+)
 from tests.utils import (
     catch_errors_raise_warnings,
     decorate_methods,
@@ -209,47 +214,74 @@ class TestBitcoinDotComAPI:
     # rate limiting and will return 503 if we query it too quickly.
 
     def test_invalid_endpoint_url_mainnet(self):
-        for url in INVALID_ENDPOINT_URLS:
+        for url in INVALID_BITCOINCOM_ENDPOINT_URLS:
             with pytest.raises(InvalidEndpointURLProvided):
                 BitcoinDotComAPI(url)
 
     def test_get_single_endpoint_for_env_variable_bitcoincom(self, reset_environ):
-        os.environ["BITCOINCOM_API_MAINNET"] = VALID_ENDPOINT_URLS[0]
+        os.environ["BITCOINCOM_API_MAINNET"] = VALID_BITCOINCOM_ENDPOINT_URLS[0]
         os.environ["CHAINGRAPH_API_MAINNET"] = "%mainnet"
         endpoints = get_endpoints_for("mainnet")
-        assert len(endpoints) == 3
+        assert len(endpoints) == 5
         assert isinstance(endpoints[0], ChaingraphAPI)  # default
         assert isinstance(endpoints[1], ChaingraphAPI)  # default
-        assert isinstance(endpoints[2], BitcoinDotComAPI)  # env
+        assert isinstance(endpoints[2], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[3], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[4], BitcoinDotComAPI)  # env
 
-    def test_get_single_endpoint_for_env_variable_chaingraph(self, reset_environ):
-        os.environ["CHAINGRAPH_API"] = VALID_ENDPOINT_URLS[0]
+    def test_get_single_endpoint_for_env_variable_fulcrum(self, reset_environ):
+        os.environ["FULCRUM_API_MAINNET"] = VALID_FULCRUM_ENDPOINT_URLS[0]
         os.environ["CHAINGRAPH_API_MAINNET"] = "%mainnet"
-        endpoints = get_endpoints_for("mainnet")
-        assert len(endpoints) == 2
-        assert isinstance(endpoints[0], ChaingraphAPI)  # env
-        assert isinstance(endpoints[1], BitcoinDotComAPI)  # default
-        assert endpoints[0].node_like == "%mainnet"
-
-    def test_get_multiple_endpoint_for_env_variable_bitcoincom(self, reset_environ):
-        os.environ["BITCOINCOM_API_MAINNET_1"] = VALID_ENDPOINT_URLS[0]
-        os.environ["BITCOINCOM_API_MAINNET_2"] = VALID_ENDPOINT_URLS[1]
         endpoints = get_endpoints_for("mainnet")
         assert len(endpoints) == 4
         assert isinstance(endpoints[0], ChaingraphAPI)  # default
         assert isinstance(endpoints[1], ChaingraphAPI)  # default
-        assert isinstance(endpoints[2], BitcoinDotComAPI)  # env
-        assert isinstance(endpoints[3], BitcoinDotComAPI)  # env
+        assert isinstance(endpoints[2], FulcrumProtocolAPI)  # env
+        assert isinstance(endpoints[3], BitcoinDotComAPI)  # default
+
+    def test_get_single_endpoint_for_env_variable_chaingraph(self, reset_environ):
+        os.environ["CHAINGRAPH_API"] = VALID_BITCOINCOM_ENDPOINT_URLS[0]
+        os.environ["CHAINGRAPH_API_MAINNET"] = "%mainnet"
+        endpoints = get_endpoints_for("mainnet")
+        assert len(endpoints) == 4
+        assert isinstance(endpoints[0], ChaingraphAPI)  # env
+        assert isinstance(endpoints[1], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[2], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[3], BitcoinDotComAPI)  # default
+        assert endpoints[0].node_like == "%mainnet"
+
+    def test_get_multiple_endpoint_for_env_variable_bitcoincom(self, reset_environ):
+        os.environ["BITCOINCOM_API_MAINNET_1"] = VALID_BITCOINCOM_ENDPOINT_URLS[0]
+        os.environ["BITCOINCOM_API_MAINNET_2"] = VALID_BITCOINCOM_ENDPOINT_URLS[1]
+        endpoints = get_endpoints_for("mainnet")
+        assert len(endpoints) == 6
+        assert isinstance(endpoints[0], ChaingraphAPI)  # default
+        assert isinstance(endpoints[1], ChaingraphAPI)  # default
+        assert isinstance(endpoints[2], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[3], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[4], BitcoinDotComAPI)  # env
+        assert isinstance(endpoints[5], BitcoinDotComAPI)  # env
+
+    def test_get_multiple_endpoint_for_env_variable_fulcrum(self, reset_environ):
+        os.environ["FULCRUM_API_MAINNET_1"] = VALID_FULCRUM_ENDPOINT_URLS[0]
+        endpoints = get_endpoints_for("mainnet")
+        assert len(endpoints) == 4
+        assert isinstance(endpoints[0], ChaingraphAPI)  # default
+        assert isinstance(endpoints[1], ChaingraphAPI)  # default
+        assert isinstance(endpoints[2], FulcrumProtocolAPI)  # env
+        assert isinstance(endpoints[3], BitcoinDotComAPI)  # default
 
     def test_get_multiple_endpoint_for_env_variable_chaingraph(self, reset_environ):
         os.environ["CHAINGRAPH_API_1"] = "https://demo.chaingraph.cash/v1/graphql"
         os.environ["CHAINGRAPH_API_2"] = "https://demo.chaingraph.cash/v1/graphql"
         os.environ["CHAINGRAPH_API_MAINNET_2"] = "%mainnet"
         endpoints = get_endpoints_for("mainnet")
-        assert len(endpoints) == 3
+        assert len(endpoints) == 5
         assert isinstance(endpoints[0], ChaingraphAPI)  # default
         assert isinstance(endpoints[1], ChaingraphAPI)  # default
-        assert isinstance(endpoints[2], BitcoinDotComAPI)  # env
+        assert isinstance(endpoints[2], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[3], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[4], BitcoinDotComAPI)  # env
         assert endpoints[0].node_like == "%"
         assert endpoints[1].node_like == "%mainnet"
 

@@ -1,14 +1,18 @@
 import os
 import requests
+import threading
+import concurrent.futures
 
 # Import supported endpoint APIs
 from bitcash.network.APIs.BitcoinDotComAPI import BitcoinDotComAPI
 from bitcash.network.APIs.ChaingraphAPI import ChaingraphAPI
+from bitcash.network.APIs.FulcrumProtocolAPI import FulcrumProtocolAPI
 from bitcash.utils import time_cache
 
 # Dictionary of supported endpoint APIs
 ENDPOINT_ENV_VARIABLES = {
     "CHAINGRAPH": ChaingraphAPI,
+    "FULCRUM": FulcrumProtocolAPI,
     "BITCOINCOM": BitcoinDotComAPI,
 }
 
@@ -17,6 +21,9 @@ DEFAULT_TIMEOUT = 5
 
 # Default sanitized endpoint, based on blockheigt, cache timeout
 DEFAULT_SANITIZED_ENDPOINTS_CACHE_TIME = 300
+
+# Max thread workers to get blockheight
+THREADWORKERS = 6
 
 BCH_TO_SAT_MULTIPLIER = 100000000
 
@@ -117,15 +124,30 @@ def get_sanitized_endpoints_for(network="mainnet"):
 
     :param network: network in ["mainnet", "testnet", "regtest"].
     """
+
+    class ThreadedGetBlockheight:
+        def __init__(self, endpoints):
+            self.endpoints = endpoints
+            self.endpoints_blockheight = [0 for _ in range(len(endpoints))]
+            self._lock = threading.Lock()
+
+        def update(self, ind):
+            try:
+                blockheight = self.endpoints[ind].get_blockheight(
+                    timeout=DEFAULT_TIMEOUT
+                )
+            except NetworkAPI.IGNORED_ERRORS:  # pragma: no cover
+                return
+            with self._lock:
+                self.endpoints_blockheight[ind] = blockheight
+
     endpoints = get_endpoints_for(network)
 
-    endpoints_blockheight = [0 for _ in range(len(endpoints))]
+    threadsafe_blockheight = ThreadedGetBlockheight(endpoints)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=THREADWORKERS) as executor:
+        executor.map(threadsafe_blockheight.update, range(len(endpoints)))
 
-    for i, endpoint in enumerate(endpoints):
-        try:
-            endpoints_blockheight[i] = endpoint.get_blockheight(timeout=DEFAULT_TIMEOUT)
-        except NetworkAPI.IGNORED_ERRORS:  # pragma: no cover
-            pass
+    endpoints_blockheight = threadsafe_blockheight.endpoints_blockheight
 
     if sum(endpoints_blockheight) == 0:
         raise ConnectionError("All APIs are unreachable.")  # pragma: no cover

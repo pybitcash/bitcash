@@ -115,12 +115,16 @@ Specifically, on `mainnet`, it can access:
 
 - `<https://demo.chaingraph.cash/v1/graphql>`_ via :class:`~bitcash.network.APIs.ChaingraphAPI.ChaingraphAPI`
 - `<https://gql.chaingraph.pat.mn/v1/graphql>`_ via :class:`~bitcash.network.APIs.ChaingraphAPI.ChaingraphAPI`
+- `<bch.imaginary.cash:50002>`_ via :class:`~bitcash.network.APIs.FulcrumProtocolAPI.FulcrumProtocolAPI`
+- `<electron.jochen-hoenicke.de:51002>`_ via :class:`~bitcash.network.APIs.FulcrumProtocolAPI.FulcrumProtocolAPI`
 - `<https://rest.bch.actorforth.org/v2/>`_ via :class:`~bitcash.network.APIs.BitcoinDotComAPI.BitcoinDotComAPI`
 
 And on `testnet`, it can access:
 
 - `<https://demo.chaingraph.cash/v1/graphql>`_ via :class:`~bitcash.network.APIs.ChaingraphAPI.ChaingraphAPI`
 - `<https://gql.chaingraph.pat.mn/v1/graphql>`_ via :class:`~bitcash.network.APIs.ChaingraphAPI.ChaingraphAPI`
+- `<testnet.imaginary.cash:50002>`_ via :class:`~bitcash.network.APIs.FulcrumProtocolAPI.FulcrumProtocolAPI`
+- `<testnet.bitcoincash.network:60002>`_ via :class:`~bitcash.network.APIs.FulcrumProtocolAPI.FulcrumProtocolAPI`
 
 
 NetworkAPI
@@ -131,7 +135,7 @@ it polls a service and if an error occurs it tries another.
 
 .. note::
    Default chaingraph APIs do not indicate if a transaction broadcast has failed. The NetworkAPI fallbacks to 
-   BitcoinDotComAPI on ``mainnet`` to broadcast a transaction.
+   FulcrumProtocolAPI on ``mainnet`` to broadcast a transaction.
 
 .. _satoshi: https://en.bitcoin.it/wiki/Satoshi_(unit)
 .. _blockchain: https://en.bitcoin.it/wiki/Block_chain
