@@ -297,12 +297,16 @@ Specifically, on <cite>mainnet</cite>, it can access:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://demo.chaingraph.cash/v1/graphql">https://demo.chaingraph.cash/v1/graphql</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">ChaingraphAPI</span></code></p></li>
 <li><p><a class="reference external" href="https://gql.chaingraph.pat.mn/v1/graphql">https://gql.chaingraph.pat.mn/v1/graphql</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">ChaingraphAPI</span></code></p></li>
+<li><p><a class="reference external" href="bch.imaginary.cash:50002">bch.imaginary.cash:50002</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">FulcrumProtocolAPI</span></code></p></li>
+<li><p><a class="reference external" href="electron.jochen-hoenicke.de:51002">electron.jochen-hoenicke.de:51002</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">FulcrumProtocolAPI</span></code></p></li>
 <li><p><a class="reference external" href="https://rest.bch.actorforth.org/v2/">https://rest.bch.actorforth.org/v2/</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">BitcoinDotComAPI</span></code></p></li>
 </ul>
 <p>And on <cite>testnet</cite>, it can access:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://demo.chaingraph.cash/v1/graphql">https://demo.chaingraph.cash/v1/graphql</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">ChaingraphAPI</span></code></p></li>
 <li><p><a class="reference external" href="https://gql.chaingraph.pat.mn/v1/graphql">https://gql.chaingraph.pat.mn/v1/graphql</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">ChaingraphAPI</span></code></p></li>
+<li><p><a class="reference external" href="testnet.imaginary.cash:50002">testnet.imaginary.cash:50002</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">FulcrumProtocolAPI</span></code></p></li>
+<li><p><a class="reference external" href="testnet.bitcoincash.network:60002">testnet.bitcoincash.network:60002</a> via <code class="xref py py-class docutils literal notranslate"><span class="pre">FulcrumProtocolAPI</span></code></p></li>
 </ul>
 <section id="networkapi">
 <h3>NetworkAPI<a class="headerlink" href="#networkapi" title="Link to this heading">¶</a></h3>
@@ -311,7 +315,7 @@ it polls a service and if an error occurs it tries another.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Default chaingraph APIs do not indicate if a transaction broadcast has failed. The NetworkAPI fallbacks to
-BitcoinDotComAPI on <code class="docutils literal notranslate"><span class="pre">mainnet</span></code> to broadcast a transaction.</p>
+FulcrumProtocolAPI on <code class="docutils literal notranslate"><span class="pre">mainnet</span></code> to broadcast a transaction.</p>
 </div>
 </section>
 </section>
