@@ -44,9 +44,7 @@ VALID_BITCOINCOM_ENDPOINT_URLS = [
 
 INVALID_BITCOINCOM_ENDPOINT_URLS = ["htp://fakesite.com/v2", "https://bitcom.org/", 42]
 
-VALID_FULCRUM_ENDPOINT_URLS = [
-    "electron.jochen-hoenicke.de:51002"
-]
+VALID_FULCRUM_ENDPOINT_URLS = ["electron.jochen-hoenicke.de:51002"]
 
 INVALID_FULCRUM_ENDPOINT_URLS = ["electron.jochen-hoenicke.de", 42]
 
