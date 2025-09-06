@@ -7,7 +7,7 @@ PyPI
 ----
 
 BitCash is distributed on `PyPI`_ as a universal wheel and is available on Linux/macOS
-and Windows and supports Python 3.8+.
+and Windows and supports Python 3.9+.
 
 .. code-block:: bash
 
