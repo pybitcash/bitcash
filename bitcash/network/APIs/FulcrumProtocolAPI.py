@@ -276,7 +276,7 @@ class FulcrumProtocolAPI(BaseAPI):
             else:
                 nft_commitment = bytes.fromhex(nft["commitment"])
                 nft_capability = nft["capability"]
-            token_amount = int(token_data.get("amount"))
+            token_amount = int(token_data.get("amount", "0"))
             # add unspent
             unspents.append(
                 Unspent(
