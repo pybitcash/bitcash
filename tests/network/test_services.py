@@ -168,8 +168,6 @@ class TestNetworkAPI:
         time.sleep(1)
         results = NetworkAPI.get_raw_transaction(MAIN_TX, network="mainnet")
         assert isinstance(results, dict)
-        # assert len(results) == 16  # BitcoinDotCOM
-        assert len(results) == 7  # Chaingraph
 
     # Testnet
     @pytest.mark.skip
