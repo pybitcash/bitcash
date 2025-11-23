@@ -1,0 +1,11 @@
+coincurve>=4.3.0
+requests
+
+[cache]
+lmdb
+
+[cli]
+appdirs
+click
+privy
+tinydb
