@@ -22,4 +22,5 @@ venv/
 /.tox
 htmlcov/
 /.coverage
+/coverage.xml
 /.pytest_cache
