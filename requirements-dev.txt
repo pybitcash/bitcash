@@ -3,8 +3,8 @@
 
 -e .[cli,cache]
 pytest
-pyright
+pyright==1.1.408
 coverage
-black
+black==25.1.0
 twine
 sphinx
