@@ -322,6 +322,8 @@ class TestPrivateKey:
         mock_network_api.get_transactions.return_value = []
 
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        private_key.get_unspents = MagicMock()
+        private_key.get_transactions = MagicMock()
         user_callback = MagicMock()
 
         private_key.subscribe(user_callback, update_self=True)
@@ -335,6 +337,9 @@ class TestPrivateKey:
 
         # User callback should have been called
         user_callback.assert_called_once_with(private_key.address, "some_status_hash")
+        # Valid status hash must trigger balance/history fetching
+        private_key.get_unspents.assert_called_once()
+        private_key.get_transactions.assert_called_once()
 
     @patch("bitcash.wallet.NetworkAPI")
     def test_subscribe_with_update_self_skips_update_on_error(self, mock_network_api):
