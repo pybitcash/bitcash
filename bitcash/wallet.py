@@ -495,6 +495,11 @@ class PrivateKey(BaseKey):
         :param update_self: Whether to update the instance's balance, unspents, and
             transactions on update.
 
+        The status_hash is a SHA-256 digest of the address's full transaction history.
+        It changes whenever new activity is confirmed or enters the mempool, making it
+        suitable as a change detector: a new value means something happened, so trigger
+        a UI refresh or fetch updated data. The hash itself carries no other meaning.
+
         Reserved status_hash values:
             - None: Address has no history.
             - "error: <message>": An error occurred.
