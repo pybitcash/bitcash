@@ -398,6 +398,8 @@ class TestPrivateKey:
         mock_network_api.get_transactions.return_value = []
 
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        private_key.get_unspents = MagicMock()
+        private_key.get_transactions = MagicMock()
         user_callback = MagicMock()
 
         private_key.subscribe(user_callback, update_self=True)
@@ -410,6 +412,9 @@ class TestPrivateKey:
 
         # Should still call user callback with None
         user_callback.assert_called_once_with(private_key.address, None)
+        # None status must NOT trigger balance/history fetching (Phase I fix)
+        private_key.get_unspents.assert_not_called()
+        private_key.get_transactions.assert_not_called()
 
 
 class TestPrivateKeyTestnet:

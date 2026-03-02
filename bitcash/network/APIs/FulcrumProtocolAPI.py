@@ -312,6 +312,8 @@ class FulcrumProtocolAPI(BaseAPI):
         :param address: Address to subscribe to.
         :param callback: Function to call with (address, status_hash) on update.
         :return: A SubscriptionHandle object for managing the subscription.
+
+        Note: connection errors during handshake propagate directly to the caller.
         """
         # Create a new socket for subscription
         sub_sock = handshake(self.hostname, self.port, self.timeout)
@@ -319,17 +321,17 @@ class FulcrumProtocolAPI(BaseAPI):
         stop_event = threading.Event()
 
         def listen():
-            # Send subscription request
-            payload = {
-                "method": "blockchain.address.subscribe",
-                "params": [address],
-                "jsonrpc": "2.0",
-                "id": "bitcash-sub",
-            }
-            sub_sock.sendall(json.dumps(payload).encode() + b"\n")
-            buffer = b""
-            while not stop_event.is_set():
-                try:
+            try:
+                # Send subscription request
+                payload = {
+                    "method": "blockchain.address.subscribe",
+                    "params": [address],
+                    "jsonrpc": "2.0",
+                    "id": "bitcash-sub",
+                }
+                sub_sock.sendall(json.dumps(payload).encode() + b"\n")
+                buffer = b""
+                while not stop_event.is_set():
                     buffer += sub_sock.recv(4096)
                     while b"\n" in buffer:
                         line, buffer = buffer.split(b"\n", 1)
@@ -347,15 +349,17 @@ class FulcrumProtocolAPI(BaseAPI):
                                 else msg.get("result")
                             )
                             callback(address, status)
-                except (OSError, ValueError) as e:
-                    if not stop_event.is_set():
-                        callback(address, f"error: {str(e)}")
-                        sub_sock.close()
-                        return
-                    break
-            sub_sock.close()
-            # Notify that subscription has ended (clean stop only)
-            callback(address, "unsubscribed")
+            except (OSError, ValueError) as e:
+                if not stop_event.is_set():
+                    callback(address, f"error: {str(e)}")
+            finally:
+                try:
+                    sub_sock.close()
+                except Exception:
+                    pass
+                if stop_event.is_set():
+                    # Notify that subscription has ended (clean stop only)
+                    callback(address, "unsubscribed")
 
         thread = threading.Thread(target=listen, daemon=True)
         thread.start()
