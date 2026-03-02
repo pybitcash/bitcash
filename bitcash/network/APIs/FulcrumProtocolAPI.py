@@ -348,10 +348,13 @@ class FulcrumProtocolAPI(BaseAPI):
                             )
                             callback(address, status)
                 except (OSError, ValueError) as e:
-                    callback(address, f"error: {str(e)}")
+                    if not stop_event.is_set():
+                        callback(address, f"error: {str(e)}")
+                        sub_sock.close()
+                        return
                     break
             sub_sock.close()
-            # Notify that subscription has ended
+            # Notify that subscription has ended (clean stop only)
             callback(address, "unsubscribed")
 
         thread = threading.Thread(target=listen, daemon=True)

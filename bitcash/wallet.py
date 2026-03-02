@@ -506,7 +506,7 @@ class PrivateKey(BaseKey):
         if update_self:
 
             def self_updating_callback(address: str, status_hash: str | None):
-                if status_hash is None or (
+                if status_hash is not None and (
                     not status_hash.startswith("error:")
                     and status_hash != "unsubscribed"
                 ):

@@ -234,8 +234,8 @@ with no history). When you're done, unsubscribe:
 
     >>> handle.unsubscribe()
 
-Use ``update_self=True`` to automatically update the key's balance and
-unspents when an activity is detected:
+Use ``update_self=True`` to automatically update the key's balance,
+unspents, and transactions when an activity is detected:
 
 .. code-block:: python
 
