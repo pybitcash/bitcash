@@ -26,13 +26,11 @@ jobs:
         run: |
           coverage run -m pytest -m "not regtest" -rw
           coverage xml
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+      - name: Coverage comment
+        uses: orgoro/coverage@v3.2
         with:
-          file: ./coverage.xml
-          name: codecov-umbrella
-          fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
+          coverageFile: ./coverage.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish to PyPI
         uses: casperdcl/deploy-pypi@v2
         if: ${{ matrix.python == 3.9 }}

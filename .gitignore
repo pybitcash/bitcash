@@ -11,6 +11,7 @@ __pycache__
 /.cache
 /.idea
 /bitcash.egg-info
+/BitCash.egg-info
 /build
 /dist
 /docs/build
@@ -21,4 +22,5 @@ venv/
 /.tox
 htmlcov/
 /.coverage
+/coverage.xml
 /.pytest_cache
