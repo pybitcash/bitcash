@@ -145,6 +145,7 @@
 <li><a class="reference internal" href="#der">DER</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#subscriptions">Subscriptions</a></li>
 </ul>
 
   </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/pybitcash/bitcash"
@@ -371,6 +372,32 @@ want to force the use of a particular class, you can do this:</p>
 </span></pre></div>
 </div>
 </section>
+</section>
+<section id="subscriptions">
+<h2>Subscriptions<a class="headerlink" href="#subscriptions" title="Link to this heading">¶</a></h2>
+<p>You can subscribe to real-time notifications for address activity using the
+<a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.subscribe" title="bitcash.PrivateKey.subscribe"><code class="xref py py-func docutils literal notranslate"><span class="pre">subscribe()</span></code></a> method. This uses the Fulcrum Protocol
+to receive push notifications when an address’s state changes (new transactions,
+balance updates, etc.).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash</span> <span class="kn">import</span> <span class="n">Key</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+</span><span data-line="3"><span class="gp">&gt;&gt;&gt;</span>
+</span><span data-line="4"><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">on_update</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">status_hash</span><span class="p">):</span>
+</span><span data-line="5"><span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Address </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> updated: </span><span class="si">{</span><span class="n">status_hash</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="gp">...</span>
+</span><span data-line="7"><span class="gp">&gt;&gt;&gt; </span><span class="n">handle</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">on_update</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>The callback receives the address and a status hash (or <code class="docutils literal notranslate"><span class="pre">None</span></code> for addresses
+with no history). When you’re done, unsubscribe:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">handle</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">()</span>
+</span></pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">update_self=True</span></code> to automatically update the key’s balance,
+unspents, and transactions when an activity is detected:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">handle</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">on_update</span><span class="p">,</span> <span class="n">update_self</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></pre></div>
+</div>
 </section>
 </section>
 

@@ -155,6 +155,7 @@
 <li><a class="reference internal" href="#bitcash.PrivateKey.send"><code class="docutils literal notranslate"><span class="pre">PrivateKey.send()</span></code></a></li>
 <li><a class="reference internal" href="#bitcash.PrivateKey.sign"><code class="docutils literal notranslate"><span class="pre">PrivateKey.sign()</span></code></a></li>
 <li><a class="reference internal" href="#bitcash.PrivateKey.sign_transaction"><code class="docutils literal notranslate"><span class="pre">PrivateKey.sign_transaction()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKey.subscribe"><code class="docutils literal notranslate"><span class="pre">PrivateKey.subscribe()</span></code></a></li>
 <li><a class="reference internal" href="#bitcash.PrivateKey.to_bytes"><code class="docutils literal notranslate"><span class="pre">PrivateKey.to_bytes()</span></code></a></li>
 <li><a class="reference internal" href="#bitcash.PrivateKey.to_der"><code class="docutils literal notranslate"><span class="pre">PrivateKey.to_der()</span></code></a></li>
 <li><a class="reference internal" href="#bitcash.PrivateKey.to_hex"><code class="docutils literal notranslate"><span class="pre">PrivateKey.to_hex()</span></code></a></li>
@@ -186,6 +187,7 @@
 <li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.send"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.send()</span></code></a></li>
 <li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.sign"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.sign()</span></code></a></li>
 <li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.sign_transaction"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.sign_transaction()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.subscribe"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.subscribe()</span></code></a></li>
 <li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.to_bytes"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.to_bytes()</span></code></a></li>
 <li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.to_der"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.to_der()</span></code></a></li>
 <li><a class="reference internal" href="#bitcash.PrivateKeyTestnet.to_hex"><code class="docutils literal notranslate"><span class="pre">PrivateKeyTestnet.to_hex()</span></code></a></li>
@@ -238,6 +240,7 @@
 <li><a class="reference internal" href="#bitcash.network.NetworkAPI.get_transactions"><code class="docutils literal notranslate"><span class="pre">NetworkAPI.get_transactions()</span></code></a></li>
 <li><a class="reference internal" href="#bitcash.network.NetworkAPI.get_tx_amount"><code class="docutils literal notranslate"><span class="pre">NetworkAPI.get_tx_amount()</span></code></a></li>
 <li><a class="reference internal" href="#bitcash.network.NetworkAPI.get_unspent"><code class="docutils literal notranslate"><span class="pre">NetworkAPI.get_unspent()</span></code></a></li>
+<li><a class="reference internal" href="#bitcash.network.NetworkAPI.subscribe_address"><code class="docutils literal notranslate"><span class="pre">NetworkAPI.subscribe_address()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#bitcash.network.meta.Unspent"><code class="docutils literal notranslate"><span class="pre">Unspent</span></code></a><ul>
@@ -815,6 +818,35 @@ transaction data.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="bitcash.PrivateKey.subscribe">
+<span class="sig-name descname"><span class="pre">subscribe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SubscriptionHandle</span></span></span><a class="headerlink" href="#bitcash.PrivateKey.subscribe" title="Link to this definition">¶</a></dt>
+<dd><p>Subscribe to this private key’s address and receive real-time notifications.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>callback</strong> – Function to call with (address, status_hash) on update.</p></li>
+<li><p><strong>update_self</strong> – Whether to update the instance’s balance, unspents, and
+transactions on update.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The status_hash is a SHA-256 digest of the address’s full transaction history.
+It changes whenever new activity is confirmed or enters the mempool, making it
+suitable as a change detector: a new value means something happened, so trigger
+a UI refresh or fetch updated data. The hash itself carries no other meaning.</p>
+<dl class="simple">
+<dt>Reserved status_hash values:</dt><dd><ul class="simple">
+<li><p>None: Address has no history.</p></li>
+<li><p>“error: &lt;message&gt;”: An error occurred.</p></li>
+<li><p>“unsubscribed”: Subscription has been cancelled.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Note: The subscription callback will be called immediately when the subscription
+is created with the current status hash.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="bitcash.PrivateKey.to_bytes">
 <span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#bitcash.PrivateKey.to_bytes" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -1267,6 +1299,35 @@ transaction data.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="bitcash.PrivateKeyTestnet.subscribe">
+<span class="sig-name descname"><span class="pre">subscribe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SubscriptionHandle</span></span></span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.subscribe" title="Link to this definition">¶</a></dt>
+<dd><p>Subscribe to this private key’s address and receive real-time notifications.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>callback</strong> – Function to call with (address, status_hash) on update.</p></li>
+<li><p><strong>update_self</strong> – Whether to update the instance’s balance, unspents, and
+transactions on update.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The status_hash is a SHA-256 digest of the address’s full transaction history.
+It changes whenever new activity is confirmed or enters the mempool, making it
+suitable as a change detector: a new value means something happened, so trigger
+a UI refresh or fetch updated data. The hash itself carries no other meaning.</p>
+<dl class="simple">
+<dt>Reserved status_hash values:</dt><dd><ul class="simple">
+<li><p>None: Address has no history.</p></li>
+<li><p>“error: &lt;message&gt;”: An error occurred.</p></li>
+<li><p>“unsubscribed”: Subscription has been cancelled.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Note: The subscription callback will be called immediately when the subscription
+is created with the current status hash.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="bitcash.PrivateKeyTestnet.to_bytes">
 <span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#bitcash.PrivateKeyTestnet.to_bytes" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -1643,7 +1704,7 @@ the public key.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bitcash.network.</span></span><span class="sig-name descname"><span class="pre">NetworkAPI</span></span><a class="headerlink" href="#bitcash.network.NetworkAPI" title="Link to this definition">¶</a></dt>
 <dd><dl class="py attribute">
 <dt class="sig sig-object py" id="bitcash.network.NetworkAPI.IGNORED_ERRORS">
-<span class="sig-name descname"><span class="pre">IGNORED_ERRORS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(&lt;class</span> <span class="pre">'requests.exceptions.RequestException'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.HTTPError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.ConnectionError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.ProxyError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.SSLError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.Timeout'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.ConnectTimeout'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.ReadTimeout'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.TooManyRedirects'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.ChunkedEncodingError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.ContentDecodingError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.StreamConsumedError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ssl.SSLError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ssl.SSLZeroReturnError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ssl.SSLWantReadError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ssl.SSLWantWriteError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ssl.SSLSyscallError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ssl.SSLEOFError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'OSError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'TimeoutError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ConnectionResetError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ConnectionAbortedError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'BrokenPipeError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'OSError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'TimeoutError'&gt;)</span></em><a class="headerlink" href="#bitcash.network.NetworkAPI.IGNORED_ERRORS" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">IGNORED_ERRORS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(&lt;class</span> <span class="pre">'NotImplementedError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.RequestException'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.HTTPError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.ConnectionError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.ProxyError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.SSLError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.Timeout'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.ConnectTimeout'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.ReadTimeout'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.TooManyRedirects'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.ChunkedEncodingError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.ContentDecodingError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'requests.exceptions.StreamConsumedError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ssl.SSLError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ssl.SSLZeroReturnError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ssl.SSLWantReadError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ssl.SSLWantWriteError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ssl.SSLSyscallError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ssl.SSLEOFError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'OSError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'TimeoutError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ConnectionResetError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ConnectionAbortedError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'BrokenPipeError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'OSError'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'TimeoutError'&gt;)</span></em><a class="headerlink" href="#bitcash.network.NetworkAPI.IGNORED_ERRORS" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1762,6 +1823,26 @@ the public key.</p>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A list of unspent transaction outputs of
 <a class="reference internal" href="#bitcash.network.meta.Unspent" title="bitcash.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ConnectionError</strong> – If all API services fail.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bitcash.network.NetworkAPI.subscribe_address">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">subscribe_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'mainnet'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'testnet'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'regtest'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mainnet'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SubscriptionHandle</span></span></span><a class="headerlink" href="#bitcash.network.NetworkAPI.subscribe_address" title="Link to this definition">¶</a></dt>
+<dd><p>Subscribes an address for push notifications.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – The address in question.</p></li>
+<li><p><strong>callback</strong> – Function to call with (address, status_hash) on update.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A SubscriptionHandle to manage the subscription.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>ConnectionError</strong> – If all API services fail.</p>
