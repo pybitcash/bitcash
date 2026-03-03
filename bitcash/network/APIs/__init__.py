@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Callable
 
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction
@@ -97,3 +97,30 @@ class BaseAPI(ABC):
                        broadcasted.
         :return: Boolean indicating if the tx is broadcasted
         """
+
+    @abstractmethod
+    def subscribe_address(
+        self, address: str, callback: Callable[[str, str | None], None], *args, **kwargs
+    ) -> SubscriptionHandle:
+        """
+        Subscribe to an address and receive real-time notifications.
+        :param address: Address to subscribe to.
+        :param callback: Function to call with (address, status_hash) on update.
+            status_hash is None if the address has no history.
+        :return: A SubscriptionHandle object for managing the subscription.
+        """
+
+
+class SubscriptionHandle:
+    """
+    Handle for managing a subscription
+    """
+
+    def __init__(self, stop_callback: Callable[[], None]) -> None:
+        self._stop_callback = stop_callback
+
+    def unsubscribe(self) -> None:
+        """
+        Unsubscribe from the subscription
+        """
+        self._stop_callback()

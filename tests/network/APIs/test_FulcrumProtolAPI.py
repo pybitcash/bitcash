@@ -1,7 +1,11 @@
 import pytest
+import threading
+import time
 from decimal import Decimal
+from unittest.mock import MagicMock, patch
 
 from bitcash.network.APIs import FulcrumProtocolAPI as _fapi
+from bitcash.network.APIs import SubscriptionHandle
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.network.APIs.FulcrumProtocolAPI import FulcrumProtocolAPI
 from bitcash.network.meta import Unspent
@@ -429,3 +433,161 @@ class TestFulcrumProtolAPI:
             "446f83e975d2870de740917df1b5221aa4bc52c6e2540188f5897c4ce775b7f4",
         )
         assert tx == {"dummy": "dummy"}
+
+
+class TestSubscriptionHandle:
+    def test_unsubscribe_calls_stop_callback(self):
+        stop_called = threading.Event()
+
+        def stop_callback():
+            stop_called.set()
+
+        handle = SubscriptionHandle(stop_callback)
+        handle.unsubscribe()
+
+        assert stop_called.is_set()
+
+
+class TestFulcrumSubscription:
+    @pytest.fixture(autouse=True)
+    def setup(self, monkeypatch):
+        self.monkeypatch = monkeypatch
+
+    def test_subscribe_address_returns_handle(self):
+        """Test that subscribe_address returns a SubscriptionHandle."""
+        # Create a mock socket that simulates the subscription response
+        mock_socket = MagicMock()
+        # Simulate initial subscription response
+        initial_response = (
+            b'{"jsonrpc":"2.0","id":"bitcash-sub","result":"abc123hash"}\n'
+        )
+        mock_socket.recv.return_value = initial_response
+
+        self.monkeypatch.setattr(_fapi, "handshake", lambda h, p, t: mock_socket)
+
+        api = FulcrumProtocolAPI("dummy.com:50002")
+        callback = MagicMock()
+
+        handle = api.subscribe_address(BITCOIN_CASHADDRESS_CATKN, callback)
+
+        assert isinstance(handle, SubscriptionHandle)
+        # Give the thread time to process
+        time.sleep(0.1)
+        handle.unsubscribe()
+
+    def test_subscribe_address_callback_receives_initial_status(self):
+        """Test that callback receives initial status hash."""
+        mock_socket = MagicMock()
+        initial_response = (
+            b'{"jsonrpc":"2.0","id":"bitcash-sub","result":"abc123hash"}\n'
+        )
+        # Return initial response, then block
+        mock_socket.recv.side_effect = [initial_response, OSError("closed")]
+
+        self.monkeypatch.setattr(_fapi, "handshake", lambda h, p, t: mock_socket)
+
+        api = FulcrumProtocolAPI("dummy.com:50002")
+        received = []
+
+        def callback(address, status):
+            received.append((address, status))
+
+        handle = api.subscribe_address(BITCOIN_CASHADDRESS_CATKN, callback)
+        time.sleep(0.1)
+        handle.unsubscribe()
+        time.sleep(0.1)
+
+        # Should have received initial status
+        assert len(received) >= 1
+        assert received[0] == (BITCOIN_CASHADDRESS_CATKN, "abc123hash")
+        assert received[1] == (BITCOIN_CASHADDRESS_CATKN, "error: closed")
+
+    def test_subscribe_address_callback_receives_null_status(self):
+        """Test that callback handles null status (address with no history)."""
+        mock_socket = MagicMock()
+        # Null result for address with no history
+        initial_response = b'{"jsonrpc":"2.0","id":"bitcash-sub","result":null}\n'
+        mock_socket.recv.side_effect = [initial_response, OSError("closed")]
+
+        self.monkeypatch.setattr(_fapi, "handshake", lambda h, p, t: mock_socket)
+
+        api = FulcrumProtocolAPI("dummy.com:50002")
+        received = []
+
+        def callback(address, status):
+            received.append((address, status))
+
+        handle = api.subscribe_address(BITCOIN_CASHADDRESS_CATKN, callback)
+        time.sleep(0.1)
+        handle.unsubscribe()
+        time.sleep(0.1)
+
+        assert len(received) >= 1
+        assert received[0] == (BITCOIN_CASHADDRESS_CATKN, None)
+        assert received[1] == (BITCOIN_CASHADDRESS_CATKN, "error: closed")
+
+    def test_subscribe_address_receives_notifications(self):
+        """Test that callback receives push notifications."""
+        mock_socket = MagicMock()
+        initial_response = b'{"jsonrpc":"2.0","id":"bitcash-sub","result":"hash1"}\n'
+        notification = (
+            b'{"jsonrpc":"2.0","method":"blockchain.address.subscribe","params":["'
+            + BITCOIN_CASHADDRESS_CATKN.encode()
+            + b'","hash2"]}\n'
+        )
+
+        mock_socket.recv.side_effect = [
+            initial_response,
+            notification,
+            OSError("closed"),
+        ]
+
+        self.monkeypatch.setattr(_fapi, "handshake", lambda h, p, t: mock_socket)
+
+        api = FulcrumProtocolAPI("dummy.com:50002")
+        received = []
+
+        def callback(address, status):
+            received.append((address, status))
+
+        handle = api.subscribe_address(BITCOIN_CASHADDRESS_CATKN, callback)
+        time.sleep(0.2)
+        handle.unsubscribe()
+        time.sleep(0.1)
+
+        assert len(received) >= 2
+        assert received[0] == (BITCOIN_CASHADDRESS_CATKN, "hash1")
+        assert received[1] == (BITCOIN_CASHADDRESS_CATKN, "hash2")
+
+    def test_subscribe_address_unsubscribe_notifies_callback(self):
+        """Test that unsubscribe sends 'unsubscribed' to callback."""
+        mock_socket = MagicMock()
+        initial_response = b'{"jsonrpc":"2.0","id":"bitcash-sub","result":"hash1"}\n'
+        subsequent_response = b'{"jsonrpc":"2.0","id":"bitcash-sub","result":"hash2"}\n'
+
+        # Block on second recv until shutdown
+        call_count = [0]
+
+        def recv_side_effect(size: int) -> bytes:
+            call_count[0] += 1
+            if call_count[0] == 1:
+                return initial_response
+            return subsequent_response
+
+        mock_socket.recv.side_effect = recv_side_effect
+
+        self.monkeypatch.setattr(_fapi, "handshake", lambda h, p, t: mock_socket)
+
+        api = FulcrumProtocolAPI("dummy.com:50002")
+        received = []
+
+        def callback(address, status):
+            received.append((address, status))
+
+        handle = api.subscribe_address(BITCOIN_CASHADDRESS_CATKN, callback)
+        time.sleep(0.1)
+        handle.unsubscribe()
+        time.sleep(0.2)
+
+        # Should have received "unsubscribed" notification
+        assert any(status == "unsubscribed" for _, status in received)

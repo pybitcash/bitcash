@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import Literal, Optional, Sequence, Union
+from typing import Callable, Literal, Optional, Sequence, Union
 
 from bitcash.cashtoken import Unspents
 from bitcash.crypto import ECPrivateKey
@@ -15,6 +15,7 @@ from bitcash.format import (
     wif_to_bytes,
 )
 from bitcash.network import NetworkAPI, satoshi_to_currency_cached
+from bitcash.network.APIs import SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.op import OpCodes
 from bitcash.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
@@ -483,6 +484,47 @@ class PrivateKey(BaseKey):
         ]
 
         return create_p2pkh_transaction(self, unspents, outputs)
+
+    def subscribe(
+        self, callback: Callable[[str, str | None], None], update_self: bool = False
+    ) -> SubscriptionHandle:
+        """
+        Subscribe to this private key's address and receive real-time notifications.
+
+        :param callback: Function to call with (address, status_hash) on update.
+        :param update_self: Whether to update the instance's balance, unspents, and
+            transactions on update.
+
+        The status_hash is a SHA-256 digest of the address's full transaction history.
+        It changes whenever new activity is confirmed or enters the mempool, making it
+        suitable as a change detector: a new value means something happened, so trigger
+        a UI refresh or fetch updated data. The hash itself carries no other meaning.
+
+        Reserved status_hash values:
+            - None: Address has no history.
+            - "error: <message>": An error occurred.
+            - "unsubscribed": Subscription has been cancelled.
+
+        Note: The subscription callback will be called immediately when the subscription
+        is created with the current status hash.
+        """
+        if update_self:
+
+            def self_updating_callback(address: str, status_hash: str | None):
+                if status_hash is not None and (
+                    not status_hash.startswith("error:")
+                    and status_hash != "unsubscribed"
+                ):
+                    self.get_unspents()
+                    self.get_transactions()
+                callback(address, status_hash)
+
+            return NetworkAPI.subscribe_address(
+                self.address, self_updating_callback, network=self._network.value
+            )
+        return NetworkAPI.subscribe_address(
+            self.address, callback, network=self._network.value
+        )
 
     @classmethod
     def from_hex(cls, hexed: str) -> PrivateKey:

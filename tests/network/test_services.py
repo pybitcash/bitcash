@@ -2,11 +2,13 @@ import os
 import time
 from typing import Literal
 import typing
+from unittest.mock import MagicMock, patch
 
 import pytest
 import bitcash
 from bitcash.exceptions import InvalidEndpointURLProvided
 from bitcash.network import services as _services
+from bitcash.network.APIs import SubscriptionHandle
 from bitcash.network.APIs.FulcrumProtocolAPI import FulcrumProtocolAPI
 from bitcash.network.meta import Unspent
 from bitcash.network.services import (
@@ -234,10 +236,10 @@ class TestBitcoinDotComAPI:
         os.environ["CHAINGRAPH_API_MAINNET"] = "%mainnet"
         endpoints = get_endpoints_for("mainnet")
         assert len(endpoints) == 5
-        assert isinstance(endpoints[0], ChaingraphAPI)  # default
-        assert isinstance(endpoints[1], ChaingraphAPI)  # default
-        assert isinstance(endpoints[2], FulcrumProtocolAPI)  # default
-        assert isinstance(endpoints[3], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[0], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[1], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[2], ChaingraphAPI)  # default
+        assert isinstance(endpoints[3], ChaingraphAPI)  # default
         assert isinstance(endpoints[4], BitcoinDotComAPI)  # env
 
     def test_get_single_endpoint_for_env_variable_fulcrum(self, reset_environ):
@@ -245,9 +247,9 @@ class TestBitcoinDotComAPI:
         os.environ["CHAINGRAPH_API_MAINNET"] = "%mainnet"
         endpoints = get_endpoints_for("mainnet")
         assert len(endpoints) == 4
-        assert isinstance(endpoints[0], ChaingraphAPI)  # default
+        assert isinstance(endpoints[0], FulcrumProtocolAPI)  # env
         assert isinstance(endpoints[1], ChaingraphAPI)  # default
-        assert isinstance(endpoints[2], FulcrumProtocolAPI)  # env
+        assert isinstance(endpoints[2], ChaingraphAPI)  # default
         assert isinstance(endpoints[3], BitcoinDotComAPI)  # default
 
     def test_get_single_endpoint_for_env_variable_chaingraph(self, reset_environ):
@@ -255,21 +257,21 @@ class TestBitcoinDotComAPI:
         os.environ["CHAINGRAPH_API_MAINNET"] = "%mainnet"
         endpoints = get_endpoints_for("mainnet")
         assert len(endpoints) == 4
-        assert isinstance(endpoints[0], ChaingraphAPI)  # env
+        assert isinstance(endpoints[0], FulcrumProtocolAPI)  # default
         assert isinstance(endpoints[1], FulcrumProtocolAPI)  # default
-        assert isinstance(endpoints[2], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[2], ChaingraphAPI)  # env
         assert isinstance(endpoints[3], BitcoinDotComAPI)  # default
-        assert endpoints[0].node_like == "%mainnet"
+        assert endpoints[2].node_like == "%mainnet"
 
     def test_get_multiple_endpoint_for_env_variable_bitcoincom(self, reset_environ):
         os.environ["BITCOINCOM_API_MAINNET_1"] = VALID_BITCOINCOM_ENDPOINT_URLS[0]
         os.environ["BITCOINCOM_API_MAINNET_2"] = VALID_BITCOINCOM_ENDPOINT_URLS[1]
         endpoints = get_endpoints_for("mainnet")
         assert len(endpoints) == 6
-        assert isinstance(endpoints[0], ChaingraphAPI)  # default
-        assert isinstance(endpoints[1], ChaingraphAPI)  # default
-        assert isinstance(endpoints[2], FulcrumProtocolAPI)  # default
-        assert isinstance(endpoints[3], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[0], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[1], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[2], ChaingraphAPI)  # default
+        assert isinstance(endpoints[3], ChaingraphAPI)  # default
         assert isinstance(endpoints[4], BitcoinDotComAPI)  # env
         assert isinstance(endpoints[5], BitcoinDotComAPI)  # env
 
@@ -277,9 +279,9 @@ class TestBitcoinDotComAPI:
         os.environ["FULCRUM_API_MAINNET_1"] = VALID_FULCRUM_ENDPOINT_URLS[0]
         endpoints = get_endpoints_for("mainnet")
         assert len(endpoints) == 4
-        assert isinstance(endpoints[0], ChaingraphAPI)  # default
+        assert isinstance(endpoints[0], FulcrumProtocolAPI)  # env
         assert isinstance(endpoints[1], ChaingraphAPI)  # default
-        assert isinstance(endpoints[2], FulcrumProtocolAPI)  # env
+        assert isinstance(endpoints[2], ChaingraphAPI)  # default
         assert isinstance(endpoints[3], BitcoinDotComAPI)  # default
 
     def test_get_multiple_endpoint_for_env_variable_chaingraph(self, reset_environ):
@@ -288,13 +290,13 @@ class TestBitcoinDotComAPI:
         os.environ["CHAINGRAPH_API_MAINNET_2"] = "%mainnet"
         endpoints = get_endpoints_for("mainnet")
         assert len(endpoints) == 5
-        assert isinstance(endpoints[0], ChaingraphAPI)  # default
-        assert isinstance(endpoints[1], ChaingraphAPI)  # default
-        assert isinstance(endpoints[2], FulcrumProtocolAPI)  # default
-        assert isinstance(endpoints[3], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[0], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[1], FulcrumProtocolAPI)  # default
+        assert isinstance(endpoints[2], ChaingraphAPI)  # default
+        assert isinstance(endpoints[3], ChaingraphAPI)  # default
         assert isinstance(endpoints[4], BitcoinDotComAPI)  # env
-        assert endpoints[0].node_like == "%"
-        assert endpoints[1].node_like == "%mainnet"
+        assert endpoints[2].node_like == "%"
+        assert endpoints[3].node_like == "%mainnet"
 
     def test_get_balance_mainnet_return_type(self):
         time.sleep(1)
@@ -478,3 +480,55 @@ class TestBitcoinDotComAPI:
         for endpoint in endpoints:
             this_endpoint = BitcoinDotComAPI(endpoint)
             assert this_endpoint.get_raw_transaction(TEST_TX)["txid"] == TEST_TX
+
+
+class TestNetworkAPISubscription:
+    @patch("bitcash.network.services.get_sanitized_endpoints_for")
+    def test_subscribe_address_returns_handle(self, mock_get_endpoints):
+        """Test that subscribe_address returns a SubscriptionHandle."""
+        mock_endpoint = MagicMock()
+        mock_handle = SubscriptionHandle(lambda: None)
+        mock_endpoint.subscribe_address.return_value = mock_handle
+        mock_get_endpoints.return_value = (mock_endpoint,)
+
+        callback = MagicMock()
+        handle = NetworkAPI.subscribe_address(MAIN_ADDRESS_USED1, callback)
+
+        assert handle is mock_handle
+        mock_endpoint.subscribe_address.assert_called_once()
+
+    @patch("bitcash.network.services.get_sanitized_endpoints_for")
+    def test_subscribe_address_tries_next_endpoint_on_error(self, mock_get_endpoints):
+        """Test that subscribe_address tries next endpoint on NotImplementedError."""
+        mock_endpoint1 = MagicMock()
+        mock_endpoint1.subscribe_address.side_effect = NotImplementedError()
+
+        mock_endpoint2 = MagicMock()
+        mock_handle = SubscriptionHandle(lambda: None)
+        mock_endpoint2.subscribe_address.return_value = mock_handle
+
+        mock_get_endpoints.return_value = (mock_endpoint1, mock_endpoint2)
+
+        callback = MagicMock()
+        handle = NetworkAPI.subscribe_address(MAIN_ADDRESS_USED1, callback)
+
+        assert handle is mock_handle
+        mock_endpoint1.subscribe_address.assert_called_once()
+        mock_endpoint2.subscribe_address.assert_called_once()
+
+    @patch("bitcash.network.services.get_sanitized_endpoints_for")
+    def test_subscribe_address_raises_connection_error_when_all_fail(
+        self, mock_get_endpoints
+    ):
+        """Test that subscribe_address raises ConnectionError when all endpoints fail."""
+        mock_endpoint1 = MagicMock()
+        mock_endpoint1.subscribe_address.side_effect = NotImplementedError()
+
+        mock_endpoint2 = MagicMock()
+        mock_endpoint2.subscribe_address.side_effect = NotImplementedError()
+
+        mock_get_endpoints.return_value = (mock_endpoint1, mock_endpoint2)
+
+        callback = MagicMock()
+        with pytest.raises(ConnectionError):
+            NetworkAPI.subscribe_address(MAIN_ADDRESS_USED1, callback)

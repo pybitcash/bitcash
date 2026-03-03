@@ -2,6 +2,7 @@ import os
 import time
 import logging
 import typing
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -17,6 +18,7 @@ from bitcash.wallet import (
     wif_to_key,
 )
 from bitcash.network.meta import Unspent
+from bitcash.network.APIs import SubscriptionHandle
 from .samples import (
     PRIVATE_KEY_BYTES,
     PRIVATE_KEY_DER,
@@ -281,6 +283,143 @@ class TestPrivateKey:
             unspents=unspents_original,
             fee=0,
         )
+
+    @patch("bitcash.wallet.NetworkAPI")
+    def test_subscribe_returns_handle(self, mock_network_api):
+        """Test that subscribe returns a SubscriptionHandle."""
+        mock_handle = SubscriptionHandle(lambda: None)
+        mock_network_api.subscribe_address.return_value = mock_handle
+
+        private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        callback = MagicMock()
+
+        handle = private_key.subscribe(callback)
+
+        assert handle is mock_handle
+        mock_network_api.subscribe_address.assert_called_once()
+
+    @patch("bitcash.wallet.NetworkAPI")
+    def test_subscribe_passes_address_and_callback(self, mock_network_api):
+        """Test that subscribe passes correct address and callback."""
+        mock_handle = SubscriptionHandle(lambda: None)
+        mock_network_api.subscribe_address.return_value = mock_handle
+
+        private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        callback = MagicMock()
+
+        private_key.subscribe(callback)
+
+        call_args = mock_network_api.subscribe_address.call_args
+        assert call_args[0][0] == private_key.address
+        assert call_args[1]["network"] == "mainnet"
+
+    @patch("bitcash.wallet.NetworkAPI")
+    def test_subscribe_with_update_self_updates_balances(self, mock_network_api):
+        """Test that subscribe with update_self=True updates unspents and transactions."""
+        mock_handle = SubscriptionHandle(lambda: None)
+        mock_network_api.subscribe_address.return_value = mock_handle
+        mock_network_api.get_unspent.return_value = []
+        mock_network_api.get_transactions.return_value = []
+
+        private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        private_key.get_unspents = MagicMock()
+        private_key.get_transactions = MagicMock()
+        user_callback = MagicMock()
+
+        private_key.subscribe(user_callback, update_self=True)
+
+        # Get the wrapper callback that was passed to subscribe_address
+        call_args = mock_network_api.subscribe_address.call_args
+        wrapper_callback = call_args[0][1]
+
+        # Simulate a status update
+        wrapper_callback(private_key.address, "some_status_hash")
+
+        # User callback should have been called
+        user_callback.assert_called_once_with(private_key.address, "some_status_hash")
+        # Valid status hash must trigger balance/history fetching
+        private_key.get_unspents.assert_called_once()
+        private_key.get_transactions.assert_called_once()
+
+    @patch("bitcash.wallet.NetworkAPI")
+    def test_subscribe_with_update_self_skips_update_on_error(self, mock_network_api):
+        """Test that subscribe with update_self=True skips update on error status."""
+        mock_handle = SubscriptionHandle(lambda: None)
+        mock_network_api.subscribe_address.return_value = mock_handle
+
+        private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        # Mock get_unspents to track if it's called
+        private_key.get_unspents = MagicMock()
+        private_key.get_transactions = MagicMock()
+        user_callback = MagicMock()
+
+        private_key.subscribe(user_callback, update_self=True)
+
+        # Get the wrapper callback
+        call_args = mock_network_api.subscribe_address.call_args
+        wrapper_callback = call_args[0][1]
+
+        # Simulate an error status
+        wrapper_callback(private_key.address, "error: connection failed")
+
+        # Should not have updated balances
+        private_key.get_unspents.assert_not_called()
+        private_key.get_transactions.assert_not_called()
+        # But user callback should still be called
+        user_callback.assert_called_once_with(
+            private_key.address, "error: connection failed"
+        )
+
+    @patch("bitcash.wallet.NetworkAPI")
+    def test_subscribe_with_update_self_skips_update_on_unsubscribed(
+        self, mock_network_api
+    ):
+        """Test that subscribe with update_self=True skips update on unsubscribed."""
+        mock_handle = SubscriptionHandle(lambda: None)
+        mock_network_api.subscribe_address.return_value = mock_handle
+
+        private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        private_key.get_unspents = MagicMock()
+        private_key.get_transactions = MagicMock()
+        user_callback = MagicMock()
+
+        private_key.subscribe(user_callback, update_self=True)
+
+        call_args = mock_network_api.subscribe_address.call_args
+        wrapper_callback = call_args[0][1]
+
+        wrapper_callback(private_key.address, "unsubscribed")
+
+        private_key.get_unspents.assert_not_called()
+        private_key.get_transactions.assert_not_called()
+        user_callback.assert_called_once_with(private_key.address, "unsubscribed")
+
+    @patch("bitcash.wallet.NetworkAPI")
+    def test_subscribe_with_update_self_handles_null_status(self, mock_network_api):
+        """Test that subscribe with update_self=True handles null status."""
+        mock_handle = SubscriptionHandle(lambda: None)
+        mock_network_api.subscribe_address.return_value = mock_handle
+        mock_network_api.get_unspent.return_value = []
+        mock_network_api.get_transactions.return_value = []
+
+        private_key = PrivateKey(WALLET_FORMAT_MAIN)
+        private_key.get_unspents = MagicMock()
+        private_key.get_transactions = MagicMock()
+        user_callback = MagicMock()
+
+        private_key.subscribe(user_callback, update_self=True)
+
+        call_args = mock_network_api.subscribe_address.call_args
+        wrapper_callback = call_args[0][1]
+
+        # Simulate null status (address with no history)
+        wrapper_callback(private_key.address, None)
+
+        # Should still call user callback with None
+        user_callback.assert_called_once_with(private_key.address, None)
+        # None status must NOT trigger balance/history fetching (Phase I fix)
+        private_key.get_unspents.assert_not_called()
+        private_key.get_transactions.assert_not_called()
 
 
 class TestPrivateKeyTestnet:

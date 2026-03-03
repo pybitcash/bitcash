@@ -25,6 +25,10 @@ Unreleased (see `master <https://github.com/ofek/bitcash>`_)
 
 - Supports CashAddress URIs.
 
+- Add real-time address subscription support via Fulcrum Protocol.
+  Use ``key.subscribe(callback)`` to receive notifications when
+  an address's state changes.
+
 0.5.2 (2018-05-16)
 ------------------
 

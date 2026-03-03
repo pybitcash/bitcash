@@ -1,13 +1,15 @@
+from __future__ import annotations
+
 import concurrent.futures
 import socket
 import ssl
 import os
 import threading
-from typing import Any
+from typing import Any, Callable
 
 import requests
 
-from bitcash.network.APIs import BaseAPI
+from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 
 # Import supported endpoint APIs
 from bitcash.network.APIs.BitcoinDotComAPI import BitcoinDotComAPI
@@ -20,8 +22,8 @@ from bitcash.utils import time_cache
 
 # Dictionary of supported endpoint APIs
 ENDPOINT_ENV_VARIABLES = {
-    "CHAINGRAPH": ChaingraphAPI,
     "FULCRUM": FulcrumProtocolAPI,
+    "CHAINGRAPH": ChaingraphAPI,
     "BITCOINCOM": BitcoinDotComAPI,
 }
 
@@ -179,6 +181,7 @@ def get_sanitized_endpoints_for(network: NetworkStr = "mainnet") -> tuple[BaseAP
 
 class NetworkAPI:
     IGNORED_ERRORS = (
+        NotImplementedError,
         requests.exceptions.RequestException,
         requests.exceptions.HTTPError,
         requests.exceptions.ConnectionError,
@@ -348,4 +351,28 @@ class NetworkAPI:
                 "Transaction broadcast failed, or Unspents were already used."
             )
 
+        raise ConnectionError("All APIs are unreachable.")
+
+    @classmethod
+    def subscribe_address(
+        cls,
+        address: str,
+        callback: Callable[[str, str | None], None],
+        network: NetworkStr = "mainnet",
+    ) -> SubscriptionHandle:
+        """Subscribes an address for push notifications.
+
+        :param address: The address in question.
+        :param callback: Function to call with (address, status_hash) on update.
+        :returns: A SubscriptionHandle to manage the subscription.
+        :raises ConnectionError: If all API services fail.
+        """
+
+        for endpoint in get_sanitized_endpoints_for(network):
+            try:
+                return endpoint.subscribe_address(
+                    address, callback, timeout=DEFAULT_TIMEOUT
+                )
+            except cls.IGNORED_ERRORS:
+                pass
         raise ConnectionError("All APIs are unreachable.")

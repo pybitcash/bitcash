@@ -1,9 +1,11 @@
-from typing import Any
+from __future__ import annotations
+
+from typing import Any, Callable
 from bitcash.network.http import session
 from decimal import Decimal
 from bitcash.exceptions import InvalidEndpointURLProvided
 from bitcash.network import currency_to_satoshi
-from bitcash.network.APIs import BaseAPI
+from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.format import cashtokenaddress_to_address
@@ -247,3 +249,10 @@ class BitcoinDotComAPI(BaseAPI):
         api_url = self.make_endpoint_url("raw-tx")
         r = session.post(api_url, json={"hexes": [tx_hex]}, *args, **kwargs)
         return r.status_code == 200
+
+    def subscribe_address(
+        self, address: str, callback: Callable[[str, str | None], None], *args, **kwargs
+    ) -> SubscriptionHandle:
+        raise NotImplementedError(
+            "BitcoinDotComAPI does not support address subscriptions at this time."
+        )

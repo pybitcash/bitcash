@@ -1,14 +1,16 @@
-from functools import wraps
+from __future__ import annotations
+
 import json
 import socket
 import ssl
 from decimal import Decimal
+import threading
 import typing
 from requests.exceptions import ConnectTimeout, ContentDecodingError
-from typing import Any, Union
+from typing import Any, Callable, Union
 
 from bitcash.exceptions import InvalidEndpointURLProvided
-from bitcash.network.APIs import BaseAPI
+from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.cashaddress import Address
@@ -85,21 +87,6 @@ def send_json_rpc_payload(
     return return_json["result"]
 
 
-def check_stale_sock(fn):
-    @wraps(fn)
-    def wrapper(self, *args, **kwargs):
-        if self.sock is None:
-            self.sock = handshake(self.hostname, self.port, self.timeout)
-        try:
-            result = fn(self, *args, **kwargs)
-        except ConnectTimeout:
-            self.sock = handshake(self.hostname, self.port, self.timeout)
-            result = fn(self, *args, **kwargs)
-        return result
-
-    return wrapper
-
-
 class FulcrumProtocolAPI(BaseAPI):
     """Fulcrum Protocol API
     Documentation at: https://electrum-cash-protocol.readthedocs.io/en/latest/index.html
@@ -141,32 +128,36 @@ class FulcrumProtocolAPI(BaseAPI):
 
         self.timeout = timeout
         self.sock: Union[None, socket.socket, ssl.SSLSocket] = None
+        self._sock_lock = threading.Lock()
+
+    def _send_rpc(self, method: str, params: list[Any], *args, **kwargs) -> Any:
+        """Send JSON-RPC with lock - ensures send+receive is atomic."""
+        with self._sock_lock:
+            if self.sock is None:
+                self.sock = handshake(self.hostname, self.port, self.timeout)
+            try:
+                return send_json_rpc_payload(self.sock, method, params, *args, **kwargs)
+            except ConnectTimeout:
+                self.sock = handshake(self.hostname, self.port, self.timeout)
+                return send_json_rpc_payload(self.sock, method, params, *args, **kwargs)
 
     @classmethod
     def get_default_endpoints(cls, network: NetworkStr) -> list[str]:
         return cls.DEFAULT_ENDPOINTS[network]
 
-    @check_stale_sock
     def get_blockheight(self, *args, **kwargs) -> int:
-        assert self.sock is not None, "Socket is not initialized"
-        result = send_json_rpc_payload(
-            self.sock, "blockchain.headers.get_tip", [], *args, **kwargs
-        )
+        result = self._send_rpc("blockchain.headers.get_tip", [], *args, **kwargs)
         return result["height"]
 
-    @check_stale_sock
     def get_balance(self, address: str, *args, **kwargs) -> int:
-        assert self.sock is not None, "Socket is not initialized"
-        result = send_json_rpc_payload(
-            self.sock, "blockchain.address.get_balance", [address], *args, **kwargs
+        result = self._send_rpc(
+            "blockchain.address.get_balance", [address], *args, **kwargs
         )
         return result["confirmed"] + result["unconfirmed"]
 
-    @check_stale_sock
     def get_transactions(self, address: str, *args, **kwargs) -> list[str]:
-        assert self.sock is not None, "Socket is not initialized"
-        result = send_json_rpc_payload(
-            self.sock, "blockchain.address.get_history", [address], *args, **kwargs
+        result = self._send_rpc(
+            "blockchain.address.get_history", [address], *args, **kwargs
         )
         transactions = [(tx["tx_hash"], tx["height"]) for tx in result]
         # sort by block height
@@ -174,9 +165,7 @@ class FulcrumProtocolAPI(BaseAPI):
         transactions = [_[0] for _ in transactions][::-1]
         return transactions
 
-    @check_stale_sock
     def get_transaction(self, txid: str, *args, **kwargs) -> Transaction:
-        assert self.sock is not None, "Socket is not initialized"
         result = self.get_raw_transaction(txid, *args, **kwargs)
         blockheight = self.get_blockheight()
 
@@ -256,7 +245,6 @@ class FulcrumProtocolAPI(BaseAPI):
                 return vout
         raise RuntimeError(f"Transaction {txid=} doesn't have {txindex=}")
 
-    @check_stale_sock
     def get_tx_amount(self, txid: str, txindex: int, *args, **kwargs) -> int:
         result = self.get_raw_transaction(txid, *args, **kwargs)
 
@@ -270,11 +258,9 @@ class FulcrumProtocolAPI(BaseAPI):
                 return sats
         raise RuntimeError(f"Transaction {txid=} doesn't have {txindex=}")
 
-    @check_stale_sock
     def get_unspent(self, address: str, *args, **kwargs) -> list[Unspent]:
-        assert self.sock is not None, "Socket is not initialized"
-        result = send_json_rpc_payload(
-            self.sock, "blockchain.address.listunspent", [address], *args, **kwargs
+        result = self._send_rpc(
+            "blockchain.address.listunspent", [address], *args, **kwargs
         )
         blockheight = self.get_blockheight()
         unspents = []
@@ -308,19 +294,81 @@ class FulcrumProtocolAPI(BaseAPI):
             )
         return unspents
 
-    @check_stale_sock
     def get_raw_transaction(self, txid: str, *args, **kwargs) -> dict[str, Any]:
-        assert self.sock is not None, "Socket is not initialized"
-        result = send_json_rpc_payload(
-            self.sock, "blockchain.transaction.get", [txid, True], *args, **kwargs
+        result = self._send_rpc(
+            "blockchain.transaction.get", [txid, True], *args, **kwargs
         )
-
         return typing.cast(dict[str, Any], result)
 
-    @check_stale_sock
     def broadcast_tx(self, tx_hex: str, *args, **kwargs) -> bool:  # pragma: no cover
-        assert self.sock is not None, "Socket is not initialized"
-        _ = send_json_rpc_payload(
-            self.sock, "blockchain.transaction.broadcast", [tx_hex]
-        )
+        self._send_rpc("blockchain.transaction.broadcast", [tx_hex], *args, **kwargs)
         return True
+
+    def subscribe_address(
+        self, address: str, callback: Callable[[str, str | None], None], *args, **kwargs
+    ) -> SubscriptionHandle:
+        """
+        Subscribe to an address and receive real-time notifications.
+        :param address: Address to subscribe to.
+        :param callback: Function to call with (address, status_hash) on update.
+        :return: A SubscriptionHandle object for managing the subscription.
+
+        Note: connection errors during handshake propagate directly to the caller.
+        """
+        # Create a new socket for subscription
+        sub_sock = handshake(self.hostname, self.port, self.timeout)
+        sub_sock.settimeout(None)  # set to blocking mode for subscription
+        stop_event = threading.Event()
+
+        def listen():
+            try:
+                # Send subscription request
+                payload = {
+                    "method": "blockchain.address.subscribe",
+                    "params": [address],
+                    "jsonrpc": "2.0",
+                    "id": "bitcash-sub",
+                }
+                sub_sock.sendall(json.dumps(payload).encode() + b"\n")
+                buffer = b""
+                while not stop_event.is_set():
+                    buffer += sub_sock.recv(4096)
+                    while b"\n" in buffer:
+                        line, buffer = buffer.split(b"\n", 1)
+                        if not line:
+                            continue
+                        msg = json.loads(line.decode())
+                        # Initial response or notification
+                        if (
+                            msg.get("method") == "blockchain.address.subscribe"
+                            or msg.get("id") == "bitcash-sub"
+                        ):
+                            status = (
+                                msg.get("params", [None, None])[1]
+                                if "method" in msg
+                                else msg.get("result")
+                            )
+                            callback(address, status)
+            except (OSError, ValueError) as e:
+                if not stop_event.is_set():
+                    callback(address, f"error: {str(e)}")
+            finally:
+                try:
+                    sub_sock.close()
+                except Exception:
+                    pass
+                if stop_event.is_set():
+                    # Notify that subscription has ended (clean stop only)
+                    callback(address, "unsubscribed")
+
+        thread = threading.Thread(target=listen, daemon=True)
+        thread.start()
+
+        def stop_subscription():
+            stop_event.set()
+            try:
+                sub_sock.shutdown(socket.SHUT_RDWR)
+            except Exception:
+                pass
+
+        return SubscriptionHandle(stop_subscription)
