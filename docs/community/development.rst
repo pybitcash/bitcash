@@ -12,8 +12,7 @@ Philosophy
 Continuous Integration
 ----------------------
 
-`GitHub actions`_ is used for testing and `Codecov`_ is used for detailing code
-coverage.
+`GitHub actions`_ is used for testing.
 
 Documentation
 -------------
@@ -27,6 +26,5 @@ Version Scheme
 BitCash tries to adhere to `semantic versioning`_ as much as possible.
 
 .. _GitHub actions: https://github.com/features/actions
-.. _Codecov: https://codecov.io
 .. _GitHub Pages: https://pages.github.com
 .. _semantic versioning: https://semver.org
