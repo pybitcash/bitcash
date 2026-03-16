@@ -28,7 +28,6 @@ jobs:
       - name: Run tests
         run: |
           coverage run -m pytest -m "not regtest" -rw
-          coverage xml
 
       - name: Publish to PyPI
         uses: casperdcl/deploy-pypi@v2
