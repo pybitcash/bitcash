@@ -248,7 +248,7 @@ class BitcoinDotComAPI(BaseAPI):
     def get_cashtoken_addresses(
         self,
         category_id: str,
-        has_nft: bool = False,
+        nft_capability: Optional[NFTCapability] = None,
         nft_commitment: Optional[bytes] = None,
         has_token: bool = False,
         *args,

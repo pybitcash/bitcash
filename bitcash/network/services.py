@@ -17,7 +17,7 @@ from bitcash.network.APIs.ChaingraphAPI import ChaingraphAPI
 from bitcash.network.APIs.FulcrumProtocolAPI import FulcrumProtocolAPI
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction
-from bitcash.types import Network, NetworkStr
+from bitcash.types import NFTCapability, Network, NetworkStr
 from bitcash.utils import time_cache
 
 # Dictionary of supported endpoint APIs
@@ -326,7 +326,7 @@ class NetworkAPI:
         cls,
         category_id: str,
         network: NetworkStr = "mainnet",
-        has_nft: bool = False,
+        nft_capability: Optional[NFTCapability] = None,
         nft_commitment: Optional[bytes] = None,
         has_token: bool = False,
     ) -> set[str]:
@@ -334,7 +334,7 @@ class NetworkAPI:
 
         :param category_id: The token category ID (hex string).
         :param network: The network to query.
-        :param has_nft: If True, only return addresses holding an NFT of this category.
+        :param nft_capability: If set, only return addresses holding an NFT with this capability.
         :param nft_commitment: If set, only return addresses holding an NFT with this commitment.
         :param has_token: If True, only return addresses holding fungible tokens of this category.
         :returns: A set of addresses holding the cashtoken.
@@ -343,7 +343,7 @@ class NetworkAPI:
         for endpoint in get_sanitized_endpoints_for(network):
             try:
                 return endpoint.get_cashtoken_addresses(
-                    category_id, has_nft, nft_commitment, has_token,
+                    category_id, nft_capability, nft_commitment, has_token,
                     timeout=DEFAULT_TIMEOUT,
                 )
             except NotImplementedError:

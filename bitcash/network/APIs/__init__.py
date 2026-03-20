@@ -5,7 +5,7 @@ from typing import Any, Callable, Optional
 
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction
-from bitcash.types import NetworkStr
+from bitcash.types import NFTCapability, NetworkStr
 
 
 class BaseAPI(ABC):
@@ -114,7 +114,7 @@ class BaseAPI(ABC):
     def get_cashtoken_addresses(
         self,
         category_id: str,
-        has_nft: bool = False,
+        nft_capability: Optional[NFTCapability] = None,
         nft_commitment: Optional[bytes] = None,
         has_token: bool = False,
         *args,
@@ -123,7 +123,8 @@ class BaseAPI(ABC):
         """Gets all addresses holding unspent outputs of a given cashtoken category.
 
         :param category_id: The token category ID (hex string).
-        :param has_nft: If True, only return addresses holding an NFT of this category.
+        :param nft_capability: If set, only return addresses holding an NFT with this capability
+            (one of ``"none"``, ``"mutable"``, ``"minting"``).
         :param nft_commitment: If set, only return addresses holding an NFT with this commitment.
         :param has_token: If True, only return addresses holding fungible tokens of this category.
         :returns: A set of addresses holding the cashtoken.

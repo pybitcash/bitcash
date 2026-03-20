@@ -14,7 +14,7 @@ from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.cashaddress import Address
-from bitcash.types import NetworkStr
+from bitcash.types import NFTCapability, NetworkStr
 
 
 context = ssl.create_default_context()
@@ -303,7 +303,7 @@ class FulcrumProtocolAPI(BaseAPI):
     def get_cashtoken_addresses(
         self,
         category_id: str,
-        has_nft: bool = False,
+        nft_capability: Optional[NFTCapability] = None,
         nft_commitment: Optional[bytes] = None,
         has_token: bool = False,
         *args,

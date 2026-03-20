@@ -551,10 +551,12 @@ class TestChaingraphAPI:
         session = CapturingSession(one_address)
         monkeypatch.setattr(_capi, "session", session)
 
-        # has_nft=True → query contains nonfungible_token_capability filter
-        self.api.get_cashtoken_addresses(CATEGORY, has_nft=True)
+        # nft_capability → query contains nonfungible_token_capability filter and variable
+        from bitcash.types import NFTCapability
+        self.api.get_cashtoken_addresses(CATEGORY, nft_capability=NFTCapability.minting)
         assert session.last_request is not None
         assert "nonfungible_token_capability" in session.last_request["query"]
+        assert session.last_request["variables"]["nft_capability"] == "minting"
         assert "commitment" not in session.last_request["variables"]
 
         # nft_commitment → query contains commitment variable and filter
@@ -570,7 +572,7 @@ class TestChaingraphAPI:
 
         # all filters combined
         self.api.get_cashtoken_addresses(
-            CATEGORY, has_nft=True, nft_commitment=b"\xff", has_token=True
+            CATEGORY, nft_capability=NFTCapability.none, nft_commitment=b"\xff", has_token=True
         )
         assert session.last_request is not None
         query = session.last_request["query"]

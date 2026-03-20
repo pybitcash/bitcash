@@ -182,13 +182,15 @@ scripts cannot be decoded (e.g. ``OP_RETURN`` outputs) are silently excluded.
 
 Three optional filters narrow the results:
 
-- ``has_nft=True`` — only addresses holding an NFT of this category:
+- ``nft_capability=NFTCapability.<value>`` — only addresses holding an NFT with a specific
+  capability (``NFTCapability.none``, ``NFTCapability.mutable``, or ``NFTCapability.minting``):
 
   .. code-block:: python
 
+     >>> from bitcash.types import NFTCapability
      >>> NetworkAPI.get_cashtoken_addresses(
      ...     "afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802",
-     ...     has_nft=True,
+     ...     nft_capability=NFTCapability.minting,
      ... )
 
 - ``nft_commitment=<bytes>`` — only addresses holding an NFT with a specific commitment:

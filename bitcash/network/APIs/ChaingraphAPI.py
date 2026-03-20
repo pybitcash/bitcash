@@ -7,7 +7,7 @@ from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.cashaddress import Address
-from bitcash.types import NetworkStr
+from bitcash.types import NFTCapability, NetworkStr
 
 
 class ChaingraphAPI(BaseAPI):
@@ -442,7 +442,7 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
     def get_cashtoken_addresses(
         self,
         category_id: str,
-        has_nft: bool = False,
+        nft_capability: Optional[NFTCapability] = None,
         nft_commitment: Optional[bytes] = None,
         has_token: bool = False,
         *args,
@@ -454,17 +454,19 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
         }
 
         extra_filters = []
-        commitment_decl = ""
-        if has_nft:
+        extra_decls = ""
+        if nft_capability is not None:
             extra_filters.append(
-                "nonfungible_token_capability: { _is_null: false }"
+                "nonfungible_token_capability: { _eq: $nft_capability }"
             )
+            variables["nft_capability"] = nft_capability.name
+            extra_decls += ", $nft_capability: enum_nonfungible_token_capability"
         if nft_commitment is not None:
             extra_filters.append(
                 "nonfungible_token_commitment: { _eq: $commitment }"
             )
             variables["commitment"] = f"\\x{nft_commitment.hex()}"
-            commitment_decl = ", $commitment: bytea"
+            extra_decls += ", $commitment: bytea"
         if has_token:
             extra_filters.append('fungible_token_amount: { _gt: "0" }')
 
@@ -475,7 +477,7 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
         query = (
             "query GetCashtokenAddresses"
             "($category: bytea!, $node: String!"
-            + commitment_decl
+            + extra_decls
             + """) {
   output(
     where: {
