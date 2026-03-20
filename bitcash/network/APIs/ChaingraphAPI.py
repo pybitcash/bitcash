@@ -439,6 +439,51 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
             raise RuntimeError(f"Transaction {txid} does not exist")
         return json["data"]["transaction"][0]
 
+    def get_cashtoken_addresses(
+        self, category_id: str, *args, **kwargs
+    ) -> set[str]:
+        json_request = {
+            "query": """
+query GetCashtokenAddresses($category: bytea!, $node: String!) {
+  output(
+    where: {
+      token_category: { _eq: $category }
+      _not: { spent_by: {} }
+      _or: [
+        {
+          transaction: {
+            node_validations: { node: { name: { _like: $node } } }
+          }
+        }
+        {
+          transaction: {
+            block_inclusions: {
+              block: { accepted_by: { node: { name: { _like: $node } } } }
+            }
+          }
+        }
+      ]
+    }
+  ) {
+    locking_bytecode
+  }
+}
+""",
+            "variables": {
+                "category": f"\\x{category_id}",
+                "node": self.node_like,
+            },
+        }
+        json = self.send_request(json_request, *args, **kwargs)
+        addresses: set[str] = set()
+        for output in json["data"]["output"]:
+            try:
+                scriptcode = bytes.fromhex(output["locking_bytecode"][2:])
+                addresses.add(Address.from_script(scriptcode).cash_address())
+            except ValueError:
+                pass
+        return addresses
+
     def broadcast_tx(self, tx_hex: str, *args, **kwargs) -> bool:  # pragma: no cover
         json_request = {
             "query": """

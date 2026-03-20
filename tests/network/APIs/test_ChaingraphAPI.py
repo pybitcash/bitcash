@@ -488,3 +488,41 @@ class TestChaingraphAPI:
             tx = self.api.get_raw_transaction(
                 "546f83e975d2870de740917df1b5221aa4bc52c6e2540188f5897c4ce775b7f4",
             )
+
+    def test_get_cashtoken_addresses(self, monkeypatch):
+        return_json = {
+            "data": {
+                "output": [
+                    {
+                        "locking_bytecode": "\\x76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac"
+                    },
+                    {
+                        # duplicate - should be deduplicated
+                        "locking_bytecode": "\\x76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac"
+                    },
+                    {
+                        "locking_bytecode": "\\x76a914a522e4f6ca57aef5bf893d29029c3e9fc54a67f088ac"
+                    },
+                    {
+                        # OP_RETURN - should be skipped
+                        "locking_bytecode": "\\x6a04deadbeef"
+                    },
+                ]
+            }
+        }
+        monkeypatch.setattr(_capi, "session", DummySession(return_json))
+        addresses = self.api.get_cashtoken_addresses(
+            "8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf"
+        )
+        assert addresses == {
+            "bitcoincash:qz8wymtvnavrd8u5sexuxccvm6chlt3095hczr7px4",
+            "bitcoincash:qzjj9e8keft6aadl3y7jjq5u860u2jn87qxwpv9nzl",
+        }
+
+        # zero return
+        return_json = {"data": {"output": []}}
+        monkeypatch.setattr(_capi, "session", DummySession(return_json))
+        addresses = self.api.get_cashtoken_addresses(
+            "8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf"
+        )
+        assert addresses == set()

@@ -245,6 +245,13 @@ class BitcoinDotComAPI(BaseAPI):
         r.raise_for_status()
         return r.json(parse_float=Decimal)
 
+    def get_cashtoken_addresses(
+        self, category_id: str, *args, **kwargs
+    ) -> set[str]:
+        raise NotImplementedError(
+            "BitcoinDotComAPI does not support querying addresses by token category"
+        )
+
     def broadcast_tx(self, tx_hex: str, *args, **kwargs) -> bool:  # pragma: no cover
         api_url = self.make_endpoint_url("raw-tx")
         r = session.post(api_url, json={"hexes": [tx_hex]}, *args, **kwargs)

@@ -110,6 +110,17 @@ class BaseAPI(ABC):
         :return: A SubscriptionHandle object for managing the subscription.
         """
 
+    @abstractmethod
+    def get_cashtoken_addresses(
+        self, category_id: str, *args, **kwargs
+    ) -> set[str]:
+        """Gets all addresses holding unspent outputs of a given cashtoken category.
+
+        :param category_id: The token category ID (hex string).
+        :returns: A set of addresses holding the cashtoken.
+        :raises NotImplementedError: If the API does not support this query.
+        """
+
 
 class SubscriptionHandle:
     """

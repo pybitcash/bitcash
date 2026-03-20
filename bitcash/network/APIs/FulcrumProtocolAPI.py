@@ -300,6 +300,13 @@ class FulcrumProtocolAPI(BaseAPI):
         )
         return typing.cast(dict[str, Any], result)
 
+    def get_cashtoken_addresses(
+        self, category_id: str, *args, **kwargs
+    ) -> set[str]:
+        raise NotImplementedError(
+            "FulcrumProtocolAPI does not support querying addresses by token category"
+        )
+
     def broadcast_tx(self, tx_hex: str, *args, **kwargs) -> bool:  # pragma: no cover
         self._send_rpc("blockchain.transaction.broadcast", [tx_hex], *args, **kwargs)
         return True

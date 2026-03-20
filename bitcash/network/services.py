@@ -322,6 +322,29 @@ class NetworkAPI:
         raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
 
     @classmethod
+    def get_cashtoken_addresses(
+        cls, category_id: str, network: NetworkStr = "mainnet"
+    ) -> set[str]:
+        """Gets all addresses holding unspent outputs of a given cashtoken category.
+
+        :param category_id: The token category ID (hex string).
+        :param network: The network to query.
+        :returns: A set of addresses holding the cashtoken.
+        :raises ConnectionError: If all API services fail.
+        """
+        for endpoint in get_sanitized_endpoints_for(network):
+            try:
+                return endpoint.get_cashtoken_addresses(
+                    category_id, timeout=DEFAULT_TIMEOUT
+                )
+            except NotImplementedError:
+                continue
+            except cls.IGNORED_ERRORS:  # pragma: no cover
+                pass
+
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
+
+    @classmethod
     def broadcast_tx(
         cls, tx_hex: str, network: NetworkStr = "mainnet"
     ):  # pragma: no cover
