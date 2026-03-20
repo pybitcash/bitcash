@@ -7,7 +7,7 @@ from decimal import Decimal
 import threading
 import typing
 from requests.exceptions import ConnectTimeout, ContentDecodingError
-from typing import Any, Callable, Union
+from typing import Any, Callable, Optional, Union
 
 from bitcash.exceptions import InvalidEndpointURLProvided
 from bitcash.network.APIs import BaseAPI, SubscriptionHandle
@@ -301,7 +301,13 @@ class FulcrumProtocolAPI(BaseAPI):
         return typing.cast(dict[str, Any], result)
 
     def get_cashtoken_addresses(
-        self, category_id: str, *args, **kwargs
+        self,
+        category_id: str,
+        has_nft: bool = False,
+        nft_commitment: Optional[bytes] = None,
+        has_token: bool = False,
+        *args,
+        **kwargs,
     ) -> set[str]:
         raise NotImplementedError(
             "FulcrumProtocolAPI does not support querying addresses by token category"

@@ -5,7 +5,7 @@ import socket
 import ssl
 import os
 import threading
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 import requests
 
@@ -323,19 +323,28 @@ class NetworkAPI:
 
     @classmethod
     def get_cashtoken_addresses(
-        cls, category_id: str, network: NetworkStr = "mainnet"
+        cls,
+        category_id: str,
+        network: NetworkStr = "mainnet",
+        has_nft: bool = False,
+        nft_commitment: Optional[bytes] = None,
+        has_token: bool = False,
     ) -> set[str]:
         """Gets all addresses holding unspent outputs of a given cashtoken category.
 
         :param category_id: The token category ID (hex string).
         :param network: The network to query.
+        :param has_nft: If True, only return addresses holding an NFT of this category.
+        :param nft_commitment: If set, only return addresses holding an NFT with this commitment.
+        :param has_token: If True, only return addresses holding fungible tokens of this category.
         :returns: A set of addresses holding the cashtoken.
         :raises ConnectionError: If all API services fail.
         """
         for endpoint in get_sanitized_endpoints_for(network):
             try:
                 return endpoint.get_cashtoken_addresses(
-                    category_id, timeout=DEFAULT_TIMEOUT
+                    category_id, has_nft, nft_commitment, has_token,
+                    timeout=DEFAULT_TIMEOUT,
                 )
             except NotImplementedError:
                 continue

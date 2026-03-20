@@ -134,8 +134,13 @@ Private key network operations use :class:`~bitcash.network.NetworkAPI`. For eac
 it polls a service and if an error occurs it tries another.
 
 .. note::
-   Default chaingraph APIs do not indicate if a transaction broadcast has failed. The NetworkAPI fallbacks to 
+   Default chaingraph APIs do not indicate if a transaction broadcast has failed. The NetworkAPI fallbacks to
    FulcrumProtocolAPI on ``mainnet`` to broadcast a transaction.
+
+.. note::
+   :func:`~bitcash.network.NetworkAPI.get_cashtoken_addresses` is only supported by
+   :class:`~bitcash.network.APIs.ChaingraphAPI.ChaingraphAPI`. See :ref:`cashtokens`
+   for usage details.
 
 .. _satoshi: https://en.bitcoin.it/wiki/Satoshi_(unit)
 .. _blockchain: https://en.bitcoin.it/wiki/Block_chain

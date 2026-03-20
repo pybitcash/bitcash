@@ -526,3 +526,55 @@ class TestChaingraphAPI:
             "8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf"
         )
         assert addresses == set()
+
+    def test_get_cashtoken_addresses_filters(self, monkeypatch):
+        CATEGORY = "8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf"
+        one_address = {
+            "data": {
+                "output": [
+                    {
+                        "locking_bytecode": "\\x76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac"
+                    }
+                ]
+            }
+        }
+
+        class CapturingSession:
+            def __init__(self, return_json):
+                self.return_json = return_json
+                self.last_request = None
+
+            def post(self, url, json, *args, **kwargs):
+                self.last_request = json
+                return DummyRequest(self.return_json)
+
+        session = CapturingSession(one_address)
+        monkeypatch.setattr(_capi, "session", session)
+
+        # has_nft=True → query contains nonfungible_token_capability filter
+        self.api.get_cashtoken_addresses(CATEGORY, has_nft=True)
+        assert session.last_request is not None
+        assert "nonfungible_token_capability" in session.last_request["query"]
+        assert "commitment" not in session.last_request["variables"]
+
+        # nft_commitment → query contains commitment variable and filter
+        self.api.get_cashtoken_addresses(CATEGORY, nft_commitment=b"\x0a\x0b")
+        assert session.last_request is not None
+        assert "nonfungible_token_commitment" in session.last_request["query"]
+        assert session.last_request["variables"]["commitment"] == "\\x0a0b"
+
+        # has_token=True → query contains fungible_token_amount filter
+        self.api.get_cashtoken_addresses(CATEGORY, has_token=True)
+        assert session.last_request is not None
+        assert "fungible_token_amount" in session.last_request["query"]
+
+        # all filters combined
+        self.api.get_cashtoken_addresses(
+            CATEGORY, has_nft=True, nft_commitment=b"\xff", has_token=True
+        )
+        assert session.last_request is not None
+        query = session.last_request["query"]
+        assert "nonfungible_token_capability" in query
+        assert "nonfungible_token_commitment" in query
+        assert "fungible_token_amount" in query
+        assert session.last_request["variables"]["commitment"] == "\\xff"

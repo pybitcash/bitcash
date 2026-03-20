@@ -161,6 +161,60 @@ If the default behaviour is not suitable, then a curated unspent set can be spec
 which only includes cashtokens which need to be used.
    
 
+CashToken holders
+-----------------
+
+To find all addresses currently holding unspent outputs of a given cashtoken
+``category``, use :func:`~bitcash.network.NetworkAPI.get_cashtoken_addresses`:
+
+.. code-block:: python
+
+   >>> from bitcash.network import NetworkAPI
+   >>> NetworkAPI.get_cashtoken_addresses(
+   ...     "afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802"
+   ... )
+   {'bitcoincash:qz8wymtvnavrd8u5sexuxccvm6chlt3095hczr7px4',
+    'bitcoincash:qzjj9e8keft6aadl3y7jjq5u860u2jn87qxwpv9nzl'}
+
+The result is a ``set`` of addresses — one entry per unique address, regardless
+of how many UTXOs of that category the address holds. Addresses whose locking
+scripts cannot be decoded (e.g. ``OP_RETURN`` outputs) are silently excluded.
+
+Three optional filters narrow the results:
+
+- ``has_nft=True`` — only addresses holding an NFT of this category:
+
+  .. code-block:: python
+
+     >>> NetworkAPI.get_cashtoken_addresses(
+     ...     "afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802",
+     ...     has_nft=True,
+     ... )
+
+- ``nft_commitment=<bytes>`` — only addresses holding an NFT with a specific commitment:
+
+  .. code-block:: python
+
+     >>> NetworkAPI.get_cashtoken_addresses(
+     ...     "afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802",
+     ...     nft_commitment=b"bitcash",
+     ... )
+
+- ``has_token=True`` — only addresses holding fungible tokens of this category:
+
+  .. code-block:: python
+
+     >>> NetworkAPI.get_cashtoken_addresses(
+     ...     "afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802",
+     ...     has_token=True,
+     ... )
+
+Filters can be combined freely.
+
+.. note::
+   This query is only supported by :class:`~bitcash.network.APIs.ChaingraphAPI.ChaingraphAPI`.
+   If no Chaingraph endpoint is reachable, a :exc:`ConnectionError` is raised.
+
 CashToken signalling CashAddr
 -----------------------------
 

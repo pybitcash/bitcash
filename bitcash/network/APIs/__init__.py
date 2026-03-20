@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction
@@ -112,11 +112,20 @@ class BaseAPI(ABC):
 
     @abstractmethod
     def get_cashtoken_addresses(
-        self, category_id: str, *args, **kwargs
+        self,
+        category_id: str,
+        has_nft: bool = False,
+        nft_commitment: Optional[bytes] = None,
+        has_token: bool = False,
+        *args,
+        **kwargs,
     ) -> set[str]:
         """Gets all addresses holding unspent outputs of a given cashtoken category.
 
         :param category_id: The token category ID (hex string).
+        :param has_nft: If True, only return addresses holding an NFT of this category.
+        :param nft_commitment: If set, only return addresses holding an NFT with this commitment.
+        :param has_token: If True, only return addresses holding fungible tokens of this category.
         :returns: A set of addresses holding the cashtoken.
         :raises NotImplementedError: If the API does not support this query.
         """

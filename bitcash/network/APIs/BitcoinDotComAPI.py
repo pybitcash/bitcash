@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 from bitcash.network.http import session
 from decimal import Decimal
 from bitcash.exceptions import InvalidEndpointURLProvided
@@ -246,7 +246,13 @@ class BitcoinDotComAPI(BaseAPI):
         return r.json(parse_float=Decimal)
 
     def get_cashtoken_addresses(
-        self, category_id: str, *args, **kwargs
+        self,
+        category_id: str,
+        has_nft: bool = False,
+        nft_commitment: Optional[bytes] = None,
+        has_token: bool = False,
+        *args,
+        **kwargs,
     ) -> set[str]:
         raise NotImplementedError(
             "BitcoinDotComAPI does not support querying addresses by token category"

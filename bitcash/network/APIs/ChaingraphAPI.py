@@ -440,15 +440,49 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
         return json["data"]["transaction"][0]
 
     def get_cashtoken_addresses(
-        self, category_id: str, *args, **kwargs
+        self,
+        category_id: str,
+        has_nft: bool = False,
+        nft_commitment: Optional[bytes] = None,
+        has_token: bool = False,
+        *args,
+        **kwargs,
     ) -> set[str]:
-        json_request = {
-            "query": """
-query GetCashtokenAddresses($category: bytea!, $node: String!) {
+        variables: dict[str, Any] = {
+            "category": f"\\x{category_id}",
+            "node": self.node_like,
+        }
+
+        extra_filters = []
+        commitment_decl = ""
+        if has_nft:
+            extra_filters.append(
+                "nonfungible_token_capability: { _is_null: false }"
+            )
+        if nft_commitment is not None:
+            extra_filters.append(
+                "nonfungible_token_commitment: { _eq: $commitment }"
+            )
+            variables["commitment"] = f"\\x{nft_commitment.hex()}"
+            commitment_decl = ", $commitment: bytea"
+        if has_token:
+            extra_filters.append('fungible_token_amount: { _gt: "0" }')
+
+        extra = (
+            "\n      " + "\n      ".join(extra_filters) if extra_filters else ""
+        )
+
+        query = (
+            "query GetCashtokenAddresses"
+            "($category: bytea!, $node: String!"
+            + commitment_decl
+            + """) {
   output(
     where: {
       token_category: { _eq: $category }
-      _not: { spent_by: {} }
+      _not: { spent_by: {} }"""
+            + extra
+            + """
       _or: [
         {
           transaction: {
@@ -467,14 +501,12 @@ query GetCashtokenAddresses($category: bytea!, $node: String!) {
   ) {
     locking_bytecode
   }
-}
-""",
-            "variables": {
-                "category": f"\\x{category_id}",
-                "node": self.node_like,
-            },
-        }
-        json = self.send_request(json_request, *args, **kwargs)
+}"""
+        )
+
+        json = self.send_request(
+            {"query": query, "variables": variables}, *args, **kwargs
+        )
         addresses: set[str] = set()
         for output in json["data"]["output"]:
             try:
