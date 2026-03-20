@@ -553,6 +553,7 @@ class TestChaingraphAPI:
 
         # nft_capability → query contains nonfungible_token_capability filter and variable
         from bitcash.types import NFTCapability
+
         self.api.get_cashtoken_addresses(CATEGORY, nft_capability=NFTCapability.minting)
         assert session.last_request is not None
         assert "nonfungible_token_capability" in session.last_request["query"]
@@ -572,7 +573,10 @@ class TestChaingraphAPI:
 
         # all filters combined
         self.api.get_cashtoken_addresses(
-            CATEGORY, nft_capability=NFTCapability.none, nft_commitment=b"\xff", has_token=True
+            CATEGORY,
+            nft_capability=NFTCapability.none,
+            nft_commitment=b"\xff",
+            has_token=True,
         )
         assert session.last_request is not None
         query = session.last_request["query"]

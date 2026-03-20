@@ -346,7 +346,10 @@ class NetworkAPI:
         for endpoint in get_sanitized_endpoints_for(network):
             try:
                 return endpoint.get_cashtoken_addresses(
-                    category_id, nft_capability, nft_commitment, has_token,
+                    category_id,
+                    nft_capability,
+                    nft_commitment,
+                    has_token,
                     timeout=DEFAULT_TIMEOUT,
                 )
             except NotImplementedError:

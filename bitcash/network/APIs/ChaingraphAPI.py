@@ -462,17 +462,13 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
             variables["nft_capability"] = nft_capability.name
             extra_decls += ", $nft_capability: enum_nonfungible_token_capability"
         if nft_commitment is not None:
-            extra_filters.append(
-                "nonfungible_token_commitment: { _eq: $commitment }"
-            )
+            extra_filters.append("nonfungible_token_commitment: { _eq: $commitment }")
             variables["commitment"] = f"\\x{nft_commitment.hex()}"
             extra_decls += ", $commitment: bytea"
         if has_token:
             extra_filters.append('fungible_token_amount: { _gt: "0" }')
 
-        extra = (
-            "\n      " + "\n      ".join(extra_filters) if extra_filters else ""
-        )
+        extra = "\n      " + "\n      ".join(extra_filters) if extra_filters else ""
 
         query = (
             "query GetCashtokenAddresses"
