@@ -334,7 +334,10 @@ class NetworkAPI:
 
         :param category_id: The token category ID (hex string).
         :param network: The network to query.
-        :param nft_capability: If set, only return addresses holding an NFT with this capability.
+        :param nft_capability: If set, only return addresses holding an NFT with this capability
+            (one of :attr:`~bitcash.types.NFTCapability.none`,
+            :attr:`~bitcash.types.NFTCapability.mutable`,
+            :attr:`~bitcash.types.NFTCapability.minting`).
         :param nft_commitment: If set, only return addresses holding an NFT with this commitment.
         :param has_token: If True, only return addresses holding fungible tokens of this category.
         :returns: A set of addresses holding the cashtoken.
