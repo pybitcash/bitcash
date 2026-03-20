@@ -52,6 +52,8 @@ https://explorer.bitcoin.com/bch/tx/6aea7b1c687d976644a430a87e34c93a8a7fd52d77c3
 - Compressed public keys by default
 - Multiple representations of private keys; WIF, PEM, DER, etc.
 - Standard P2PKH transactions
+- CashToken support (fungible tokens and NFTs)
+- Real-time address subscriptions via Fulcrum/ElectrumX protocol
 
 If you are intrigued, continue reading. If not, continue all the same!
 
