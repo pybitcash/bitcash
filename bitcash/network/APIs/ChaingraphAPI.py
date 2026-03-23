@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Callable, Optional
 from bitcash.network.http import session
-from bitcash.exceptions import InvalidEndpointURLProvided, InvalidEndpointResponse
+from bitcash.exceptions import InvalidEndpointURLProvided, InvalidEndpointResponse, DataNotFound
 from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
@@ -294,7 +294,7 @@ query GetOutput($tx: bytea!, $txind: bigint!, $node: String!) {
         }
         json = self.send_request(json_request, *args, **kwargs)
         if len(json["data"]["output"]) == 0:
-            raise RuntimeError(f"Output {txid}:{txindex} does not exist")
+            raise DataNotFound(f"Output {txid}:{txindex} does not exist")
         return int(json["data"]["output"][0]["value_satoshis"])
 
     def get_unspent(self, address: str, *args, **kwargs) -> list[Unspent]:
@@ -440,7 +440,7 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
         }
         json = self.send_request(json_request, *args, **kwargs)
         if len(json["data"]["transaction"]) == 0:
-            raise RuntimeError(f"Transaction {txid} does not exist")
+            raise DataNotFound(f"Transaction {txid} does not exist")
         return json["data"]["transaction"][0]
 
     def broadcast_tx(self, tx_hex: str, *args, **kwargs) -> bool:  # pragma: no cover

@@ -1,6 +1,7 @@
 import pytest
 from bitcash.network.APIs import ChaingraphAPI as _capi
 
+from bitcash.exceptions import DataNotFound
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.network.APIs.ChaingraphAPI import ChaingraphAPI
 from bitcash.network.meta import Unspent
@@ -328,7 +329,7 @@ class TestChaingraphAPI:
         # zero return
         return_json = {"data": {"output": []}}
         monkeypatch.setattr(_capi, "session", DummySession(return_json))
-        with pytest.raises(RuntimeError):
+        with pytest.raises(DataNotFound):
             # a tx that does not exist
             amount = self.api.get_tx_amount(
                 "546f83e975d2870de740917df1b5221aa4bc52c6e2540188f5897c4ce775b7f4", 0
@@ -483,7 +484,7 @@ class TestChaingraphAPI:
         # zero return
         return_json = {"data": {"transaction": []}}
         monkeypatch.setattr(_capi, "session", DummySession(return_json))
-        with pytest.raises(RuntimeError):
+        with pytest.raises(DataNotFound):
             # a tx that does not exist
             tx = self.api.get_raw_transaction(
                 "546f83e975d2870de740917df1b5221aa4bc52c6e2540188f5897c4ce775b7f4",

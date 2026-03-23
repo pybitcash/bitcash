@@ -274,6 +274,8 @@ class NetworkAPI:
         :param txindex: The transaction index in question.
         :returns: The amount in satoshi.
         :raises ConnectionError: If all API services fail.
+        :raises DataNotFound: If the transaction or output index does not
+            exist on any endpoint. Not caught by endpoint fallback logic.
         """
 
         for endpoint in get_sanitized_endpoints_for(network):
@@ -313,6 +315,8 @@ class NetworkAPI:
         :param txid: The transaction id in question.
         :returns: The raw transaction details.
         :raises ConnectionError: If all API services fail.
+        :raises DataNotFound: If the transaction does not exist on any
+            endpoint. Not caught by endpoint fallback logic.
         """
 
         for endpoint in get_sanitized_endpoints_for(network):
