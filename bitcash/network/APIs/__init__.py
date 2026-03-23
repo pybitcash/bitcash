@@ -31,9 +31,14 @@ class BaseAPI(ABC):
     @abstractmethod
     def get_blockheight(self, *args, **kwargs) -> int:
         """
-        Returns the current block height
+        Returns the current block height.
 
-        :returns: Current block height
+        Must return 0 if the endpoint has not yet indexed any blocks (e.g. a
+        node that hasn't synced). A return value of 0 causes NetworkAPI's
+        endpoint selection to ignore this endpoint, so no further requests
+        will be routed to it until it catches up.
+
+        :returns: Current block height, or 0 if no blocks are available.
         """
 
     @abstractmethod

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Callable, Optional
 from bitcash.network.http import session
-from bitcash.exceptions import InvalidEndpointURLProvided
+from bitcash.exceptions import InvalidEndpointURLProvided, InvalidEndpointResponse
 from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
@@ -53,7 +53,7 @@ class ChaingraphAPI(BaseAPI):
         r.raise_for_status()
         json = r.json()
         if "errors" in json:
-            raise RuntimeError(json)
+            raise InvalidEndpointResponse(json)
         return json
 
     @classmethod
@@ -78,8 +78,12 @@ query GetBlockheight($node: String!) {
             },
         }
         json = self.send_request(json_request, *args, **kwargs)
-        blockheight = int(json["data"]["block"][0]["height"])
-        return blockheight
+        block = json["data"]["block"]
+        if not block:
+            # No blocks returned means the node hasn't indexed any blocks yet.
+            # Return 0 so NetworkAPI's endpoint selection skips this endpoint.
+            return 0
+        return int(block[0]["height"])
 
     def get_balance(self, address: str, *args, **kwargs) -> int:
         json_request = {

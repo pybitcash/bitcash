@@ -10,6 +10,7 @@ from typing import Any, Callable
 import requests
 
 from bitcash.network.APIs import BaseAPI, SubscriptionHandle
+from bitcash.exceptions import InvalidEndpointResponse
 
 # Import supported endpoint APIs
 from bitcash.network.APIs.BitcoinDotComAPI import BitcoinDotComAPI
@@ -182,6 +183,7 @@ def get_sanitized_endpoints_for(network: NetworkStr = "mainnet") -> tuple[BaseAP
 class NetworkAPI:
     IGNORED_ERRORS = (
         NotImplementedError,
+        InvalidEndpointResponse,
         requests.exceptions.RequestException,
         requests.exceptions.HTTPError,
         requests.exceptions.ConnectionError,
