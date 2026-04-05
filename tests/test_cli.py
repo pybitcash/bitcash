@@ -222,10 +222,12 @@ class TestSend:
 class TestSubscribe:
     def _make_fake_subscribe(self, *events):
         """Returns a subscribe side_effect that fires events synchronously."""
+
         def fake_subscribe(address, callback, network):
             for status_hash in events:
                 callback(address, status_hash)
             return MagicMock()
+
         return fake_subscribe
 
     def test_subscribe_update(self, runner):
@@ -233,7 +235,9 @@ class TestSubscribe:
             "bitcash.cli.NetworkAPI.subscribe_address",
             side_effect=self._make_fake_subscribe("abc123def456", "unsubscribed"),
         ):
-            result = runner.invoke(bitcash, ["subscribe", BITCOIN_CASHADDRESS_COMPRESSED])
+            result = runner.invoke(
+                bitcash, ["subscribe", BITCOIN_CASHADDRESS_COMPRESSED]
+            )
         assert result.exit_code == 0
         assert "abc123def456"[:12] in result.output
         assert "Unsubscribed" in result.output
@@ -243,15 +247,20 @@ class TestSubscribe:
             "bitcash.cli.NetworkAPI.subscribe_address",
             side_effect=self._make_fake_subscribe(None, "unsubscribed"),
         ):
-            result = runner.invoke(bitcash, ["subscribe", BITCOIN_CASHADDRESS_COMPRESSED])
+            result = runner.invoke(
+                bitcash, ["subscribe", BITCOIN_CASHADDRESS_COMPRESSED]
+            )
         assert result.exit_code == 0
         assert "no history" in result.output
 
     def test_subscribe_show_balance(self, runner):
-        with patch(
-            "bitcash.cli.NetworkAPI.subscribe_address",
-            side_effect=self._make_fake_subscribe("deadbeef1234", "unsubscribed"),
-        ), patch("bitcash.cli.NetworkAPI.get_balance", return_value=42000):
+        with (
+            patch(
+                "bitcash.cli.NetworkAPI.subscribe_address",
+                side_effect=self._make_fake_subscribe("deadbeef1234", "unsubscribed"),
+            ),
+            patch("bitcash.cli.NetworkAPI.get_balance", return_value=42000),
+        ):
             result = runner.invoke(
                 bitcash,
                 ["subscribe", BITCOIN_CASHADDRESS_COMPRESSED, "--show-balance"],
@@ -264,7 +273,9 @@ class TestSubscribe:
             "bitcash.cli.NetworkAPI.subscribe_address",
             side_effect=self._make_fake_subscribe("error:timeout", "unsubscribed"),
         ):
-            result = runner.invoke(bitcash, ["subscribe", BITCOIN_CASHADDRESS_COMPRESSED])
+            result = runner.invoke(
+                bitcash, ["subscribe", BITCOIN_CASHADDRESS_COMPRESSED]
+            )
         assert result.exit_code == 0
         assert "Error:" in result.output
 
@@ -280,12 +291,21 @@ class TestWalletSubscribe:
             for status_hash in events:
                 callback(address, status_hash)
             return MagicMock()
+
         return fake_subscribe
 
     def test_wallet_subscribe(self, runner, isolated_db):
         runner.invoke(
             bitcash,
-            ["wallet", "new", "watcher", "--wif", WALLET_FORMAT_COMPRESSED_MAIN, "--password", "pass"],
+            [
+                "wallet",
+                "new",
+                "watcher",
+                "--wif",
+                WALLET_FORMAT_COMPRESSED_MAIN,
+                "--password",
+                "pass",
+            ],
         )
         with patch(
             "bitcash.cli.NetworkAPI.subscribe_address",
@@ -319,7 +339,15 @@ class TestWalletNew:
     def test_wallet_new_import_wif(self, runner, isolated_db):
         result = runner.invoke(
             bitcash,
-            ["wallet", "new", "imported", "--wif", WALLET_FORMAT_COMPRESSED_MAIN, "--password", "secret"],
+            [
+                "wallet",
+                "new",
+                "imported",
+                "--wif",
+                WALLET_FORMAT_COMPRESSED_MAIN,
+                "--password",
+                "secret",
+            ],
         )
         assert result.exit_code == 0, result.output
         assert BITCOIN_CASHADDRESS_COMPRESSED in result.output
@@ -334,10 +362,15 @@ class TestWalletNew:
         result = runner.invoke(
             bitcash,
             [
-                "wallet", "new", "bad",
-                "--wif", WALLET_FORMAT_COMPRESSED_MAIN,
-                "--network", "test",
-                "--password", "pass",
+                "wallet",
+                "new",
+                "bad",
+                "--wif",
+                WALLET_FORMAT_COMPRESSED_MAIN,
+                "--network",
+                "test",
+                "--password",
+                "pass",
             ],
         )
         assert result.exit_code != 0
@@ -424,9 +457,14 @@ class TestWalletSend:
             result = runner.invoke(
                 bitcash,
                 [
-                    "wallet", "send", "spender",
-                    BITCOIN_CASHADDRESS_COMPRESSED, "100", "satoshi",
-                    "--password", "mypassword",
+                    "wallet",
+                    "send",
+                    "spender",
+                    BITCOIN_CASHADDRESS_COMPRESSED,
+                    "100",
+                    "satoshi",
+                    "--password",
+                    "mypassword",
                 ],
             )
         assert result.exit_code == 0, result.output
@@ -440,9 +478,14 @@ class TestWalletSend:
         result = runner.invoke(
             bitcash,
             [
-                "wallet", "send", "spender2",
-                BITCOIN_CASHADDRESS_COMPRESSED, "100", "satoshi",
-                "--password", "wrong",
+                "wallet",
+                "send",
+                "spender2",
+                BITCOIN_CASHADDRESS_COMPRESSED,
+                "100",
+                "satoshi",
+                "--password",
+                "wrong",
             ],
         )
         assert result.exit_code != 0
@@ -458,7 +501,15 @@ class TestWalletExport:
     def test_wallet_export(self, runner, isolated_db):
         runner.invoke(
             bitcash,
-            ["wallet", "new", "exportme", "--wif", WALLET_FORMAT_COMPRESSED_MAIN, "--password", "mypass"],
+            [
+                "wallet",
+                "new",
+                "exportme",
+                "--wif",
+                WALLET_FORMAT_COMPRESSED_MAIN,
+                "--password",
+                "mypass",
+            ],
         )
         result = runner.invoke(
             bitcash,
@@ -470,7 +521,15 @@ class TestWalletExport:
     def test_wallet_export_wrong_password(self, runner, isolated_db):
         runner.invoke(
             bitcash,
-            ["wallet", "new", "exportme2", "--wif", WALLET_FORMAT_COMPRESSED_MAIN, "--password", "correct"],
+            [
+                "wallet",
+                "new",
+                "exportme2",
+                "--wif",
+                WALLET_FORMAT_COMPRESSED_MAIN,
+                "--password",
+                "correct",
+            ],
         )
         result = runner.invoke(
             bitcash,

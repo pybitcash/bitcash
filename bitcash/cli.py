@@ -37,9 +37,8 @@ from bitcash.types import Network, UserOutput
 # Shared option — callback converts the CLI string to a Network enum member
 # ---------------------------------------------------------------------------
 
-def _parse_network(
-    ctx: click.Context, param: click.Parameter, value: str
-) -> Network:
+
+def _parse_network(ctx: click.Context, param: click.Parameter, value: str) -> Network:
     return Network[value]
 
 
@@ -234,7 +233,9 @@ def unspents(address: str, network: Network) -> None:
 
 @bitcash.command(name="subscribe")
 @click.argument("address")
-@click.option("--show-balance", is_flag=True, help="Fetch and print balance on each update")
+@click.option(
+    "--show-balance", is_flag=True, help="Fetch and print balance on each update"
+)
 @NETWORK_OPTION
 def subscribe_cmd(address: str, show_balance: bool, network: Network) -> None:
     """Watch ADDRESS for real-time transaction activity."""
@@ -252,7 +253,9 @@ def subscribe_cmd(address: str, show_balance: bool, network: Network) -> None:
         else:
             if show_balance:
                 bal: int = NetworkAPI.get_balance(addr, network=network.value)
-                click.echo(f"[{ts}] {addr}  status={status_hash[:12]}…  balance={bal} sat")
+                click.echo(
+                    f"[{ts}] {addr}  status={status_hash[:12]}…  balance={bal} sat"
+                )
             else:
                 click.echo(f"[{ts}] {addr}  status={status_hash[:12]}…")
 
@@ -315,7 +318,9 @@ def wallet() -> None:
 @click.option("--wif", default=None, help="Import existing WIF (optional)")
 @NETWORK_OPTION
 @PASSWORD_OPTION
-def wallet_new(name: str, wif: str | None, network: Network, password: str | None) -> None:
+def wallet_new(
+    name: str, wif: str | None, network: Network, password: str | None
+) -> None:
     """Create or import a named wallet."""
     if privy is None:
         raise click.ClickException(
@@ -365,7 +370,9 @@ def wallet_list() -> None:
 
 @wallet.command(name="subscribe")
 @click.argument("name")
-@click.option("--show-balance", is_flag=True, help="Fetch and print balance on each update")
+@click.option(
+    "--show-balance", is_flag=True, help="Fetch and print balance on each update"
+)
 def wallet_subscribe(name: str, show_balance: bool) -> None:
     """Watch wallet NAME for real-time transaction activity."""
     record = _load_key_from_db(name)
@@ -384,12 +391,18 @@ def wallet_subscribe(name: str, show_balance: bool) -> None:
         else:
             if show_balance:
                 bal: int = NetworkAPI.get_balance(addr, network=record.network.value)
-                click.echo(f"[{ts}] {addr}  status={status_hash[:12]}…  balance={bal} sat")
+                click.echo(
+                    f"[{ts}] {addr}  status={status_hash[:12]}…  balance={bal} sat"
+                )
             else:
                 click.echo(f"[{ts}] {addr}  status={status_hash[:12]}…")
 
-    click.echo(f"Subscribing to {name} ({address}) on {record.network.name}. Press Ctrl+C to stop.")
-    handle = NetworkAPI.subscribe_address(address, on_update, network=record.network.value)
+    click.echo(
+        f"Subscribing to {name} ({address}) on {record.network.name}. Press Ctrl+C to stop."
+    )
+    handle = NetworkAPI.subscribe_address(
+        address, on_update, network=record.network.value
+    )
 
     try:
         stop_event.wait()
