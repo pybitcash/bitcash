@@ -6,11 +6,17 @@ from tinydb.storages import MemoryStorage
 
 from bitcash.cli import bitcash
 import bitcash.cli as cli_module
+from bitcash.types import NFTCapability, NFTData, TokenData
 from tests.samples import (
     WALLET_FORMAT_COMPRESSED_MAIN,
     WALLET_FORMAT_COMPRESSED_TEST,
     BITCOIN_CASHADDRESS_COMPRESSED,
     BITCOIN_CASHADDRESS_TEST_COMPRESSED,
+    BITCOIN_CASHADDRESS_CATKN,
+    CASHTOKEN_CATAGORY_ID,
+    CASHTOKEN_CAPABILITY,
+    CASHTOKEN_COMMITMENT,
+    CASHTOKEN_AMOUNT,
 )
 
 
@@ -581,3 +587,239 @@ class TestRootGroup:
         result = runner.invoke(bitcash, [])
         assert result.exit_code == 0
         assert "Usage:" in result.output
+
+
+# ---------------------------------------------------------------------------
+# TestCashtokenAddress
+# ---------------------------------------------------------------------------
+
+
+class TestCashtokenAddress:
+    def test_converts_to_catkn(self, runner):
+        result = runner.invoke(
+            bitcash, ["cashtoken-address", BITCOIN_CASHADDRESS_COMPRESSED]
+        )
+        assert result.exit_code == 0, result.output
+        # CATKN addresses use the "zz" prefix after the network prefix
+        assert "CATKN" in result.output or "zz" in result.output
+
+    def test_known_address(self, runner):
+        with patch(
+            "bitcash.cli.address_to_cashtokenaddress",
+            return_value=BITCOIN_CASHADDRESS_CATKN,
+        ):
+            result = runner.invoke(
+                bitcash, ["cashtoken-address", BITCOIN_CASHADDRESS_COMPRESSED]
+            )
+        assert result.exit_code == 0
+        assert BITCOIN_CASHADDRESS_CATKN in result.output
+
+
+# ---------------------------------------------------------------------------
+# TestBalanceCashtoken
+# ---------------------------------------------------------------------------
+
+
+def _make_mock_unspent_with_token():
+    """Return a mock Unspent list that CashtokenUnspents can aggregate."""
+    from bitcash.network.meta import Unspent
+    from bitcash.types import CashTokens
+
+    unspent = MagicMock(spec=Unspent)
+    unspent.amount = 1000
+    unspent.txindex = 1
+    unspent.has_cashtoken = True
+    unspent.has_amount = True
+    unspent.has_nft = True
+    unspent.cashtoken = CashTokens(
+        category_id=CASHTOKEN_CATAGORY_ID,
+        nft_capability=NFTCapability[CASHTOKEN_CAPABILITY],
+        nft_commitment=CASHTOKEN_COMMITMENT,
+        token_amount=CASHTOKEN_AMOUNT,
+    )
+    return [unspent]
+
+
+class TestBalanceCashtoken:
+    def test_cashtoken_flag_shows_token_data(self, runner):
+        with (
+            patch("bitcash.cli.NetworkAPI.get_balance", return_value=1000),
+            patch(
+                "bitcash.cli.NetworkAPI.get_unspent",
+                return_value=_make_mock_unspent_with_token(),
+            ),
+        ):
+            result = runner.invoke(
+                bitcash,
+                ["balance", BITCOIN_CASHADDRESS_COMPRESSED, "--cashtoken"],
+            )
+        assert result.exit_code == 0, result.output
+        assert "1000 satoshi" in result.output
+        assert CASHTOKEN_CATAGORY_ID in result.output
+        assert str(CASHTOKEN_AMOUNT) in result.output
+
+    def test_cashtoken_flag_empty(self, runner):
+        with (
+            patch("bitcash.cli.NetworkAPI.get_balance", return_value=0),
+            patch("bitcash.cli.NetworkAPI.get_unspent", return_value=[]),
+        ):
+            result = runner.invoke(
+                bitcash,
+                ["balance", BITCOIN_CASHADDRESS_COMPRESSED, "--cashtoken"],
+            )
+        assert result.exit_code == 0
+        assert "No tokens found." in result.output
+
+    def test_without_cashtoken_flag_no_token_output(self, runner):
+        with patch("bitcash.cli.NetworkAPI.get_balance", return_value=500):
+            result = runner.invoke(
+                bitcash,
+                ["balance", BITCOIN_CASHADDRESS_COMPRESSED],
+            )
+        assert result.exit_code == 0
+        assert "500 satoshi" in result.output
+        assert "Category:" not in result.output
+
+
+# ---------------------------------------------------------------------------
+# TestSendWithTokens
+# ---------------------------------------------------------------------------
+
+
+class TestSendWithTokens:
+    def test_send_with_token_amount(self, runner):
+        with patch("bitcash.cli.wif_to_key") as mock_wif:
+            mock_key = MagicMock()
+            mock_key.send.return_value = "tokentxid"
+            mock_wif.return_value = mock_key
+            result = runner.invoke(
+                bitcash,
+                [
+                    "send",
+                    "--wif",
+                    WALLET_FORMAT_COMPRESSED_MAIN,
+                    BITCOIN_CASHADDRESS_CATKN,
+                    "1000",
+                    "satoshi",
+                    "--category-id",
+                    CASHTOKEN_CATAGORY_ID,
+                    "--token-amount",
+                    str(CASHTOKEN_AMOUNT),
+                ],
+            )
+        assert result.exit_code == 0, result.output
+        assert "tokentxid" in result.output
+        mock_key.send.assert_called_once_with(
+            [
+                (
+                    BITCOIN_CASHADDRESS_CATKN,
+                    "1000",
+                    "satoshi",
+                    CASHTOKEN_CATAGORY_ID,
+                    None,
+                    None,
+                    CASHTOKEN_AMOUNT,
+                )
+            ],
+            fee=None,
+            message=None,
+        )
+
+    def test_send_with_nft(self, runner):
+        commitment_hex = CASHTOKEN_COMMITMENT.hex()
+        with patch("bitcash.cli.wif_to_key") as mock_wif:
+            mock_key = MagicMock()
+            mock_key.send.return_value = "nfttxid"
+            mock_wif.return_value = mock_key
+            result = runner.invoke(
+                bitcash,
+                [
+                    "send",
+                    "--wif",
+                    WALLET_FORMAT_COMPRESSED_MAIN,
+                    BITCOIN_CASHADDRESS_CATKN,
+                    "1000",
+                    "satoshi",
+                    "--category-id",
+                    CASHTOKEN_CATAGORY_ID,
+                    "--nft-capability",
+                    CASHTOKEN_CAPABILITY,
+                    "--nft-commitment",
+                    commitment_hex,
+                ],
+            )
+        assert result.exit_code == 0, result.output
+        assert "nfttxid" in result.output
+        mock_key.send.assert_called_once_with(
+            [
+                (
+                    BITCOIN_CASHADDRESS_CATKN,
+                    "1000",
+                    "satoshi",
+                    CASHTOKEN_CATAGORY_ID,
+                    CASHTOKEN_CAPABILITY,
+                    CASHTOKEN_COMMITMENT,
+                    None,
+                )
+            ],
+            fee=None,
+            message=None,
+        )
+
+    def test_nft_commitment_bad_hex(self, runner):
+        with patch("bitcash.cli.wif_to_key"):
+            result = runner.invoke(
+                bitcash,
+                [
+                    "send",
+                    "--wif",
+                    WALLET_FORMAT_COMPRESSED_MAIN,
+                    BITCOIN_CASHADDRESS_CATKN,
+                    "1000",
+                    "satoshi",
+                    "--nft-commitment",
+                    "notvalidhex",
+                ],
+            )
+        assert result.exit_code != 0
+
+
+# ---------------------------------------------------------------------------
+# TestWalletBalanceCashtoken
+# ---------------------------------------------------------------------------
+
+
+class TestWalletBalanceCashtoken:
+    def test_wallet_balance_cashtoken(self, runner, isolated_db):
+        runner.invoke(
+            bitcash,
+            ["wallet", "new", "tokenrich", "--password", "pass"],
+        )
+        with (
+            patch("bitcash.cli.NetworkAPI.get_balance", return_value=2000),
+            patch(
+                "bitcash.cli.NetworkAPI.get_unspent",
+                return_value=_make_mock_unspent_with_token(),
+            ),
+        ):
+            result = runner.invoke(
+                bitcash, ["wallet", "balance", "tokenrich", "--cashtoken"]
+            )
+        assert result.exit_code == 0, result.output
+        assert "2000 satoshi" in result.output
+        assert CASHTOKEN_CATAGORY_ID in result.output
+
+    def test_wallet_balance_cashtoken_empty(self, runner, isolated_db):
+        runner.invoke(
+            bitcash,
+            ["wallet", "new", "emptywallet", "--password", "pass"],
+        )
+        with (
+            patch("bitcash.cli.NetworkAPI.get_balance", return_value=0),
+            patch("bitcash.cli.NetworkAPI.get_unspent", return_value=[]),
+        ):
+            result = runner.invoke(
+                bitcash, ["wallet", "balance", "emptywallet", "--cashtoken"]
+            )
+        assert result.exit_code == 0
+        assert "No tokens found." in result.output

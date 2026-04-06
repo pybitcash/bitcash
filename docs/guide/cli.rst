@@ -56,14 +56,31 @@ Example:
     $ bitcash gen q1
     ...
 
-balance
-^^^^^^^
+cashtoken-address
+^^^^^^^^^^^^^^^^^
 
-Fetch the current balance of any address.
+Convert any address to its CashToken-signalling form (``bitcoincash:zz...``).
 
 .. code-block:: bash
 
-    bitcash balance <address> [--currency satoshi] [--network main|test|regtest]
+    bitcash cashtoken-address <address>
+
+Example:
+
+.. code-block:: bash
+
+    $ bitcash cashtoken-address bitcoincash:qp0hamw9rpyllkmvd8047w9em3yt9fytsunyhutucx
+    bitcoincash:zp0hamw9rpyllkmvd8047w9em3yt9fytsuu5wac7aq
+
+balance
+^^^^^^^
+
+Fetch the current balance of any address. Pass ``--cashtoken`` to also show
+CashToken holdings (fungible amounts and NFTs) alongside the BCH balance.
+
+.. code-block:: bash
+
+    bitcash balance <address> [--currency satoshi] [--cashtoken] [--network main|test|regtest]
 
 Example:
 
@@ -74,6 +91,13 @@ Example:
 
     $ bitcash balance bitcoincash:qp0hamw9rpyllkmvd8047w9em3yt9fytsunyhutucx --currency usd
     2 USD
+
+    $ bitcash balance bitcoincash:qp0hamw9rpyllkmvd8047w9em3yt9fytsunyhutucx --cashtoken
+    493200 satoshi
+    Category: aabbcc0011223344556677889900aabbcc0011223344556677889900aabbcc00
+      Fungible amount: 1000
+      NFTs (1):
+        capability=minting  commitment(hex)=666f6f626172
 
 transactions
 ^^^^^^^^^^^^
@@ -113,19 +137,36 @@ send
 ^^^^
 
 Broadcast a transaction using a raw WIF key (no wallet store required).
+CashToken options are optional — omit them for a plain BCH transfer.
 
 .. code-block:: bash
 
     bitcash send --wif <WIF> <to> <amount> <currency> \
-        [--fee N] [--message TEXT] [--network main|test|regtest]
+        [--fee N] [--message TEXT] \
+        [--category-id HEX] [--nft-capability none|mutable|minting] \
+        [--nft-commitment HEX] [--token-amount N] \
+        [--network main|test|regtest]
 
-Example:
+Examples:
 
 .. code-block:: bash
 
+    # Plain BCH transfer
     $ bitcash send --wif L4vB5fomsK8L... \
         bitcoincash:qz69e5y8yrtujhsyht7q9xq5zhu4mrklmv0ap7tq5f 1000 satoshi
     Transaction ID: 6aea7b1c687d976644a430a87e34c93a8a7fd52d77c30e9cc247fc8228b749ff
+
+    # Send fungible tokens
+    $ bitcash send --wif L4vB5fomsK8L... \
+        bitcoincash:zz69e5y8yrtujhsyht7q9xq5zhu4mrklmvxxxxxxx 1000 satoshi \
+        --category-id aabbcc00... --token-amount 50
+    Transaction ID: 6aea7b1c...
+
+    # Send an NFT with commitment
+    $ bitcash send --wif L4vB5fomsK8L... \
+        bitcoincash:zz69e5y8yrtujhsyht7q9xq5zhu4mrklmvxxxxxxx 1000 satoshi \
+        --category-id aabbcc00... --nft-capability none --nft-commitment 666f6f626172
+    Transaction ID: 6aea7b1c...
 
 subscribe
 ^^^^^^^^^
@@ -221,11 +262,11 @@ wallet balance
 ^^^^^^^^^^^^^^
 
 Fetch the balance of a stored wallet. No password required — the address
-is public information.
+is public information. Pass ``--cashtoken`` to also show CashToken holdings.
 
 .. code-block:: bash
 
-    bitcash wallet balance <name> [--currency satoshi]
+    bitcash wallet balance <name> [--currency satoshi] [--cashtoken]
 
 Example:
 
@@ -233,6 +274,13 @@ Example:
 
     $ bitcash wallet balance mykey
     493200 satoshi
+
+    $ bitcash wallet balance mykey --cashtoken
+    493200 satoshi
+    Category: aabbcc0011223344556677889900aabbcc0011223344556677889900aabbcc00
+      Fungible amount: 1000
+      NFTs (1):
+        capability=minting  commitment(hex)=666f6f626172
 
 wallet subscribe
 ^^^^^^^^^^^^^^^^
@@ -246,12 +294,15 @@ Watch a stored wallet's address for real-time activity.
 wallet send
 ^^^^^^^^^^^
 
-Send BCH from a stored wallet.
+Send BCH (and optionally CashTokens) from a stored wallet.
 
 .. code-block:: bash
 
     bitcash wallet send <name> <to> <amount> <currency> \
-        [--fee N] [--message TEXT] [--password PASSWORD]
+        [--fee N] [--message TEXT] \
+        [--category-id HEX] [--nft-capability none|mutable|minting] \
+        [--nft-commitment HEX] [--token-amount N] \
+        [--password PASSWORD]
 
 Example:
 
@@ -259,6 +310,10 @@ Example:
 
     $ bitcash wallet send mykey bitcoincash:qz69e5y8yrtujhsyht7q9xq5zhu4mrklmv0ap7tq5f 1000 satoshi --password mysecret
     Transaction ID: 6aea7b1c687d976644a430a87e34c93a8a7fd52d77c30e9cc247fc8228b749ff
+
+    $ bitcash wallet send mykey bitcoincash:zz69e5y8yrtujhsyht7q9xq5zhu4mrklmvxxxxxxx 1000 satoshi \
+        --category-id aabbcc00... --token-amount 50 --password mysecret
+    Transaction ID: 6aea7b1c...
 
 wallet export
 ^^^^^^^^^^^^^

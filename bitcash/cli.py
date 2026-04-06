@@ -27,10 +27,12 @@ except ImportError:
     TinyDB = None  # type: ignore[assignment,misc]
     Query = None  # type: ignore[assignment]
 
+from bitcash.cashtoken import Unspents as CashtokenUnspents
+from bitcash.format import address_to_cashtokenaddress
 from bitcash.keygen import generate_matching_address
 from bitcash.wallet import PrivateKey, wif_to_key
 from bitcash.network import NetworkAPI, satoshi_to_currency_cached
-from bitcash.types import Network, UserOutput
+from bitcash.types import Network, NFTCapability, TokenData, UserOutput
 
 
 # ---------------------------------------------------------------------------
@@ -57,6 +59,49 @@ NETWORK_OPTION = click.option(
     default=Network.main.name,
     show_default=True,
     callback=_parse_network,
+)
+
+
+def _parse_nft_commitment(
+    ctx: click.Context, param: click.Parameter, value: str | None
+) -> bytes | None:
+    if value is None:
+        return None
+    try:
+        return bytes.fromhex(value)
+    except ValueError:
+        raise click.BadParameter("must be a valid hex string")
+
+
+CATEGORY_ID_OPTION = click.option(
+    "--category-id",
+    default=None,
+    help="CashToken category ID (hex)",
+)
+
+NFT_CAPABILITY_OPTION = click.option(
+    "--nft-capability",
+    type=click.Choice([c.name for c in NFTCapability]),
+    default=None,
+    help="NFT capability",
+)
+
+NFT_COMMITMENT_OPTION = click.option(
+    "--nft-commitment",
+    default=None,
+    callback=_parse_nft_commitment,
+    help="NFT commitment (hex)",
+)
+
+TOKEN_AMOUNT_OPTION = click.option(
+    "--token-amount",
+    default=None,
+    type=int,
+    help="Fungible token amount",
+)
+
+CASHTOKEN_FLAG = click.option(
+    "--cashtoken", is_flag=True, help="Also show CashToken holdings"
 )
 
 
@@ -134,6 +179,53 @@ def _decrypt_wif(record: WalletRecord, password: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# CashToken helpers
+# ---------------------------------------------------------------------------
+
+
+def _print_cashtoken_balance(tokendata: dict[str, TokenData]) -> None:
+    if not tokendata:
+        click.echo("No tokens found.")
+        return
+    for category_id, data in tokendata.items():
+        click.echo(f"Category: {category_id}")
+        if data.token_amount is not None:
+            click.echo(f"  Fungible amount: {data.token_amount}")
+        if data.nft:
+            click.echo(f"  NFTs ({len(data.nft)}):")
+            for nft in data.nft:
+                commitment = nft.commitment.hex() if nft.commitment else "(none)"
+                click.echo(
+                    f"    capability={nft.capability.name}  commitment(hex)={commitment}"
+                )
+
+
+def _build_output(
+    to: str,
+    amount: str,
+    currency: str,
+    category_id: str | None,
+    nft_capability: str | None,
+    nft_commitment: bytes | None,
+    token_amount: int | None,
+) -> UserOutput:
+    if category_id is None:
+        return cast(UserOutput, (to, amount, currency))
+    return cast(
+        UserOutput,
+        (
+            to,
+            amount,
+            currency,
+            category_id,
+            nft_capability,
+            nft_commitment,
+            token_amount,
+        ),
+    )
+
+
+# ---------------------------------------------------------------------------
 # Root group
 # ---------------------------------------------------------------------------
 
@@ -159,6 +251,18 @@ def gen(prefix: str, cores: str) -> None:
 
 
 # ---------------------------------------------------------------------------
+# cashtoken-address
+# ---------------------------------------------------------------------------
+
+
+@bitcash.command(name="cashtoken-address")
+@click.argument("address")
+def cashtoken_address_cmd(address: str) -> None:
+    """Convert ADDRESS to its CashToken-signalling form."""
+    click.echo(address_to_cashtokenaddress(address))
+
+
+# ---------------------------------------------------------------------------
 # new
 # ---------------------------------------------------------------------------
 
@@ -180,14 +284,19 @@ def new_cmd(network: Network) -> None:
 @bitcash.command()
 @click.argument("address")
 @click.option("--currency", default="satoshi", show_default=True)
+@CASHTOKEN_FLAG
 @NETWORK_OPTION
-def balance(address: str, currency: str, network: Network) -> None:
-    """Show the balance of ADDRESS."""
+def balance(address: str, currency: str, cashtoken: bool, network: Network) -> None:
+    """Show the BCH balance of ADDRESS, and optionally its CashToken holdings."""
     raw: int = NetworkAPI.get_balance(address, network=network.value)
     if currency == "satoshi":
         click.echo(f"{raw} satoshi")
     else:
         click.echo(satoshi_to_currency_cached(raw, currency))
+    if cashtoken:
+        utxos = NetworkAPI.get_unspent(address, network=network.value)
+        agg = CashtokenUnspents(utxos)
+        _print_cashtoken_balance(agg.tokendata)
 
 
 # ---------------------------------------------------------------------------
@@ -281,6 +390,10 @@ def subscribe_cmd(address: str, show_balance: bool, network: Network) -> None:
 @click.argument("currency")
 @click.option("--fee", default=None, type=int, help="Fee in satoshi/byte")
 @click.option("--message", default=None, help="OP_RETURN message")
+@CATEGORY_ID_OPTION
+@NFT_CAPABILITY_OPTION
+@NFT_COMMITMENT_OPTION
+@TOKEN_AMOUNT_OPTION
 @NETWORK_OPTION
 def send_cmd(
     wif: str,
@@ -289,14 +402,19 @@ def send_cmd(
     currency: str,
     fee: int | None,
     message: str | None,
+    category_id: str | None,
+    nft_capability: str | None,
+    nft_commitment: bytes | None,
+    token_amount: int | None,
     network: Network,
 ) -> None:
-    """Send BCH using a raw WIF key."""
+    """Send BCH (and optionally CashTokens) using a raw WIF key."""
     key = wif_to_key(wif, regtest=(network == Network.regtest))
-    # UserOutput types amount as int but the implementation accepts any
-    # Decimal-compatible value; cast to satisfy the type checker.
+    output = _build_output(
+        to, amount, currency, category_id, nft_capability, nft_commitment, token_amount
+    )
     txid: str = key.send(
-        cast(list[UserOutput], [(to, amount, currency)]),
+        [output],
         fee=fee,
         message=message,
     )
@@ -414,7 +532,8 @@ def wallet_subscribe(name: str, show_balance: bool) -> None:
 @wallet.command(name="balance")
 @click.argument("name")
 @click.option("--currency", default="satoshi", show_default=True)
-def wallet_balance(name: str, currency: str) -> None:
+@CASHTOKEN_FLAG
+def wallet_balance(name: str, currency: str, cashtoken: bool) -> None:
     """Show balance for wallet NAME (no password required)."""
     record = _load_key_from_db(name)
     raw: int = NetworkAPI.get_balance(record.address, network=record.network.value)
@@ -422,6 +541,10 @@ def wallet_balance(name: str, currency: str) -> None:
         click.echo(f"{raw} satoshi")
     else:
         click.echo(satoshi_to_currency_cached(raw, currency))
+    if cashtoken:
+        utxos = NetworkAPI.get_unspent(record.address, network=record.network.value)
+        agg = CashtokenUnspents(utxos)
+        _print_cashtoken_balance(agg.tokendata)
 
 
 @wallet.command(name="send")
@@ -431,6 +554,10 @@ def wallet_balance(name: str, currency: str) -> None:
 @click.argument("currency")
 @click.option("--fee", default=None, type=int, help="Fee in satoshi/byte")
 @click.option("--message", default=None, help="OP_RETURN message")
+@CATEGORY_ID_OPTION
+@NFT_CAPABILITY_OPTION
+@NFT_COMMITMENT_OPTION
+@TOKEN_AMOUNT_OPTION
 @PASSWORD_OPTION
 def wallet_send(
     name: str,
@@ -439,14 +566,21 @@ def wallet_send(
     currency: str,
     fee: int | None,
     message: str | None,
+    category_id: str | None,
+    nft_capability: str | None,
+    nft_commitment: bytes | None,
+    token_amount: int | None,
     password: str | None,
 ) -> None:
-    """Send BCH from wallet NAME."""
+    """Send BCH (and optionally CashTokens) from wallet NAME."""
     record = _load_key_from_db(name)
     wif: str = _decrypt_wif(record, _prompt_password(password))
     key = wif_to_key(wif, regtest=(record.network == Network.regtest))
+    output = _build_output(
+        to, amount, currency, category_id, nft_capability, nft_commitment, token_amount
+    )
     txid: str = key.send(
-        cast(list[UserOutput], [(to, amount, currency)]),
+        [output],
         fee=fee,
         message=message,
     )
