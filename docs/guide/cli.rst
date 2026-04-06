@@ -174,8 +174,6 @@ subscribe
 Watch an address for real-time transaction activity. Blocks until
 ``Ctrl+C`` or the server sends an ``unsubscribed`` event.
 
-Requires the ``subscriptions`` extra: ``pip install 'bitcash[subscriptions]'``.
-
 .. code-block:: bash
 
     bitcash subscribe <address> [--show-balance] [--network main|test|regtest]
