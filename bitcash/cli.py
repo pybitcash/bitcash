@@ -233,6 +233,7 @@ def _build_output(
 @click.group(invoke_without_command=True)
 @click.pass_context
 def bitcash(ctx: click.Context) -> None:
+    """BitCash: Python Bitcoin Cash Library."""
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
 
@@ -246,7 +247,11 @@ def bitcash(ctx: click.Context) -> None:
 @click.argument("prefix")
 @click.option("--cores", "-c", default="all")
 def gen(prefix: str, cores: str) -> None:
-    """Generate a vanity address matching PREFIX."""
+    """Generate a vanity address whose address starts with PREFIX.
+
+    CPU-intensive and may run for a long time depending on prefix length.
+    No network calls. Prints a (WIF, address) pair when a match is found.
+    """
     click.echo(generate_matching_address(prefix, cores))
 
 
@@ -258,7 +263,11 @@ def gen(prefix: str, cores: str) -> None:
 @bitcash.command(name="cashtoken-address")
 @click.argument("address")
 def cashtoken_address_cmd(address: str) -> None:
-    """Convert ADDRESS to its CashToken-signalling form."""
+    """Convert ADDRESS to its CashToken-signalling form (bitcoincash:zz...).
+
+    Pure local conversion — no network calls. CashToken-signalling addresses
+    are required as destinations when sending tokens via the send commands.
+    """
     click.echo(address_to_cashtokenaddress(address))
 
 
@@ -270,7 +279,11 @@ def cashtoken_address_cmd(address: str) -> None:
 @bitcash.command(name="new")
 @NETWORK_OPTION
 def new_cmd(network: Network) -> None:
-    """Generate a new private key and print WIF + address."""
+    """Generate a new private key and print its WIF and address.
+
+    No network calls. Each invocation produces a unique key — never reuses keys.
+    Store the WIF securely; it cannot be recovered if lost.
+    """
     key = PrivateKey(network=network.name)
     click.echo(f"WIF:     {key.to_wif()}")
     click.echo(f"Address: {key.address}")
@@ -287,7 +300,12 @@ def new_cmd(network: Network) -> None:
 @CASHTOKEN_FLAG
 @NETWORK_OPTION
 def balance(address: str, currency: str, cashtoken: bool, network: Network) -> None:
-    """Show the BCH balance of ADDRESS, and optionally its CashToken holdings."""
+    """Show the BCH balance of ADDRESS, and optionally its CashToken holdings.
+
+    Always fetches the BCH balance via a network call. With --cashtoken, also
+    fetches UTXOs to aggregate fungible token amounts and NFTs per category ID.
+    Output is human-readable; use 'bitcash schema' for machine-readable field names.
+    """
     raw: int = NetworkAPI.get_balance(address, network=network.value)
     if currency == "satoshi":
         click.echo(f"{raw} satoshi")
@@ -308,7 +326,10 @@ def balance(address: str, currency: str, cashtoken: bool, network: Network) -> N
 @click.argument("address")
 @NETWORK_OPTION
 def transactions(address: str, network: Network) -> None:
-    """List transactions for ADDRESS."""
+    """List all transaction IDs for ADDRESS, one per line.
+
+    Read-only network call. Prints nothing (exit 0) if the address has no history.
+    """
     txs: list[str] = NetworkAPI.get_transactions(address, network=network.value)
     if not txs:
         click.echo("No transactions found.")
@@ -326,7 +347,11 @@ def transactions(address: str, network: Network) -> None:
 @click.argument("address")
 @NETWORK_OPTION
 def unspents(address: str, network: Network) -> None:
-    """List unspent outputs for ADDRESS."""
+    """List all unspent transaction outputs (UTXOs) for ADDRESS, one per line.
+
+    Read-only network call. Each line includes txid, vout index, amount in
+    satoshi, and any CashToken prefix data attached to that UTXO.
+    """
     utxos = NetworkAPI.get_unspent(address, network=network.value)
     if not utxos:
         click.echo("No unspents found.")
@@ -347,7 +372,13 @@ def unspents(address: str, network: Network) -> None:
 )
 @NETWORK_OPTION
 def subscribe_cmd(address: str, show_balance: bool, network: Network) -> None:
-    """Watch ADDRESS for real-time transaction activity."""
+    """Watch ADDRESS for real-time transaction activity over a persistent connection.
+
+    Blocks until Ctrl+C or the server sends an unsubscribed event. Each update
+    prints a timestamped status hash. With --show-balance, also fetches and
+    prints the current BCH balance on each update. Not suitable for scripted
+    one-shot use — prefer 'balance' or 'transactions' for polling.
+    """
     stop_event = threading.Event()
 
     def on_update(addr: str, status_hash: str | None) -> None:
@@ -408,7 +439,14 @@ def send_cmd(
     token_amount: int | None,
     network: Network,
 ) -> None:
-    """Send BCH (and optionally CashTokens) using a raw WIF key."""
+    """Sign and broadcast a BCH transaction using a raw WIF private key.
+
+    Amount is converted from currency to satoshi automatically. Prints the
+    transaction ID on success. To include CashTokens, provide --category-id;
+    the destination address must be a CashToken-signalling address
+    (bitcoincash:zz...) — use 'cashtoken-address' to convert if needed.
+    --nft-commitment expects a hex string.
+    """
     key = wif_to_key(wif, regtest=(network == Network.regtest))
     output = _build_output(
         to, amount, currency, category_id, nft_capability, nft_commitment, token_amount
@@ -428,7 +466,13 @@ def send_cmd(
 
 @bitcash.group()
 def wallet() -> None:
-    """Manage named, password-protected wallets."""
+    """Manage named, password-protected wallets stored in a local TinyDB file.
+
+    Wallets are stored at the platform user-data directory
+    (e.g. ~/.local/share/bitcash/wallets.json on Linux). The private key is
+    encrypted with privy using the wallet password; the address is stored in
+    plaintext for read-only commands that don't need the password.
+    """
 
 
 @wallet.command(name="new")
@@ -439,7 +483,13 @@ def wallet() -> None:
 def wallet_new(
     name: str, wif: str | None, network: Network, password: str | None
 ) -> None:
-    """Create or import a named wallet."""
+    """Create a new wallet or import an existing WIF into the local wallet store.
+
+    Fails if a wallet with NAME already exists. Without --wif, generates a
+    fresh private key. With --wif, the WIF's network must match --network.
+    Password is required to encrypt the key; prompts interactively if omitted.
+    Prints the wallet address on success.
+    """
     if privy is None:
         raise click.ClickException(
             "Wallet commands require optional dependencies. "
@@ -476,7 +526,10 @@ def wallet_new(
 
 @wallet.command(name="list")
 def wallet_list() -> None:
-    """List all stored wallets."""
+    """List all wallets in the local store — name, network, and address.
+
+    No password required. No network calls.
+    """
     db = _get_db()
     records = [WalletRecord.from_dict(r) for r in db.all()]
     if not records:
@@ -492,7 +545,11 @@ def wallet_list() -> None:
     "--show-balance", is_flag=True, help="Fetch and print balance on each update"
 )
 def wallet_subscribe(name: str, show_balance: bool) -> None:
-    """Watch wallet NAME for real-time transaction activity."""
+    """Watch wallet NAME for real-time transaction activity.
+
+    Resolves the address from the local wallet store — no password required.
+    Otherwise behaves identically to 'subscribe'. Blocks until Ctrl+C.
+    """
     record = _load_key_from_db(name)
     address: str = record.address
     stop_event = threading.Event()
@@ -534,7 +591,11 @@ def wallet_subscribe(name: str, show_balance: bool) -> None:
 @click.option("--currency", default="satoshi", show_default=True)
 @CASHTOKEN_FLAG
 def wallet_balance(name: str, currency: str, cashtoken: bool) -> None:
-    """Show balance for wallet NAME (no password required)."""
+    """Show the BCH balance for wallet NAME, and optionally its CashToken holdings.
+
+    Resolves the address from the local wallet store — no password required.
+    Otherwise behaves identically to 'balance'.
+    """
     record = _load_key_from_db(name)
     raw: int = NetworkAPI.get_balance(record.address, network=record.network.value)
     if currency == "satoshi":
@@ -572,7 +633,12 @@ def wallet_send(
     token_amount: int | None,
     password: str | None,
 ) -> None:
-    """Send BCH (and optionally CashTokens) from wallet NAME."""
+    """Decrypt wallet NAME and broadcast a signed BCH transaction.
+
+    Password is required to decrypt the stored WIF; prompts interactively if
+    omitted, or reads from BITCASH_WALLET_PASSWORD env var. Prints the
+    transaction ID on success. CashToken behaviour is identical to 'send'.
+    """
     record = _load_key_from_db(name)
     wif: str = _decrypt_wif(record, _prompt_password(password))
     key = wif_to_key(wif, regtest=(record.network == Network.regtest))
@@ -591,7 +657,11 @@ def wallet_send(
 @click.argument("name")
 @PASSWORD_OPTION
 def wallet_export(name: str, password: str | None) -> None:
-    """Decrypt and print the WIF for wallet NAME."""
+    """Decrypt and print the WIF for wallet NAME.
+
+    Password required. Treat the output as a secret — anyone with the WIF
+    has full control of the funds.
+    """
     record = _load_key_from_db(name)
     wif: str = _decrypt_wif(record, _prompt_password(password))
     click.echo(f"WIF: {wif}")
@@ -601,7 +671,11 @@ def wallet_export(name: str, password: str | None) -> None:
 @click.argument("name")
 @click.confirmation_option(prompt="Are you sure you want to delete this wallet?")
 def wallet_delete(name: str) -> None:
-    """Delete wallet NAME."""
+    """Remove wallet NAME from the local store.
+
+    Asks for confirmation unless --yes is passed. Only deletes the local
+    record — funds on-chain are unaffected. Fails if NAME does not exist.
+    """
     db = _get_db()
     assert Query is not None
     removed = db.remove(Query().name == name)
