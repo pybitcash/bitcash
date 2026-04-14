@@ -5,7 +5,6 @@ from bitcash.network.transaction import Transaction, TxPart
 from bitcash.network.APIs.ChaingraphAPI import ChaingraphAPI
 from bitcash.network.meta import Unspent
 
-
 BITCOIN_CASHADDRESS_CATKN = "bitcoincash:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq37yf2mzf"
 
 

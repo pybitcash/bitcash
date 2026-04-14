@@ -599,7 +599,7 @@ class TestUnspents:
             "tokendata": tokendata,
         }
         cashtoken = Unspents.from_dict(unspents_dict)
-        (outputs, leftover_amount) = cashtoken.get_outputs(
+        outputs, leftover_amount = cashtoken.get_outputs(
             Address.from_string(BITCOIN_CASHADDRESS_CATKN)
         )
 
@@ -614,7 +614,7 @@ class TestUnspents:
 
         cashtoken = Unspents([])
         cashtoken.amount = 546
-        (outputs, leftover_amount) = cashtoken.get_outputs(
+        outputs, leftover_amount = cashtoken.get_outputs(
             Address.from_string(BITCOIN_CASHADDRESS_CATKN)
         )
 

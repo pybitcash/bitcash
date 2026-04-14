@@ -16,7 +16,6 @@ from bitcash.network.transaction import Transaction, TxPart
 from bitcash.cashaddress import Address
 from bitcash.types import NetworkStr
 
-
 context = ssl.create_default_context()
 FULCRUM_PROTOCOL = "1.5.0"
 DEFAULT_SOCKET_TIMEOUT = 5.0
