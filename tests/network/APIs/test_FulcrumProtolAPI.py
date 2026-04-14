@@ -10,7 +10,6 @@ from bitcash.network.transaction import Transaction, TxPart
 from bitcash.network.APIs.FulcrumProtocolAPI import FulcrumProtocolAPI
 from bitcash.network.meta import Unspent
 
-
 BITCOIN_CASHADDRESS_CATKN = "bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v"
 
 
