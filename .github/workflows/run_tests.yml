@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false # still run the other versions of Python if one fails
       matrix:
-        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python: ["3.10", "3.11", "3.12", "3.13"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
