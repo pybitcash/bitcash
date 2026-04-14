@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from typing import Any, Callable, Optional
 from bitcash.network.http import session
-from bitcash.exceptions import InvalidEndpointURLProvided, InvalidEndpointResponse, DataNotFound
+from bitcash.exceptions import (
+    InvalidEndpointURLProvided,
+    InvalidEndpointResponse,
+    DataNotFound,
+)
 from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart

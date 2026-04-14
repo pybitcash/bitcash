@@ -9,7 +9,11 @@ import typing
 from requests.exceptions import ConnectTimeout, ContentDecodingError
 from typing import Any, Callable, Union
 
-from bitcash.exceptions import InvalidEndpointURLProvided, InvalidEndpointResponse, DataNotFound
+from bitcash.exceptions import (
+    InvalidEndpointURLProvided,
+    InvalidEndpointResponse,
+    DataNotFound,
+)
 from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
