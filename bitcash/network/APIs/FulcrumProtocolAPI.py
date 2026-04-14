@@ -9,7 +9,7 @@ import typing
 from requests.exceptions import ConnectTimeout, ContentDecodingError
 from typing import Any, Callable, Union
 
-from bitcash.exceptions import InvalidEndpointURLProvided
+from bitcash.exceptions import InvalidEndpointURLProvided, InvalidEndpointResponse, DataNotFound
 from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
@@ -81,7 +81,7 @@ def send_json_rpc_payload(
         )
 
     if "error" in return_json:
-        raise RuntimeError(f"Error in retruned json: {return_json['error']}")
+        raise InvalidEndpointResponse(f"Error in returned json: {return_json['error']}")
 
     return return_json["result"]
 
@@ -242,7 +242,7 @@ class FulcrumProtocolAPI(BaseAPI):
         for vout in result["vout"]:
             if vout["n"] == txindex:
                 return vout
-        raise RuntimeError(f"Transaction {txid=} doesn't have {txindex=}")
+        raise DataNotFound(f"Transaction {txid=} doesn't have {txindex=}")
 
     def get_tx_amount(self, txid: str, txindex: int, *args, **kwargs) -> int:
         result = self.get_raw_transaction(txid, *args, **kwargs)
@@ -255,7 +255,7 @@ class FulcrumProtocolAPI(BaseAPI):
                     (Decimal(vout["value"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()
                 )
                 return sats
-        raise RuntimeError(f"Transaction {txid=} doesn't have {txindex=}")
+        raise DataNotFound(f"Transaction {txid=} doesn't have {txindex=}")
 
     def get_unspent(self, address: str, *args, **kwargs) -> list[Unspent]:
         result = self._send_rpc(
