@@ -50,7 +50,7 @@ belonging to your address:
 
     >>> key = Key(...)
     >>> key.get_unspents()
-    [Unspent(amount=900000, confirmations=1, script='76a914dd9c917762a9f585a40e5c3a54238684d8cc741e88ac', txid='afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802', txindex=0)]
+    [Unspent(amount=900000, confirmations=1, script='76a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac', txid='afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802', txindex=0)]
 
 In the above example, the unspent output has an output index 0, which implies it can be
 a cashtoken genesis unspent. The cashtoken generated with this unspent will have a 
@@ -63,7 +63,7 @@ nft_capability, nft_commitment, token_amount)`. This can be sent as:
 
    >>> key.send([
    ...     (
-   ...         "bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v",  # destination
+   ...         "bitcoincash:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq37yf2mzf",  # destination
    ...         1000,  # amount
    ...         "satoshi",  # currency
    ...         "afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802",  # category
@@ -88,7 +88,7 @@ send 6000 fungible tokens of ``category`` ``afe979...`` you can use:
 
    >>> key.send([
    ...     (
-   ...         "bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v",
+   ...         "bitcoincash:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq37yf2mzf",
    ...         1000,
    ...         "satoshi",
    ...         "afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802",
@@ -110,7 +110,7 @@ We can further use the "minting" ``capability`` of NFT to mint a cashtoken of "m
    >>> key.send(
    ...     [
    ...     (
-   ...         "bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v",
+   ...         "bitcoincash:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq37yf2mzf",
    ...         1000,
    ...         "satoshi",
    ...         "afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802",
@@ -173,8 +173,8 @@ To find all addresses currently holding unspent outputs of a given cashtoken
    >>> NetworkAPI.get_cashtoken_addresses(
    ...     "afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802"
    ... )
-   {'bitcoincash:qz8wymtvnavrd8u5sexuxccvm6chlt3095hczr7px4',
-    'bitcoincash:qzjj9e8keft6aadl3y7jjq5u860u2jn87qxwpv9nzl'}
+   {'bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6',
+    'bitcoincash:qzvsaasdvw6mt9j2rs3gyps673gj86flev4sthhcc0'}
 
 The result is a ``set`` of addresses — one entry per unique address, regardless
 of how many UTXOs of that category the address holds. Addresses whose locking
@@ -228,4 +228,4 @@ non-cashtoken-signalling addresses:
 .. code-block:: python
 
    >>> key.cashtoken_address
-   'bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v'
+   'bitcoincash:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq37yf2mzf'
