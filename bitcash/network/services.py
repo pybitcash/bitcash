@@ -10,6 +10,7 @@ from typing import Any, Callable, Optional
 import requests
 
 from bitcash.network.APIs import BaseAPI, SubscriptionHandle
+from bitcash.exceptions import InvalidEndpointResponse
 
 # Import supported endpoint APIs
 from bitcash.network.APIs.BitcoinDotComAPI import BitcoinDotComAPI
@@ -182,6 +183,7 @@ def get_sanitized_endpoints_for(network: NetworkStr = "mainnet") -> tuple[BaseAP
 class NetworkAPI:
     IGNORED_ERRORS = (
         NotImplementedError,
+        InvalidEndpointResponse,
         requests.exceptions.RequestException,
         requests.exceptions.HTTPError,
         requests.exceptions.ConnectionError,
@@ -272,6 +274,8 @@ class NetworkAPI:
         :param txindex: The transaction index in question.
         :returns: The amount in satoshi.
         :raises ConnectionError: If all API services fail.
+        :raises DataNotFound: If the transaction or output index does not
+            exist on any endpoint. Not caught by endpoint fallback logic.
         """
 
         for endpoint in get_sanitized_endpoints_for(network):
@@ -311,6 +315,8 @@ class NetworkAPI:
         :param txid: The transaction id in question.
         :returns: The raw transaction details.
         :raises ConnectionError: If all API services fail.
+        :raises DataNotFound: If the transaction does not exist on any
+            endpoint. Not caught by endpoint fallback logic.
         """
 
         for endpoint in get_sanitized_endpoints_for(network):

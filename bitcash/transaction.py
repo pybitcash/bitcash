@@ -225,7 +225,7 @@ def sanitize_tx_data(
             try:
                 for output in prepared_outputs:
                     test_token.subtract_output(output)
-                (leftover_outputs, leftover_amount) = test_token.get_outputs(
+                leftover_outputs, leftover_amount = test_token.get_outputs(
                     leftover_address
                 )
             except InsufficientFunds as err:

@@ -142,6 +142,22 @@ it polls a service and if an error occurs it tries another.
    :class:`~bitcash.network.APIs.ChaingraphAPI.ChaingraphAPI`. See :ref:`cashtokens`
    for usage details.
 
+Exceptions
+^^^^^^^^^^
+
+Endpoint methods may raise two kinds of errors that are handled differently by
+NetworkAPI:
+
+- :class:`~bitcash.exceptions.InvalidEndpointResponse` — the endpoint returned
+  an application-level error (e.g. GraphQL ``errors`` field, JSON-RPC error).
+  This is added to ``NetworkAPI.IGNORED_ERRORS``, so the endpoint is skipped
+  and the next one is tried.
+
+- :class:`~bitcash.exceptions.DataNotFound` — the requested data (transaction,
+  output) does not exist on the endpoint. This is **not** an ignored error, so
+  it propagates immediately to the caller. This avoids masking genuinely missing
+  data behind a ``ConnectionError("All APIs are unreachable")`` message.
+
 .. _satoshi: https://en.bitcoin.it/wiki/Satoshi_(unit)
 .. _blockchain: https://en.bitcoin.it/wiki/Block_chain
 .. _unspent transaction outputs: https://en.bitcoin.it/wiki/Transaction#Input
