@@ -195,13 +195,20 @@ class Address:
         raise ValueError("Locking script not implemented for this address type")
 
     @classmethod
-    def from_script(cls, scriptcode: bytes) -> Address:
+    def from_script(cls, scriptcode: bytes, network: Network = Network.main) -> Address:
         """
         Generate Address from a locking script
 
         :param scriptcode: The locking script
+        :param network: Network — :attr:`~bitcash.types.Network.main`,
+            :attr:`~bitcash.types.Network.test`, or :attr:`~bitcash.types.Network.regtest`
         :returns: Instance of :class:~bitcash.cashaddress.Address
         """
+        net_suffix = (
+            "-TESTNET" if network == Network.test else
+            "-REGTEST" if network == Network.regtest else
+            ""
+        )
         # cashtoken suffix
         catkn = ""
         if scriptcode.startswith(OpCodes.OP_TOKENPREFIX.binary):
@@ -232,19 +239,19 @@ class Address:
             ) and scriptcode.endswith(
                 OpCodes.OP_EQUALVERIFY.binary + OpCodes.OP_CHECKSIG.binary
             ):
-                return cls("P2PKH" + catkn, list(scriptcode[3:23]))
+                return cls("P2PKH" + catkn + net_suffix, list(scriptcode[3:23]))
         # P2SH20
         if len(scriptcode) == 23:
             if scriptcode.startswith(
                 OpCodes.OP_HASH160.binary + OpCodes.OP_DATA_20.binary
             ) and scriptcode.endswith(OpCodes.OP_EQUAL.binary):
-                return cls("P2SH20" + catkn, list(scriptcode[2:22]))
+                return cls("P2SH20" + catkn + net_suffix, list(scriptcode[2:22]))
         # P2SH32
         if len(scriptcode) == 35:
             if scriptcode.startswith(
                 OpCodes.OP_HASH256.binary + OpCodes.OP_DATA_32.binary
             ) and scriptcode.endswith(OpCodes.OP_EQUAL.binary):
-                return cls("P2SH32" + catkn, list(scriptcode[2:34]))
+                return cls("P2SH32" + catkn + net_suffix, list(scriptcode[2:34]))
         raise ValueError("Unknown script")
 
     @classmethod

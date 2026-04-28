@@ -11,7 +11,7 @@ from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.cashaddress import Address
-from bitcash.types import NFTCapability, NetworkStr
+from bitcash.types import NFTCapability, Network, NetworkStr
 
 
 class ChaingraphAPI(BaseAPI):
@@ -510,6 +510,15 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
 }"""
         )
 
+        network_str: Optional[str] = kwargs.get("network")
+        if network_str is None:
+            node_like = self.node_like.lower()
+            if "regtest" in node_like:
+                network_str = "regtest"
+            elif "testnet" in node_like or "chipnet" in node_like:
+                network_str = "testnet"
+        network_enum = Network(network_str) if network_str else Network.main
+
         json = self.send_request(
             {"query": query, "variables": variables}, *args, **kwargs
         )
@@ -517,7 +526,9 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
         for output in json["data"]["output"]:
             try:
                 scriptcode = bytes.fromhex(output["locking_bytecode"][2:])
-                addresses.add(Address.from_script(scriptcode).cash_address())
+                addresses.add(
+                    Address.from_script(scriptcode, network_enum).cash_address()
+                )
             except ValueError:
                 pass
         return addresses

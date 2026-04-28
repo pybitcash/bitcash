@@ -357,6 +357,7 @@ class NetworkAPI:
                     nft_commitment,
                     has_token,
                     timeout=DEFAULT_TIMEOUT,
+                    network=network,
                 )
             except NotImplementedError:
                 continue
