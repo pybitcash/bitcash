@@ -205,9 +205,9 @@ class Address:
         :returns: Instance of :class:~bitcash.cashaddress.Address
         """
         net_suffix = (
-            "-TESTNET" if network == Network.test else
-            "-REGTEST" if network == Network.regtest else
-            ""
+            "-TESTNET"
+            if network == Network.test
+            else "-REGTEST" if network == Network.regtest else ""
         )
         # cashtoken suffix
         catkn = ""

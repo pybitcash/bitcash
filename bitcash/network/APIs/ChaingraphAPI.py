@@ -21,7 +21,12 @@ class ChaingraphAPI(BaseAPI):
     :param node_like: node name to match for with "_like" string comparison expression
     """
 
-    def __init__(self, network_endpoint: str, node_like: Optional[str] = None, network: Network = Network.main):
+    def __init__(
+        self,
+        network_endpoint: str,
+        node_like: Optional[str] = None,
+        network: Network = Network.main,
+    ):
         try:
             assert isinstance(network_endpoint, str)
         except AssertionError:
@@ -243,7 +248,9 @@ query GetOutputs($lb: _text!, $node: String!) {
                     txpart = txpart["outpoint"]
                 try:
                     scriptcode = bytes.fromhex(txpart["locking_bytecode"][2:])
-                    cashaddress = Address.from_script(scriptcode, self.network).cash_address()
+                    cashaddress = Address.from_script(
+                        scriptcode, self.network
+                    ).cash_address()
                 except ValueError:
                     cashaddress = None
                 part = TxPart(cashaddress, sats, data_hex=data_hex)

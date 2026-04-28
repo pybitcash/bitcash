@@ -92,9 +92,15 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
                 ].get_default_endpoints(network)
                 for each in defaults_endpoints:
                     if hasattr(each, "__iter__") and not isinstance(each, str):
-                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each, network=network_enum))
+                        endpoints.append(
+                            ENDPOINT_ENV_VARIABLES[endpoint](
+                                *each, network=network_enum
+                            )
+                        )
                     else:
-                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each, network=network_enum))
+                        endpoints.append(
+                            ENDPOINT_ENV_VARIABLES[endpoint](each, network=network_enum)
+                        )
         else:
             if os.getenv(f"{endpoint}_API_{network}".upper()):
                 endpoints.append(
@@ -112,7 +118,9 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
                     )
                     if next_endpoint:
                         endpoints.append(
-                            ENDPOINT_ENV_VARIABLES[endpoint](next_endpoint, network=network_enum)
+                            ENDPOINT_ENV_VARIABLES[endpoint](
+                                next_endpoint, network=network_enum
+                            )
                         )
                         counter += 1
                     else:
@@ -123,9 +131,15 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
                 ].get_default_endpoints(network)
                 for each in defaults_endpoints:
                     if hasattr(each, "__iter__") and not isinstance(each, str):
-                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each, network=network_enum))
+                        endpoints.append(
+                            ENDPOINT_ENV_VARIABLES[endpoint](
+                                *each, network=network_enum
+                            )
+                        )
                     else:
-                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each, network=network_enum))
+                        endpoints.append(
+                            ENDPOINT_ENV_VARIABLES[endpoint](each, network=network_enum)
+                        )
 
     return tuple(endpoints)
 

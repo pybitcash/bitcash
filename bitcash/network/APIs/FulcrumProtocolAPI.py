@@ -111,7 +111,12 @@ class FulcrumProtocolAPI(BaseAPI):
         "regtest": [],
     }
 
-    def __init__(self, network_endpoint: str, timeout: float = DEFAULT_SOCKET_TIMEOUT, network: Network = Network.main):
+    def __init__(
+        self,
+        network_endpoint: str,
+        timeout: float = DEFAULT_SOCKET_TIMEOUT,
+        network: Network = Network.main,
+    ):
         try:
             assert isinstance(network_endpoint, str)
         except AssertionError:
