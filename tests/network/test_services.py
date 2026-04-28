@@ -22,6 +22,7 @@ from bitcash.network.services import (
 from bitcash.network.transaction import Transaction
 from bitcash.types import NFTCapability
 from tests.samples import (
+    BITCOIN_CASHADDRESS,
     VALID_BITCOINCOM_ENDPOINT_URLS,
     INVALID_BITCOINCOM_ENDPOINT_URLS,
     VALID_FULCRUM_ENDPOINT_URLS,
@@ -541,7 +542,7 @@ CASHTOKEN_CATEGORY = "8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2
 class TestNetworkAPICashtokenAddresses:
     @patch("bitcash.network.services.get_sanitized_endpoints_for")
     def test_returns_result_from_supporting_endpoint(self, mock_get_endpoints):
-        expected = {"bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6"}
+        expected = {BITCOIN_CASHADDRESS}
         mock_endpoint = MagicMock()
         mock_endpoint.get_cashtoken_addresses.return_value = expected
         mock_get_endpoints.return_value = (mock_endpoint,)
@@ -553,7 +554,7 @@ class TestNetworkAPICashtokenAddresses:
 
     @patch("bitcash.network.services.get_sanitized_endpoints_for")
     def test_skips_unsupported_endpoints(self, mock_get_endpoints):
-        expected = {"bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6"}
+        expected = {BITCOIN_CASHADDRESS}
         mock_endpoint1 = MagicMock()
         mock_endpoint1.get_cashtoken_addresses.side_effect = NotImplementedError()
         mock_endpoint2 = MagicMock()
