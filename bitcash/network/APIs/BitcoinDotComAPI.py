@@ -9,7 +9,7 @@ from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.format import cashtokenaddress_to_address
-from bitcash.types import CashTokens, NFTCapability, NetworkStr
+from bitcash.types import CashTokens, NFTCapability, Network, NetworkStr
 
 # This class is the interface for Bitcash to interact with
 # Bitcoin.com based RESTful interfaces.
@@ -21,7 +21,7 @@ BCH_TO_SAT_MULTIPLIER = 100000000
 class BitcoinDotComAPI(BaseAPI):
     """rest.bitcoin.com API"""
 
-    def __init__(self, network_endpoint: str):
+    def __init__(self, network_endpoint: str, network: Network = Network.main):
         try:
             assert isinstance(network_endpoint, str)
             assert network_endpoint[:4] == "http"
@@ -33,6 +33,7 @@ class BitcoinDotComAPI(BaseAPI):
             )
 
         self.network_endpoint = network_endpoint
+        self.network = network
 
     # Default endpoints to use for this interface
     DEFAULT_ENDPOINTS = {

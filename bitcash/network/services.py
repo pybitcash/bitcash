@@ -56,7 +56,7 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
     # however many endpoints you'd like.
     # If neither of these env variables have been set, it returns
     # the instantiated result of <NAME>.get_default_endpoints(network)
-    _ = Network(network)  # Validate network input
+    network_enum = Network(network)  # Validate network input
 
     endpoints: list[BaseAPI] = []
     for endpoint in ENDPOINT_ENV_VARIABLES.keys():
@@ -66,6 +66,7 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
                     ENDPOINT_ENV_VARIABLES[endpoint](
                         os.getenv(f"{endpoint}_API".upper()),
                         os.getenv(f"{endpoint}_API_{network}".upper()),
+                        network=network_enum,
                     )
                 )
             elif os.getenv(f"{endpoint}_API_1".upper()):
@@ -79,7 +80,7 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
                     if next_endpoint:
                         endpoints.append(
                             ENDPOINT_ENV_VARIABLES[endpoint](
-                                next_endpoint, next_pattern
+                                next_endpoint, next_pattern, network=network_enum
                             )
                         )
                         counter += 1
@@ -91,14 +92,15 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
                 ].get_default_endpoints(network)
                 for each in defaults_endpoints:
                     if hasattr(each, "__iter__") and not isinstance(each, str):
-                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each))
+                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each, network=network_enum))
                     else:
-                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
+                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each, network=network_enum))
         else:
             if os.getenv(f"{endpoint}_API_{network}".upper()):
                 endpoints.append(
                     ENDPOINT_ENV_VARIABLES[endpoint](
-                        os.getenv(f"{endpoint}_API_{network}".upper())
+                        os.getenv(f"{endpoint}_API_{network}".upper()),
+                        network=network_enum,
                     )
                 )
             elif os.getenv(f"{endpoint}_API_{network}_1".upper()):
@@ -110,7 +112,7 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
                     )
                     if next_endpoint:
                         endpoints.append(
-                            ENDPOINT_ENV_VARIABLES[endpoint](next_endpoint)
+                            ENDPOINT_ENV_VARIABLES[endpoint](next_endpoint, network=network_enum)
                         )
                         counter += 1
                     else:
@@ -121,9 +123,9 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
                 ].get_default_endpoints(network)
                 for each in defaults_endpoints:
                     if hasattr(each, "__iter__") and not isinstance(each, str):
-                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each))
+                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each, network=network_enum))
                     else:
-                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
+                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each, network=network_enum))
 
     return tuple(endpoints)
 
@@ -357,7 +359,6 @@ class NetworkAPI:
                     nft_commitment,
                     has_token,
                     timeout=DEFAULT_TIMEOUT,
-                    network=network,
                 )
             except NotImplementedError:
                 continue

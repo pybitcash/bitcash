@@ -21,7 +21,7 @@ class ChaingraphAPI(BaseAPI):
     :param node_like: node name to match for with "_like" string comparison expression
     """
 
-    def __init__(self, network_endpoint: str, node_like: Optional[str] = None):
+    def __init__(self, network_endpoint: str, node_like: Optional[str] = None, network: Network = Network.main):
         try:
             assert isinstance(network_endpoint, str)
         except AssertionError:
@@ -35,6 +35,7 @@ class ChaingraphAPI(BaseAPI):
             self.node_like = "%"
         else:
             self.node_like = node_like
+        self.network = network
 
     # Default endpoints to use for this interface
     DEFAULT_ENDPOINTS = {
@@ -242,8 +243,7 @@ query GetOutputs($lb: _text!, $node: String!) {
                     txpart = txpart["outpoint"]
                 try:
                     scriptcode = bytes.fromhex(txpart["locking_bytecode"][2:])
-                    cashaddress = Address.from_script(scriptcode)
-                    cashaddress = cashaddress.cash_address()
+                    cashaddress = Address.from_script(scriptcode, self.network).cash_address()
                 except ValueError:
                     cashaddress = None
                 part = TxPart(cashaddress, sats, data_hex=data_hex)
@@ -510,15 +510,6 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
 }"""
         )
 
-        network_str: Optional[str] = kwargs.get("network")
-        if network_str is None:
-            node_like = self.node_like.lower()
-            if "regtest" in node_like:
-                network_str = "regtest"
-            elif "testnet" in node_like or "chipnet" in node_like:
-                network_str = "testnet"
-        network_enum = Network(network_str) if network_str else Network.main
-
         json = self.send_request(
             {"query": query, "variables": variables}, *args, **kwargs
         )
@@ -527,7 +518,7 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
             try:
                 scriptcode = bytes.fromhex(output["locking_bytecode"][2:])
                 addresses.add(
-                    Address.from_script(scriptcode, network_enum).cash_address()
+                    Address.from_script(scriptcode, self.network).cash_address()
                 )
             except ValueError:
                 pass

@@ -18,7 +18,7 @@ from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.cashaddress import Address
-from bitcash.types import NFTCapability, NetworkStr
+from bitcash.types import NFTCapability, Network, NetworkStr
 
 context = ssl.create_default_context()
 FULCRUM_PROTOCOL = "1.5.0"
@@ -111,7 +111,7 @@ class FulcrumProtocolAPI(BaseAPI):
         "regtest": [],
     }
 
-    def __init__(self, network_endpoint: str, timeout: float = DEFAULT_SOCKET_TIMEOUT):
+    def __init__(self, network_endpoint: str, timeout: float = DEFAULT_SOCKET_TIMEOUT, network: Network = Network.main):
         try:
             assert isinstance(network_endpoint, str)
         except AssertionError:
@@ -130,6 +130,7 @@ class FulcrumProtocolAPI(BaseAPI):
         self.port = int(port)
 
         self.timeout = timeout
+        self.network = network
         self.sock: Union[None, socket.socket, ssl.SSLSocket] = None
         self._sock_lock = threading.Lock()
 

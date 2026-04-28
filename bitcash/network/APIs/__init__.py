@@ -5,7 +5,7 @@ from typing import Any, Callable, Optional
 
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction
-from bitcash.types import NFTCapability, NetworkStr
+from bitcash.types import NFTCapability, Network, NetworkStr
 
 
 class BaseAPI(ABC):
@@ -13,10 +13,12 @@ class BaseAPI(ABC):
     Abstract class for API classes
 
     :param network_endpoint: Network endpoint to send requests
+    :param network: The BCH network this endpoint serves
     """
 
-    def __init__(self, network_endpoint: str):
+    def __init__(self, network_endpoint: str, network: Network = Network.main):
         self.network_endpoint = network_endpoint
+        self.network = network
 
     @classmethod
     @abstractmethod

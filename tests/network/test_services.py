@@ -597,5 +597,4 @@ class TestNetworkAPICashtokenAddresses:
             b"\xff",
             True,
             timeout=mock_endpoint.get_cashtoken_addresses.call_args[1]["timeout"],
-            network="testnet",
         )
