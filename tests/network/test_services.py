@@ -20,7 +20,7 @@ from bitcash.network.services import (
     set_service_timeout,
 )
 from bitcash.network.transaction import Transaction
-from bitcash.types import NFTCapability
+from bitcash.types import NFTCapability, Network
 from tests.samples import (
     BITCOIN_CASHADDRESS,
     VALID_BITCOINCOM_ENDPOINT_URLS,
@@ -118,7 +118,7 @@ def mock_get_chaingraph_endpoints_for(network):
     default_endpoints = ChaingraphAPI.get_default_endpoints(network)
     endpoints = []
     for endpoint in default_endpoints:
-        endpoints.append(ChaingraphAPI(*endpoint))
+        endpoints.append(ChaingraphAPI(*endpoint, network=Network(network)))
     return endpoints
 
 
