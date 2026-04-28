@@ -20,6 +20,7 @@ from bitcash.network.services import (
     set_service_timeout,
 )
 from bitcash.network.transaction import Transaction
+from bitcash.types import NFTCapability
 from tests.samples import (
     VALID_BITCOINCOM_ENDPOINT_URLS,
     INVALID_BITCOINCOM_ENDPOINT_URLS,
@@ -532,3 +533,69 @@ class TestNetworkAPISubscription:
         callback = MagicMock()
         with pytest.raises(ConnectionError):
             NetworkAPI.subscribe_address(MAIN_ADDRESS_USED1, callback)
+
+
+CASHTOKEN_CATEGORY = "8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf"
+
+
+class TestNetworkAPICashtokenAddresses:
+    @patch("bitcash.network.services.get_sanitized_endpoints_for")
+    def test_returns_result_from_supporting_endpoint(self, mock_get_endpoints):
+        expected = {"bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6"}
+        mock_endpoint = MagicMock()
+        mock_endpoint.get_cashtoken_addresses.return_value = expected
+        mock_get_endpoints.return_value = (mock_endpoint,)
+
+        result = NetworkAPI.get_cashtoken_addresses(CASHTOKEN_CATEGORY)
+
+        assert result == expected
+        mock_endpoint.get_cashtoken_addresses.assert_called_once()
+
+    @patch("bitcash.network.services.get_sanitized_endpoints_for")
+    def test_skips_unsupported_endpoints(self, mock_get_endpoints):
+        expected = {"bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6"}
+        mock_endpoint1 = MagicMock()
+        mock_endpoint1.get_cashtoken_addresses.side_effect = NotImplementedError()
+        mock_endpoint2 = MagicMock()
+        mock_endpoint2.get_cashtoken_addresses.return_value = expected
+        mock_get_endpoints.return_value = (mock_endpoint1, mock_endpoint2)
+
+        result = NetworkAPI.get_cashtoken_addresses(CASHTOKEN_CATEGORY)
+
+        assert result == expected
+        mock_endpoint1.get_cashtoken_addresses.assert_called_once()
+        mock_endpoint2.get_cashtoken_addresses.assert_called_once()
+
+    @patch("bitcash.network.services.get_sanitized_endpoints_for")
+    def test_raises_connection_error_when_all_unsupported(self, mock_get_endpoints):
+        mock_endpoint1 = MagicMock()
+        mock_endpoint1.get_cashtoken_addresses.side_effect = NotImplementedError()
+        mock_endpoint2 = MagicMock()
+        mock_endpoint2.get_cashtoken_addresses.side_effect = NotImplementedError()
+        mock_get_endpoints.return_value = (mock_endpoint1, mock_endpoint2)
+
+        with pytest.raises(ConnectionError):
+            NetworkAPI.get_cashtoken_addresses(CASHTOKEN_CATEGORY)
+
+    @patch("bitcash.network.services.get_sanitized_endpoints_for")
+    def test_passes_filters_and_network_to_endpoint(self, mock_get_endpoints):
+        mock_endpoint = MagicMock()
+        mock_endpoint.get_cashtoken_addresses.return_value = set()
+        mock_get_endpoints.return_value = (mock_endpoint,)
+
+        NetworkAPI.get_cashtoken_addresses(
+            CASHTOKEN_CATEGORY,
+            network="testnet",
+            nft_capability=NFTCapability.minting,
+            nft_commitment=b"\xff",
+            has_token=True,
+        )
+
+        mock_endpoint.get_cashtoken_addresses.assert_called_once_with(
+            CASHTOKEN_CATEGORY,
+            NFTCapability.minting,
+            b"\xff",
+            True,
+            timeout=mock_endpoint.get_cashtoken_addresses.call_args[1]["timeout"],
+            network="testnet",
+        )
