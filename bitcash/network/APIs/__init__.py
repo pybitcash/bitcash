@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction
-from bitcash.types import NetworkStr
+from bitcash.types import NFTCapability, Network, NetworkStr
 
 
 class BaseAPI(ABC):
@@ -13,10 +13,12 @@ class BaseAPI(ABC):
     Abstract class for API classes
 
     :param network_endpoint: Network endpoint to send requests
+    :param network: The BCH network this endpoint serves
     """
 
-    def __init__(self, network_endpoint: str):
+    def __init__(self, network_endpoint: str, network: Network = Network.main):
         self.network_endpoint = network_endpoint
+        self.network = network
 
     @classmethod
     @abstractmethod
@@ -31,9 +33,14 @@ class BaseAPI(ABC):
     @abstractmethod
     def get_blockheight(self, *args, **kwargs) -> int:
         """
-        Returns the current block height
+        Returns the current block height.
 
-        :returns: Current block height
+        Must return 0 if the endpoint has not yet indexed any blocks (e.g. a
+        node that hasn't synced). A return value of 0 causes NetworkAPI's
+        endpoint selection to ignore this endpoint, so no further requests
+        will be routed to it until it catches up.
+
+        :returns: Current block height, or 0 if no blocks are available.
         """
 
     @abstractmethod
@@ -60,6 +67,8 @@ class BaseAPI(ABC):
         :param txid: The transaction id in question.
         :param txindex: The transaction index in question.
         :returns: The amount in satoshis.
+        :raises DataNotFound: If the transaction or output index does not
+            exist on this endpoint.
         """
 
     @abstractmethod
@@ -86,6 +95,8 @@ class BaseAPI(ABC):
 
         :param txid: The transaction id in question.
         :returns: The raw transaction details as a dictionary.
+        :raises DataNotFound: If the transaction does not exist on this
+            endpoint.
         """
 
     @abstractmethod
@@ -108,6 +119,29 @@ class BaseAPI(ABC):
         :param callback: Function to call with (address, status_hash) on update.
             status_hash is None if the address has no history.
         :return: A SubscriptionHandle object for managing the subscription.
+        """
+
+    @abstractmethod
+    def get_cashtoken_addresses(
+        self,
+        category_id: str,
+        nft_capability: Optional[NFTCapability] = None,
+        nft_commitment: Optional[bytes] = None,
+        has_token: bool = False,
+        *args,
+        **kwargs,
+    ) -> set[str]:
+        """Gets all addresses holding unspent outputs of a given cashtoken category.
+
+        :param category_id: The token category ID (hex string).
+        :param nft_capability: If set, only return addresses holding an NFT with this capability
+            (one of :attr:`~bitcash.types.NFTCapability.none`,
+            :attr:`~bitcash.types.NFTCapability.mutable`,
+            :attr:`~bitcash.types.NFTCapability.minting`).
+        :param nft_commitment: If set, only return addresses holding an NFT with this commitment.
+        :param has_token: If True, only return addresses holding fungible tokens of this category.
+        :returns: A set of addresses holding the cashtoken.
+        :raises NotImplementedError: If the API does not support this query.
         """
 
 

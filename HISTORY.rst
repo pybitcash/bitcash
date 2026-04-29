@@ -29,6 +29,15 @@ Unreleased (see `master <https://github.com/ofek/bitcash>`_)
   Use ``key.subscribe(callback)`` to receive notifications when
   an address's state changes.
 
+- Add ``NetworkAPI.get_cashtoken_addresses(category_id, ...)`` to fetch
+  all addresses holding unspent outputs of a given CashToken category,
+  with optional filters for NFT capability, NFT commitment, and fungible
+  token presence. Supported by ChaingraphAPI only.
+
+- All API endpoint classes (``ChaingraphAPI``, ``FulcrumProtocolAPI``,
+  ``BitcoinDotComAPI``) now accept a ``network`` parameter at construction
+  and expose it as ``self.network``.
+
 0.5.2 (2018-05-16)
 ------------------
 

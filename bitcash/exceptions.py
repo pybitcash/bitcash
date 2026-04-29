@@ -14,5 +14,13 @@ class InvalidEndpointURLProvided(Exception):
     pass
 
 
+class InvalidEndpointResponse(Exception):
+    pass
+
+
+class DataNotFound(Exception):
+    pass
+
+
 class InvalidCashToken(ValueError):
     pass

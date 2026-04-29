@@ -7,15 +7,18 @@ from decimal import Decimal
 import threading
 import typing
 from requests.exceptions import ConnectTimeout, ContentDecodingError
-from typing import Any, Callable, Union
+from typing import Any, Callable, Optional, Union
 
-from bitcash.exceptions import InvalidEndpointURLProvided
+from bitcash.exceptions import (
+    InvalidEndpointURLProvided,
+    InvalidEndpointResponse,
+    DataNotFound,
+)
 from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.cashaddress import Address
-from bitcash.types import NetworkStr
-
+from bitcash.types import NFTCapability, Network, NetworkStr
 
 context = ssl.create_default_context()
 FULCRUM_PROTOCOL = "1.5.0"
@@ -82,7 +85,7 @@ def send_json_rpc_payload(
         )
 
     if "error" in return_json:
-        raise RuntimeError(f"Error in retruned json: {return_json['error']}")
+        raise InvalidEndpointResponse(f"Error in returned json: {return_json['error']}")
 
     return return_json["result"]
 
@@ -108,7 +111,12 @@ class FulcrumProtocolAPI(BaseAPI):
         "regtest": [],
     }
 
-    def __init__(self, network_endpoint: str, timeout: float = DEFAULT_SOCKET_TIMEOUT):
+    def __init__(
+        self,
+        network_endpoint: str,
+        timeout: float = DEFAULT_SOCKET_TIMEOUT,
+        network: Network = Network.main,
+    ):
         try:
             assert isinstance(network_endpoint, str)
         except AssertionError:
@@ -127,6 +135,7 @@ class FulcrumProtocolAPI(BaseAPI):
         self.port = int(port)
 
         self.timeout = timeout
+        self.network = network
         self.sock: Union[None, socket.socket, ssl.SSLSocket] = None
         self._sock_lock = threading.Lock()
 
@@ -243,7 +252,7 @@ class FulcrumProtocolAPI(BaseAPI):
         for vout in result["vout"]:
             if vout["n"] == txindex:
                 return vout
-        raise RuntimeError(f"Transaction {txid=} doesn't have {txindex=}")
+        raise DataNotFound(f"Transaction {txid=} doesn't have {txindex=}")
 
     def get_tx_amount(self, txid: str, txindex: int, *args, **kwargs) -> int:
         result = self.get_raw_transaction(txid, *args, **kwargs)
@@ -256,7 +265,7 @@ class FulcrumProtocolAPI(BaseAPI):
                     (Decimal(vout["value"]) * BCH_TO_SAT_MULTIPLIER).to_integral_value()
                 )
                 return sats
-        raise RuntimeError(f"Transaction {txid=} doesn't have {txindex=}")
+        raise DataNotFound(f"Transaction {txid=} doesn't have {txindex=}")
 
     def get_unspent(self, address: str, *args, **kwargs) -> list[Unspent]:
         result = self._send_rpc(
@@ -299,6 +308,19 @@ class FulcrumProtocolAPI(BaseAPI):
             "blockchain.transaction.get", [txid, True], *args, **kwargs
         )
         return typing.cast(dict[str, Any], result)
+
+    def get_cashtoken_addresses(
+        self,
+        category_id: str,
+        nft_capability: Optional[NFTCapability] = None,
+        nft_commitment: Optional[bytes] = None,
+        has_token: bool = False,
+        *args,
+        **kwargs,
+    ) -> set[str]:
+        raise NotImplementedError(
+            "FulcrumProtocolAPI does not support querying addresses by token category"
+        )
 
     def broadcast_tx(self, tx_hex: str, *args, **kwargs) -> bool:  # pragma: no cover
         self._send_rpc("blockchain.transaction.broadcast", [tx_hex], *args, **kwargs)

@@ -5,11 +5,12 @@ import socket
 import ssl
 import os
 import threading
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 import requests
 
 from bitcash.network.APIs import BaseAPI, SubscriptionHandle
+from bitcash.exceptions import InvalidEndpointResponse
 
 # Import supported endpoint APIs
 from bitcash.network.APIs.BitcoinDotComAPI import BitcoinDotComAPI
@@ -17,7 +18,7 @@ from bitcash.network.APIs.ChaingraphAPI import ChaingraphAPI
 from bitcash.network.APIs.FulcrumProtocolAPI import FulcrumProtocolAPI
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction
-from bitcash.types import Network, NetworkStr
+from bitcash.types import NFTCapability, Network, NetworkStr
 from bitcash.utils import time_cache
 
 # Dictionary of supported endpoint APIs
@@ -55,7 +56,7 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
     # however many endpoints you'd like.
     # If neither of these env variables have been set, it returns
     # the instantiated result of <NAME>.get_default_endpoints(network)
-    _ = Network(network)  # Validate network input
+    network_enum = Network(network)  # Validate network input
 
     endpoints: list[BaseAPI] = []
     for endpoint in ENDPOINT_ENV_VARIABLES.keys():
@@ -65,6 +66,7 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
                     ENDPOINT_ENV_VARIABLES[endpoint](
                         os.getenv(f"{endpoint}_API".upper()),
                         os.getenv(f"{endpoint}_API_{network}".upper()),
+                        network=network_enum,
                     )
                 )
             elif os.getenv(f"{endpoint}_API_1".upper()):
@@ -78,7 +80,7 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
                     if next_endpoint:
                         endpoints.append(
                             ENDPOINT_ENV_VARIABLES[endpoint](
-                                next_endpoint, next_pattern
+                                next_endpoint, next_pattern, network=network_enum
                             )
                         )
                         counter += 1
@@ -90,14 +92,21 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
                 ].get_default_endpoints(network)
                 for each in defaults_endpoints:
                     if hasattr(each, "__iter__") and not isinstance(each, str):
-                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each))
+                        endpoints.append(
+                            ENDPOINT_ENV_VARIABLES[endpoint](
+                                *each, network=network_enum
+                            )
+                        )
                     else:
-                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
+                        endpoints.append(
+                            ENDPOINT_ENV_VARIABLES[endpoint](each, network=network_enum)
+                        )
         else:
             if os.getenv(f"{endpoint}_API_{network}".upper()):
                 endpoints.append(
                     ENDPOINT_ENV_VARIABLES[endpoint](
-                        os.getenv(f"{endpoint}_API_{network}".upper())
+                        os.getenv(f"{endpoint}_API_{network}".upper()),
+                        network=network_enum,
                     )
                 )
             elif os.getenv(f"{endpoint}_API_{network}_1".upper()):
@@ -109,7 +118,9 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
                     )
                     if next_endpoint:
                         endpoints.append(
-                            ENDPOINT_ENV_VARIABLES[endpoint](next_endpoint)
+                            ENDPOINT_ENV_VARIABLES[endpoint](
+                                next_endpoint, network=network_enum
+                            )
                         )
                         counter += 1
                     else:
@@ -120,9 +131,15 @@ def get_endpoints_for(network: str) -> tuple[BaseAPI, ...]:
                 ].get_default_endpoints(network)
                 for each in defaults_endpoints:
                     if hasattr(each, "__iter__") and not isinstance(each, str):
-                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](*each))
+                        endpoints.append(
+                            ENDPOINT_ENV_VARIABLES[endpoint](
+                                *each, network=network_enum
+                            )
+                        )
                     else:
-                        endpoints.append(ENDPOINT_ENV_VARIABLES[endpoint](each))
+                        endpoints.append(
+                            ENDPOINT_ENV_VARIABLES[endpoint](each, network=network_enum)
+                        )
 
     return tuple(endpoints)
 
@@ -182,6 +199,7 @@ def get_sanitized_endpoints_for(network: NetworkStr = "mainnet") -> tuple[BaseAP
 class NetworkAPI:
     IGNORED_ERRORS = (
         NotImplementedError,
+        InvalidEndpointResponse,
         requests.exceptions.RequestException,
         requests.exceptions.HTTPError,
         requests.exceptions.ConnectionError,
@@ -272,6 +290,8 @@ class NetworkAPI:
         :param txindex: The transaction index in question.
         :returns: The amount in satoshi.
         :raises ConnectionError: If all API services fail.
+        :raises DataNotFound: If the transaction or output index does not
+            exist on any endpoint. Not caught by endpoint fallback logic.
         """
 
         for endpoint in get_sanitized_endpoints_for(network):
@@ -311,11 +331,51 @@ class NetworkAPI:
         :param txid: The transaction id in question.
         :returns: The raw transaction details.
         :raises ConnectionError: If all API services fail.
+        :raises DataNotFound: If the transaction does not exist on any
+            endpoint. Not caught by endpoint fallback logic.
         """
 
         for endpoint in get_sanitized_endpoints_for(network):
             try:
                 return endpoint.get_raw_transaction(txid, timeout=DEFAULT_TIMEOUT)
+            except cls.IGNORED_ERRORS:  # pragma: no cover
+                pass
+
+        raise ConnectionError("All APIs are unreachable.")  # pragma: no cover
+
+    @classmethod
+    def get_cashtoken_addresses(
+        cls,
+        category_id: str,
+        network: NetworkStr = "mainnet",
+        nft_capability: Optional[NFTCapability] = None,
+        nft_commitment: Optional[bytes] = None,
+        has_token: bool = False,
+    ) -> set[str]:
+        """Gets all addresses holding unspent outputs of a given cashtoken category.
+
+        :param category_id: The token category ID (hex string).
+        :param network: The network to query.
+        :param nft_capability: If set, only return addresses holding an NFT with this capability
+            (one of :attr:`~bitcash.types.NFTCapability.none`,
+            :attr:`~bitcash.types.NFTCapability.mutable`,
+            :attr:`~bitcash.types.NFTCapability.minting`).
+        :param nft_commitment: If set, only return addresses holding an NFT with this commitment.
+        :param has_token: If True, only return addresses holding fungible tokens of this category.
+        :returns: A set of addresses holding the cashtoken.
+        :raises ConnectionError: If all API services fail.
+        """
+        for endpoint in get_sanitized_endpoints_for(network):
+            try:
+                return endpoint.get_cashtoken_addresses(
+                    category_id,
+                    nft_capability,
+                    nft_commitment,
+                    has_token,
+                    timeout=DEFAULT_TIMEOUT,
+                )
+            except NotImplementedError:
+                continue
             except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 

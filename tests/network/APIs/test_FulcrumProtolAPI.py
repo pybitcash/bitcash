@@ -9,9 +9,9 @@ from bitcash.network.APIs import SubscriptionHandle
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.network.APIs.FulcrumProtocolAPI import FulcrumProtocolAPI
 from bitcash.network.meta import Unspent
+from tests.samples import BITCOIN_CASHADDRESS_CATKN, PUBKEY_HASH
 
-
-BITCOIN_CASHADDRESS_CATKN = "bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v"
+_SCRIPT = "76a914" + PUBKEY_HASH.hex() + "88ac"
 
 
 def dummy_handshake(hostname: str, port: int, timeout: float):
@@ -369,7 +369,7 @@ class TestFulcrumProtolAPI:
             Unspent(
                 amount=657,
                 confirmations=19445,
-                script="76a914dd9c917762a9f585a40e5c3a54238684d8cc741e88ac",
+                script=_SCRIPT,
                 txid="bfd2f488f33a77fced7ea4d0bc694ab64fadb0e0f66bf101438b3eb88b2411c3",
                 txindex=0,
                 category_id="357dc834af514958b5cb9d5407c26af12e81f442599fbfb99f108563cea126f0",
@@ -378,7 +378,7 @@ class TestFulcrumProtolAPI:
             Unspent(
                 amount=681,
                 confirmations=19445,
-                script="76a914dd9c917762a9f585a40e5c3a54238684d8cc741e88ac",
+                script=_SCRIPT,
                 txid="bfd2f488f33a77fced7ea4d0bc694ab64fadb0e0f66bf101438b3eb88b2411c3",
                 txindex=1,
                 category_id="afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802",
@@ -389,7 +389,7 @@ class TestFulcrumProtolAPI:
             Unspent(
                 amount=648,
                 confirmations=19445,
-                script="76a914dd9c917762a9f585a40e5c3a54238684d8cc741e88ac",
+                script=_SCRIPT,
                 txid="bfd2f488f33a77fced7ea4d0bc694ab64fadb0e0f66bf101438b3eb88b2411c3",
                 txindex=2,
                 category_id="afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802",
@@ -398,7 +398,7 @@ class TestFulcrumProtolAPI:
             Unspent(
                 amount=895078,
                 confirmations=19445,
-                script="76a914dd9c917762a9f585a40e5c3a54238684d8cc741e88ac",
+                script=_SCRIPT,
                 txid="bfd2f488f33a77fced7ea4d0bc694ab64fadb0e0f66bf101438b3eb88b2411c3",
                 txindex=3,
                 category_id="60f451f3cb0ea81fd6c68cf2d42b708bfdf6d74cd08d75c8a7a515ff8adce4ae",

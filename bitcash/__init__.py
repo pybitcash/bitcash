@@ -4,9 +4,9 @@ from bitcash.network.services import set_service_timeout
 from bitcash.wallet import (
     Key,
     PrivateKey,
-    PrivateKeyTestnet,
     PrivateKeyRegtest,
+    PrivateKeyTestnet,
     wif_to_key,
 )
 
-__version__ = "1.1.2"
+__version__ = "1.2.0"
