@@ -288,7 +288,9 @@ def cashtoken_address_cmd(address: str) -> None:
 @click.argument("category_id")
 @NFT_CAPABILITY_OPTION
 @NFT_COMMITMENT_OPTION
-@click.option("--has-amount", is_flag=True, help="Only addresses holding fungible tokens")
+@click.option(
+    "--has-amount", is_flag=True, help="Only addresses holding fungible tokens"
+)
 @NETWORK_OPTION
 def cashtoken_addresses_cmd(
     category_id: str,
@@ -534,7 +536,13 @@ def wallet() -> None:
 
 
 @wallet.command(name="new")
-@agent(read_only=False, destructive=False, idempotent=False, open_world=False, local_required=True)
+@agent(
+    read_only=False,
+    destructive=False,
+    idempotent=False,
+    open_world=False,
+    local_required=True,
+)
 @click.argument("name")
 @click.option("--wif", default=None, help="Import existing WIF (optional)")
 @NETWORK_OPTION
@@ -671,7 +679,13 @@ def wallet_balance(name: str, currency: str, cashtoken: bool) -> None:
 
 
 @wallet.command(name="send")
-@agent(read_only=False, destructive=True, idempotent=False, open_world=True, local_required=True)
+@agent(
+    read_only=False,
+    destructive=True,
+    idempotent=False,
+    open_world=True,
+    local_required=True,
+)
 @click.argument("name")
 @click.argument("to")
 @click.argument("amount")
@@ -718,7 +732,9 @@ def wallet_send(
 
 
 @wallet.command(name="export")
-@agent(read_only=True, idempotent=True, open_world=False, secret=True, local_required=True)
+@agent(
+    read_only=True, idempotent=True, open_world=False, secret=True, local_required=True
+)
 @click.argument("name")
 @PASSWORD_OPTION
 def wallet_export(name: str, password: str | None) -> None:
@@ -733,7 +749,13 @@ def wallet_export(name: str, password: str | None) -> None:
 
 
 @wallet.command(name="delete")
-@agent(read_only=False, destructive=True, idempotent=False, open_world=False, local_required=True)
+@agent(
+    read_only=False,
+    destructive=True,
+    idempotent=False,
+    open_world=False,
+    local_required=True,
+)
 @click.argument("name")
 @click.confirmation_option(prompt="Are you sure you want to delete this wallet?")
 def wallet_delete(name: str) -> None:

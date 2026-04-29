@@ -612,6 +612,7 @@ class TestSchema:
 
     def test_agent_decorator_rejects_unknown_fields(self):
         from bitcash.click_agent import agent
+
         with pytest.raises(ValueError, match="Unknown @agent fields"):
             agent(unknown_field=True)
 
@@ -646,7 +647,9 @@ class TestSchema:
 class TestCashtokenAddresses:
     def test_lists_sorted(self, runner):
         addrs = {"bitcoincash:qzzz", "bitcoincash:qaaa", "bitcoincash:qmmm"}
-        with patch("bitcash.cli.NetworkAPI.get_cashtoken_addresses", return_value=addrs):
+        with patch(
+            "bitcash.cli.NetworkAPI.get_cashtoken_addresses", return_value=addrs
+        ):
             result = runner.invoke(
                 bitcash, ["cashtoken-addresses", CASHTOKEN_CATAGORY_ID]
             )
@@ -655,7 +658,9 @@ class TestCashtokenAddresses:
         assert lines == sorted(addrs)
 
     def test_empty(self, runner):
-        with patch("bitcash.cli.NetworkAPI.get_cashtoken_addresses", return_value=set()):
+        with patch(
+            "bitcash.cli.NetworkAPI.get_cashtoken_addresses", return_value=set()
+        ):
             result = runner.invoke(
                 bitcash, ["cashtoken-addresses", CASHTOKEN_CATAGORY_ID]
             )
@@ -664,18 +669,25 @@ class TestCashtokenAddresses:
 
     def test_filters_passed_through(self, runner):
         commitment_hex = CASHTOKEN_COMMITMENT.hex()
-        with patch("bitcash.cli.NetworkAPI.get_cashtoken_addresses", return_value=set()) as mock:
+        with patch(
+            "bitcash.cli.NetworkAPI.get_cashtoken_addresses", return_value=set()
+        ) as mock:
             runner.invoke(
                 bitcash,
                 [
-                    "cashtoken-addresses", CASHTOKEN_CATAGORY_ID,
-                    "--nft-capability", CASHTOKEN_CAPABILITY,
-                    "--nft-commitment", commitment_hex,
+                    "cashtoken-addresses",
+                    CASHTOKEN_CATAGORY_ID,
+                    "--nft-capability",
+                    CASHTOKEN_CAPABILITY,
+                    "--nft-commitment",
+                    commitment_hex,
                     "--has-amount",
-                    "--network", "test",
+                    "--network",
+                    "test",
                 ],
             )
         from bitcash.types import NFTCapability
+
         mock.assert_called_once_with(
             CASHTOKEN_CATAGORY_ID,
             nft_capability=NFTCapability[CASHTOKEN_CAPABILITY],
