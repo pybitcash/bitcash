@@ -9,7 +9,7 @@ from typing import Any, cast
 try:
     import click  # pyright: ignore
 except ImportError:
-    raise ImportError("Please install the 'click' package to use this CLI tool.")
+    raise ImportError("Please install CLI dependencies with: pip install 'bitcash[cli]'")
 
 try:
     import appdirs  # pyright: ignore
