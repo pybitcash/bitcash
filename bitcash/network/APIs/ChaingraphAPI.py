@@ -13,6 +13,8 @@ from bitcash.network.transaction import Transaction, TxPart
 from bitcash.cashaddress import Address
 from bitcash.types import NFTCapability, Network, NetworkStr
 
+CASHTOKEN_ADDRESSES_PAGE_SIZE = 1000
+
 
 class ChaingraphAPI(BaseAPI):
     """ChaingraphAPI API, chaingraph.cash
@@ -487,7 +489,7 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
 
         query = (
             "query GetCashtokenAddresses"
-            "($category: bytea!, $node: String!"
+            "($category: bytea!, $node: String!, $limit: Int!, $offset: Int!"
             + extra_decls
             + """) {
   output(
@@ -511,24 +513,35 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
         }
       ]
     }
+    limit: $limit
+    offset: $offset
   ) {
     locking_bytecode
   }
 }"""
         )
 
-        json = self.send_request(
-            {"query": query, "variables": variables}, *args, **kwargs
-        )
+        _PAGE_SIZE = CASHTOKEN_ADDRESSES_PAGE_SIZE
         addresses: set[str] = set()
-        for output in json["data"]["output"]:
-            try:
-                scriptcode = bytes.fromhex(output["locking_bytecode"][2:])
-                addresses.add(
-                    Address.from_script(scriptcode, self.network).cash_address()
-                )
-            except ValueError:
-                pass
+        offset = 0
+        while True:
+            variables["limit"] = _PAGE_SIZE
+            variables["offset"] = offset
+            json = self.send_request(
+                {"query": query, "variables": variables}, *args, **kwargs
+            )
+            rows = json["data"]["output"]
+            for output in rows:
+                try:
+                    scriptcode = bytes.fromhex(output["locking_bytecode"][2:])
+                    addresses.add(
+                        Address.from_script(scriptcode, self.network).cash_address()
+                    )
+                except ValueError:
+                    pass
+            if len(rows) < _PAGE_SIZE:
+                break
+            offset += _PAGE_SIZE
         return addresses
 
     def broadcast_tx(self, tx_hex: str, *args, **kwargs) -> bool:  # pragma: no cover
