@@ -5,8 +5,19 @@ from bitcash.exceptions import DataNotFound
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.network.APIs.ChaingraphAPI import ChaingraphAPI
 from bitcash.network.meta import Unspent
+from tests.samples import (
+    BITCOIN_CASHADDRESS,
+    BITCOIN_CASHADDRESS_COMPRESSED,
+    BITCOIN_CASHADDRESS_CATKN,
+    PUBKEY_HASH,
+    PUBKEY_HASH_COMPRESSED,
+)
 
-BITCOIN_CASHADDRESS_CATKN = "bitcoincash:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq37yf2mzf"
+# P2PKH locking scripts derived from test key hashes
+_LOCKING = "\\x76a914" + PUBKEY_HASH.hex() + "88ac"
+_LOCKING_2 = "\\x76a914" + PUBKEY_HASH_COMPRESSED.hex() + "88ac"
+_SCRIPT = "76a914" + PUBKEY_HASH.hex() + "88ac"
+_SCRIPT_2 = "76a914" + PUBKEY_HASH_COMPRESSED.hex() + "88ac"
 
 
 class DummyRequest:
@@ -159,7 +170,7 @@ class TestChaingraphAPI:
                                 "value_satoshis": "10000",
                                 "unlocking_bytecode": "\\x4177033dfa31b3ab4ad8a147d0b7bd10da60e7fe1df51bf1767f5ba7273767d7ffad55feec5c201ea89c6c07a1c8368d8a378aae2f48ddd2076324769b2c23a1ac4121031aa8f87cde6c87de9bf1bdb9e575801a754d2a600be4d1fc89e36eae6db63bc6",
                                 "outpoint": {
-                                    "locking_bytecode": "\\x76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac",
+                                    "locking_bytecode": _LOCKING,
                                     "token_category": None,
                                     "nonfungible_token_capability": None,
                                     "nonfungible_token_commitment": None,
@@ -170,7 +181,7 @@ class TestChaingraphAPI:
                                 "value_satoshis": "8746",
                                 "unlocking_bytecode": "\\x41b818b5c19459d64c4f16ac8fbaff844a6c0d05de8cf563173737d56908de56033a1e367f3c7cae8cf3240af06659bcde09d543bc064e208a31d576bbf074bb714121031aa8f87cde6c87de9bf1bdb9e575801a754d2a600be4d1fc89e36eae6db63bc6",
                                 "outpoint": {
-                                    "locking_bytecode": "\\x76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac",
+                                    "locking_bytecode": _LOCKING,
                                     "token_category": None,
                                     "nonfungible_token_capability": None,
                                     "nonfungible_token_commitment": None,
@@ -181,7 +192,7 @@ class TestChaingraphAPI:
                         "outputs": [
                             {
                                 "value_satoshis": "1000",
-                                "locking_bytecode": "\\x76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac",
+                                "locking_bytecode": _LOCKING,
                                 "token_category": "\\x8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf",
                                 "nonfungible_token_capability": None,
                                 "nonfungible_token_commitment": None,
@@ -197,7 +208,7 @@ class TestChaingraphAPI:
                             },
                             {
                                 "value_satoshis": "17221",
-                                "locking_bytecode": "\\x76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac",
+                                "locking_bytecode": _LOCKING,
                                 "token_category": "\\x8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf",
                                 "nonfungible_token_capability": "minting",
                                 "nonfungible_token_commitment": "\\x",
@@ -220,23 +231,23 @@ class TestChaingraphAPI:
         )
         tx.inputs = [
             TxPart(
-                "bitcoincash:qz8wymtvnavrd8u5sexuxccvm6chlt3095hczr7px4",
+                BITCOIN_CASHADDRESS,
                 10000,
                 data_hex="4177033dfa31b3ab4ad8a147d0b7bd10da60e7fe1df51bf1767f5ba7273767d7ffad55feec5c201ea89c6c07a1c8368d8a378aae2f48ddd2076324769b2c23a1ac4121031aa8f87cde6c87de9bf1bdb9e575801a754d2a600be4d1fc89e36eae6db63bc6",
             ),
             TxPart(
-                "bitcoincash:qz8wymtvnavrd8u5sexuxccvm6chlt3095hczr7px4",
+                BITCOIN_CASHADDRESS,
                 8746,
                 data_hex="41b818b5c19459d64c4f16ac8fbaff844a6c0d05de8cf563173737d56908de56033a1e367f3c7cae8cf3240af06659bcde09d543bc064e208a31d576bbf074bb714121031aa8f87cde6c87de9bf1bdb9e575801a754d2a600be4d1fc89e36eae6db63bc6",
             ),
         ]
         tx.outputs = [
             TxPart(
-                "bitcoincash:qz8wymtvnavrd8u5sexuxccvm6chlt3095hczr7px4",
+                BITCOIN_CASHADDRESS,
                 1000,
                 category_id="8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf",
                 token_amount=140000000000,
-                data_hex="76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac",
+                data_hex=_SCRIPT,
             ),
             TxPart(
                 None,
@@ -244,11 +255,11 @@ class TestChaingraphAPI:
                 data_hex="6a0442434d52206b2000be5ce5527cd653c49cdba486e2fd0ec4214da2f71d7e56ad027b2139f448676973742e67697468756275736572636f6e74656e742e636f6d2f6d722d7a776574732f38346230303537383038616632306466333932383135666232376434613636312f726177",
             ),
             TxPart(
-                "bitcoincash:qz8wymtvnavrd8u5sexuxccvm6chlt3095hczr7px4",
+                BITCOIN_CASHADDRESS,
                 17221,
                 category_id="8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf",
                 nft_capability="minting",
-                data_hex="76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac",
+                data_hex=_SCRIPT,
             ),
         ]
 
@@ -269,7 +280,7 @@ class TestChaingraphAPI:
                                 "value_satoshis": "900000",
                                 "unlocking_bytecode": "\\x473044022024d7be8afd3100656889cddc309d2f5fc343a345fe7d7a22191163f463c5aac502200bbcebf4dc1361a2931f585c33a9fdf9816cbc919341b863609551030bcdb97d4141046bad1c4c33157c12dd812e734917f05a65b502658eeb4f164decc087c54f9fca4005df3499ad93f698294ab13259d7da578461930a9cb7312d526ab2d8f82012",
                                 "outpoint": {
-                                    "locking_bytecode": "\\x76a914f3fe91589a61c3d7ec9eb4f28ee3e36ead0e4ba988ac",
+                                    "locking_bytecode": _LOCKING,
                                     "token_category": None,
                                     "nonfungible_token_capability": None,
                                     "nonfungible_token_commitment": None,
@@ -280,7 +291,7 @@ class TestChaingraphAPI:
                         "outputs": [
                             {
                                 "value_satoshis": "899745",
-                                "locking_bytecode": "\\x76a914a522e4f6ca57aef5bf893d29029c3e9fc54a67f088ac",
+                                "locking_bytecode": _LOCKING_2,
                                 "token_category": None,
                                 "nonfungible_token_capability": None,
                                 "nonfungible_token_commitment": None,
@@ -302,16 +313,16 @@ class TestChaingraphAPI:
         )
         tx.inputs = [
             TxPart(
-                "bitcoincash:qrelay2cnfsu84lvn6609rhrudh26rjt4y6ddw55lf",
+                BITCOIN_CASHADDRESS,
                 900000,
                 data_hex="473044022024d7be8afd3100656889cddc309d2f5fc343a345fe7d7a22191163f463c5aac502200bbcebf4dc1361a2931f585c33a9fdf9816cbc919341b863609551030bcdb97d4141046bad1c4c33157c12dd812e734917f05a65b502658eeb4f164decc087c54f9fca4005df3499ad93f698294ab13259d7da578461930a9cb7312d526ab2d8f82012",
             )
         ]
         tx.outputs = [
             TxPart(
-                "bitcoincash:qzjj9e8keft6aadl3y7jjq5u860u2jn87qxwpv9nzl",
+                BITCOIN_CASHADDRESS_COMPRESSED,
                 899745,
-                data_hex="76a914a522e4f6ca57aef5bf893d29029c3e9fc54a67f088ac",
+                data_hex=_SCRIPT_2,
             )
         ]
 
@@ -347,7 +358,7 @@ class TestChaingraphAPI:
                         "fungible_token_amount": "0",
                         "nonfungible_token_capability": "none",
                         "nonfungible_token_commitment": "\\x0a",
-                        "locking_bytecode": "\\x76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac",
+                        "locking_bytecode": _LOCKING,
                         "transaction": {
                             "block_inclusions": [{"block": {"height": "792782"}}]
                         },
@@ -360,7 +371,7 @@ class TestChaingraphAPI:
                         "fungible_token_amount": "0",
                         "nonfungible_token_capability": "none",
                         "nonfungible_token_commitment": "\\x",
-                        "locking_bytecode": "\\x76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac",
+                        "locking_bytecode": _LOCKING,
                         "transaction": {
                             "block_inclusions": [{"block": {"height": "792782"}}]
                         },
@@ -373,7 +384,7 @@ class TestChaingraphAPI:
                         "fungible_token_amount": "1000",
                         "nonfungible_token_capability": None,
                         "nonfungible_token_commitment": None,
-                        "locking_bytecode": "\\x76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac",
+                        "locking_bytecode": _LOCKING,
                         "transaction": {
                             "block_inclusions": [{"block": {"height": "792785"}}]
                         },
@@ -386,7 +397,7 @@ class TestChaingraphAPI:
                         "fungible_token_amount": None,
                         "nonfungible_token_capability": None,
                         "nonfungible_token_commitment": None,
-                        "locking_bytecode": "\\x76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac",
+                        "locking_bytecode": _LOCKING,
                         "transaction": {
                             "block_inclusions": [{"block": {"height": "794043"}}]
                         },
@@ -399,7 +410,7 @@ class TestChaingraphAPI:
                         "fungible_token_amount": None,
                         "nonfungible_token_capability": None,
                         "nonfungible_token_commitment": None,
-                        "locking_bytecode": "\\x76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac",
+                        "locking_bytecode": _LOCKING,
                         "transaction": {"block_inclusions": []},
                     },
                 ],
@@ -407,7 +418,7 @@ class TestChaingraphAPI:
         }
         monkeypatch.setattr(_capi, "session", DummySession(return_json))
         unspents = self.api.get_unspent(BITCOIN_CASHADDRESS_CATKN)
-        script = "76a9148ee26d6c9f58369f94864dc3630cdeb17fae2f2d88ac"
+        script = _SCRIPT
         assert unspents == [
             Unspent(
                 1000,
@@ -488,3 +499,87 @@ class TestChaingraphAPI:
             tx = self.api.get_raw_transaction(
                 "546f83e975d2870de740917df1b5221aa4bc52c6e2540188f5897c4ce775b7f4",
             )
+
+    def test_get_cashtoken_addresses(self, monkeypatch):
+        return_json = {
+            "data": {
+                "output": [
+                    {"locking_bytecode": _LOCKING},
+                    {
+                        # duplicate - should be deduplicated
+                        "locking_bytecode": _LOCKING
+                    },
+                    {"locking_bytecode": _LOCKING_2},
+                    {
+                        # OP_RETURN - should be skipped
+                        "locking_bytecode": "\\x6a04deadbeef"
+                    },
+                ]
+            }
+        }
+        monkeypatch.setattr(_capi, "session", DummySession(return_json))
+        addresses = self.api.get_cashtoken_addresses(
+            "8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf"
+        )
+        assert addresses == {
+            BITCOIN_CASHADDRESS,
+            BITCOIN_CASHADDRESS_COMPRESSED,
+        }
+
+        # zero return
+        return_json = {"data": {"output": []}}
+        monkeypatch.setattr(_capi, "session", DummySession(return_json))
+        addresses = self.api.get_cashtoken_addresses(
+            "8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf"
+        )
+        assert addresses == set()
+
+    def test_get_cashtoken_addresses_filters(self, monkeypatch):
+        CATEGORY = "8473d94f604de351cdee3030f6c354d36b257861ad8e95bbc0a06fbab2a2f9cf"
+        one_address = {"data": {"output": [{"locking_bytecode": _LOCKING}]}}
+
+        class CapturingSession:
+            def __init__(self, return_json):
+                self.return_json = return_json
+                self.last_request = None
+
+            def post(self, url, json, *args, **kwargs):
+                self.last_request = json
+                return DummyRequest(self.return_json)
+
+        session = CapturingSession(one_address)
+        monkeypatch.setattr(_capi, "session", session)
+
+        # nft_capability → query contains nonfungible_token_capability filter and variable
+        from bitcash.types import NFTCapability
+
+        self.api.get_cashtoken_addresses(CATEGORY, nft_capability=NFTCapability.minting)
+        assert session.last_request is not None
+        assert "nonfungible_token_capability" in session.last_request["query"]
+        assert session.last_request["variables"]["nft_capability"] == "minting"
+        assert "commitment" not in session.last_request["variables"]
+
+        # nft_commitment → query contains commitment variable and filter
+        self.api.get_cashtoken_addresses(CATEGORY, nft_commitment=b"\x0a\x0b")
+        assert session.last_request is not None
+        assert "nonfungible_token_commitment" in session.last_request["query"]
+        assert session.last_request["variables"]["commitment"] == "\\x0a0b"
+
+        # has_token=True → query contains fungible_token_amount filter
+        self.api.get_cashtoken_addresses(CATEGORY, has_token=True)
+        assert session.last_request is not None
+        assert "fungible_token_amount" in session.last_request["query"]
+
+        # all filters combined
+        self.api.get_cashtoken_addresses(
+            CATEGORY,
+            nft_capability=NFTCapability.none,
+            nft_commitment=b"\xff",
+            has_token=True,
+        )
+        assert session.last_request is not None
+        query = session.last_request["query"]
+        assert "nonfungible_token_capability" in query
+        assert "nonfungible_token_commitment" in query
+        assert "fungible_token_amount" in query
+        assert session.last_request["variables"]["commitment"] == "\\xff"

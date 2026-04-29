@@ -9,6 +9,7 @@ from bitcash.cashaddress import (
     parse_cashaddress,
 )
 from bitcash.exceptions import InvalidAddress
+from bitcash.types import Network
 
 from .samples import (
     BITCOIN_ADDRESS,
@@ -256,6 +257,18 @@ class TestAddress:
             assert address_catkn == Address.from_script(
                 script + address_catkn.scriptcode
             )
+
+    def test_from_script_network(self):
+        scriptcode = Address.from_string(BITCOIN_CASHADDRESS).scriptcode
+        assert Address.from_script(scriptcode, Network.main) == Address.from_string(
+            BITCOIN_CASHADDRESS
+        )
+        assert Address.from_script(scriptcode, Network.test) == Address.from_string(
+            BITCOIN_CASHADDRESS_TEST
+        )
+        assert Address.from_script(scriptcode, Network.regtest) == Address.from_string(
+            BITCOIN_CASHADDRESS_REGTEST
+        )
 
 
 def test_parse_cashaddress():

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction
-from bitcash.types import NetworkStr
+from bitcash.types import NFTCapability, Network, NetworkStr
 
 
 class BaseAPI(ABC):
@@ -13,10 +13,12 @@ class BaseAPI(ABC):
     Abstract class for API classes
 
     :param network_endpoint: Network endpoint to send requests
+    :param network: The BCH network this endpoint serves
     """
 
-    def __init__(self, network_endpoint: str):
+    def __init__(self, network_endpoint: str, network: Network = Network.main):
         self.network_endpoint = network_endpoint
+        self.network = network
 
     @classmethod
     @abstractmethod
@@ -117,6 +119,29 @@ class BaseAPI(ABC):
         :param callback: Function to call with (address, status_hash) on update.
             status_hash is None if the address has no history.
         :return: A SubscriptionHandle object for managing the subscription.
+        """
+
+    @abstractmethod
+    def get_cashtoken_addresses(
+        self,
+        category_id: str,
+        nft_capability: Optional[NFTCapability] = None,
+        nft_commitment: Optional[bytes] = None,
+        has_token: bool = False,
+        *args,
+        **kwargs,
+    ) -> set[str]:
+        """Gets all addresses holding unspent outputs of a given cashtoken category.
+
+        :param category_id: The token category ID (hex string).
+        :param nft_capability: If set, only return addresses holding an NFT with this capability
+            (one of :attr:`~bitcash.types.NFTCapability.none`,
+            :attr:`~bitcash.types.NFTCapability.mutable`,
+            :attr:`~bitcash.types.NFTCapability.minting`).
+        :param nft_commitment: If set, only return addresses holding an NFT with this commitment.
+        :param has_token: If True, only return addresses holding fungible tokens of this category.
+        :returns: A set of addresses holding the cashtoken.
+        :raises NotImplementedError: If the API does not support this query.
         """
 
 

@@ -11,7 +11,7 @@ from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
 from bitcash.cashaddress import Address
-from bitcash.types import NetworkStr
+from bitcash.types import NFTCapability, Network, NetworkStr
 
 
 class ChaingraphAPI(BaseAPI):
@@ -21,7 +21,12 @@ class ChaingraphAPI(BaseAPI):
     :param node_like: node name to match for with "_like" string comparison expression
     """
 
-    def __init__(self, network_endpoint: str, node_like: Optional[str] = None):
+    def __init__(
+        self,
+        network_endpoint: str,
+        node_like: Optional[str] = None,
+        network: Network = Network.main,
+    ):
         try:
             assert isinstance(network_endpoint, str)
         except AssertionError:
@@ -35,6 +40,7 @@ class ChaingraphAPI(BaseAPI):
             self.node_like = "%"
         else:
             self.node_like = node_like
+        self.network = network
 
     # Default endpoints to use for this interface
     DEFAULT_ENDPOINTS = {
@@ -242,8 +248,9 @@ query GetOutputs($lb: _text!, $node: String!) {
                     txpart = txpart["outpoint"]
                 try:
                     scriptcode = bytes.fromhex(txpart["locking_bytecode"][2:])
-                    cashaddress = Address.from_script(scriptcode)
-                    cashaddress = cashaddress.cash_address()
+                    cashaddress = Address.from_script(
+                        scriptcode, self.network
+                    ).cash_address()
                 except ValueError:
                     cashaddress = None
                 part = TxPart(cashaddress, sats, data_hex=data_hex)
@@ -446,6 +453,83 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
         if len(json["data"]["transaction"]) == 0:
             raise DataNotFound(f"Transaction {txid} does not exist")
         return json["data"]["transaction"][0]
+
+    def get_cashtoken_addresses(
+        self,
+        category_id: str,
+        nft_capability: Optional[NFTCapability] = None,
+        nft_commitment: Optional[bytes] = None,
+        has_token: bool = False,
+        *args,
+        **kwargs,
+    ) -> set[str]:
+        variables: dict[str, Any] = {
+            "category": f"\\x{category_id}",
+            "node": self.node_like,
+        }
+
+        extra_filters = []
+        extra_decls = ""
+        if nft_capability is not None:
+            extra_filters.append(
+                "nonfungible_token_capability: { _eq: $nft_capability }"
+            )
+            variables["nft_capability"] = nft_capability.name
+            extra_decls += ", $nft_capability: enum_nonfungible_token_capability"
+        if nft_commitment is not None:
+            extra_filters.append("nonfungible_token_commitment: { _eq: $commitment }")
+            variables["commitment"] = f"\\x{nft_commitment.hex()}"
+            extra_decls += ", $commitment: bytea"
+        if has_token:
+            extra_filters.append('fungible_token_amount: { _gt: "0" }')
+
+        extra = "\n      " + "\n      ".join(extra_filters) if extra_filters else ""
+
+        query = (
+            "query GetCashtokenAddresses"
+            "($category: bytea!, $node: String!"
+            + extra_decls
+            + """) {
+  output(
+    where: {
+      token_category: { _eq: $category }
+      _not: { spent_by: {} }"""
+            + extra
+            + """
+      _or: [
+        {
+          transaction: {
+            node_validations: { node: { name: { _like: $node } } }
+          }
+        }
+        {
+          transaction: {
+            block_inclusions: {
+              block: { accepted_by: { node: { name: { _like: $node } } } }
+            }
+          }
+        }
+      ]
+    }
+  ) {
+    locking_bytecode
+  }
+}"""
+        )
+
+        json = self.send_request(
+            {"query": query, "variables": variables}, *args, **kwargs
+        )
+        addresses: set[str] = set()
+        for output in json["data"]["output"]:
+            try:
+                scriptcode = bytes.fromhex(output["locking_bytecode"][2:])
+                addresses.add(
+                    Address.from_script(scriptcode, self.network).cash_address()
+                )
+            except ValueError:
+                pass
+        return addresses
 
     def broadcast_tx(self, tx_hex: str, *args, **kwargs) -> bool:  # pragma: no cover
         json_request = {
