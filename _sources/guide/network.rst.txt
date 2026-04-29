@@ -137,6 +137,11 @@ it polls a service and if an error occurs it tries another.
    Default chaingraph APIs do not indicate if a transaction broadcast has failed. The NetworkAPI fallbacks to
    FulcrumProtocolAPI on ``mainnet`` to broadcast a transaction.
 
+.. note::
+   :func:`~bitcash.network.NetworkAPI.get_cashtoken_addresses` is only supported by
+   :class:`~bitcash.network.APIs.ChaingraphAPI.ChaingraphAPI`. See :ref:`cashtokens`
+   for usage details.
+
 Exceptions
 ^^^^^^^^^^
 

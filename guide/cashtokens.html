@@ -136,6 +136,7 @@
 <li><a class="reference internal" href="#cashtoken-spending-order">CashToken spending order</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#cashtoken-holders">CashToken holders</a></li>
 <li><a class="reference internal" href="#cashtoken-signalling-cashaddr">CashToken signalling CashAddr</a></li>
 </ul>
 
@@ -260,7 +261,7 @@ required. This cashtoken then gets the transaction id of the genesis output as i
 belonging to your address:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_unspents</span><span class="p">()</span>
-</span><span data-line="3"><span class="go">[Unspent(amount=900000, confirmations=1, script=&#39;76a914dd9c917762a9f585a40e5c3a54238684d8cc741e88ac&#39;, txid=&#39;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&#39;, txindex=0)]</span>
+</span><span data-line="3"><span class="go">[Unspent(amount=900000, confirmations=1, script=&#39;76a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac&#39;, txid=&#39;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&#39;, txindex=0)]</span>
 </span></pre></div>
 </div>
 <p>In the above example, the unspent output has an output index 0, which implies it can be
@@ -271,7 +272,7 @@ which is a tuple of size 7 in the form <cite>(destination, amount, currency, cat
 nft_capability, nft_commitment, token_amount)</cite>. This can be sent as:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">send</span><span class="p">([</span>
 </span><span data-line="2"><span class="gp">... </span>    <span class="p">(</span>
-</span><span data-line="3"><span class="gp">... </span>        <span class="s2">&quot;bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v&quot;</span><span class="p">,</span>  <span class="c1"># destination</span>
+</span><span data-line="3"><span class="gp">... </span>        <span class="s2">&quot;bitcoincash:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq37yf2mzf&quot;</span><span class="p">,</span>  <span class="c1"># destination</span>
 </span><span data-line="4"><span class="gp">... </span>        <span class="mi">1000</span><span class="p">,</span>  <span class="c1"># amount</span>
 </span><span data-line="5"><span class="gp">... </span>        <span class="s2">&quot;satoshi&quot;</span><span class="p">,</span>  <span class="c1"># currency</span>
 </span><span data-line="6"><span class="gp">... </span>        <span class="s2">&quot;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&quot;</span><span class="p">,</span>  <span class="c1"># category</span>
@@ -294,7 +295,7 @@ nft_capability, nft_commitment, token_amount)</cite>. This can be sent as:</p>
 send 6000 fungible tokens of <code class="docutils literal notranslate"><span class="pre">category</span></code> <code class="docutils literal notranslate"><span class="pre">afe979...</span></code> you can use:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">send</span><span class="p">([</span>
 </span><span data-line="2"><span class="gp">... </span>    <span class="p">(</span>
-</span><span data-line="3"><span class="gp">... </span>        <span class="s2">&quot;bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="gp">... </span>        <span class="s2">&quot;bitcoincash:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq37yf2mzf&quot;</span><span class="p">,</span>
 </span><span data-line="4"><span class="gp">... </span>        <span class="mi">1000</span><span class="p">,</span>
 </span><span data-line="5"><span class="gp">... </span>        <span class="s2">&quot;satoshi&quot;</span><span class="p">,</span>
 </span><span data-line="6"><span class="gp">... </span>        <span class="s2">&quot;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&quot;</span><span class="p">,</span>
@@ -313,7 +314,7 @@ the leftover BCH and cashtokens management.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
 </span><span data-line="2"><span class="gp">... </span>    <span class="p">[</span>
 </span><span data-line="3"><span class="gp">... </span>    <span class="p">(</span>
-</span><span data-line="4"><span class="gp">... </span>        <span class="s2">&quot;bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="gp">... </span>        <span class="s2">&quot;bitcoincash:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq37yf2mzf&quot;</span><span class="p">,</span>
 </span><span data-line="5"><span class="gp">... </span>        <span class="mi">1000</span><span class="p">,</span>
 </span><span data-line="6"><span class="gp">... </span>        <span class="s2">&quot;satoshi&quot;</span><span class="p">,</span>
 </span><span data-line="7"><span class="gp">... </span>        <span class="s2">&quot;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&quot;</span><span class="p">,</span>
@@ -378,6 +379,57 @@ and is also present in a leftover output.</p>
 which only includes cashtokens which need to be used.</p>
 </section>
 </section>
+<section id="cashtoken-holders">
+<h2>CashToken holders<a class="headerlink" href="#cashtoken-holders" title="Link to this heading">¶</a></h2>
+<p>To find all addresses currently holding unspent outputs of a given cashtoken
+<code class="docutils literal notranslate"><span class="pre">category</span></code>, use <a class="reference internal" href="../dev/api.html#bitcash.network.NetworkAPI.get_cashtoken_addresses" title="bitcash.network.NetworkAPI.get_cashtoken_addresses"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_cashtoken_addresses()</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash.network</span> <span class="kn">import</span> <span class="n">NetworkAPI</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">NetworkAPI</span><span class="o">.</span><span class="n">get_cashtoken_addresses</span><span class="p">(</span>
+</span><span data-line="3"><span class="gp">... </span>    <span class="s2">&quot;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&quot;</span>
+</span><span data-line="4"><span class="gp">... </span><span class="p">)</span>
+</span><span data-line="5"><span class="go">{&#39;bitcoincash:qzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmqk5hhyaa6&#39;,</span>
+</span><span data-line="6"><span class="go"> &#39;bitcoincash:qzvsaasdvw6mt9j2rs3gyps673gj86flev4sthhcc0&#39;}</span>
+</span></pre></div>
+</div>
+<p>The result is a <code class="docutils literal notranslate"><span class="pre">set</span></code> of addresses — one entry per unique address, regardless
+of how many UTXOs of that category the address holds. Addresses whose locking
+scripts cannot be decoded (e.g. <code class="docutils literal notranslate"><span class="pre">OP_RETURN</span></code> outputs) are silently excluded.</p>
+<p>Three optional filters narrow the results:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">nft_capability=NFTCapability.&lt;value&gt;</span></code> — only addresses holding an NFT with a specific
+capability (<code class="docutils literal notranslate"><span class="pre">NFTCapability.none</span></code>, <code class="docutils literal notranslate"><span class="pre">NFTCapability.mutable</span></code>, or <code class="docutils literal notranslate"><span class="pre">NFTCapability.minting</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bitcash.types</span> <span class="kn">import</span> <span class="n">NFTCapability</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">NetworkAPI</span><span class="o">.</span><span class="n">get_cashtoken_addresses</span><span class="p">(</span>
+</span><span data-line="3"><span class="gp">... </span>    <span class="s2">&quot;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="gp">... </span>    <span class="n">nft_capability</span><span class="o">=</span><span class="n">NFTCapability</span><span class="o">.</span><span class="n">minting</span><span class="p">,</span>
+</span><span data-line="5"><span class="gp">... </span><span class="p">)</span>
+</span></pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nft_commitment=&lt;bytes&gt;</span></code> — only addresses holding an NFT with a specific commitment:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">NetworkAPI</span><span class="o">.</span><span class="n">get_cashtoken_addresses</span><span class="p">(</span>
+</span><span data-line="2"><span class="gp">... </span>    <span class="s2">&quot;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="gp">... </span>    <span class="n">nft_commitment</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;bitcash&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="gp">... </span><span class="p">)</span>
+</span></pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">has_token=True</span></code> — only addresses holding fungible tokens of this category:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">NetworkAPI</span><span class="o">.</span><span class="n">get_cashtoken_addresses</span><span class="p">(</span>
+</span><span data-line="2"><span class="gp">... </span>    <span class="s2">&quot;afe979e6b52e37d29f6c4d7edd922bddb91b5e4d55ebfa8cd59a0f90bc03b802&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="gp">... </span>    <span class="n">has_token</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="4"><span class="gp">... </span><span class="p">)</span>
+</span></pre></div>
+</div>
+</li>
+</ul>
+<p>Filters can be combined freely.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This query is only supported by <code class="xref py py-class docutils literal notranslate"><span class="pre">ChaingraphAPI</span></code>.
+If no Chaingraph endpoint is reachable, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">ConnectionError</span></code> is raised.</p>
+</div>
+</section>
 <section id="cashtoken-signalling-cashaddr">
 <h2>CashToken signalling CashAddr<a class="headerlink" href="#cashtoken-signalling-cashaddr" title="Link to this heading">¶</a></h2>
 <p>To signal cashtoken support by wallets, new <a class="reference internal" href="cashaddr.html#cashaddr"><span class="std std-ref">CashAddr</span></a> versions are introduced. BitCash
@@ -385,7 +437,7 @@ wallet can signal cashtoken support by sharing cashtoken address using
 <a class="reference internal" href="../dev/api.html#bitcash.PrivateKey.cashtoken_address" title="bitcash.PrivateKey.cashtoken_address"><code class="xref py py-func docutils literal notranslate"><span class="pre">cashtoken_address()</span></code></a>, and BitCash does not allow spending cashtokens to
 non-cashtoken-signalling addresses:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">cashtoken_address</span>
-</span><span data-line="2"><span class="go">&#39;bitcoincash:zrweeythv25ltpdypewr54prs6zd3nr5rcjhrnhy2v&#39;</span>
+</span><span data-line="2"><span class="go">&#39;bitcoincash:zzfyvx77v2pmgc0vulwlfkl3uzjgh5gnmq37yf2mzf&#39;</span>
 </span></pre></div>
 </div>
 </section>
