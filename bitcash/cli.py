@@ -279,6 +279,46 @@ def cashtoken_address_cmd(address: str) -> None:
 
 
 # ---------------------------------------------------------------------------
+# cashtoken-addresses
+# ---------------------------------------------------------------------------
+
+
+@bitcash.command(name="cashtoken-addresses")
+@agent(read_only=True, idempotent=True, open_world=True)
+@click.argument("category_id")
+@NFT_CAPABILITY_OPTION
+@NFT_COMMITMENT_OPTION
+@click.option("--has-amount", is_flag=True, help="Only addresses holding fungible tokens")
+@NETWORK_OPTION
+def cashtoken_addresses_cmd(
+    category_id: str,
+    nft_capability: str | None,
+    nft_commitment: bytes | None,
+    has_amount: bool,
+    network: Network,
+) -> None:
+    """List addresses holding unspent tokens of CATEGORY_ID.
+
+    All filters are optional and combinable. --nft-commitment expects a hex
+    string. Returns addresses sorted alphabetically, one per line.
+    Read-only network call.
+    """
+    nft_cap = NFTCapability[nft_capability] if nft_capability else None
+    addresses: set[str] = NetworkAPI.get_cashtoken_addresses(
+        category_id,
+        nft_capability=nft_cap,
+        nft_commitment=nft_commitment,
+        has_token=has_amount,
+        network=network.value,
+    )
+    if not addresses:
+        click.echo("No addresses found.")
+    else:
+        for addr in sorted(addresses):
+            click.echo(addr)
+
+
+# ---------------------------------------------------------------------------
 # new
 # ---------------------------------------------------------------------------
 
