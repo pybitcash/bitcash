@@ -28,6 +28,7 @@ except ImportError:
     Query = None  # type: ignore[assignment]
 
 from bitcash.cashtoken import Unspents as CashtokenUnspents
+from bitcash.click_agent import agent, add_schema_command
 from bitcash.format import address_to_cashtokenaddress
 from bitcash.keygen import generate_matching_address
 from bitcash.wallet import PrivateKey, wif_to_key
@@ -233,7 +234,11 @@ def _build_output(
 @click.group(invoke_without_command=True)
 @click.pass_context
 def bitcash(ctx: click.Context) -> None:
-    """BitCash: Python Bitcoin Cash Library."""
+    """BitCash: Python Bitcoin Cash Library.
+
+    Agents: run 'bitcash schema' first. It returns the full command
+    tree as JSON in one call, including all params, defaults, and choices.
+    """
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
 
@@ -244,6 +249,7 @@ def bitcash(ctx: click.Context) -> None:
 
 
 @bitcash.command()  # pyright: ignore
+@agent(open_world=False)
 @click.argument("prefix")
 @click.option("--cores", "-c", default="all")
 def gen(prefix: str, cores: str) -> None:
@@ -261,6 +267,7 @@ def gen(prefix: str, cores: str) -> None:
 
 
 @bitcash.command(name="cashtoken-address")
+@agent(read_only=True, idempotent=True, open_world=False)
 @click.argument("address")
 def cashtoken_address_cmd(address: str) -> None:
     """Convert ADDRESS to its CashToken-signalling form (bitcoincash:zz...).
@@ -277,6 +284,7 @@ def cashtoken_address_cmd(address: str) -> None:
 
 
 @bitcash.command(name="new")
+@agent(open_world=False)
 @NETWORK_OPTION
 def new_cmd(network: Network) -> None:
     """Generate a new private key and print its WIF and address.
@@ -295,6 +303,7 @@ def new_cmd(network: Network) -> None:
 
 
 @bitcash.command()
+@agent(read_only=True, idempotent=True, open_world=True)
 @click.argument("address")
 @click.option("--currency", default="satoshi", show_default=True)
 @CASHTOKEN_FLAG
@@ -323,6 +332,7 @@ def balance(address: str, currency: str, cashtoken: bool, network: Network) -> N
 
 
 @bitcash.command()
+@agent(read_only=True, idempotent=True, open_world=True)
 @click.argument("address")
 @NETWORK_OPTION
 def transactions(address: str, network: Network) -> None:
@@ -344,6 +354,7 @@ def transactions(address: str, network: Network) -> None:
 
 
 @bitcash.command()
+@agent(read_only=True, idempotent=True, open_world=True)
 @click.argument("address")
 @NETWORK_OPTION
 def unspents(address: str, network: Network) -> None:
@@ -366,6 +377,7 @@ def unspents(address: str, network: Network) -> None:
 
 
 @bitcash.command(name="subscribe")
+@agent(read_only=True, open_world=True, blocking=True)
 @click.argument("address")
 @click.option(
     "--show-balance", is_flag=True, help="Fetch and print balance on each update"
@@ -415,6 +427,7 @@ def subscribe_cmd(address: str, show_balance: bool, network: Network) -> None:
 
 
 @bitcash.command(name="send")
+@agent(read_only=False, destructive=True, idempotent=False, open_world=True)
 @click.option("--wif", required=True, help="Sender WIF private key")
 @click.argument("to")
 @click.argument("amount")
@@ -446,6 +459,10 @@ def send_cmd(
     the destination address must be a CashToken-signalling address
     (bitcoincash:zz...) — use 'cashtoken-address' to convert if needed.
     --nft-commitment expects a hex string.
+
+    To genesis a new CashToken, pass the txid of an index-0 UTXO you own
+    as --category-id. Any index-0 UTXO qualifies regardless of existing
+    tokens on it.
     """
     key = wif_to_key(wif, regtest=(network == Network.regtest))
     output = _build_output(
@@ -465,6 +482,7 @@ def send_cmd(
 
 
 @bitcash.group()
+@agent(local_required=True)
 def wallet() -> None:
     """Manage named, password-protected wallets stored in a local TinyDB file.
 
@@ -476,6 +494,7 @@ def wallet() -> None:
 
 
 @wallet.command(name="new")
+@agent(read_only=False, destructive=False, idempotent=False, open_world=False, local_required=True)
 @click.argument("name")
 @click.option("--wif", default=None, help="Import existing WIF (optional)")
 @NETWORK_OPTION
@@ -525,6 +544,7 @@ def wallet_new(
 
 
 @wallet.command(name="list")
+@agent(read_only=True, idempotent=True, open_world=False, local_required=True)
 def wallet_list() -> None:
     """List all wallets in the local store — name, network, and address.
 
@@ -540,6 +560,7 @@ def wallet_list() -> None:
 
 
 @wallet.command(name="subscribe")
+@agent(read_only=True, open_world=True, blocking=True, local_required=True)
 @click.argument("name")
 @click.option(
     "--show-balance", is_flag=True, help="Fetch and print balance on each update"
@@ -587,6 +608,7 @@ def wallet_subscribe(name: str, show_balance: bool) -> None:
 
 
 @wallet.command(name="balance")
+@agent(read_only=True, idempotent=True, open_world=True, local_required=True)
 @click.argument("name")
 @click.option("--currency", default="satoshi", show_default=True)
 @CASHTOKEN_FLAG
@@ -609,6 +631,7 @@ def wallet_balance(name: str, currency: str, cashtoken: bool) -> None:
 
 
 @wallet.command(name="send")
+@agent(read_only=False, destructive=True, idempotent=False, open_world=True, local_required=True)
 @click.argument("name")
 @click.argument("to")
 @click.argument("amount")
@@ -637,7 +660,8 @@ def wallet_send(
 
     Password is required to decrypt the stored WIF; prompts interactively if
     omitted, or reads from BITCASH_WALLET_PASSWORD env var. Prints the
-    transaction ID on success. CashToken behaviour is identical to 'send'.
+    transaction ID on success. CashToken behaviour is identical to 'send',
+    including genesis token creation.
     """
     record = _load_key_from_db(name)
     wif: str = _decrypt_wif(record, _prompt_password(password))
@@ -654,6 +678,7 @@ def wallet_send(
 
 
 @wallet.command(name="export")
+@agent(read_only=True, idempotent=True, open_world=False, secret=True, local_required=True)
 @click.argument("name")
 @PASSWORD_OPTION
 def wallet_export(name: str, password: str | None) -> None:
@@ -668,6 +693,7 @@ def wallet_export(name: str, password: str | None) -> None:
 
 
 @wallet.command(name="delete")
+@agent(read_only=False, destructive=True, idempotent=False, open_world=False, local_required=True)
 @click.argument("name")
 @click.confirmation_option(prompt="Are you sure you want to delete this wallet?")
 def wallet_delete(name: str) -> None:
@@ -682,3 +708,6 @@ def wallet_delete(name: str) -> None:
     if not removed:
         raise click.ClickException(f"Wallet '{name}' not found.")
     click.echo(f"Wallet '{name}' deleted.")
+
+
+add_schema_command(bitcash)

@@ -590,6 +590,55 @@ class TestRootGroup:
 
 
 # ---------------------------------------------------------------------------
+# TestSchema
+# ---------------------------------------------------------------------------
+
+
+class TestSchema:
+    def _get_schema(self, runner) -> dict:
+        import json
+
+        result = runner.invoke(bitcash, ["schema"])
+        assert result.exit_code == 0, result.output
+        return json.loads(result.output)
+
+    def test_schema_is_valid_json_with_full_command_tree(self, runner):
+        schema = self._get_schema(runner)
+        # top-level commands present, wallet subcommands nested
+        for cmd in ("balance", "send", "subscribe", "wallet", "schema"):
+            assert cmd in schema["commands"]
+        for sub in ("new", "list", "balance", "send", "export", "delete"):
+            assert sub in schema["commands"]["wallet"]["commands"]
+
+    def test_agent_decorator_rejects_unknown_fields(self):
+        from bitcash.click_agent import agent
+        with pytest.raises(ValueError, match="Unknown @agent fields"):
+            agent(unknown_field=True)
+
+    def test_agent_metadata_emitted_and_absent_fields_omitted(self, runner):
+        schema = self._get_schema(runner)
+        # send is annotated with destructive=True
+        assert schema["commands"]["send"]["agent"]["destructive"] is True
+        # balance is read_only — destructive must be absent, not False
+        assert "destructive" not in schema["commands"]["balance"]["agent"]
+
+    def test_choices_and_is_flag_serialized(self, runner):
+        schema = self._get_schema(runner)
+        send_params = {p["name"]: p for p in schema["commands"]["send"]["params"]}
+        # network is a Choice param
+        assert send_params["network"]["choices"] == ["main", "test", "regtest"]
+        # cashtoken is a flag — but send doesn't have it; check balance
+        balance_params = {p["name"]: p for p in schema["commands"]["balance"]["params"]}
+        assert balance_params["cashtoken"].get("is_flag") is True
+
+    def test_sentinel_defaults_serialize_to_null(self, runner):
+        schema = self._get_schema(runner)
+        send_params = {p["name"]: p for p in schema["commands"]["send"]["params"]}
+        # --fee has no default set → should be null, not a crash
+        assert send_params["fee"]["default"] is None
+
+
+# ---------------------------------------------------------------------------
 # TestCashtokenAddress
 # ---------------------------------------------------------------------------
 
