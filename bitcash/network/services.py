@@ -260,7 +260,7 @@ class NetworkAPI:
         """
         for endpoint in get_sanitized_endpoints_for(network):
             try:
-                return endpoint.get_transactions(address, timeout=DEFAULT_TIMEOUT)
+                return endpoint.get_transactions(address, timeout=LONG_DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
@@ -319,7 +319,7 @@ class NetworkAPI:
 
         for endpoint in get_sanitized_endpoints_for(network):
             try:
-                return endpoint.get_unspent(address, timeout=DEFAULT_TIMEOUT)
+                return endpoint.get_unspent(address, timeout=LONG_DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
