@@ -111,8 +111,8 @@ class OpCodes(IntEnum):
     OP_VER = 0x62
     OP_IF = 0x63
     OP_NOTIF = 0x64
-    OP_VERIF = 0x65
-    OP_VERNOTIF = 0x66
+    OP_BEGIN = 0x65
+    OP_UNTIL = 0x66
     OP_ELSE = 0x67
     OP_ENDIF = 0x68
     OP_VERIFY = 0x69
@@ -153,14 +153,18 @@ class OpCodes(IntEnum):
     OP_XOR = 0x86
     OP_EQUAL = 0x87
     OP_EQUALVERIFY = 0x88
-    OP_RESERVED1 = 0x89
-    OP_RESERVED2 = 0x8A
+    OP_LSHIFTBIN = 0x98
+    OP_RSHIFTBIN = 0x99
+
+    # user-defined functions
+    OP_DEFINE = 0x89
+    OP_INVOKE = 0x8A
 
     # numeric
     OP_1ADD = 0x8B
     OP_1SUB = 0x8C
-    OP_2MUL = 0x8D
-    OP_2DIV = 0x8E
+    OP_LSHIFTNUM = 0x8D
+    OP_RSHIFTNUM = 0x8E
     OP_NEGATE = 0x8F
     OP_ABS = 0x90
     OP_NOT = 0x91
@@ -171,8 +175,6 @@ class OpCodes(IntEnum):
     OP_MUL = 0x95
     OP_DIV = 0x96
     OP_MOD = 0x97
-    OP_LSHIFT = 0x98
-    OP_RSHIFT = 0x99
 
     OP_BOOLAND = 0x9A
     OP_BOOLOR = 0x9B
