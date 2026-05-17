@@ -7,7 +7,7 @@ import typing
 
 from bitcash.exceptions import InvalidCashToken
 
-COMMITMENT_LENGTH = 40
+COMMITMENT_LENGTH = 128
 MAX_TOKEN_AMOUNT = 9223372036854775807
 
 
