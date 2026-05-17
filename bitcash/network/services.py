@@ -31,6 +31,9 @@ ENDPOINT_ENV_VARIABLES = {
 # Default API call total time timeout
 DEFAULT_TIMEOUT = 5
 
+# Timeout for queries that may fetch large result sets
+LONG_DEFAULT_TIMEOUT = 60
+
 # Default sanitized endpoint, based on blockheigt, cache timeout
 DEFAULT_SANITIZED_ENDPOINTS_CACHE_TIME = 300
 
@@ -257,7 +260,7 @@ class NetworkAPI:
         """
         for endpoint in get_sanitized_endpoints_for(network):
             try:
-                return endpoint.get_transactions(address, timeout=DEFAULT_TIMEOUT)
+                return endpoint.get_transactions(address, timeout=LONG_DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
@@ -316,7 +319,7 @@ class NetworkAPI:
 
         for endpoint in get_sanitized_endpoints_for(network):
             try:
-                return endpoint.get_unspent(address, timeout=DEFAULT_TIMEOUT)
+                return endpoint.get_unspent(address, timeout=LONG_DEFAULT_TIMEOUT)
             except cls.IGNORED_ERRORS:  # pragma: no cover
                 pass
 
@@ -364,6 +367,8 @@ class NetworkAPI:
         :param has_token: If True, only return addresses holding fungible tokens of this category.
         :returns: A set of addresses holding the cashtoken.
         :raises ConnectionError: If all API services fail.
+        .. note:: This call may take over a minute for tokens with thousands of holders,
+            as results are fetched in pages.
         """
         for endpoint in get_sanitized_endpoints_for(network):
             try:
@@ -372,7 +377,7 @@ class NetworkAPI:
                     nft_capability,
                     nft_commitment,
                     has_token,
-                    timeout=DEFAULT_TIMEOUT,
+                    timeout=LONG_DEFAULT_TIMEOUT,
                 )
             except NotImplementedError:
                 continue
