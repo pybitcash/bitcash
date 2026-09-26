@@ -29,6 +29,11 @@ Unreleased (see `master <https://github.com/ofek/bitcash>`_)
   Use ``key.subscribe(callback)`` to receive notifications when
   an address's state changes.
 
+- Security: ``FulcrumProtocolAPI`` no longer falls back to a plaintext
+  connection when the TLS handshake fails (for example on a certificate
+  error). It now raises ``TLSHandshakeError`` instead, and connections are
+  always TLS.
+
 - Add ``NetworkAPI.get_cashtoken_addresses(category_id, ...)`` to fetch
   all addresses holding unspent outputs of a given CashToken category,
   with optional filters for NFT capability, NFT commitment, and fungible

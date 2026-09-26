@@ -1,14 +1,18 @@
-import pytest
+import socket
 import threading
 import time
 from decimal import Decimal
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
+import pytest
+
+from bitcash.exceptions import TLSHandshakeError
 from bitcash.network.APIs import FulcrumProtocolAPI as _fapi
 from bitcash.network.APIs import SubscriptionHandle
-from bitcash.network.transaction import Transaction, TxPart
 from bitcash.network.APIs.FulcrumProtocolAPI import FulcrumProtocolAPI
 from bitcash.network.meta import Unspent
+from bitcash.network.services import NetworkAPI
+from bitcash.network.transaction import Transaction, TxPart
 from tests.samples import BITCOIN_CASHADDRESS_CATKN, PUBKEY_HASH
 
 _SCRIPT = "76a914" + PUBKEY_HASH.hex() + "88ac"
@@ -591,3 +595,56 @@ class TestFulcrumSubscription:
 
         # Should have received "unsubscribed" notification
         assert any(status == "unsubscribed" for _, status in received)
+
+
+def _plaintext_server(reply: bytes):
+    """Local TCP server that records received bytes and answers every connection."""
+    srv = socket.socket()
+    srv.bind(("127.0.0.1", 0))
+    srv.listen(5)
+    srv.settimeout(3)
+    state = {"connections": 0, "received": b""}
+
+    def serve():
+        while True:
+            try:
+                conn, _ = srv.accept()
+            except (socket.timeout, OSError):
+                return
+            state["connections"] += 1
+            conn.settimeout(1)
+            try:
+                data = conn.recv(4096)
+                state["received"] += data
+                if data:
+                    conn.sendall(reply)
+            except OSError:
+                pass
+            finally:
+                conn.close()
+
+    threading.Thread(target=serve, daemon=True).start()
+    return srv, state
+
+
+class TestFulcrumTLS:
+    def test_tls_failure_does_not_fall_back_to_plaintext(self):
+        # A plaintext server answering the TLS ClientHello with JSON-RPC makes
+        # the TLS handshake fail. The client must give up, not reconnect.
+        reply = b'{"jsonrpc":"2.0","id":"bitcash","result":["Evil","1.5.0"]}\n'
+        srv, state = _plaintext_server(reply)
+        host, port = srv.getsockname()
+        api = FulcrumProtocolAPI(f"{host}:{port}", timeout=2)
+
+        with pytest.raises(TLSHandshakeError):
+            api.get_blockheight()
+
+        srv.close()
+        time.sleep(0.2)
+        assert state["connections"] == 1
+        # Only the TLS ClientHello reached the server, never a JSON-RPC request
+        assert b"server.version" not in state["received"]
+        assert api.sock is None
+
+    def test_tls_error_is_a_failover_error(self):
+        assert issubclass(TLSHandshakeError, NetworkAPI.IGNORED_ERRORS)

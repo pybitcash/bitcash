@@ -24,7 +24,9 @@ For Fulcrum Protocol API::
 
     export FULCRUM_API_MAINNET=electron.jochen-hoenicke.de:51002
 
-The port is a necessary component for a Fulcrum Protocol uri. The Fulcrum protocol is connected directly via tcp, hence, avoid "http://" or "https://" prefix.
+The port is a necessary component for a Fulcrum Protocol uri. The Fulcrum protocol is connected directly over a socket, hence, avoid "http://" or "https://" prefix.
+
+The connection always uses TLS with certificate and hostname verification, so the port must be the server's TLS port. If the TLS handshake fails, BitCash raises :class:`~bitcash.exceptions.TLSHandshakeError` and moves on to the next endpoint. It never falls back to plaintext.
 
 And for ChainGraph API::
 

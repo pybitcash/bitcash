@@ -3,22 +3,24 @@ from __future__ import annotations
 import json
 import socket
 import ssl
-from decimal import Decimal
 import threading
 import typing
-from requests.exceptions import ConnectTimeout, ContentDecodingError
+from decimal import Decimal
 from typing import Any, Callable, Optional, Union
 
+from requests.exceptions import ConnectTimeout, ContentDecodingError
+
+from bitcash.cashaddress import Address
 from bitcash.exceptions import (
-    InvalidEndpointURLProvided,
-    InvalidEndpointResponse,
     DataNotFound,
+    InvalidEndpointResponse,
+    InvalidEndpointURLProvided,
+    TLSHandshakeError,
 )
 from bitcash.network.APIs import BaseAPI, SubscriptionHandle
 from bitcash.network.meta import Unspent
 from bitcash.network.transaction import Transaction, TxPart
-from bitcash.cashaddress import Address
-from bitcash.types import NFTCapability, Network, NetworkStr
+from bitcash.types import Network, NetworkStr, NFTCapability
 
 context = ssl.create_default_context()
 FULCRUM_PROTOCOL = "1.5.0"
@@ -30,18 +32,20 @@ BCH_TO_SAT_MULTIPLIER = 100000000
 
 def handshake(
     hostname: str, port: int, timeout: float = DEFAULT_SOCKET_TIMEOUT
-) -> Union[socket.socket, ssl.SSLSocket]:
+) -> ssl.SSLSocket:
     """
-    Perform handshake with the host and establish protocol
+    Perform handshake with the host and establish protocol (TLS only).
     """
     # make socket connection
+    sock = socket.create_connection((hostname, port), timeout=timeout)
     try:
-        sock = socket.create_connection((hostname, port), timeout=timeout)
         ssock = context.wrap_socket(sock, server_hostname=hostname)
-        ssock.settimeout(timeout)
-    except ssl.SSLError:
-        ssock = socket.create_connection((hostname, port), timeout=timeout)
-        ssock.settimeout(timeout)
+    except ssl.SSLError as e:
+        sock.close()
+        raise TLSHandshakeError(
+            f"TLS handshake with {hostname}:{port} failed: {e}"
+        ) from e
+    ssock.settimeout(timeout)
 
     # send a server.version to establish protocol
     _ = send_json_rpc_payload(ssock, "server.version", ["Bitcash", FULCRUM_PROTOCOL])
@@ -94,7 +98,8 @@ class FulcrumProtocolAPI(BaseAPI):
     """Fulcrum Protocol API
     Documentation at: https://electrum-cash-protocol.readthedocs.io/en/latest/index.html
 
-    :param network_endpoint: The url for the network endpoint
+    :param network_endpoint: The network endpoint as ``host:port``. The
+        connection always uses TLS.
     :param timeout: Socket timeout in seconds.
     """
 

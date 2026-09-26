@@ -18,6 +18,10 @@ class InvalidEndpointResponse(Exception):
     pass
 
 
+class TLSHandshakeError(ConnectionError):
+    pass
+
+
 class DataNotFound(Exception):
     pass
 
