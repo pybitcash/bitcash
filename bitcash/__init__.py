@@ -9,4 +9,4 @@ from bitcash.wallet import (
     wif_to_key,
 )
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
