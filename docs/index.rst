@@ -18,6 +18,7 @@ of best practices.
 
     guide/intro
     guide/install
+    guide/cli
     guide/keys
     guide/cashaddr
     guide/network
