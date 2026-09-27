@@ -13,6 +13,10 @@ from bitcash.network.transaction import Transaction, TxPart
 from bitcash.cashaddress import Address
 from bitcash.types import NFTCapability, Network, NetworkStr
 
+CASHTOKEN_ADDRESSES_PAGE_SIZE = 1000
+UNSPENT_PAGE_SIZE = 1000
+TRANSACTIONS_PAGE_SIZE = 1000
+
 
 class ChaingraphAPI(BaseAPI):
     """ChaingraphAPI API, chaingraph.cash
@@ -133,9 +137,8 @@ query GetUTXO($lb: _text, $node: String!) {
         return sum([int(_["value_satoshis"]) for _ in data])
 
     def get_transactions(self, address: str, *args, **kwargs) -> list[str]:
-        json_request = {
-            "query": """
-query GetOutputs($lb: _text!, $node: String!) {
+        query = """
+query GetOutputs($lb: _text!, $node: String!, $limit: Int!, $offset: Int!) {
   block(
     limit: 1
     order_by: { height: desc }
@@ -161,6 +164,8 @@ query GetOutputs($lb: _text!, $node: String!) {
         }
       ]
     }
+    limit: $limit
+    offset: $offset
   ) {
     transaction_hash
     transaction {
@@ -182,36 +187,49 @@ query GetOutputs($lb: _text!, $node: String!) {
     }
   }
 }
-""",
-            "variables": {
-                "lb": f"{{{Address.from_string(address).scriptcode.hex()}}}",
-                "node": self.node_like,
-            },
+"""
+        variables: dict[str, Any] = {
+            "lb": f"{{{Address.from_string(address).scriptcode.hex()}}}",
+            "node": self.node_like,
         }
-        json = self.send_request(json_request, *args, **kwargs)
-        blockheight = int(json["data"]["block"][0]["height"])
+        _PAGE_SIZE = TRANSACTIONS_PAGE_SIZE
+        blockheight = None
         transactions = []
-        for output in json["data"]["search_output"]:
-            # outputs
-            block_inclusions = output["transaction"]["block_inclusions"]
-            if len(block_inclusions) == 0:
-                # assume next block confirmation,
-                # only needed to sort transactions
-                height = blockheight + 1
-            else:
-                height = int(block_inclusions[0]["block"]["height"])
-            transactions.append((output["transaction_hash"][2:], height))
-            # inputs
-            if len(output["spent_by"]) == 0:
-                # unspent
-                continue
-            input_ = output["spent_by"][0]["transaction"]
-            block_inclusions = input_["block_inclusions"]
-            if len(block_inclusions) == 0:
-                height = blockheight + 1
-            else:
-                height = int(block_inclusions[0]["block"]["height"])
-            transactions.append((input_["hash"][2:], height))
+        offset = 0
+        while True:
+            variables["limit"] = _PAGE_SIZE
+            variables["offset"] = offset
+            json = self.send_request(
+                {"query": query, "variables": variables}, *args, **kwargs
+            )
+            data = json["data"]
+            if blockheight is None:
+                blockheight = int(data["block"][0]["height"])
+            rows = data["search_output"]
+            for output in rows:
+                # outputs
+                block_inclusions = output["transaction"]["block_inclusions"]
+                if len(block_inclusions) == 0:
+                    # assume next block confirmation,
+                    # only needed to sort transactions
+                    height = blockheight + 1
+                else:
+                    height = int(block_inclusions[0]["block"]["height"])
+                transactions.append((output["transaction_hash"][2:], height))
+                # inputs
+                if len(output["spent_by"]) == 0:
+                    # unspent
+                    continue
+                input_ = output["spent_by"][0]["transaction"]
+                block_inclusions = input_["block_inclusions"]
+                if len(block_inclusions) == 0:
+                    height = blockheight + 1
+                else:
+                    height = int(block_inclusions[0]["block"]["height"])
+                transactions.append((input_["hash"][2:], height))
+            if len(rows) < _PAGE_SIZE:
+                break
+            offset += _PAGE_SIZE
         # sort by block height
         transactions.sort(key=lambda x: x[1])
         transactions = [_[0] for _ in transactions][::-1]
@@ -309,9 +327,8 @@ query GetOutput($tx: bytea!, $txind: bigint!, $node: String!) {
         return int(json["data"]["output"][0]["value_satoshis"])
 
     def get_unspent(self, address: str, *args, **kwargs) -> list[Unspent]:
-        json_request = {
-            "query": """
-query GetUTXO($lb: _text!, $node: String!) {
+        query = """
+query GetUTXO($lb: _text!, $node: String!, $limit: Int!, $offset: Int!) {
   block(
     limit: 1
     order_by: { height: desc }
@@ -338,6 +355,8 @@ query GetUTXO($lb: _text!, $node: String!) {
         }
       ]
     }
+    limit: $limit
+    offset: $offset
   ) {
     transaction_hash
     output_index
@@ -356,47 +375,59 @@ query GetUTXO($lb: _text!, $node: String!) {
     }
   }
 }
-""",
-            "variables": {
-                "lb": f"{{{Address.from_string(address).scriptcode.hex()}}}",
-                "node": self.node_like,
-            },
+"""
+        variables: dict[str, Any] = {
+            "lb": f"{{{Address.from_string(address).scriptcode.hex()}}}",
+            "node": self.node_like,
         }
-        data = self.send_request(json_request, *args, **kwargs)["data"]
-        blockheight = int(data["block"][0]["height"])
+        _PAGE_SIZE = UNSPENT_PAGE_SIZE
+        blockheight = None
         unspents = []
-        for utxo in data["search_output"]:
-            block_inclusions = utxo["transaction"]["block_inclusions"]
-            if len(block_inclusions) == 0:
-                # unconfirmed
-                confirmations = 0
-            else:
-                confirmations = (
-                    -int(block_inclusions[0]["block"]["height"]) + blockheight + 1
+        offset = 0
+        while True:
+            variables["limit"] = _PAGE_SIZE
+            variables["offset"] = offset
+            data = self.send_request(
+                {"query": query, "variables": variables}, *args, **kwargs
+            )["data"]
+            if blockheight is None:
+                blockheight = int(data["block"][0]["height"])
+            rows = data["search_output"]
+            for utxo in rows:
+                block_inclusions = utxo["transaction"]["block_inclusions"]
+                if len(block_inclusions) == 0:
+                    # unconfirmed
+                    confirmations = 0
+                else:
+                    confirmations = (
+                        -int(block_inclusions[0]["block"]["height"]) + blockheight + 1
+                    )
+                token_category = utxo["token_category"]
+                if token_category:
+                    token_category = token_category[2:]
+                nft_commitment = utxo["nonfungible_token_commitment"]
+                if nft_commitment:
+                    nft_commitment = bytes.fromhex(nft_commitment[2:]) or None
+                token_amount = utxo["fungible_token_amount"]
+                if token_amount:
+                    token_amount = int(token_amount)
+                # add unspent
+                unspents.append(
+                    Unspent(
+                        int(utxo["value_satoshis"]),
+                        confirmations,
+                        utxo["locking_bytecode"][2:],
+                        utxo["transaction_hash"][2:],
+                        int(utxo["output_index"]),
+                        token_category,
+                        utxo["nonfungible_token_capability"],
+                        nft_commitment or None,  # b"" is None
+                        token_amount or None,  # 0 amount is None
+                    )
                 )
-            token_category = utxo["token_category"]
-            if token_category:
-                token_category = token_category[2:]
-            nft_commitment = utxo["nonfungible_token_commitment"]
-            if nft_commitment:
-                nft_commitment = bytes.fromhex(nft_commitment[2:]) or None
-            token_amount = utxo["fungible_token_amount"]
-            if token_amount:
-                token_amount = int(token_amount)
-            # add unspent
-            unspents.append(
-                Unspent(
-                    int(utxo["value_satoshis"]),
-                    confirmations,
-                    utxo["locking_bytecode"][2:],
-                    utxo["transaction_hash"][2:],
-                    int(utxo["output_index"]),
-                    token_category,
-                    utxo["nonfungible_token_capability"],
-                    nft_commitment or None,  # b"" is None
-                    token_amount or None,  # 0 amount is None
-                )
-            )
+            if len(rows) < _PAGE_SIZE:
+                break
+            offset += _PAGE_SIZE
         return unspents
 
     def get_raw_transaction(self, txid: str, *args, **kwargs) -> dict[str, Any]:
@@ -487,7 +518,7 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
 
         query = (
             "query GetCashtokenAddresses"
-            "($category: bytea!, $node: String!"
+            "($category: bytea!, $node: String!, $limit: Int!, $offset: Int!"
             + extra_decls
             + """) {
   output(
@@ -511,24 +542,35 @@ query GetTransactionDetails($tx: bytea!, $node: String!) {
         }
       ]
     }
+    limit: $limit
+    offset: $offset
   ) {
     locking_bytecode
   }
 }"""
         )
 
-        json = self.send_request(
-            {"query": query, "variables": variables}, *args, **kwargs
-        )
+        _PAGE_SIZE = CASHTOKEN_ADDRESSES_PAGE_SIZE
         addresses: set[str] = set()
-        for output in json["data"]["output"]:
-            try:
-                scriptcode = bytes.fromhex(output["locking_bytecode"][2:])
-                addresses.add(
-                    Address.from_script(scriptcode, self.network).cash_address()
-                )
-            except ValueError:
-                pass
+        offset = 0
+        while True:
+            variables["limit"] = _PAGE_SIZE
+            variables["offset"] = offset
+            json = self.send_request(
+                {"query": query, "variables": variables}, *args, **kwargs
+            )
+            rows = json["data"]["output"]
+            for output in rows:
+                try:
+                    scriptcode = bytes.fromhex(output["locking_bytecode"][2:])
+                    addresses.add(
+                        Address.from_script(scriptcode, self.network).cash_address()
+                    )
+                except ValueError:
+                    pass
+            if len(rows) < _PAGE_SIZE:
+                break
+            offset += _PAGE_SIZE
         return addresses
 
     def broadcast_tx(self, tx_hex: str, *args, **kwargs) -> bool:  # pragma: no cover
